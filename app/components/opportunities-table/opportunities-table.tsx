@@ -14,6 +14,7 @@ import { StatusBadge } from '@/shared/components/status-badge';
 import { Building, Calendar, Plus, Users, CheckCircle, UserCheck, XCircle } from 'lucide-react';
 import type { Opportunity, OpportunityStatus, RoleStatus } from '@/shared/types';
 import { ProbabilityBadge } from '@/shared/components/probability-badge';
+import { getStartDateUrgency, getUrgencyConfig, getUrgencyTooltip } from '@/shared/lib/helpers/date-urgency';
 
 interface OpportunitiesTableProps {
   opportunities: Opportunity[];
@@ -161,7 +162,12 @@ export const OpportunitiesTable = ({
                   <TableCell rowSpan={row.rowSpan} className='align-top'>
                     <div className='flex items-center gap-1'>
                       <Calendar className='h-3 w-3' />
-                      {row.expectedStartDate}
+                      <span 
+                        className={`${getUrgencyConfig(getStartDateUrgency(row.expectedStartDate)).textClass}`}
+                        title={getUrgencyTooltip(row.expectedStartDate)}
+                      >
+                        {row.expectedStartDate}
+                      </span>
                     </div>
                   </TableCell>
                   <TableCell rowSpan={row.rowSpan} className='align-top'>

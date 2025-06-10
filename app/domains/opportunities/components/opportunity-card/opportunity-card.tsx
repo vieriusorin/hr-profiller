@@ -10,6 +10,7 @@ import { OpportunityService } from '../../services/opportunity-service';
 import { RoleCard } from '../role-card/role-card';
 import { useOpportunityCard } from './hooks/useOpportunityCard';
 import { OpportunityCardProps } from './types';
+import { getStartDateUrgency, getUrgencyConfig, getUrgencyTooltip } from '@/shared/lib/helpers/date-urgency';
 
 export const OpportunityCard = ({
   opportunity,
@@ -32,8 +33,15 @@ export const OpportunityCard = ({
     onMoveToInProgress,
   });
 
+  const urgency = getStartDateUrgency(opportunity.expectedStartDate);
+  const urgencyConfig = getUrgencyConfig(urgency);
+  const tooltip = getUrgencyTooltip(opportunity.expectedStartDate);
+
   return (
-    <Card className='mb-4'>
+    <Card 
+      className={`mb-4 ${urgencyConfig.bgClass} transition-colors duration-200`}
+      title={tooltip}
+    >
       <CardHeader>
         <div className='flex justify-between items-start'>
           <div className='flex-1'>
