@@ -3,8 +3,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronDown, ChevronRight, Calendar, Building, Briefcase, Plus, Users } from 'lucide-react';
+import { ChevronDown, ChevronRight, Calendar, Building, Plus, Users } from 'lucide-react';
 import { StatusBadge } from '../../../../shared/components/status-badge';
+import { ProbabilityBadge } from '../../../../shared/components/probability-badge';
 import { OpportunityService } from '../../services/opportunity-service';
 import { RoleCard } from '../role-card/role-card';
 import { useOpportunityCard } from './hooks/useOpportunityCard';
@@ -59,10 +60,7 @@ export const OpportunityCard = ({
                 <Calendar className='h-3 w-3' />
                 Start: {opportunity.expectedStartDate}
               </span>
-              <span className='flex items-center gap-1'>
-                <Briefcase className='h-3 w-3' />
-                {opportunity.probability}% probability
-              </span>
+              <ProbabilityBadge probability={opportunity.probability} size='sm' />
             </CardDescription>
           </div>
           

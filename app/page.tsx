@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -9,9 +9,13 @@ import { OpportunityCard } from '@/domains/opportunities/components/opportunity-
 import { CreateOpportunityForm } from '@/domains/opportunities/components/forms/create-opportunity-form';
 import { CreateRoleForm } from '@/domains/opportunities/components/forms/create-role-form';
 import { OpportunityFilters } from '@/domains/opportunities/components/filters/opportunity-filters';
+import { ViewToggle, type ViewMode } from './components/view-toggle/view-toggle';
+import { OpportunitiesTable } from './components/opportunities-table/opportunities-table';
 import { useDashboard } from './hooks/useDashboard';
 
 export default function OpportunityDashboard() {
+  const [currentView, setCurrentView] = useState<ViewMode>('cards');
+  
   const {
     loading,
     isRefetching,
@@ -53,26 +57,33 @@ export default function OpportunityDashboard() {
           <p className='text-gray-600 mt-1'>Manage client opportunities and resource allocation</p>
         </div>
         
-        <Dialog open={showNewOpportunityDialog} onOpenChange={(open) => open ? openNewOpportunityDialog() : closeNewOpportunityDialog()}>
-          <DialogTrigger asChild>
-            <Button className='flex items-center gap-2'>
-              <Plus className='h-4 w-4' />
-              New Opportunity
-            </Button>
-          </DialogTrigger>
-          <DialogContent className='sm:max-w-md'>
-            <DialogHeader>
-              <DialogTitle>Create New Opportunity</DialogTitle>
-              <DialogDescription>
-                Add a new client opportunity to the pipeline
-              </DialogDescription>
-            </DialogHeader>
-            <CreateOpportunityForm
-              onSubmit={handleCreateOpportunity}
-              onCancel={closeNewOpportunityDialog}
-            />
-          </DialogContent>
-        </Dialog>
+        <div className='flex items-center gap-4'>
+          <ViewToggle 
+            currentView={currentView} 
+            onViewChange={setCurrentView} 
+          />
+          
+          <Dialog open={showNewOpportunityDialog} onOpenChange={(open) => open ? openNewOpportunityDialog() : closeNewOpportunityDialog()}>
+            <DialogTrigger asChild>
+              <Button className='flex items-center gap-2'>
+                <Plus className='h-4 w-4' />
+                New Opportunity
+              </Button>
+            </DialogTrigger>
+            <DialogContent className='sm:max-w-md'>
+              <DialogHeader>
+                <DialogTitle>Create New Opportunity</DialogTitle>
+                <DialogDescription>
+                  Add a new client opportunity to the pipeline
+                </DialogDescription>
+              </DialogHeader>
+              <CreateOpportunityForm
+                onSubmit={handleCreateOpportunity}
+                onCancel={closeNewOpportunityDialog}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <OpportunityFilters />
@@ -94,58 +105,83 @@ export default function OpportunityDashboard() {
         </TabsList>
 
         <TabsContent value='in-progress'>
-          <div className='space-y-4'>
-            {filteredInProgress.map(opportunity => (
-              <OpportunityCard
-                key={opportunity.id}
-                opportunity={opportunity}
-                onAddRole={handleAddRole}
-                onUpdateRole={handleUpdateRole}
-                onMoveToHold={handleMoveToHold}
-              />
-            ))}
-            {filteredInProgress.length === 0 && (
-              <div className='text-center py-8 text-gray-500'>
-                No opportunities in progress
-              </div>
-            )}
-          </div>
+          {currentView === 'cards' ? (
+            <div className='space-y-4'>
+              {filteredInProgress.map(opportunity => (
+                <OpportunityCard
+                  key={opportunity.id}
+                  opportunity={opportunity}
+                  onAddRole={handleAddRole}
+                  onUpdateRole={handleUpdateRole}
+                  onMoveToHold={handleMoveToHold}
+                />
+              ))}
+              {filteredInProgress.length === 0 && (
+                <div className='text-center py-8 text-gray-500'>
+                  No opportunities in progress
+                </div>
+              )}
+            </div>
+          ) : (
+            <OpportunitiesTable
+              opportunities={filteredInProgress}
+              onAddRole={handleAddRole}
+              onUpdateRole={handleUpdateRole}
+              onMoveToHold={handleMoveToHold}
+            />
+          )}
         </TabsContent>
 
         <TabsContent value='on-hold'>
-          <div className='space-y-4'>
-            {filteredOnHold.map(opportunity => (
-              <OpportunityCard
-                key={opportunity.id}
-                opportunity={opportunity}
-                onAddRole={handleAddRole}
-                onUpdateRole={handleUpdateRole}
-                onMoveToInProgress={handleMoveToInProgress}
-              />
-            ))}
-            {filteredOnHold.length === 0 && (
-              <div className='text-center py-8 text-gray-500'>
-                No opportunities on hold
-              </div>
-            )}
-          </div>
+          {currentView === 'cards' ? (
+            <div className='space-y-4'>
+              {filteredOnHold.map(opportunity => (
+                <OpportunityCard
+                  key={opportunity.id}
+                  opportunity={opportunity}
+                  onAddRole={handleAddRole}
+                  onUpdateRole={handleUpdateRole}
+                  onMoveToInProgress={handleMoveToInProgress}
+                />
+              ))}
+              {filteredOnHold.length === 0 && (
+                <div className='text-center py-8 text-gray-500'>
+                  No opportunities on hold
+                </div>
+              )}
+            </div>
+          ) : (
+            <OpportunitiesTable
+              opportunities={filteredOnHold}
+              onAddRole={handleAddRole}
+              onUpdateRole={handleUpdateRole}
+              onMoveToInProgress={handleMoveToInProgress}
+            />
+          )}
         </TabsContent>
 
         <TabsContent value='completed'>
-          <div className='space-y-4'>
-            {filteredCompleted.map(opportunity => (
-              <OpportunityCard
-                key={opportunity.id}
-                opportunity={opportunity}
-                showActions={false}
-              />
-            ))}
-            {filteredCompleted.length === 0 && (
-              <div className='text-center py-8 text-gray-500'>
-                No completed opportunities
-              </div>
-            )}
-          </div>
+          {currentView === 'cards' ? (
+            <div className='space-y-4'>
+              {filteredCompleted.map(opportunity => (
+                <OpportunityCard
+                  key={opportunity.id}
+                  opportunity={opportunity}
+                  showActions={false}
+                />
+              ))}
+              {filteredCompleted.length === 0 && (
+                <div className='text-center py-8 text-gray-500'>
+                  No completed opportunities
+                </div>
+              )}
+            </div>
+          ) : (
+            <OpportunitiesTable
+              opportunities={filteredCompleted}
+              showActions={false}
+            />
+          )}
         </TabsContent>
       </Tabs>
 

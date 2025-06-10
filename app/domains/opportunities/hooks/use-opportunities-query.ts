@@ -2,8 +2,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { OpportunityFilters } from '@/shared/types';
 import { OpportunityService } from '../services/opportunity-service';
 import { opportunityApi } from '@/shared/lib/api/mock-data';
-import { validatedOpportunityApi, type ValidatedApiResult, ApiValidationError } from '@/shared/lib/api/validated-api';
-import { type Opportunity, type CreateOpportunityInput, type CreateRoleInput } from '@/shared/schemas/api-schemas';
+import { validatedOpportunityApi, ApiValidationError } from '@/shared/lib/api/validated-api';
+import { type Opportunity} from '@/shared/schemas/api-schemas';
 import { queryKeys } from '@/shared/lib/query/keys';
 
 export const useOpportunitiesQuery = () => {
