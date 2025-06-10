@@ -1,4 +1,23 @@
-import { Opportunity } from '../../types';
+import { Opportunity, OpportunityFilters } from '../../types';
+
+// Helper function to filter opportunities
+const applyFilters = (opportunities: Opportunity[], filters: OpportunityFilters): Opportunity[] => {
+  return opportunities.filter(opp => {
+    const clientMatch = !filters.client || opp.clientName.toLowerCase().includes(filters.client.toLowerCase());
+    
+    const gradeMatch = !filters.grades || filters.grades.length === 0 || opp.roles.some(role => filters.grades.includes(role.requiredGrade));
+    
+    const hireMatch = filters.needsHire === 'all' || opp.roles.some(role => {
+      if (filters.needsHire === 'yes') return role.needsHire;
+      if (filters.needsHire === 'no') return !role.needsHire;
+      return true;
+    });
+
+    const probabilityMatch = !filters.probability || (opp.probability >= filters.probability[0] && opp.probability <= filters.probability[1]);
+    
+    return clientMatch && gradeMatch && hireMatch && probabilityMatch;
+  });
+};
 
 // Use let instead of const so we can modify these arrays
 let mockOpportunities: Opportunity[] = [
@@ -104,19 +123,25 @@ const getNextRoleId = (): number => {
 
 // Simulate API calls
 export const opportunityApi = {
-  async getInProgressOpportunities(): Promise<Opportunity[]> {
+  async getInProgressOpportunities(filters?: OpportunityFilters): Promise<Opportunity[]> {
     await new Promise(resolve => setTimeout(resolve, 100));
-    return [...mockOpportunities];
+    const data = [...mockOpportunities];
+    if (!filters) return data;
+    return applyFilters(data, filters);
   },
 
-  async getOnHoldOpportunities(): Promise<Opportunity[]> {
+  async getOnHoldOpportunities(filters?: OpportunityFilters): Promise<Opportunity[]> {
     await new Promise(resolve => setTimeout(resolve, 100));
-    return [...mockOnHoldOpportunities];
+    const data = [...mockOnHoldOpportunities];
+    if (!filters) return data;
+    return applyFilters(data, filters);
   },
 
-  async getCompletedOpportunities(): Promise<Opportunity[]> {
+  async getCompletedOpportunities(filters?: OpportunityFilters): Promise<Opportunity[]> {
     await new Promise(resolve => setTimeout(resolve, 100));
-    return [...mockCompletedOpportunities];
+    const data = [...mockCompletedOpportunities];
+    if (!filters) return data;
+    return applyFilters(data, filters);
   },
 
   async createOpportunity(opportunity: Opportunity): Promise<Opportunity> {

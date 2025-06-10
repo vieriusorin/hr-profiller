@@ -5,7 +5,8 @@ import { Grade } from '@/shared/types';
 import { 
   parseAsValidatedClient,
   parseAsValidatedGrades,
-  parseAsValidatedNeedsHire 
+  parseAsValidatedNeedsHire,
+  parseAsValidatedProbability
 } from './filter-parsers';
 import { 
   validateOpportunityFilters,
@@ -17,12 +18,14 @@ const filterParsers = {
   client: parseAsValidatedClient.withDefault(''),
   grades: parseAsValidatedGrades.withDefault([]),
   needsHire: parseAsValidatedNeedsHire.withDefault('all'),
+  probability: parseAsValidatedProbability.withDefault([0, 100]),
 };
 
 export interface OpportunityFiltersState {
   client: string;
   grades: Grade[];
   needsHire: 'yes' | 'no' | 'all';
+  probability: [number, number];
 }
 
 export interface UseOpportunityFiltersReturn {
@@ -82,6 +85,7 @@ export const useOpportunityFilters = (): UseOpportunityFiltersReturn => {
       client: updates.client ?? filters.client,
       grades: updates.grades ?? filters.grades,
       needsHire: updates.needsHire ?? filters.needsHire,
+      probability: updates.probability ?? filters.probability,
     });
     
     setFilters((prev: OpportunityFiltersState) => ({
@@ -108,6 +112,7 @@ export const useOpportunityFilters = (): UseOpportunityFiltersReturn => {
       client: '',
       grades: [],
       needsHire: 'all',
+      probability: [0, 100],
     });
     
     setFilters(safeDefaults);
@@ -116,13 +121,15 @@ export const useOpportunityFilters = (): UseOpportunityFiltersReturn => {
   const hasActiveFilters = 
     filters.client !== '' || 
     filters.grades.length > 0 || 
-    filters.needsHire !== 'all';
+    filters.needsHire !== 'all' ||
+    (filters.probability && (filters.probability[0] !== 0 || filters.probability[1] !== 100));
 
   return {
     filters: filterValidation.isValid ? filterValidation.filters! : {
       client: '',
       grades: [],
       needsHire: 'all',
+      probability: [0, 100],
     },
     clientInput,
     updateFilters,

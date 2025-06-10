@@ -78,4 +78,29 @@ export const parseAsValidatedClient = createParser({
       .trim()
       .slice(0, 100);
   }
+});
+
+export const parseAsValidatedProbability = createParser({
+  parse(query: string): [number, number] {
+    if (!query) return [0, 100];
+    
+    const parts = query.split('-').map(Number);
+    if (parts.length !== 2 || isNaN(parts[0]) || isNaN(parts[1])) {
+      return [0, 100];
+    }
+
+    const [min, max] = parts;
+    if (min < 0 || max > 100 || min > max) {
+      return [0, 100];
+    }
+    
+    return [min, max];
+  },
+  
+  serialize(value: [number, number]): string {
+    if (value[0] === 0 && value[1] === 100) {
+      return '';
+    }
+    return `${value[0]}-${value[1]}`;
+  }
 }); 

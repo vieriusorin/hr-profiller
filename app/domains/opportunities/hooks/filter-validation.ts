@@ -26,6 +26,7 @@ export const OpportunityFiltersSchema = z.object({
   client: z.string(),
   grades: z.array(GradeSchema),
   needsHire: NeedsHireSchema,
+  probability: z.tuple([z.number().min(0).max(100), z.number().min(0).max(100)]),
 });
 
 // URL parameter schemas (before parsing)
@@ -33,6 +34,7 @@ export const RawFiltersSchema = z.object({
   client: z.string().optional(),
   grades: z.array(z.string()).optional(),
   needsHire: z.string().optional(),
+  probability: z.string().optional(),
 });
 
 // Validation functions
@@ -92,15 +94,24 @@ export const createSafeFilters = (rawFilters: {
   client?: string;
   grades?: string[];
   needsHire?: string;
+  probability?: [number, number];
 }): z.infer<typeof OpportunityFiltersSchema> => {
   const client = rawFilters.client || '';
   const grades = rawFilters.grades ? validateAndSanitizeGrades(rawFilters.grades) : [];
   const needsHire = rawFilters.needsHire ? validateNeedsHire(rawFilters.needsHire) : 'all';
   
+  const probability = Array.isArray(rawFilters.probability) && 
+    rawFilters.probability.length === 2 &&
+    typeof rawFilters.probability[0] === 'number' &&
+    typeof rawFilters.probability[1] === 'number'
+      ? rawFilters.probability 
+      : [0, 100];
+  
   const filters = {
     client,
     grades,
     needsHire,
+    probability,
   };
   
   // Final validation
@@ -113,6 +124,7 @@ export const createSafeFilters = (rawFilters: {
       client: '',
       grades: [],
       needsHire: 'all',
+      probability: [0, 100],
     };
   }
   

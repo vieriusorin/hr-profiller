@@ -55,6 +55,7 @@ export interface OpportunityFilters {
   client: string;
   grades: Grade[];
   needsHire: 'yes' | 'no' | 'all';
+  probability: [number, number]; // Value between 0 and 100
 }
 
 // Validation error types

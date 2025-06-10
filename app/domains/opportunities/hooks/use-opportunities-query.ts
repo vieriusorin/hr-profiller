@@ -6,12 +6,12 @@ import { validatedOpportunityApi, ApiValidationError } from '@/shared/lib/api/va
 import { type Opportunity} from '@/shared/schemas/api-schemas';
 import { queryKeys } from '@/shared/lib/query/keys';
 
-export const useOpportunitiesQuery = () => {
+export const useOpportunitiesQuery = (filters: OpportunityFilters) => {
 
   const inProgressQuery = useQuery({
-    queryKey: queryKeys.opportunities.inProgress(),
+    queryKey: queryKeys.opportunities.inProgress(filters),
     queryFn: async () => {
-      const result = await validatedOpportunityApi.getInProgressOpportunities();
+      const result = await validatedOpportunityApi.getInProgressOpportunities(filters);
       if (result.success) {
         return result.data;
       }
@@ -28,9 +28,9 @@ export const useOpportunitiesQuery = () => {
   });
 
   const onHoldQuery = useQuery({
-    queryKey: queryKeys.opportunities.onHold(),
+    queryKey: queryKeys.opportunities.onHold(filters),
     queryFn: async () => {
-      const result = await validatedOpportunityApi.getOnHoldOpportunities();
+      const result = await validatedOpportunityApi.getOnHoldOpportunities(filters);
       if (result.success) {
         return result.data;
       }
@@ -46,9 +46,9 @@ export const useOpportunitiesQuery = () => {
   });
 
   const completedQuery = useQuery({
-    queryKey: queryKeys.opportunities.completed(),
+    queryKey: queryKeys.opportunities.completed(filters),
     queryFn: async () => {
-      const result = await validatedOpportunityApi.getCompletedOpportunities();
+      const result = await validatedOpportunityApi.getCompletedOpportunities(filters);
       if (result.success) {
         return result.data;
       }
@@ -334,8 +334,9 @@ export const useOpportunityFiltering = () => {
       const clientMatch = OpportunityService.filterByClient(opp, filters.client);
       const gradeMatch = !filters.grades || filters.grades.length === 0 || opp.roles.some(role => filters.grades.includes(role.requiredGrade));
       const hireMatch = OpportunityService.filterByHiringNeeds(opp, filters.needsHire);
+      const probabilityMatch = !filters.probability || (opp.probability >= filters.probability[0] && opp.probability <= filters.probability[1]);
       
-      return clientMatch && gradeMatch && hireMatch;
+      return clientMatch && gradeMatch && hireMatch && probabilityMatch;
     });
   };
 
@@ -343,7 +344,8 @@ export const useOpportunityFiltering = () => {
 };
 
 export const useOpportunities = () => {
-  const queries = useOpportunitiesQuery();
+  const { filters } = useOpportunityFiltering();
+  const queries = useOpportunitiesQuery(filters);
   const createMutation = useCreateOpportunityMutation();
   const addRoleMutation = useAddRoleMutation();
   const moveMutation = useMoveOpportunityMutation();
