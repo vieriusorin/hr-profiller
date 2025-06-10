@@ -1,103 +1,168 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import React from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Plus, Building, Calendar, Users } from 'lucide-react';
+import { OpportunityCard } from '@/domains/opportunities/components/opportunity-card/opportunity-card';
+import { CreateOpportunityForm } from '@/domains/opportunities/components/forms/create-opportunity-form';
+import { CreateRoleForm } from '@/domains/opportunities/components/forms/create-role-form';
+import { OpportunityFilters } from '@/domains/opportunities/components/filters/opportunity-filters';
+import { useDashboard } from './hooks/useDashboard';
+
+export default function OpportunityDashboard() {
+  const {
+    loading,
+    isRefetching,
+    showNewOpportunityDialog,
+    showNewRoleDialog,
+    filteredInProgress,
+    filteredOnHold,
+    filteredCompleted,
+    handleAddRole,
+    handleCreateRole,
+    handleUpdateRole,
+    handleCreateOpportunity,
+    handleMoveToHold,
+    handleMoveToInProgress,
+    openNewOpportunityDialog,
+    closeNewOpportunityDialog,
+    closeNewRoleDialogAndReset,
+  } = useDashboard();
+
+  if (loading) {
+    return (
+      <div className='p-6 text-center'>
+        <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4'></div>
+        Loading opportunities...
+      </div>
+    );
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className='p-6 max-w-7xl mx-auto'>
+      <div className='flex justify-between items-center mb-6'>
+        <div>
+          <h1 className='text-3xl font-bold flex items-center gap-2'>
+            HR Opportunity Dashboard
+            {isRefetching && (
+              <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600'></div>
+            )}
+          </h1>
+          <p className='text-gray-600 mt-1'>Manage client opportunities and resource allocation</p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+        
+        <Dialog open={showNewOpportunityDialog} onOpenChange={(open) => open ? openNewOpportunityDialog() : closeNewOpportunityDialog()}>
+          <DialogTrigger asChild>
+            <Button className='flex items-center gap-2'>
+              <Plus className='h-4 w-4' />
+              New Opportunity
+            </Button>
+          </DialogTrigger>
+          <DialogContent className='sm:max-w-md'>
+            <DialogHeader>
+              <DialogTitle>Create New Opportunity</DialogTitle>
+              <DialogDescription>
+                Add a new client opportunity to the pipeline
+              </DialogDescription>
+            </DialogHeader>
+            <CreateOpportunityForm
+              onSubmit={handleCreateOpportunity}
+              onCancel={closeNewOpportunityDialog}
+            />
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <OpportunityFilters />
+
+      <Tabs defaultValue='in-progress' className='space-y-4'>
+        <TabsList className='grid w-full grid-cols-3'>
+          <TabsTrigger value='in-progress' className='flex items-center gap-2'>
+            <Building className='h-4 w-4' />
+            In Progress ({filteredInProgress.length})
+          </TabsTrigger>
+          <TabsTrigger value='on-hold' className='flex items-center gap-2'>
+            <Calendar className='h-3 w-3' />
+            On Hold ({filteredOnHold.length})
+          </TabsTrigger>
+          <TabsTrigger value='completed' className='flex items-center gap-2'>
+            <Users className='h-3 w-3' />
+            Completed ({filteredCompleted.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value='in-progress'>
+          <div className='space-y-4'>
+            {filteredInProgress.map(opportunity => (
+              <OpportunityCard
+                key={opportunity.id}
+                opportunity={opportunity}
+                onAddRole={handleAddRole}
+                onUpdateRole={handleUpdateRole}
+                onMoveToHold={handleMoveToHold}
+              />
+            ))}
+            {filteredInProgress.length === 0 && (
+              <div className='text-center py-8 text-gray-500'>
+                No opportunities in progress
+              </div>
+            )}
+          </div>
+        </TabsContent>
+
+        <TabsContent value='on-hold'>
+          <div className='space-y-4'>
+            {filteredOnHold.map(opportunity => (
+              <OpportunityCard
+                key={opportunity.id}
+                opportunity={opportunity}
+                onAddRole={handleAddRole}
+                onUpdateRole={handleUpdateRole}
+                onMoveToInProgress={handleMoveToInProgress}
+              />
+            ))}
+            {filteredOnHold.length === 0 && (
+              <div className='text-center py-8 text-gray-500'>
+                No opportunities on hold
+              </div>
+            )}
+          </div>
+        </TabsContent>
+
+        <TabsContent value='completed'>
+          <div className='space-y-4'>
+            {filteredCompleted.map(opportunity => (
+              <OpportunityCard
+                key={opportunity.id}
+                opportunity={opportunity}
+                showActions={false}
+              />
+            ))}
+            {filteredCompleted.length === 0 && (
+              <div className='text-center py-8 text-gray-500'>
+                No completed opportunities
+              </div>
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
+
+      <Dialog open={showNewRoleDialog} onOpenChange={closeNewRoleDialogAndReset}>
+        <DialogContent className='sm:max-w-md'>
+          <DialogHeader>
+            <DialogTitle>Add New Role</DialogTitle>
+            <DialogDescription>
+              Add a role to the selected opportunity
+            </DialogDescription>
+          </DialogHeader>
+          <CreateRoleForm
+            onSubmit={handleCreateRole}
+            onCancel={closeNewRoleDialogAndReset}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </DialogContent>
+      </Dialog>
     </div>
   );
-}
+}; 
