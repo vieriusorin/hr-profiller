@@ -38,12 +38,17 @@ export async function GET(request: Request) {
 
     const response = await fetch(`${JSON_SERVER_URL}/opportunities?status=In Progress`);
     if (!response.ok) {
-        throw new Error(`Failed to fetch from json-server: ${response.statusText}`);
+      throw new Error(`Failed to fetch from json-server: ${response.statusText}`);
     }
     const allInProgressOpportunities: Opportunity[] = await response.json();
 
-    const filteredOpportunities = applyFilters(allInProgressOpportunities, filters);
-    
+    const filteredOpportunities = applyFilters(allInProgressOpportunities, filters).map(opp => ({
+      ...opp,
+      roles: filters.grades && filters.grades.length > 0
+        ? opp.roles.filter(role => filters.grades.includes(role.requiredGrade))
+        : opp.roles
+    }));
+
     return NextResponse.json(filteredOpportunities);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
