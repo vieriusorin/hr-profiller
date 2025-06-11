@@ -1,0 +1,64 @@
+{
+  "opportunities": [
+    {
+      "id": "7df1",
+      "clientName": "Relx",
+      "opportunityName": "Popverse",
+      "expectedStartDate": "2025-07-04",
+      "probability": 90,
+      "createdAt": "2025-06-11",
+      "status": "Done",
+      "roles": [
+        {
+          "roleName": "Senior Frontend Developer",
+          "requiredGrade": "SC",
+          "needsHire": true,
+          "comments": "",
+          "status": "Staffed",
+          "assignedMember": null,
+          "id": "2d23e399-ff2c-4a59-a3f7-478e57abd52f"
+        }
+      ]
+    },
+    {
+      "id": "e2a7",
+      "clientName": "Relx",
+      "opportunityName": "Pure",
+      "expectedStartDate": "2025-07-31",
+      "probability": 100,
+      "createdAt": "2025-06-11",
+      "status": "Done",
+      "roles": [
+        {
+          "roleName": "Devops",
+          "requiredGrade": "C",
+          "needsHire": false,
+          "comments": "Awsome ",
+          "status": "Lost",
+          "assignedMember": null,
+          "id": "a96ab6ea-4720-40e5-b10d-b2c463cf7f00"
+        }
+      ]
+    },
+    {
+      "id": "b6c1",
+      "clientName": "Relx",
+      "opportunityName": "Backend Developer",
+      "expectedStartDate": "2025-07-31",
+      "probability": 100,
+      "createdAt": "2025-06-11",
+      "status": "In Progress",
+      "roles": [
+        {
+          "roleName": "Web Developer",
+          "requiredGrade": "SE",
+          "needsHire": false,
+          "comments": "",
+          "status": "Open",
+          "assignedMember": null,
+          "id": "7ffc7c5c-a0bf-4af9-bf6c-b405d9ca8c8e"
+        }
+      ]
+    }
+  ]
+}

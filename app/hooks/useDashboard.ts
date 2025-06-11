@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useOpportunities } from '@/domains/opportunities/hooks/use-opportunities-query';
-import { useOpportunityFilters } from '@/domains/opportunities/hooks/useOpportunityFilters';
+import { useOpportunities } from '@/app/(dashboard)/domains/opportunities/hooks/use-opportunities-query';
+import { useOpportunityFilters } from '@/app/(dashboard)/domains/opportunities/hooks/useOpportunityFilters';
 import { UseDashboardReturn } from '../types';
 import type { Opportunity } from '@/shared/types';
 import toast from 'react-hot-toast';
@@ -28,13 +28,13 @@ export const useDashboard = (): UseDashboardReturn => {
 
   const [showNewOpportunityDialog, setShowNewOpportunityDialog] = useState(false);
   const [showNewRoleDialog, setShowNewRoleDialog] = useState(false);
-  const [selectedOpportunityId, setSelectedOpportunityId] = useState<number | null>(null);
+  const [selectedOpportunityId, setSelectedOpportunityId] = useState<string | null>(null);
 
   if (error) {
     throw error;
   }
 
-  const handleAddRole = (opportunityId: number) => {
+  const handleAddRole = (opportunityId: string) => {
     setSelectedOpportunityId(opportunityId);
     setShowNewRoleDialog(true);
   };
@@ -71,9 +71,9 @@ export const useDashboard = (): UseDashboardReturn => {
     }
   };
 
-  const handleUpdateRole = async (opportunityId: number, roleId: number, status: string) => {
-    const opportunity = opportunities.find((opp: any) => opp.id === opportunityId) ||
-                      onHoldOpportunities.find((opp: any) => opp.id === opportunityId);
+  const handleUpdateRole = async (opportunityId: string, roleId: string, status: string) => {
+    const opportunity = opportunities.find((opp: Opportunity) => opp.id === opportunityId) ||
+                      onHoldOpportunities.find((opp: Opportunity) => opp.id === opportunityId);
     
     if (opportunity) {
       const role = opportunity.roles.find((r: any) => r.id === roleId);
@@ -84,12 +84,14 @@ export const useDashboard = (): UseDashboardReturn => {
         const updatedOpportunity = await updateRoleStatus(opportunityId, roleId, status);
         
         // Check if the opportunity should be moved to completed
-        // Move to completed when any role becomes "Won"
-        const shouldMoveToCompleted = status === 'Won';
+        // Move to completed when all roles are in a final state (Won, Lost, or Staffed)
+        const updatedRoles = updatedOpportunity.roles;
+        const shouldMoveToCompleted = updatedRoles.length > 0 && 
+          updatedRoles.every((role: any) => role.status === 'Won' || role.status === 'Lost' || role.status === 'Staffed');
         
         if (shouldMoveToCompleted) {
           // Move to completed
-          const fromStatus = opportunities.find((opp: any) => opp.id === opportunityId) ? 'in-progress' : 'on-hold';
+          const fromStatus = opportunities.find((opp: Opportunity) => opp.id === opportunityId) ? 'in-progress' : 'on-hold';
           
           try {
             await moveToCompleted(opportunityId, fromStatus as 'in-progress' | 'on-hold');
@@ -108,7 +110,7 @@ export const useDashboard = (): UseDashboardReturn => {
     }
   };
 
-  const handleCreateOpportunity = async (opportunity: any) => {
+  const handleCreateOpportunity = async (opportunity: Opportunity) => {
     const loadingToast = toast.loading('Creating opportunity...');
     
     try {
@@ -124,8 +126,8 @@ export const useDashboard = (): UseDashboardReturn => {
     }
   };
 
-  const handleMoveToHold = async (opportunityId: number) => {
-    const opportunity = opportunities.find(opp => opp.id === opportunityId);
+  const handleMoveToHold = async (opportunityId: string) => {
+    const opportunity = opportunities.find((opp: Opportunity) => opp.id === opportunityId);
     if (!opportunity) return;
 
     const loadingToast = toast.loading('Moving to hold...');
@@ -140,8 +142,8 @@ export const useDashboard = (): UseDashboardReturn => {
     }
   };
 
-  const handleMoveToInProgress = async (opportunityId: number) => {
-    const opportunity = onHoldOpportunities.find(opp => opp.id === opportunityId);
+  const handleMoveToInProgress = async (opportunityId: string) => {
+    const opportunity = onHoldOpportunities.find((opp: Opportunity) => opp.id === opportunityId);
     if (!opportunity) return;
 
     const loadingToast = toast.loading('Moving to in progress...');
@@ -156,11 +158,29 @@ export const useDashboard = (): UseDashboardReturn => {
     }
   };
 
+  const handleMoveToCompleted = async (opportunityId: string) => {
+    const opportunity = opportunities.find((opp: Opportunity) => opp.id === opportunityId) ||
+                      onHoldOpportunities.find((opp: Opportunity) => opp.id === opportunityId);
+    if (!opportunity) return;
+
+    const loadingToast = toast.loading('Moving to completed...');
+    
+    try {
+      const fromStatus = opportunities.find((opp: Opportunity) => opp.id === opportunityId) ? 'in-progress' : 'on-hold';
+      await moveToCompleted(opportunityId, fromStatus as 'in-progress' | 'on-hold');
+      toast.dismiss(loadingToast);
+      toast.success(`"${opportunity.opportunityName}" moved to completed`);
+    } catch (error: any) {
+      toast.dismiss(loadingToast);
+      toast.error(`Failed to move opportunity: ${error.message}`);
+    }
+  };
+
   const openNewOpportunityDialog = () => setShowNewOpportunityDialog(true);
   const closeNewOpportunityDialog = () => setShowNewOpportunityDialog(false);
   const closeNewRoleDialog = () => setShowNewRoleDialog(false);
   const closeNewRoleDialogAndReset = () => {
-    setShowNewOpportunityDialog(false);
+    setShowNewRoleDialog(false);
   };
 
   return {
@@ -181,6 +201,7 @@ export const useDashboard = (): UseDashboardReturn => {
     handleCreateOpportunity,
     handleMoveToHold,
     handleMoveToInProgress,
+    handleMoveToCompleted,
     openNewOpportunityDialog,
     closeNewOpportunityDialog,
     closeNewRoleDialog,

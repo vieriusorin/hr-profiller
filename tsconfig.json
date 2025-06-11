@@ -20,7 +20,7 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@/domains/*": ["./app/domains/*"],
+      "@/domains/*": ["app/(dashboard)/domains/*"],
       "@/shared/*": ["./app/shared/*"],
       "@/hooks/*": ["./app/hooks/*"]
     }

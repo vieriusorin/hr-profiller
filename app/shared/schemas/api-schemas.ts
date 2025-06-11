@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
 // Base schemas for IDs and enums
-export const OpportunityIdSchema = z.number().int().positive();
-export const RoleIdSchema = z.number().int().positive();
-export const MemberIdSchema = z.number().int().positive();
+export const OpportunityIdSchema = z.string();
+export const RoleIdSchema = z.string();
+export const MemberIdSchema = z.string();
 
 export const OpportunityStatusSchema = z.enum(['In Progress', 'On Hold', 'Done']);
 export const RoleStatusSchema = z.enum(['Open', 'Staffed', 'Won', 'Lost']);
@@ -34,7 +34,7 @@ export const OpportunitySchema = z.object({
   id: OpportunityIdSchema,
   clientName: z.string().min(1, 'Client name is required'),
   opportunityName: z.string().min(1, 'Opportunity name is required'),
-  openDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
+  createdAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
   expectedStartDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
   probability: z.number().min(0).max(100),
   status: OpportunityStatusSchema,
@@ -50,6 +50,7 @@ export const CreateOpportunityInputSchema = z.object({
   opportunityName: z.string().min(1, 'Opportunity name is required'),
   expectedStartDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
   probability: z.number().min(0).max(100),
+  createdAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
 });
 
 export const CreateRoleInputSchema = z.object({
@@ -144,12 +145,14 @@ export const validateOpportunities = (data: unknown): {
 
 // Safe parsing with fallbacks
 export const safeParseOpportunities = (data: unknown): Opportunity[] => {
+  console.log('safeParseOpportunities', data);
   const result = validateOpportunities(data);
+  
   if (result.success) {
     return result.data;
   }
   
-  console.error('Failed to validate opportunities data:', result.error.format());
+  console.error('Failed to validate opportunities data:', JSON.stringify(result.error, null, 2));
   
   // Try to salvage individual opportunities
   if (Array.isArray(data)) {
@@ -159,7 +162,7 @@ export const safeParseOpportunities = (data: unknown): Opportunity[] => {
       if (itemResult.success) {
         validOpportunities.push(itemResult.data);
       } else {
-        console.warn(`Skipping invalid opportunity at index ${index}:`, itemResult.error.format());
+        console.warn(`Skipping invalid opportunity at index ${index}:`, JSON.stringify(itemResult.error, null, 2));
       }
     });
     return validOpportunities;

@@ -11,6 +11,7 @@ import {
   type CreateRoleInput
 } from '@/shared/schemas/api-schemas';
 import { z } from 'zod';
+import { Role } from '@/shared/types';
 
 const API_BASE_URL = '/api';
 
@@ -20,7 +21,7 @@ const buildQueryString = (filters: OpportunityFilters): string => {
     if(filters.client) params.append('client', filters.client);
     if(filters.grades && filters.grades.length > 0) params.append('grades', filters.grades.join(','));
     if(filters.needsHire) params.append('needsHire', filters.needsHire);
-    if(filters.probability) params.append('probability', `${filters.probability[0]}-${filters.probability[1]}`);
+    if(filters.probability) params.append('probability', filters.probability.join('-'));
     return params.toString();
 }
 
@@ -56,9 +57,9 @@ export const opportunityApi = {
         return await response.json();
     },
 
-    async addRoleToOpportunity(opportunityId: number, roleData: any): Promise<Opportunity> {
+    async addRoleToOpportunity(opportunityId: string, roleData: CreateRoleInput): Promise<Opportunity> {
         const response = await fetch(`${API_BASE_URL}/opportunities/${opportunityId}/roles`, {
-            method: 'POST',
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(roleData),
         });
@@ -76,9 +77,9 @@ export const opportunityApi = {
         return await response.json();
     },
 
-    async moveOpportunity(opportunityId: number, toStatus: 'In Progress' | 'On Hold' | 'Done'): Promise<Opportunity> {
+    async moveOpportunity(opportunityId: string, toStatus: 'In Progress' | 'On Hold' | 'Done'): Promise<Opportunity> {
         const response = await fetch(`${API_BASE_URL}/opportunities/${opportunityId}/move`, {
-            method: 'PUT',
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ toStatus }),
         });
@@ -86,7 +87,7 @@ export const opportunityApi = {
         return await response.json();
     },
 
-    async updateRoleStatus(opportunityId: number, roleId: number, status: string): Promise<Opportunity> {
+    async updateRoleStatus(opportunityId: string, roleId: string, status: string): Promise<Opportunity> {
         const response = await fetch(`${API_BASE_URL}/opportunities/${opportunityId}/roles/${roleId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -132,7 +133,16 @@ export const validatedOpportunityApi = {
   async getInProgressOpportunities(filters: OpportunityFilters): Promise<ValidatedApiResult<OpportunityType[]>> {
     try {
       const rawData = await opportunityApi.getInProgressOpportunities(filters);
+      
+      if (!Array.isArray(rawData)) {
+        console.error('API returned non-array data for getInProgressOpportunities:', rawData);
+        const customError = new Error('Invalid data format from API: expected an array.');
+        return { success: false, error: customError, fallbackData: [] };
+      }
+
       const validation = validateOpportunities(rawData);
+
+      console.log('validation', validation);
       
       if (validation.success) {
         return {
@@ -153,6 +163,7 @@ export const validatedOpportunityApi = {
       return {
         success: false,
         error: error instanceof Error ? error : new Error('Unknown error occurred'),
+        fallbackData: [],
       };
     }
   },
@@ -160,6 +171,13 @@ export const validatedOpportunityApi = {
   async getOnHoldOpportunities(filters: OpportunityFilters): Promise<ValidatedApiResult<OpportunityType[]>> {
     try {
       const rawData = await opportunityApi.getOnHoldOpportunities(filters);
+      
+      if (!Array.isArray(rawData)) {
+        console.error('API returned non-array data for getOnHoldOpportunities:', rawData);
+        const customError = new Error('Invalid data format from API: expected an array.');
+        return { success: false, error: customError, fallbackData: [] };
+      }
+
       const validation = validateOpportunities(rawData);
       
       if (validation.success) {
@@ -180,6 +198,7 @@ export const validatedOpportunityApi = {
       return {
         success: false,
         error: error instanceof Error ? error : new Error('Unknown error occurred'),
+        fallbackData: [],
       };
     }
   },
@@ -187,6 +206,13 @@ export const validatedOpportunityApi = {
   async getCompletedOpportunities(filters: OpportunityFilters): Promise<ValidatedApiResult<OpportunityType[]>> {
     try {
       const rawData = await opportunityApi.getCompletedOpportunities(filters);
+      
+      if (!Array.isArray(rawData)) {
+        console.error('API returned non-array data for getCompletedOpportunities:', rawData);
+        const customError = new Error('Invalid data format from API: expected an array.');
+        return { success: false, error: customError, fallbackData: [] };
+      }
+
       const validation = validateOpportunities(rawData);
       
       if (validation.success) {
@@ -207,6 +233,7 @@ export const validatedOpportunityApi = {
       return {
         success: false,
         error: error instanceof Error ? error : new Error('Unknown error occurred'),
+        fallbackData: [],
       };
     }
   },
@@ -249,7 +276,7 @@ export const validatedOpportunityApi = {
   },
 
   async addRoleToOpportunity(
-    opportunityId: number, 
+    opportunityId: string, 
     roleData: CreateRoleInput
   ): Promise<ValidatedApiResult<OpportunityType>> {
     try {
@@ -326,7 +353,7 @@ export const validatedOpportunityApi = {
   },
 
   async moveOpportunity(
-    opportunityId: number, 
+    opportunityId: string, 
     toStatus: 'In Progress' | 'On Hold' | 'Done'
   ): Promise<ValidatedApiResult<OpportunityType>> {
     try {
@@ -355,8 +382,8 @@ export const validatedOpportunityApi = {
   },
 
   async updateRoleStatus(
-    opportunityId: number,
-    roleId: number,
+    opportunityId: string,
+    roleId: string,
     status: string
   ): Promise<ValidatedApiResult<OpportunityType>> {
     try {

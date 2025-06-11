@@ -1,7 +1,7 @@
 // Core domain types
-export type OpportunityId = number;
-export type RoleId = number;
-export type MemberId = number;
+export type OpportunityId = string;
+export type RoleId = string;
+export type MemberId = string;
 
 export type OpportunityStatus = 'In Progress' | 'On Hold' | 'Done';
 export type RoleStatus = 'Open' | 'Staffed' | 'Won' | 'Lost';
@@ -29,7 +29,7 @@ export interface Opportunity {
   id: OpportunityId;
   clientName: string;
   opportunityName: string;
-  openDate: string;
+  createdAt: string;
   expectedStartDate: string;
   probability: number;
   status: OpportunityStatus;
