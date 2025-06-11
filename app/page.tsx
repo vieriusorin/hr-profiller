@@ -1,48 +1,40 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, Building, Calendar, Users } from 'lucide-react';
-import { OpportunityCard } from '@/domains/opportunities/components/opportunity-card/opportunity-card';
 import { CreateOpportunityForm } from '@/domains/opportunities/components/forms/create-opportunity-form';
 import { CreateRoleForm } from '@/domains/opportunities/components/forms/create-role-form';
 import { OpportunityFilters } from '@/domains/opportunities/components/filters/opportunity-filters';
 import { ViewToggle, type ViewMode } from './components/view-toggle/view-toggle';
-import { OpportunitiesTable } from './components/opportunities-table/opportunities-table';
 import { useDashboard } from './hooks/useDashboard';
+import OpportunitiesList from '@/domains/opportunities/components/opportunities-list';
+import { OpportunityCardSkeleton } from '@/domains/opportunities/components/opportunity-card/opportunity-card-skeleton';
 
 export default function OpportunityDashboard() {
   const [currentView, setCurrentView] = useState<ViewMode>('cards');
   
   const {
-    loading,
     isRefetching,
     showNewOpportunityDialog,
     showNewRoleDialog,
-    filteredInProgress,
-    filteredOnHold,
-    filteredCompleted,
-    handleAddRole,
+    opportunities,
+    onHoldOpportunities,
+    completedOpportunities,
+    filterOpportunities,
+    filters,
     handleCreateRole,
-    handleUpdateRole,
     handleCreateOpportunity,
-    handleMoveToHold,
-    handleMoveToInProgress,
     openNewOpportunityDialog,
     closeNewOpportunityDialog,
     closeNewRoleDialogAndReset,
   } = useDashboard();
 
-  if (loading) {
-    return (
-      <div className='p-6 text-center'>
-        <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4'></div>
-        Loading opportunities...
-      </div>
-    );
-  }
+  const filteredInProgress = filterOpportunities(opportunities, filters);
+  const filteredOnHold = filterOpportunities(onHoldOpportunities, filters);
+  const filteredCompleted = filterOpportunities(completedOpportunities, filters);
 
   return (
     <div className='p-6 max-w-7xl mx-auto'>
@@ -104,85 +96,17 @@ export default function OpportunityDashboard() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value='in-progress'>
-          {currentView === 'cards' ? (
-            <div className='space-y-4'>
-              {filteredInProgress.map(opportunity => (
-                <OpportunityCard
-                  key={opportunity.id}
-                  opportunity={opportunity}
-                  onAddRole={handleAddRole}
-                  onUpdateRole={handleUpdateRole}
-                  onMoveToHold={handleMoveToHold}
-                />
-              ))}
-              {filteredInProgress.length === 0 && (
-                <div className='text-center py-8 text-gray-500'>
-                  No opportunities in progress
-                </div>
-              )}
-            </div>
-          ) : (
-            <OpportunitiesTable
-              opportunities={filteredInProgress}
-              onAddRole={handleAddRole}
-              onUpdateRole={handleUpdateRole}
-              onMoveToHold={handleMoveToHold}
-            />
-          )}
-        </TabsContent>
-
-        <TabsContent value='on-hold'>
-          {currentView === 'cards' ? (
-            <div className='space-y-4'>
-              {filteredOnHold.map(opportunity => (
-                <OpportunityCard
-                  key={opportunity.id}
-                  opportunity={opportunity}
-                  onAddRole={handleAddRole}
-                  onUpdateRole={handleUpdateRole}
-                  onMoveToInProgress={handleMoveToInProgress}
-                />
-              ))}
-              {filteredOnHold.length === 0 && (
-                <div className='text-center py-8 text-gray-500'>
-                  No opportunities on hold
-                </div>
-              )}
-            </div>
-          ) : (
-            <OpportunitiesTable
-              opportunities={filteredOnHold}
-              onAddRole={handleAddRole}
-              onUpdateRole={handleUpdateRole}
-              onMoveToInProgress={handleMoveToInProgress}
-            />
-          )}
-        </TabsContent>
-
-        <TabsContent value='completed'>
-          {currentView === 'cards' ? (
-            <div className='space-y-4'>
-              {filteredCompleted.map(opportunity => (
-                <OpportunityCard
-                  key={opportunity.id}
-                  opportunity={opportunity}
-                  showActions={false}
-                />
-              ))}
-              {filteredCompleted.length === 0 && (
-                <div className='text-center py-8 text-gray-500'>
-                  No completed opportunities
-                </div>
-              )}
-            </div>
-          ) : (
-            <OpportunitiesTable
-              opportunities={filteredCompleted}
-              showActions={false}
-            />
-          )}
-        </TabsContent>
+        <Suspense fallback={<OpportunityCardSkeleton />}>
+          <TabsContent value='in-progress'>
+            <OpportunitiesList viewMode={currentView} status='in-progress' />
+          </TabsContent>
+          <TabsContent value='on-hold'>
+            <OpportunitiesList viewMode={currentView} status='on-hold' />
+          </TabsContent>
+          <TabsContent value='completed'>
+            <OpportunitiesList viewMode={currentView} status='completed' />
+          </TabsContent>
+        </Suspense>
       </Tabs>
 
       <Dialog open={showNewRoleDialog} onOpenChange={closeNewRoleDialogAndReset}>

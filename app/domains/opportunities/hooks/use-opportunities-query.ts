@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { OpportunityFilters } from '@/shared/types';
 import { OpportunityService } from '../services/opportunity-service';
-import { opportunityApi } from '@/shared/lib/api/mock-data';
 import { validatedOpportunityApi, ApiValidationError } from '@/shared/lib/api/validated-api';
 import { type Opportunity} from '@/shared/schemas/api-schemas';
 import { queryKeys } from '@/shared/lib/query/keys';
+import { useOpportunityFilters } from './useOpportunityFilters';
 
 export const useOpportunitiesQuery = (filters: OpportunityFilters) => {
 
@@ -92,7 +92,7 @@ export const useCreateOpportunityMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (opportunity: Opportunity) => opportunityApi.createOpportunity(opportunity),
+    mutationFn: (opportunity: Opportunity) => validatedOpportunityApi.createOpportunity(opportunity),
     onMutate: async (newOpportunity) => {
       // Cancel outgoing refetches for in-progress opportunities
       await queryClient.cancelQueries({ queryKey: queryKeys.opportunities.inProgress() });
@@ -146,7 +146,7 @@ export const useAddRoleMutation = () => {
 
   return useMutation({
     mutationFn: ({ opportunityId, roleData }: { opportunityId: number; roleData: any }) => 
-      opportunityApi.addRoleToOpportunity(opportunityId, roleData),
+      validatedOpportunityApi.addRoleToOpportunity(opportunityId, roleData),
     onMutate: async ({ opportunityId, roleData }) => {
       // Find which list the opportunity is in
       const inProgressKey = queryKeys.opportunities.inProgress();
@@ -221,7 +221,7 @@ export const useMoveOpportunityMutation = () => {
     }) => {
       const status = toStatus === 'in-progress' ? 'In Progress' : 
                     toStatus === 'on-hold' ? 'On Hold' : 'Done';
-      return opportunityApi.moveOpportunity(opportunityId, status);
+      return validatedOpportunityApi.moveOpportunity(opportunityId, status);
     },
     onMutate: async ({ opportunityId, fromStatus, toStatus }) => {
       const fromKey = queryKeys.opportunities.list(fromStatus);
@@ -286,7 +286,7 @@ export const useUpdateOpportunityMutation = () => {
       updatedOpportunity: Opportunity; 
       listType: 'in-progress' | 'on-hold' | 'completed';
     }) => {
-      return opportunityApi.updateOpportunity(updatedOpportunity);
+      return validatedOpportunityApi.updateOpportunity(updatedOpportunity);
     },
     onSuccess: (updatedOpportunity, { listType }) => {
       const queryKey = queryKeys.opportunities.list(listType);
@@ -311,7 +311,7 @@ export const useUpdateRoleStatusMutation = () => {
       roleId: number; 
       status: string;
     }) => {
-      return opportunityApi.updateRoleStatus(opportunityId, roleId, status);
+      return validatedOpportunityApi.updateRoleStatus(opportunityId, roleId, status);
     },
     onSuccess: (updatedOpportunity, { opportunityId }) => {
       // Update the opportunity in all relevant query caches
@@ -344,7 +344,17 @@ export const useOpportunityFiltering = () => {
 };
 
 export const useOpportunities = () => {
-  const { filters } = useOpportunityFiltering();
+  const { 
+    filters, 
+    clientInput, 
+    updateFilters, 
+    updateClientInput, 
+    updateGrades, 
+    clearFilters, 
+    hasActiveFilters,
+    isFiltersValid,
+    filterValidationErrors 
+  } = useOpportunityFilters();
   const queries = useOpportunitiesQuery(filters);
   const createMutation = useCreateOpportunityMutation();
   const addRoleMutation = useAddRoleMutation();
@@ -371,6 +381,18 @@ export const useOpportunities = () => {
       }),
     updateRoleStatus: (opportunityId: number, roleId: number, status: string) =>
       updateRoleStatusMutation.mutateAsync({ opportunityId, roleId, status }),
+    
+    // Filter-related state and functions
+    filters,
+    clientInput,
+    updateFilters,
+    updateClientInput,
+    updateGrades,
+    clearFilters,
+    hasActiveFilters,
+    isFiltersValid,
+    filterValidationErrors,
+
     filterOpportunities,
     
     isCreating: createMutation.isPending,

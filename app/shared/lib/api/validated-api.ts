@@ -1,16 +1,101 @@
+import { Opportunity, OpportunityFilters } from '@/shared/types';
 import { 
-  validateOpportunities, 
-  validateOpportunity, 
+  OpportunitySchema, 
+  type Opportunity as OpportunityType,
+  validateOpportunities,
   safeParseOpportunities,
-  OpportunitySchema,
   CreateOpportunityInputSchema,
   CreateRoleInputSchema,
-  type Opportunity,
+  validateOpportunity,
   type CreateOpportunityInput,
   type CreateRoleInput
-} from '../../schemas/api-schemas';
-import { opportunityApi } from './mock-data';
+} from '@/shared/schemas/api-schemas';
 import { z } from 'zod';
+
+const API_BASE_URL = '/api';
+
+// Helper to build query strings
+const buildQueryString = (filters: OpportunityFilters): string => {
+    const params = new URLSearchParams();
+    if(filters.client) params.append('client', filters.client);
+    if(filters.grades && filters.grades.length > 0) params.append('grades', filters.grades.join(','));
+    if(filters.needsHire) params.append('needsHire', filters.needsHire);
+    if(filters.probability) params.append('probability', `${filters.probability[0]}-${filters.probability[1]}`);
+    return params.toString();
+}
+
+export const opportunityApi = {
+    async getInProgressOpportunities(filters: OpportunityFilters): Promise<Opportunity[]> {
+        const queryString = buildQueryString(filters);
+        const response = await fetch(`${API_BASE_URL}/opportunities/in-progress?${queryString}`);
+        if (!response.ok) throw new Error('Failed to fetch in-progress opportunities');
+        return await response.json();
+    },
+
+    async getOnHoldOpportunities(filters: OpportunityFilters): Promise<Opportunity[]> {
+        const queryString = buildQueryString(filters);
+        const response = await fetch(`${API_BASE_URL}/opportunities/on-hold?${queryString}`);
+        if (!response.ok) throw new Error('Failed to fetch on-hold opportunities');
+        return await response.json();
+    },
+
+    async getCompletedOpportunities(filters: OpportunityFilters): Promise<Opportunity[]> {
+        const queryString = buildQueryString(filters);
+        const response = await fetch(`${API_BASE_URL}/opportunities/completed?${queryString}`);
+        if (!response.ok) throw new Error('Failed to fetch completed opportunities');
+        return await response.json();
+    },
+
+    async createOpportunity(opportunity: Partial<Opportunity>): Promise<Opportunity> {
+        const response = await fetch(`${API_BASE_URL}/opportunities`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(opportunity),
+        });
+        if (!response.ok) throw new Error('Failed to create opportunity');
+        return await response.json();
+    },
+
+    async addRoleToOpportunity(opportunityId: number, roleData: any): Promise<Opportunity> {
+        const response = await fetch(`${API_BASE_URL}/opportunities/${opportunityId}/roles`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(roleData),
+        });
+        if (!response.ok) throw new Error('Failed to add role');
+        return await response.json();
+    },
+
+    async updateOpportunity(opportunity: Opportunity): Promise<Opportunity> {
+        const response = await fetch(`${API_BASE_URL}/opportunities/${opportunity.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(opportunity),
+        });
+        if (!response.ok) throw new Error('Failed to update opportunity');
+        return await response.json();
+    },
+
+    async moveOpportunity(opportunityId: number, toStatus: 'In Progress' | 'On Hold' | 'Done'): Promise<Opportunity> {
+        const response = await fetch(`${API_BASE_URL}/opportunities/${opportunityId}/move`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ toStatus }),
+        });
+        if (!response.ok) throw new Error('Failed to move opportunity');
+        return await response.json();
+    },
+
+    async updateRoleStatus(opportunityId: number, roleId: number, status: string): Promise<Opportunity> {
+        const response = await fetch(`${API_BASE_URL}/opportunities/${opportunityId}/roles/${roleId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status }),
+        });
+        if (!response.ok) throw new Error('Failed to update role status');
+        return await response.json();
+    }
+}
 
 // Enhanced error class for API validation errors
 export class ApiValidationError extends Error {
@@ -44,9 +129,9 @@ export type ValidatedApiResult<T> = {
 
 // Validated API wrapper
 export const validatedOpportunityApi = {
-  async getInProgressOpportunities(): Promise<ValidatedApiResult<Opportunity[]>> {
+  async getInProgressOpportunities(filters: OpportunityFilters): Promise<ValidatedApiResult<OpportunityType[]>> {
     try {
-      const rawData = await opportunityApi.getInProgressOpportunities();
+      const rawData = await opportunityApi.getInProgressOpportunities(filters);
       const validation = validateOpportunities(rawData);
       
       if (validation.success) {
@@ -72,9 +157,9 @@ export const validatedOpportunityApi = {
     }
   },
 
-  async getOnHoldOpportunities(): Promise<ValidatedApiResult<Opportunity[]>> {
+  async getOnHoldOpportunities(filters: OpportunityFilters): Promise<ValidatedApiResult<OpportunityType[]>> {
     try {
-      const rawData = await opportunityApi.getOnHoldOpportunities();
+      const rawData = await opportunityApi.getOnHoldOpportunities(filters);
       const validation = validateOpportunities(rawData);
       
       if (validation.success) {
@@ -99,9 +184,9 @@ export const validatedOpportunityApi = {
     }
   },
 
-  async getCompletedOpportunities(): Promise<ValidatedApiResult<Opportunity[]>> {
+  async getCompletedOpportunities(filters: OpportunityFilters): Promise<ValidatedApiResult<OpportunityType[]>> {
     try {
-      const rawData = await opportunityApi.getCompletedOpportunities();
+      const rawData = await opportunityApi.getCompletedOpportunities(filters);
       const validation = validateOpportunities(rawData);
       
       if (validation.success) {
@@ -126,7 +211,7 @@ export const validatedOpportunityApi = {
     }
   },
 
-  async createOpportunity(input: CreateOpportunityInput): Promise<ValidatedApiResult<Opportunity>> {
+  async createOpportunity(input: CreateOpportunityInput): Promise<ValidatedApiResult<OpportunityType>> {
     try {
       // Validate input first
       const validatedInput = CreateOpportunityInputSchema.parse(input);
@@ -166,7 +251,7 @@ export const validatedOpportunityApi = {
   async addRoleToOpportunity(
     opportunityId: number, 
     roleData: CreateRoleInput
-  ): Promise<ValidatedApiResult<Opportunity>> {
+  ): Promise<ValidatedApiResult<OpportunityType>> {
     try {
       // Validate input
       const validatedRoleData = CreateRoleInputSchema.parse(roleData);
@@ -174,7 +259,7 @@ export const validatedOpportunityApi = {
       // Call the API
       const rawData = await opportunityApi.addRoleToOpportunity(opportunityId, validatedRoleData);
       
-      // Validate response
+      // Validate the response
       const validation = validateOpportunity(rawData);
       
       if (validation.success) {
@@ -203,12 +288,12 @@ export const validatedOpportunityApi = {
     }
   },
 
-  async updateOpportunity(opportunity: Opportunity): Promise<ValidatedApiResult<Opportunity>> {
+  async updateOpportunity(opportunity: OpportunityType): Promise<ValidatedApiResult<OpportunityType>> {
     try {
       // Validate input
       const validatedOpportunity = OpportunitySchema.parse(opportunity);
       
-      // Call the API
+      // Call API
       const rawData = await opportunityApi.updateOpportunity(validatedOpportunity);
       
       // Validate response
@@ -243,9 +328,11 @@ export const validatedOpportunityApi = {
   async moveOpportunity(
     opportunityId: number, 
     toStatus: 'In Progress' | 'On Hold' | 'Done'
-  ): Promise<ValidatedApiResult<Opportunity>> {
+  ): Promise<ValidatedApiResult<OpportunityType>> {
     try {
       const rawData = await opportunityApi.moveOpportunity(opportunityId, toStatus);
+      
+      // Validate the response
       const validation = validateOpportunity(rawData);
       
       if (validation.success) {
@@ -271,9 +358,11 @@ export const validatedOpportunityApi = {
     opportunityId: number,
     roleId: number,
     status: string
-  ): Promise<ValidatedApiResult<Opportunity>> {
+  ): Promise<ValidatedApiResult<OpportunityType>> {
     try {
       const rawData = await opportunityApi.updateRoleStatus(opportunityId, roleId, status);
+      
+      // Validate the response
       const validation = validateOpportunity(rawData);
       
       if (validation.success) {
@@ -293,5 +382,5 @@ export const validatedOpportunityApi = {
         error: error instanceof Error ? error : new Error('Unknown error occurred'),
       };
     }
-  },
+  }
 }; 

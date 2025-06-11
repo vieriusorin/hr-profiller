@@ -160,28 +160,8 @@ export const useDashboard = (): UseDashboardReturn => {
   const closeNewOpportunityDialog = () => setShowNewOpportunityDialog(false);
   const closeNewRoleDialog = () => setShowNewRoleDialog(false);
   const closeNewRoleDialogAndReset = () => {
-    setShowNewRoleDialog(false);
+    setShowNewOpportunityDialog(false);
   };
-
-  const filterParams = {
-    client: filters.client,
-    grades: filters.grades as any,
-    needsHire: filters.needsHire as any,
-  };
-
-  // Filter out opportunities with "Won" roles from In Progress and On Hold
-  const filterActiveOpportunities = (opportunities: Opportunity[]) => {
-    return opportunities.filter(opp => 
-      !opp.roles.some(role => role.status === 'Won')
-    );
-  };
-
-  const activeOpportunities = filterActiveOpportunities(opportunities);
-  const activeOnHoldOpportunities = filterActiveOpportunities(onHoldOpportunities);
-
-  const filteredInProgress = filterOpportunities(activeOpportunities, filterParams);
-  const filteredOnHold = filterOpportunities(activeOnHoldOpportunities, filterParams);
-  const filteredCompleted = filterOpportunities(completedOpportunities, filterParams);
 
   return {
     opportunities,
@@ -194,9 +174,7 @@ export const useDashboard = (): UseDashboardReturn => {
     showNewOpportunityDialog,
     showNewRoleDialog,
     selectedOpportunityId,
-    filteredInProgress,
-    filteredOnHold,
-    filteredCompleted,
+    filterOpportunities,
     handleAddRole,
     handleCreateRole,
     handleUpdateRole,

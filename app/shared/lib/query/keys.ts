@@ -1,13 +1,15 @@
+import { OpportunityFilters } from '@/shared/types';
+
 export const queryKeys = {
   opportunities: {
     all: ['opportunities'] as const,
     lists: () => [...queryKeys.opportunities.all, 'list'] as const,
-    list: (status: 'in-progress' | 'on-hold' | 'completed') => 
-      [...queryKeys.opportunities.lists(), status] as const,
+    list: (status: 'in-progress' | 'on-hold' | 'completed', filters?: OpportunityFilters) => 
+      [...queryKeys.opportunities.lists(), status, filters ? { ...filters } : {}] as const,
     detail: (id: number) => [...queryKeys.opportunities.all, 'detail', id] as const,
-    inProgress: () => [...queryKeys.opportunities.list('in-progress')] as const,
-    onHold: () => [...queryKeys.opportunities.list('on-hold')] as const,
-    completed: () => [...queryKeys.opportunities.list('completed')] as const,
+    inProgress: (filters?: OpportunityFilters) => [...queryKeys.opportunities.list('in-progress', filters)] as const,
+    onHold: (filters?: OpportunityFilters) => [...queryKeys.opportunities.list('on-hold', filters)] as const,
+    completed: (filters?: OpportunityFilters) => [...queryKeys.opportunities.list('completed', filters)] as const,
   },
 
   roles: {
@@ -35,6 +37,6 @@ export const opportunityInvalidationPatterns = {
   byId: (id: number) => queryKeys.opportunities.detail(id),
 };
 
-export type OpportunityQueryKey = ReturnType<typeof queryKeys.opportunities[keyof typeof queryKeys.opportunities]>;
-export type RoleQueryKey = ReturnType<typeof queryKeys.roles[keyof typeof queryKeys.roles]>;
-export type MemberQueryKey = ReturnType<typeof queryKeys.members[keyof typeof queryKeys.members]>; 
+export type OpportunityQueryKey = ReturnType<typeof queryKeys.opportunities[keyof Omit<typeof queryKeys.opportunities, 'all'>]>;
+export type RoleQueryKey = ReturnType<typeof queryKeys.roles[keyof Omit<typeof queryKeys.roles, 'all'>]>;
+export type MemberQueryKey = ReturnType<typeof queryKeys.members[keyof Omit<typeof queryKeys.members, 'all'>]>; 
