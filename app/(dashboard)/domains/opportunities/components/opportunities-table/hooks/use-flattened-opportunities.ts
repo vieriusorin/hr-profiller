@@ -23,7 +23,7 @@ export const useFlattenedOpportunities = (opportunities: Opportunity[]): Flatten
       });
 
       // Then add role rows (if any)
-      opportunity.roles.forEach((role) => {
+      opportunity.roles.forEach((role, idx) => {
         flattened.push({
           opportunityId: opportunity.id,
           opportunityName: opportunity.opportunityName,
@@ -40,7 +40,7 @@ export const useFlattenedOpportunities = (opportunities: Opportunity[]): Flatten
           assignedMember: role.assignedMember?.fullName,
           needsHire: role.needsHire,
           allocation: role.assignedMember?.allocation,
-          isFirstRowForOpportunity: false,
+          isFirstRowForOpportunity: idx === 0, // Only first role row is true
           isOpportunityRow: false,
           isRoleRow: true,
           rowSpan: 1,

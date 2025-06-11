@@ -5,7 +5,7 @@ export interface UseDashboardReturn {
   onHoldOpportunities: Opportunity[];
   completedOpportunities: Opportunity[];
   loading: boolean;
-  error: any;
+  error: unknown;
   isRefetching: boolean;
   filters: OpportunityFilters;
   showNewOpportunityDialog: boolean;
@@ -13,9 +13,9 @@ export interface UseDashboardReturn {
   selectedOpportunityId: string | null;
   filterOpportunities: (opportunities: Opportunity[], filters: OpportunityFilters) => Opportunity[];
   handleAddRole: (opportunityId: string) => void;
-  handleCreateRole: (roleData: any) => Promise<void>;
+  handleCreateRole: (roleData: unknown) => Promise<void>;
   handleUpdateRole: (opportunityId: string, roleId: string, status: string) => Promise<void>;
-  handleCreateOpportunity: (opportunity: any) => Promise<any>;
+  handleCreateOpportunity: (opportunity: Opportunity) => Promise<Opportunity>;
   handleMoveToHold: (opportunityId: string) => Promise<void>;
   handleMoveToInProgress: (opportunityId: string) => Promise<void>;
   handleMoveToCompleted: (opportunityId: string) => Promise<void>;

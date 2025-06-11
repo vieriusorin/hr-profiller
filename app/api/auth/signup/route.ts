@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 
 // In-memory user store (replace with database in production)
 // This would typically be in a shared database module
-let users = [
+const users = [
   {
     id: '1',
     email: 'admin@ddroidd.com',
@@ -12,7 +12,7 @@ let users = [
     role: 'admin'
   },
   {
-    id: '2', 
+    id: '2',
     email: 'user@ddroidd.com',
     password: 'password123', // Plain text for testing - will be hashed in production
     name: 'Basic User',
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
     users.push(newUser);
 
     return NextResponse.json(
-      { 
+      {
         message: 'Account created successfully',
         user: {
           id: newUser.id,
@@ -106,6 +106,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-// Export the users array so it can be used by the auth handler
-export { users }; 

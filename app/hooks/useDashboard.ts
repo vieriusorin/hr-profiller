@@ -4,6 +4,7 @@ import { useOpportunityFilters } from '@/app/(dashboard)/domains/opportunities/h
 import { UseDashboardReturn } from '../types';
 import type { Opportunity } from '@/shared/types';
 import toast from 'react-hot-toast';
+import { Role } from '../shared/schemas/api-schemas';
 
 export const useDashboard = (): UseDashboardReturn => {
   const {
@@ -44,12 +45,12 @@ export const useDashboard = (): UseDashboardReturn => {
 
     try {
       const loadingToast = toast.loading('Creating role...');
-      
+
       await new Promise<void>((resolve, reject) => {
         addRole(
-          { 
-            opportunityId: selectedOpportunityId, 
-            roleData: roleData 
+          {
+            opportunityId: selectedOpportunityId,
+            roleData: roleData
           },
           {
             onSuccess: (updatedOpportunity: Opportunity) => {
@@ -73,26 +74,26 @@ export const useDashboard = (): UseDashboardReturn => {
 
   const handleUpdateRole = async (opportunityId: string, roleId: string, status: string) => {
     const opportunity = opportunities.find((opp: Opportunity) => opp.id === opportunityId) ||
-                      onHoldOpportunities.find((opp: Opportunity) => opp.id === opportunityId);
-    
+      onHoldOpportunities.find((opp: Opportunity) => opp.id === opportunityId);
+
     if (opportunity) {
-      const role = opportunity.roles.find((r: any) => r.id === roleId);
+      const role = opportunity.roles.find((r: Role) => r.id === roleId);
       const roleName = role?.roleName || 'Role';
-      
+
       try {
         // First, update the role status via API
         const updatedOpportunity = await updateRoleStatus(opportunityId, roleId, status);
-        
+
         // Check if the opportunity should be moved to completed
         // Move to completed when all roles are in a final state (Won, Lost, or Staffed)
         const updatedRoles = updatedOpportunity.roles;
-        const shouldMoveToCompleted = updatedRoles.length > 0 && 
+        const shouldMoveToCompleted = updatedRoles.length > 0 &&
           updatedRoles.every((role: any) => role.status === 'Won' || role.status === 'Lost' || role.status === 'Staffed');
-        
+
         if (shouldMoveToCompleted) {
           // Move to completed
           const fromStatus = opportunities.find((opp: Opportunity) => opp.id === opportunityId) ? 'in-progress' : 'on-hold';
-          
+
           try {
             await moveToCompleted(opportunityId, fromStatus as 'in-progress' | 'on-hold');
             toast.success(`${roleName} status updated to ${status}. Opportunity moved to completed!`);
@@ -112,7 +113,7 @@ export const useDashboard = (): UseDashboardReturn => {
 
   const handleCreateOpportunity = async (opportunity: Opportunity) => {
     const loadingToast = toast.loading('Creating opportunity...');
-    
+
     try {
       const result = await addOpportunity(opportunity);
       toast.dismiss(loadingToast);
@@ -131,7 +132,7 @@ export const useDashboard = (): UseDashboardReturn => {
     if (!opportunity) return;
 
     const loadingToast = toast.loading('Moving to hold...');
-    
+
     try {
       await moveToOnHold(opportunityId);
       toast.dismiss(loadingToast);
@@ -147,7 +148,7 @@ export const useDashboard = (): UseDashboardReturn => {
     if (!opportunity) return;
 
     const loadingToast = toast.loading('Moving to in progress...');
-    
+
     try {
       await moveToInProgress(opportunityId);
       toast.dismiss(loadingToast);
@@ -160,11 +161,11 @@ export const useDashboard = (): UseDashboardReturn => {
 
   const handleMoveToCompleted = async (opportunityId: string) => {
     const opportunity = opportunities.find((opp: Opportunity) => opp.id === opportunityId) ||
-                      onHoldOpportunities.find((opp: Opportunity) => opp.id === opportunityId);
+      onHoldOpportunities.find((opp: Opportunity) => opp.id === opportunityId);
     if (!opportunity) return;
 
     const loadingToast = toast.loading('Moving to completed...');
-    
+
     try {
       const fromStatus = opportunities.find((opp: Opportunity) => opp.id === opportunityId) ? 'in-progress' : 'on-hold';
       await moveToCompleted(opportunityId, fromStatus as 'in-progress' | 'on-hold');

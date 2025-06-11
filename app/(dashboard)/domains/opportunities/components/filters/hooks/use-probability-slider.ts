@@ -61,7 +61,7 @@ export const useProbabilitySlider = (
     num: number | '',
   ) => {
     const numericValue = num === '' ? (part === 'min' ? 0 : 100) : Number(num);
-    let newRange: [number, number] = [...localValue] as [number, number];
+    const newRange: [number, number] = [...localValue] as [number, number];
 
     if (part === 'min') {
       newRange[0] = numericValue;
