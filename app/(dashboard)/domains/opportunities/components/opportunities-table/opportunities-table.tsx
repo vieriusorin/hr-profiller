@@ -38,8 +38,8 @@ export const OpportunitiesTable = ({
             <TableHead className='w-[150px]'>Assigned</TableHead>
             <TableHead className='w-[80px]'>Allocation</TableHead>
             <TableHead className='w-[80px]'>Hire</TableHead>
-            {showActions && <TableHead className='w-[140px]'>Role Actions</TableHead>}
-            {showActions && <TableHead className='w-[120px]'>Opp. Actions</TableHead>}
+            {showActions && <TableHead className='w-[60px]'>Role Actions</TableHead>}
+            {showActions && <TableHead className='w-[400px]'>Opp. Actions</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>

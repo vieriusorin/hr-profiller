@@ -6,7 +6,7 @@ interface AssignedMemberInfoProps {
 }
 
 export const AssignedMemberInfo = ({ member }: AssignedMemberInfoProps) => (
-  <div className='mt-4 p-3 bg-green-50 rounded-md'>
+  <div className='mt-4 p-3 bg-yellow-50 rounded-md'>
     <Label className='text-sm font-medium'>Assigned Member</Label>
     <p className='text-sm'>
       {member.fullName} ({member.actualGrade})

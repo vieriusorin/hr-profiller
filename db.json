@@ -47,16 +47,54 @@
       "expectedStartDate": "2025-07-31",
       "probability": 100,
       "createdAt": "2025-06-11",
-      "status": "In Progress",
+      "status": "Done",
       "roles": [
         {
           "roleName": "Web Developer",
           "requiredGrade": "SE",
           "needsHire": false,
           "comments": "",
-          "status": "Open",
+          "status": "Won",
           "assignedMember": null,
           "id": "7ffc7c5c-a0bf-4af9-bf6c-b405d9ca8c8e"
+        }
+      ]
+    },
+    {
+      "id": "4a6a",
+      "clientName": "test",
+      "opportunityName": "test",
+      "expectedStartDate": "2025-07-04",
+      "probability": 60,
+      "createdAt": "2025-06-11",
+      "status": "In Progress",
+      "roles": [
+        {
+          "roleName": "be",
+          "requiredGrade": "SE",
+          "needsHire": false,
+          "comments": "",
+          "status": "Open",
+          "assignedMember": null,
+          "id": "ee407be1-2e7a-404f-83f9-522a57708c42"
+        },
+        {
+          "roleName": "FE",
+          "requiredGrade": "SE",
+          "needsHire": false,
+          "comments": "test",
+          "status": "Open",
+          "assignedMember": null,
+          "id": "32952c0d-13b3-43c0-a69b-d358196f8004"
+        },
+        {
+          "roleName": "test",
+          "requiredGrade": "T",
+          "needsHire": false,
+          "comments": "",
+          "status": "Open",
+          "assignedMember": null,
+          "id": "3c20b3b4-7c3e-4bd9-a646-08caf3294834"
         }
       ]
     }

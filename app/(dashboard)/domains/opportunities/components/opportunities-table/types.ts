@@ -17,6 +17,8 @@ export interface FlattenedRow {
   needsHire?: boolean;
   allocation?: number;
   isFirstRowForOpportunity: boolean;
+  isOpportunityRow?: boolean;
+  isRoleRow?: boolean;
   rowSpan: number;
 } 
 

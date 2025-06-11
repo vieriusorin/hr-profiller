@@ -12,9 +12,9 @@ interface ProbabilityBadgeProps {
 const getProbabilityConfig = (probability: number) => {
   if (probability >= 76) {
     return {
-      color: 'bg-green-100 text-green-800 border-green-200',
+      color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
       label: 'High',
-      textColor: 'text-green-600'
+      textColor: 'text-yellow-600'
     };
   } else if (probability >= 51) {
     return {

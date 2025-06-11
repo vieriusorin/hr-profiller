@@ -15,8 +15,29 @@ let users = [
     id: '2', 
     email: 'user@ddroidd.com',
     password: 'password123', // Plain text for testing - will be hashed in production
-    name: 'Test User',
+    name: 'Basic User',
     role: 'user'
+  },
+  {
+    id: '3',
+    email: 'hr.manager@ddroidd.com',
+    password: 'password123',
+    name: 'Sarah Johnson',
+    role: 'hr_manager'
+  },
+  {
+    id: '4',
+    email: 'recruiter@ddroidd.com',
+    password: 'password123',
+    name: 'Mike Chen',
+    role: 'recruiter'
+  },
+  {
+    id: '5',
+    email: 'employee@ddroidd.com',
+    password: 'password123',
+    name: 'Emma Davis',
+    role: 'employee'
   }
 ];
 

@@ -7,7 +7,23 @@ export const useFlattenedOpportunities = (opportunities: Opportunity[]): Flatten
     const flattened: FlattenedRow[] = [];
 
     opportunities.forEach(opportunity => {
-      if (opportunity.roles.length === 0) {
+      // Always add the opportunity row first (without role data)
+      flattened.push({
+        opportunityId: opportunity.id,
+        opportunityName: opportunity.opportunityName,
+        clientName: opportunity.clientName,
+        expectedStartDate: opportunity.expectedStartDate,
+        probability: opportunity.probability,
+        opportunityStatus: opportunity.status,
+        rolesCount: opportunity.roles.length,
+        hasHiringNeeds: opportunity.roles.some(r => r.needsHire),
+        isFirstRowForOpportunity: true,
+        isOpportunityRow: true,
+        rowSpan: opportunity.roles.length + 1, // +1 for the opportunity row itself
+      });
+
+      // Then add role rows (if any)
+      opportunity.roles.forEach((role) => {
         flattened.push({
           opportunityId: opportunity.id,
           opportunityName: opportunity.opportunityName,
@@ -15,34 +31,21 @@ export const useFlattenedOpportunities = (opportunities: Opportunity[]): Flatten
           expectedStartDate: opportunity.expectedStartDate,
           probability: opportunity.probability,
           opportunityStatus: opportunity.status,
-          rolesCount: 0,
-          hasHiringNeeds: false,
-          isFirstRowForOpportunity: true,
+          rolesCount: opportunity.roles.length,
+          hasHiringNeeds: opportunity.roles.some(r => r.needsHire),
+          roleId: role.id,
+          roleName: role.roleName,
+          requiredGrade: role.requiredGrade,
+          roleStatus: role.status,
+          assignedMember: role.assignedMember?.fullName,
+          needsHire: role.needsHire,
+          allocation: role.assignedMember?.allocation,
+          isFirstRowForOpportunity: false,
+          isOpportunityRow: false,
+          isRoleRow: true,
           rowSpan: 1,
         });
-      } else {
-        opportunity.roles.forEach((role, index) => {
-          flattened.push({
-            opportunityId: opportunity.id,
-            opportunityName: opportunity.opportunityName,
-            clientName: opportunity.clientName,
-            expectedStartDate: opportunity.expectedStartDate,
-            probability: opportunity.probability,
-            opportunityStatus: opportunity.status,
-            rolesCount: opportunity.roles.length,
-            hasHiringNeeds: opportunity.roles.some(r => r.needsHire),
-            roleId: role.id,
-            roleName: role.roleName,
-            requiredGrade: role.requiredGrade,
-            roleStatus: role.status,
-            assignedMember: role.assignedMember?.fullName,
-            needsHire: role.needsHire,
-            allocation: role.assignedMember?.allocation,
-            isFirstRowForOpportunity: index === 0,
-            rowSpan: opportunity.roles.length,
-          });
-        });
-      }
+      });
     });
 
     return flattened;

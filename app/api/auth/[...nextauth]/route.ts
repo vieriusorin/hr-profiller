@@ -16,8 +16,29 @@ const users = [
     id: '2', 
     email: 'user@ddroidd.com',
     password: 'password123', // Plain text for testing - will be hashed in production
-    name: 'Test User',
+    name: 'Basic User',
     role: 'user'
+  },
+  {
+    id: '3',
+    email: 'hr.manager@ddroidd.com',
+    password: 'password123',
+    name: 'Sarah Johnson',
+    role: 'hr_manager'
+  },
+  {
+    id: '4',
+    email: 'recruiter@ddroidd.com',
+    password: 'password123',
+    name: 'Mike Chen',
+    role: 'recruiter'
+  },
+  {
+    id: '5',
+    email: 'employee@ddroidd.com',
+    password: 'password123',
+    name: 'Emma Davis',
+    role: 'employee'
   }
 ];
 
@@ -84,14 +105,26 @@ const handler = NextAuth({
       }
       return true;
     },
-    async jwt({ token, account, profile }) {
+    async jwt({ token, account, profile, user }) {
       if (account) {
         token.accessToken = account.access_token;
       }
+      
+      // Add role to token
+      if (user) {
+        token.role = user.role;
+      }
+      
       return token;
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken;
+      
+      // Add role to session
+      if (token.role) {
+        session.user.role = token.role;
+      }
+      
       return session;
     },
   },

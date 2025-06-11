@@ -21,28 +21,28 @@ export const RoleStatusActions = ({ status, show, onStatusUpdate }: RoleStatusAc
         <Button
           size='sm'
           variant='outline'
-          className='text-emerald-600 border-emerald-200 hover:bg-emerald-50'
+          className='text-green-600 border-green-200 hover:bg-green-50'
           onClick={() => onStatusUpdate('Won')}
         >
-          <CheckCircle className='h-3 w-3 mr-1' />
+          <CheckCircle className='h-3 w-3 mr-1 text-green-600' />
           Won
         </Button>
         <Button
           size='sm'
           variant='outline'
-          className='text-green-600 border-green-200 hover:bg-green-50'
+          className='text-yellow-600 border-yellow-200 hover:bg-yellow-50'
           onClick={() => onStatusUpdate('Staffed')}
         >
-          <UserCheck className='h-3 w-3 mr-1' />
+          <UserCheck className='h-3 w-3 mr-1 text-yellow-600' />
           Staffed
         </Button>
         <Button
           size='sm'
           variant='outline'
-          className='text-gray-600 border-gray-200 hover:bg-gray-50'
+          className='text-red-600 border-red-200 hover:bg-red-50'
           onClick={() => onStatusUpdate('Lost')}
         >
-          <XCircle className='h-3 w-3 mr-1' />
+          <XCircle className='h-3 w-3 mr-1 text-red-600' />
           Lost
         </Button>
       </div>

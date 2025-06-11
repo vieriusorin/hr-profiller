@@ -24,7 +24,7 @@ export const RoleDetails = ({ role }: { role: Role }) => (
     <div>
       <Label className='text-sm font-medium'>Needs Hire?</Label>
       <div className='mt-1'>
-        <Badge className={role.needsHire ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}>
+        <Badge className={role.needsHire ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-green-800'}>
           {role.needsHire ? 'Yes' : 'No'}
         </Badge>
       </div>

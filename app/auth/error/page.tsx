@@ -135,7 +135,7 @@ const AuthErrorPage = () => {
 
             <div className='space-y-3'>
               <Link href='/auth/signin'>
-                <Button className='w-full bg-green-600 hover:bg-green-700 text-white'>
+                <Button className='w-full bg-yellow-600 hover:bg-yellow-700 text-white'>
                   <ArrowLeft className='h-4 w-4 mr-2' />
                   Try Again
                 </Button>

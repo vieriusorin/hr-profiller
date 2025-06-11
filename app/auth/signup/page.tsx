@@ -83,10 +83,10 @@ const SignUpPage = () => {
 
   if (success) {
     return (
-      <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100 p-4'>
+      <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 to-emerald-100 p-4'>
         <Card className='w-full max-w-md'>
           <CardContent className='flex flex-col items-center justify-center p-8 space-y-4'>
-            <div className='bg-green-600 rounded-full p-4'>
+            <div className='bg-yellow-600 rounded-full p-4'>
               <Building2 className='h-8 w-8 text-white' />
             </div>
             <div className='text-center'>
@@ -95,7 +95,7 @@ const SignUpPage = () => {
                 Redirecting to sign in page...
               </p>
             </div>
-            <div className='animate-spin rounded-full h-6 w-6 border-b-2 border-green-600'></div>
+            <div className='animate-spin rounded-full h-6 w-6 border-b-2 border-yellow-600'></div>
           </CardContent>
         </Card>
       </div>
@@ -103,15 +103,15 @@ const SignUpPage = () => {
   }
 
   return (
-    <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100 p-4'>
+    <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 to-emerald-100 p-4'>
       <div className='w-full max-w-md space-y-8'>
         <div className='text-center'>
           <div className='flex justify-center mb-4'>
-            <div className='bg-green-600 rounded-full p-3'>
+            <div className='bg-yellow-600 rounded-full p-3'>
               <Building2 className='h-8 w-8 text-white' />
             </div>
           </div>
-          <h1 className='text-3xl font-bold text-gray-900'>Join Profiller HR</h1>
+          <h1 className='text-3xl font-bold text-gray-900'>Join DDROIDD</h1>
           <p className='text-gray-600 mt-2'>Create your account to get started</p>
         </div>
 
@@ -201,7 +201,7 @@ const SignUpPage = () => {
               <Button 
                 type='submit'
                 disabled={isLoading}
-                className='w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-md font-medium transition-colors'
+                className='w-full bg-yellow-600 hover:bg-yellow-700 text-white py-3 rounded-md font-medium transition-colors'
               >
                 {isLoading ? (
                   <div className='flex items-center space-x-2'>
@@ -216,7 +216,7 @@ const SignUpPage = () => {
               <div className='text-center'>
                 <Link 
                   href='/auth/signin'
-                  className='text-sm text-green-600 hover:text-green-700 flex items-center justify-center space-x-1'
+                  className='text-sm text-yellow-600 hover:text-yellow-700 flex items-center justify-center space-x-1'
                 >
                   <ArrowLeft className='h-4 w-4' />
                   <span>Back to Sign In</span>

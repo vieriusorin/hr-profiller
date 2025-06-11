@@ -47,10 +47,13 @@ openssl rand -base64 32
 
 I've pre-created these test accounts:
 
-| Email | Password | Role |
-|-------|----------|------|
-| `admin@ddroidd.com` | `password123` | admin |
-| `user@ddroidd.com` | `password123` | user |
+| Email | Password | Role | Access Level |
+|-------|----------|------|--------------|
+| `admin@ddroidd.com` | `password123` | admin | 👑 Full access including financials |
+| `hr.manager@ddroidd.com` | `password123` | hr_manager | 👥 HR management without client financials |
+| `recruiter@ddroidd.com` | `password123` | recruiter | 🎯 Candidate-focused, no client access |
+| `employee@ddroidd.com` | `password123` | employee | 👤 Basic project access |
+| `user@ddroidd.com` | `password123` | user | 🔒 Dashboard only |
 
 ## Features Implemented
 

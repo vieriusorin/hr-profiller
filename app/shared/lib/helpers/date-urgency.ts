@@ -41,10 +41,10 @@ export const getUrgencyConfig = (urgency: UrgencyLevel): UrgencyConfig => {
       };
     case 'safe':
       return {
-        colorClass: 'border-green-200',
+        colorClass: 'border-yellow-200',
         label: 'On Track',
-        bgClass: 'bg-green-50',
-        textClass: 'text-green-700'
+        bgClass: 'bg-yellow-50',
+        textClass: 'text-yellow-700'
       };
   }
 };

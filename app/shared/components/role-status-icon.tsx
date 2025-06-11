@@ -14,7 +14,7 @@ export const RoleStatusIcon = ({ status }: RoleStatusIconProps) => {
     case 'Lost':
       return <XCircle className='h-4 w-4 text-gray-600' />;
     case 'Staffed':
-      return <UserCheck className='h-4 w-4 text-green-600' />;
+      return <UserCheck className='h-4 w-4 text-yellow-600' />;
     default:
       return <AlertCircle className='h-4 w-4 text-red-600' />;
   }
