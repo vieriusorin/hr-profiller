@@ -94,9 +94,13 @@ export const OpportunitiesTableRow = ({
 	};
 
 	if (row.isOpportunityRow) {
+		const urgency = getStartDateUrgency(row.expectedStartDate);
+		const urgencyConfig = getUrgencyConfig(urgency);
+		const tooltip = getUrgencyTooltip(row.expectedStartDate);
+
 		return (
 			<>
-				<TableRow>
+				<TableRow className={`${urgencyConfig.bgClass} transition-colors duration-200`} title={tooltip}>
 					<TableCell rowSpan={row.rowSpan} className='font-medium align-top'>
 						<div>
 							<div className='font-semibold'>{row.opportunityName}</div>
@@ -119,11 +123,8 @@ export const OpportunitiesTableRow = ({
 						<div className='flex items-center gap-1'>
 							<Calendar className='h-3 w-3' />
 							<span
-								className={`${
-									getUrgencyConfig(getStartDateUrgency(row.expectedStartDate))
-										.textClass
-								}`}
-								title={getUrgencyTooltip(row.expectedStartDate)}
+								className={`font-medium ${urgencyConfig.textClass}`}
+								title={tooltip}
 							>
 								{row.expectedStartDate}
 							</span>
@@ -227,10 +228,12 @@ export const OpportunitiesTableRow = ({
 		);
 	}
 
+	const urgency = getStartDateUrgency(row.expectedStartDate);
+	const urgencyConfig = getUrgencyConfig(urgency);
 
 	return (
 		<>
-			<TableRow className='bg-gray-50/70'>
+			<TableRow className={`${urgencyConfig.bgClass} transition-colors duration-200`}>
 				<TableCell>
 					<div
 						className={

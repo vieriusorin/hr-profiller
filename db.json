@@ -236,6 +236,47 @@
           "id": "59ea6293-ec7e-4709-b11b-8081027b16e8"
         }
       ]
+    },
+    {
+      "id": "5819",
+      "clientName": "Digitalism",
+      "opportunityName": "DGTl",
+      "expectedStartDate": "2025-10-02",
+      "probability": 100,
+      "createdAt": "2025-06-12",
+      "status": "In Progress",
+      "roles": []
+    },
+    {
+      "id": "d637",
+      "clientName": "Test",
+      "opportunityName": "test",
+      "expectedStartDate": "2025-12-24",
+      "probability": 50,
+      "createdAt": "2025-06-12",
+      "status": "In Progress",
+      "roles": [
+        {
+          "roleName": "FE",
+          "requiredGrade": "SE",
+          "allocation": 100,
+          "needsHire": false,
+          "comments": "",
+          "status": "Open",
+          "assignedMember": null,
+          "id": "fcc5a4e4-954f-412a-89a0-bc132785b238"
+        }
+      ]
+    },
+    {
+      "id": "3fad",
+      "clientName": "test2",
+      "opportunityName": "test3",
+      "expectedStartDate": "2025-06-26",
+      "probability": 100,
+      "createdAt": "2025-06-12",
+      "status": "In Progress",
+      "roles": []
     }
   ]
 }
