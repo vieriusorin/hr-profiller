@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+export const OpportunityIdSchema = z.string();
 export const RoleIdSchema = z.string();
 export const MemberIdSchema = z.string();
 
@@ -20,4 +21,14 @@ export const ClientSchema = z.object({
   name: z.string().min(1, 'Client name is required'),
 });
 
-export const ProbabilitySchema = z.number().min(0).max(100); 
+export const ProbabilitySchema = z.number().min(0).max(100);
+
+// Inferred types from schemas
+export type OpportunityId = z.infer<typeof OpportunityIdSchema>;
+export type RoleId = z.infer<typeof RoleIdSchema>;
+export type MemberId = z.infer<typeof MemberIdSchema>;
+export type OpportunityStatus = z.infer<typeof OpportunityStatusSchema>;
+export type RoleStatus = z.infer<typeof RoleStatusSchema>;
+export type Grade = z.infer<typeof GradeSchema>;
+export type Member = z.infer<typeof MemberSchema>;
+export type Client = z.infer<typeof ClientSchema>; 

@@ -1,0 +1,78 @@
+import { Badge } from '@/components/ui/badge';
+import { Clock, AlertTriangle, Calendar } from 'lucide-react';
+import { getCountdownDisplay } from '../../lib/helpers/date-urgency';
+
+interface CountdownBadgeProps {
+  startDate: string;
+  size?: 'sm' | 'md' | 'lg';
+  showIcon?: boolean;
+}
+
+export const CountdownBadge = ({ 
+  startDate, 
+  size = 'md', 
+  showIcon = true 
+}: CountdownBadgeProps) => {
+  const countdown = getCountdownDisplay(startDate);
+  
+  const getIcon = () => {
+    if (!showIcon) return null;
+    
+    const iconSize = size === 'sm' ? 'h-3 w-3' : size === 'lg' ? 'h-5 w-5' : 'h-4 w-4';
+    
+    if (countdown.isToday) {
+      return <Calendar className={iconSize} />;
+    }
+    if (countdown.isOverdue) {
+      return <AlertTriangle className={iconSize} />;
+    }
+    return <Clock className={iconSize} />;
+  };
+
+  const getVariantAndClasses = () => {
+    if (countdown.isToday) {
+      return {
+        variant: 'default' as const,
+        className: 'bg-blue-100 text-blue-800 border-blue-200 animate-pulse'
+      };
+    }
+    
+    if (countdown.isOverdue) {
+      return {
+        variant: 'destructive' as const,
+        className: 'bg-red-100 text-red-800 border-red-200'
+      };
+    }
+    
+    switch (countdown.urgency) {
+      case 'urgent':
+        return {
+          variant: 'secondary' as const,
+          className: 'bg-red-50 text-red-700 border-red-200'
+        };
+      case 'warning':
+        return {
+          variant: 'secondary' as const,
+          className: 'bg-amber-50 text-amber-700 border-amber-200'
+        };
+      case 'safe':
+        return {
+          variant: 'outline' as const,
+          className: 'bg-green-50 text-green-700 border-green-200'
+        };
+    }
+  };
+
+  const { variant, className } = getVariantAndClasses();
+  const textSize = size === 'sm' ? 'text-xs' : size === 'lg' ? 'text-sm' : 'text-xs';
+
+  return (
+    <Badge 
+      variant={variant}
+      className={`${className} ${textSize} flex items-center gap-1 font-medium`}
+    >
+      {getIcon()}
+      {countdown.display}
+    </Badge>
+  );
+}; 

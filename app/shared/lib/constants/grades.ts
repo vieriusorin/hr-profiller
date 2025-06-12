@@ -1,9 +1,4 @@
-import { Grade } from '../../types';
-
-export interface GradeOption {
-  value: Grade;
-  label: string;
-}
+import { Grade, GradeOption } from "../../types";
 
 export const GRADE_OPTIONS: GradeOption[] = [
   { value: 'JT', label: 'JT - Junior Trainee' },

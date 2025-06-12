@@ -1,19 +1,27 @@
-export type OpportunityId = string;
-export type RoleId = string;
-export type MemberId = string;
+// Re-export schema-derived types
+export type {
+  OpportunityId,
+  RoleId,
+  MemberId,
+  OpportunityStatus,
+  RoleStatus,
+  Grade,
+  Member,
+  Client,
+  Opportunity,
+  Role,
+  CreateOpportunityForm,
+  CreateRoleForm,
+  EditRoleForm,
+  CreateOpportunityInput,
+  CreateRoleInput,
+  EditOpportunityForm,
+} from '../schemas/api-schemas';
 
-export type OpportunityStatus = 'In Progress' | 'On Hold' | 'Done';
-export type RoleStatus = 'Open' | 'Staffed' | 'Won' | 'Lost';
-export type Grade = 'JT' | 'T' | 'ST' | 'EN' | 'SE' | 'C' | 'SC' |'SM';
+// Import types for use in interfaces below
+import type { Grade } from '../schemas/api-schemas';
 
-export interface Member {
-  id: MemberId;
-  fullName: string;
-  actualGrade: Grade;
-  allocation: number;
-  availableFrom: string;
-}
-
+// Frontend-specific types that don't exist in schemas
 export interface BaseRole {
   roleName: string;
   requiredGrade: Grade;
@@ -29,37 +37,6 @@ export interface BaseOpportunity {
   probability: number;
 }
 
-export interface Role extends BaseRole {
-  id: RoleId;
-  status: RoleStatus;
-  assignedMember: Member | null;
-  needsHire: boolean;
-}
-
-export interface Client {
-  id: string;
-  name: string;
-}
-
-export interface Opportunity extends BaseOpportunity {
-  id: OpportunityId;
-  createdAt: string;
-  status: OpportunityStatus;
-  roles: Role[];
-  name: string;
-  client: Client;
-}
-
-export interface CreateOpportunityForm extends BaseOpportunity {}
-
-export interface CreateRoleForm extends BaseRole {
-  needsHire: boolean;
-}
-
-export interface EditRoleForm extends BaseRole {
-  id: RoleId;
-}
-
 // Filter types
 export interface OpportunityFilters {
   client: string;
@@ -72,3 +49,18 @@ export interface OpportunityFilters {
 export interface ValidationErrors {
   [key: string]: string;
 } 
+
+
+export type UrgencyLevel = 'urgent' | 'warning' | 'safe';
+
+export interface UrgencyConfig {
+  colorClass: string;
+  label: string;
+  bgClass: string;
+  textClass: string;
+}
+
+export interface GradeOption {
+  value: Grade;
+  label: string;
+}

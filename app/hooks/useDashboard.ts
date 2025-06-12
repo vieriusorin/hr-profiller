@@ -18,7 +18,6 @@ export const useDashboard = (): UseDashboardReturn => {
     moveToOnHold,
     moveToInProgress,
     moveToCompleted,
-    updateOpportunityInList,
     updateRoleStatus,
     filterOpportunities,
     isRefetching,

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { StatusBadge } from "@/shared/components/status-badge";
 import { ProbabilityBadge } from "@/shared/components/probability-badge";
+import { CountdownBadge } from "@/shared/components/countdown-badge";
 import {
 	Building,
 	Calendar,
@@ -120,14 +121,17 @@ export const OpportunitiesTableRow = ({
 						</div>
 					</TableCell>
 					<TableCell rowSpan={row.rowSpan} className='align-top'>
-						<div className='flex items-center gap-1'>
-							<Calendar className='h-3 w-3' />
-							<span
-								className={`font-medium ${urgencyConfig.textClass}`}
-								title={tooltip}
-							>
-								{row.expectedStartDate}
-							</span>
+						<div className='flex flex-col gap-1'>
+							<div className='flex items-center gap-1'>
+								<Calendar className='h-3 w-3' />
+								<span
+									className={`font-medium ${urgencyConfig.textClass}`}
+									title={tooltip}
+								>
+									{row.expectedStartDate}
+								</span>
+							</div>
+							<CountdownBadge startDate={row.expectedStartDate} size='sm' />
 						</div>
 					</TableCell>
 					<TableCell rowSpan={row.rowSpan} className='align-top'>

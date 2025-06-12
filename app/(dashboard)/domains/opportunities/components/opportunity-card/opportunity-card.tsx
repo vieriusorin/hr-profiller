@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { ChevronDown, ChevronRight, Calendar, Building, Plus, Users } from 'lucide-react';
 import { StatusBadge } from '../../../../../shared/components/status-badge';
 import { ProbabilityBadge } from '../../../../../shared/components/probability-badge';
+import { CountdownBadge } from '../../../../../shared/components/countdown-badge';
 import { OpportunityService } from '../../services/opportunity-service';
 import { RoleCard } from '../role-card/role-card';
 import { useOpportunityCard } from './hooks/useOpportunityCard';
@@ -61,6 +62,7 @@ export const OpportunityCard = ({
               </Button>
               <CardTitle className='text-lg'>{opportunity.opportunityName}</CardTitle>
               <StatusBadge status={opportunity.status} />
+              <CountdownBadge startDate={opportunity.expectedStartDate} size='md' />
             </div>
             <CardDescription className='flex items-center gap-4 text-sm'>
               <span className='flex items-center gap-1'>

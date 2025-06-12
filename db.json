@@ -244,7 +244,7 @@
       "expectedStartDate": "2025-10-02",
       "probability": 100,
       "createdAt": "2025-06-12",
-      "status": "In Progress",
+      "status": "Done",
       "roles": []
     },
     {
@@ -275,7 +275,7 @@
       "expectedStartDate": "2025-06-26",
       "probability": 100,
       "createdAt": "2025-06-12",
-      "status": "In Progress",
+      "status": "Done",
       "roles": []
     }
   ]
