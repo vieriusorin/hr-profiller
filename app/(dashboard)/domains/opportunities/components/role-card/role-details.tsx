@@ -4,11 +4,24 @@ import { RoleStatusIcon } from '../../../../../shared/components/role-status-ico
 import { StatusBadge } from '../../../../../shared/components/status-badge';
 import { Role } from '@/shared/types';
 
-export const RoleDetails = ({ role }: { role: Role }) => (
-  <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
+interface RoleDetailsProps {
+  role: Role;
+  onRoleNameClick: () => void;
+}
+
+export const RoleDetails = ({ role, onRoleNameClick }: RoleDetailsProps) => (
+  <div className='grid grid-cols-1 md:grid-cols-5 gap-4'>
     <div>
       <Label className='text-sm font-medium'>Role</Label>
-      <p className='text-sm'>{role.roleName}</p>
+      <p 
+        className='text-sm cursor-pointer hover:text-blue-600 transition-colors'
+        onClick={(e) => {
+          e.stopPropagation();
+          onRoleNameClick();
+        }}
+      >
+        {role.roleName}
+      </p>
     </div>
     <div>
       <Label className='text-sm font-medium'>Required Grade</Label>
@@ -20,6 +33,12 @@ export const RoleDetails = ({ role }: { role: Role }) => (
         <RoleStatusIcon status={role.status} />
         <StatusBadge status={role.status} />
       </div>
+    </div>
+    <div>
+      <Label className='text-sm font-medium'>Allocation</Label>
+      <p className='text-sm font-semibold'>
+        {(role.allocation !== undefined && role.allocation !== null) ? `${role.allocation}%` : '100%'}
+      </p>
     </div>
     <div>
       <Label className='text-sm font-medium'>Needs Hire?</Label>

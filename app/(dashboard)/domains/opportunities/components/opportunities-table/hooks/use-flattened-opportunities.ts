@@ -39,7 +39,7 @@ export const useFlattenedOpportunities = (opportunities: Opportunity[]): Flatten
           roleStatus: role.status,
           assignedMember: role.assignedMember?.fullName,
           needsHire: role.needsHire,
-          allocation: role.assignedMember?.allocation,
+          allocation: role.allocation,
           isFirstRowForOpportunity: idx === 0, // Only first role row is true
           isOpportunityRow: false,
           isRoleRow: true,

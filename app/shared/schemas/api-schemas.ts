@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-// Base schemas for IDs and enums
 export const OpportunityIdSchema = z.string();
 export const RoleIdSchema = z.string();
 export const MemberIdSchema = z.string();
@@ -9,7 +8,6 @@ export const OpportunityStatusSchema = z.enum(['In Progress', 'On Hold', 'Done']
 export const RoleStatusSchema = z.enum(['Open', 'Staffed', 'Won', 'Lost']);
 export const GradeSchema = z.enum(['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM']);
 
-// Member schema
 export const MemberSchema = z.object({
   id: MemberIdSchema,
   fullName: z.string().min(1, 'Member name is required'),
@@ -18,18 +16,17 @@ export const MemberSchema = z.object({
   availableFrom: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
 });
 
-// Role schema
 export const RoleSchema = z.object({
   id: RoleIdSchema,
   roleName: z.string().min(1, 'Role name is required'),
   requiredGrade: GradeSchema,
   status: RoleStatusSchema,
   assignedMember: MemberSchema.nullable(),
+  allocation: z.number().min(0).max(100),
   needsHire: z.boolean(),
   comments: z.string(),
 });
 
-// Opportunity schema
 export const OpportunitySchema = z.object({
   id: OpportunityIdSchema,
   clientName: z.string().min(1, 'Client name is required'),
@@ -41,10 +38,8 @@ export const OpportunitySchema = z.object({
   roles: z.array(RoleSchema),
 });
 
-// Array schemas for API responses
 export const OpportunitiesArraySchema = z.array(OpportunitySchema);
 
-// Form input schemas (for create/update operations)
 export const CreateOpportunityInputSchema = z.object({
   clientName: z.string().min(1, 'Client name is required'),
   opportunityName: z.string().min(1, 'Opportunity name is required'),
@@ -60,7 +55,6 @@ export const CreateRoleInputSchema = z.object({
   comments: z.string(),
 });
 
-// API response wrappers for different endpoints
 export const OpportunityApiResponseSchema = z.object({
   data: OpportunitySchema,
   success: z.boolean(),
@@ -73,7 +67,6 @@ export const OpportunitiesApiResponseSchema = z.object({
   message: z.string().optional(),
 });
 
-// Error response schema
 export const ApiErrorSchema = z.object({
   success: z.literal(false),
   message: z.string(),
@@ -84,14 +77,12 @@ export const ApiErrorSchema = z.object({
   })).optional(),
 });
 
-// Union type for API responses (success or error)
 export const ApiResponseSchema = z.union([
   OpportunityApiResponseSchema,
   OpportunitiesApiResponseSchema,
   ApiErrorSchema,
 ]);
 
-// Type inference - reuse these instead of duplicating TypeScript types
 export type Opportunity = z.infer<typeof OpportunitySchema>;
 export type Role = z.infer<typeof RoleSchema>;
 export type Member = z.infer<typeof MemberSchema>;
@@ -154,7 +145,6 @@ export const safeParseOpportunities = (data: unknown): Opportunity[] => {
   
   console.error('Failed to validate opportunities data:', JSON.stringify(result.error, null, 2));
   
-  // Try to salvage individual opportunities
   if (Array.isArray(data)) {
     const validOpportunities: Opportunity[] = [];
     data.forEach((item, index) => {
@@ -168,5 +158,5 @@ export const safeParseOpportunities = (data: unknown): Opportunity[] => {
     return validOpportunities;
   }
   
-  return []; // Return empty array as fallback
+  return []; 
 }; 

@@ -1,4 +1,5 @@
 import type { Opportunity, OpportunityStatus, RoleStatus } from '@/shared/types';
+import type { OpportunityActionCallbacks } from '../../types';
 
 export interface FlattenedRow {
   opportunityId: string;
@@ -22,12 +23,7 @@ export interface FlattenedRow {
   rowSpan: number;
 } 
 
-export interface OpportunitiesTableProps {
+export interface OpportunitiesTableProps extends OpportunityActionCallbacks {
   opportunities: Opportunity[];
   showActions?: boolean;
-  onAddRole?: (opportunityId: string) => void;
-  onUpdateRole?: (opportunityId: string, roleId: string, status: string) => void;
-  onMoveToHold?: (opportunityId: string) => void;
-  onMoveToInProgress?: (opportunityId: string) => void;
-  onMoveToCompleted?: (opportunityId: string) => void;
 }

@@ -11,13 +11,11 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === 'loading') return; // Still loading
+    if (status === 'loading') return;
 
     if (session) {
-      // User is authenticated, redirect to dashboard
       router.push('/dashboard');
     } else {
-      // User is not authenticated, redirect to sign in
       router.push('/auth/signin');
     }
   }, [session, status, router]);

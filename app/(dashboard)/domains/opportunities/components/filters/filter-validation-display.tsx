@@ -10,20 +10,10 @@ export const FilterValidationDisplay = ({ isValid, errors, className }: FilterVa
     isExpanded,
     toggleExpanded,
     shouldRender,
-    isProduction,
   } = useFilterValidationDisplay({ isValid, errors });
 
   if (!shouldRender) {
     return null;
-  }
-
-  if (isProduction) {
-    return (
-      <div className={`text-amber-600 text-xs flex items-center gap-1 ${className}`}>
-        <AlertTriangle className='h-3 w-3' />
-        Filter validation warnings detected
-      </div>
-    );
   }
 
   return (

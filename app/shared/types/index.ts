@@ -1,4 +1,3 @@
-// Core domain types
 export type OpportunityId = string;
 export type RoleId = string;
 export type MemberId = string;
@@ -15,39 +14,40 @@ export interface Member {
   availableFrom: string;
 }
 
-export interface Role {
-  id: RoleId;
+export interface BaseRole {
   roleName: string;
   requiredGrade: Grade;
-  status: RoleStatus;
-  assignedMember: Member | null;
-  needsHire: boolean;
+  allocation: number;
   comments: string;
 }
 
-export interface Opportunity {
-  id: OpportunityId;
+export interface BaseOpportunity {
   clientName: string;
   opportunityName: string;
-  createdAt: string;
   expectedStartDate: string;
   probability: number;
+}
+
+export interface Role extends BaseRole {
+  id: RoleId;
+  status: RoleStatus;
+  assignedMember: Member | null;
+  needsHire: boolean;
+}
+
+export interface Opportunity extends BaseOpportunity {
+  id: OpportunityId;
+  createdAt: string;
   status: OpportunityStatus;
   roles: Role[];
 }
 
-// Form types
-export interface CreateOpportunityForm {
-  clientName: string;
-  opportunityName: string;
-  expectedStartDate: string;
-  probability: number;
-}
+export interface CreateOpportunityForm extends BaseOpportunity {}
 
-export interface CreateRoleForm {
-  roleName: string;
-  requiredGrade: Grade;
-  comments: string;
+export interface CreateRoleForm extends BaseRole {}
+
+export interface EditRoleForm extends BaseRole {
+  id: RoleId;
 }
 
 // Filter types

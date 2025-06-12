@@ -9,6 +9,7 @@ export const useRoleActions = () => {
   const [newRole, setNewRole] = useState<CreateRoleForm>({
     roleName: '',
     requiredGrade: 'SE',
+    allocation: 100,
     comments: ''
   });
   const [roleErrors, setRoleErrors] = useState<ValidationErrors>({});
@@ -17,14 +18,14 @@ export const useRoleActions = () => {
     setNewRole({
       roleName: '',
       requiredGrade: 'SE',
+      allocation: 100,
       comments: ''
     });
     setRoleErrors({});
   };
 
   const updateRoleForm = (updates: Partial<CreateRoleForm>) => {
-    setNewRole(prev => ({ ...prev, ...updates }));
-    // Clear specific errors when user starts typing
+    setNewRole((prev: CreateRoleForm) => ({ ...prev, ...updates }));
     const clearedErrors = { ...roleErrors };
     Object.keys(updates).forEach(key => {
       delete clearedErrors[key];
@@ -40,7 +41,6 @@ export const useRoleActions = () => {
       return null;
     }
     
-    // Return role data without ID - the mock API will generate the ID
     return OpportunityService.createRole(newRole);
   };
 
@@ -49,11 +49,8 @@ export const useRoleActions = () => {
   };
 
   return {
-    // State
     newRole,
     roleErrors,
-    
-    // Actions
     resetRoleForm,
     updateRoleForm,
     validateAndCreateRole,

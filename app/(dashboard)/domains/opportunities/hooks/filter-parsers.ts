@@ -6,13 +6,11 @@ import {
 } from './filter-validation';
 import { Grade } from '@/shared/types';
 
-// Custom parser for grades array with validation
 export const parseAsValidatedGrades = createParser({
   parse(query: string): Grade[] {
     if (!query) return [];
     
     try {
-      // Handle both comma-separated and array formats
       const rawGrades = query.includes(',') 
         ? query.split(',').map(g => g.trim()).filter(Boolean)
         : [query.trim()].filter(Boolean);
@@ -27,7 +25,6 @@ export const parseAsValidatedGrades = createParser({
   serialize(grades: Grade[]): string {
     if (!grades || grades.length === 0) return '';
     
-    // Additional validation before serialization
     const validGrades = grades.filter(isValidGrade);
     
     if (validGrades.length !== grades.length) {
@@ -38,7 +35,7 @@ export const parseAsValidatedGrades = createParser({
   }
 });
 
-// Custom parser for needsHire with validation
+
 export const parseAsValidatedNeedsHire = createParser({
   parse(query: string): 'yes' | 'no' | 'all' {
     if (!query) return 'all';
@@ -53,12 +50,10 @@ export const parseAsValidatedNeedsHire = createParser({
   }
 });
 
-// Safe client parser (basic string but with sanitation)
 export const parseAsValidatedClient = createParser({
   parse(query: string): string {
     if (!query) return '';
     
-    // Basic sanitation - remove potential XSS characters
     return query
       .replace(/<script[^>]*>.*?<\/script>/gi, '')
       .replace(/<[^>]*>/g, '')
@@ -69,7 +64,6 @@ export const parseAsValidatedClient = createParser({
   serialize(value: string): string {
     if (!value) return '';
     
-    // Same sanitation for serialization
     return value
       .replace(/<script[^>]*>.*?<\/script>/gi, '')
       .replace(/<[^>]*>/g, '')

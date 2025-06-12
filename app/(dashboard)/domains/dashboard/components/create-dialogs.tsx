@@ -1,0 +1,51 @@
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { CreateOpportunityForm } from '@/app/(dashboard)/domains/opportunities/components/forms/create-opportunity-form';
+import { CreateRoleForm } from '@/app/(dashboard)/domains/opportunities/components/forms/create-role-form';
+import { CreateDialogsProps } from '../types';
+
+export const CreateDialogs = ({
+  showNewOpportunityDialog,
+  showNewRoleDialog,
+  handleCreateOpportunity,
+  handleCreateRole,
+  closeNewOpportunityDialog,
+  closeNewRoleDialogAndReset,
+  children
+}: CreateDialogsProps) => {
+  return (
+    <>
+      <Dialog open={showNewOpportunityDialog} onOpenChange={(open: boolean) => open ? null : closeNewOpportunityDialog()}>
+        <DialogTrigger asChild>
+          {children}
+        </DialogTrigger>
+        <DialogContent className='sm:max-w-md'>
+          <DialogHeader>
+            <DialogTitle>Create New Opportunity</DialogTitle>
+            <DialogDescription>
+              Add a new client opportunity to the pipeline
+            </DialogDescription>
+          </DialogHeader>
+          <CreateOpportunityForm
+            onSubmit={handleCreateOpportunity}
+            onCancel={closeNewOpportunityDialog}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showNewRoleDialog} onOpenChange={closeNewRoleDialogAndReset}>
+        <DialogContent className='sm:max-w-md'>
+          <DialogHeader>
+            <DialogTitle>Add New Role</DialogTitle>
+            <DialogDescription>
+              Add a role to the selected opportunity
+            </DialogDescription>
+          </DialogHeader>
+          <CreateRoleForm
+            onSubmit={handleCreateRole}
+            onCancel={closeNewRoleDialogAndReset}
+          />
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}; 

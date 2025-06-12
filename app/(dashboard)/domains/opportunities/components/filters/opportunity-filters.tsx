@@ -9,10 +9,9 @@ import { Filter, Search, X, AlertTriangle } from 'lucide-react';
 import { GRADE_OPTIONS } from '@/shared/lib/constants/grades';
 import { useOpportunityFilters } from '../../hooks/useOpportunityFilters';
 import { GradeMultiSelect } from './grade-multi-select';
-import { ProbabilitySlider } from './probability-slider';
-import { OpportunityFiltersProps } from './types';
+import { ProbabilitySlider } from './probability-slider'
 
-export const OpportunityFilters = ({}: OpportunityFiltersProps) => {
+export const OpportunityFilters = () => {
   const { 
     filters, 
     clientInput, 

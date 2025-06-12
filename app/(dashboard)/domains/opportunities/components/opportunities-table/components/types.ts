@@ -1,11 +1,9 @@
 import type { FlattenedRow } from '../types';
+import type { OpportunityActionCallbacks } from '../../../types';
 
-export interface OpportunitiesTableRowProps {
-    row: FlattenedRow;
-    showActions: boolean;
-    onAddRole?: (opportunityId: string) => void;
-    onUpdateRole?: (opportunityId: string, roleId: string, status: string) => void;
-    onMoveToHold?: (opportunityId: string) => void;
-    onMoveToInProgress?: (opportunityId: string) => void;
-    onMoveToCompleted?: (opportunityId: string) => void;
-  }
+export interface OpportunitiesTableRowProps extends OpportunityActionCallbacks {
+  row: FlattenedRow;
+  showActions: boolean;
+}
+
+export interface UseOpportunitiesTableRowCallbacks extends OpportunityActionCallbacks {}

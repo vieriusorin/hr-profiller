@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { DatePickerProps } from '../types';
 
 interface UseDatePickerParams {
   value?: Date | string;

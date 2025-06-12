@@ -1,9 +1,5 @@
 import { Label } from '@/components/ui/label';
-import { Member } from '@/shared/types';
-
-interface AssignedMemberInfoProps {
-  member: Member;
-}
+import { AssignedMemberInfoProps } from './types';
 
 export const AssignedMemberInfo = ({ member }: AssignedMemberInfoProps) => (
   <div className='mt-4 p-3 bg-yellow-50 rounded-md'>

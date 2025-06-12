@@ -3,7 +3,6 @@ import { Grade } from '@/shared/types';
 
 const VALID_GRADES: readonly Grade[] = ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'] as const;
 
-// Type guards
 export const isValidGrade = (value: string): value is Grade => {
   return VALID_GRADES.includes(value as Grade);
 };
@@ -27,7 +26,6 @@ export const OpportunityFiltersSchema = z.object({
   probability: z.tuple([z.number().min(0).max(100), z.number().min(0).max(100)]),
 });
 
-// URL parameter schemas (before parsing)
 export const RawFiltersSchema = z.object({
   client: z.string().optional(),
   grades: z.array(z.string()).optional(),

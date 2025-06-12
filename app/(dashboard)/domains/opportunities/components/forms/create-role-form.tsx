@@ -41,34 +41,57 @@ export const CreateRoleForm = ({ onSubmit, onCancel }: CreateRoleFormProps) => {
           Required Grade
           <span className='text-red-500 ml-1'>*</span>
         </label>
-        <Controller
-          name='requiredGrade'
-          control={control}
-          render={({ field }) => (
-            <Select 
-              value={field.value} 
-              onValueChange={field.onChange}
-            >
-              <SelectTrigger className={errors.requiredGrade ? 'border-red-500' : ''}>
-                <SelectValue placeholder='Select required grade' />
-              </SelectTrigger>
-              <SelectContent>
-                {GRADE_OPTIONS.map(grade => (
-                  <SelectItem key={grade.value} value={grade.value}>
-                    {grade.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        />
-        {errors.requiredGrade && (
-          <div className='flex items-center gap-1 text-red-600 text-sm'>
-            <span className='h-3 w-3'>⚠</span>
-            {errors.requiredGrade.message}
-          </div>
+              <Controller
+        name='requiredGrade'
+        control={control}
+        render={({ field }) => (
+          <Select 
+            value={field.value} 
+            onValueChange={field.onChange}
+          >
+            <SelectTrigger className={errors.requiredGrade ? 'border-red-500' : ''}>
+              <SelectValue placeholder='Select required grade' />
+            </SelectTrigger>
+            <SelectContent>
+              {GRADE_OPTIONS.map(grade => (
+                <SelectItem key={grade.value} value={grade.value}>
+                  {grade.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         )}
-      </div>
+      />
+      {errors.requiredGrade && (
+        <div className='flex items-center gap-1 text-red-600 text-sm'>
+          <span className='h-3 w-3'>⚠</span>
+          {errors.requiredGrade.message}
+        </div>
+      )}
+    </div>
+    
+    <div className='space-y-2'>
+      <Controller
+        name='allocation'
+        control={control}
+        render={({ field }) => (
+          <FormField 
+            label='Allocation (%)' 
+            value={field.value?.toString() || ''}
+            onChange={(value) => {
+              const numValue = value === '' ? undefined : Number(value);
+              field.onChange(numValue);
+            }}
+            placeholder='e.g., 100'
+            type='number'
+            min='0'
+            max='100'
+            error={errors.allocation?.message}
+            required
+          />
+        )}
+      />
+    </div>
       
       <div className='space-y-2'>
         <label className='text-sm font-medium'>

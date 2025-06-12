@@ -23,6 +23,7 @@ export const useCreateRoleForm = ({
     defaultValues: {
       roleName: '',
       requiredGrade: 'SE',
+      allocation: 100,
       needsHire: 'No',
       comments: '',
     },

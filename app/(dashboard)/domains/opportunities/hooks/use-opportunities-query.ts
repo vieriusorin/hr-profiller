@@ -16,7 +16,6 @@ export const useOpportunitiesQuery = (filters: OpportunityFilters) => {
         return result.data;
       }
       
-      // If we have fallback data, use it but still throw for error handling
       if (result.fallbackData && result.fallbackData.length > 0) {
         console.warn('Using fallback data for in-progress opportunities:', result.error);
         return result.fallbackData;
@@ -187,6 +186,7 @@ export const useAddRoleMutation = () => {
         id: crypto.randomUUID(), // Temporary ID
         status: 'Open' as const,
         assignedMember: null,
+        allocation: 0,
         ...roleData,
         needsHire: roleData.needsHire === 'Yes',
       };
@@ -407,6 +407,77 @@ export const useUpdateRoleStatusMutation = () => {
   });
 };
 
+export const useUpdateRoleMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ 
+      opportunityId, 
+      roleId, 
+      roleData 
+    }: { 
+      opportunityId: string; 
+      roleId: string; 
+      roleData: EditRoleForm;
+    }) => {
+      const result = await validatedOpportunityApi.updateRole(opportunityId, roleId, roleData);
+      if (result.success) {
+        return result.data;
+      } else {
+        throw result.error;
+      }
+    },
+    onMutate: async ({ opportunityId, roleId, roleData }) => {
+      // Find which list the opportunity is in
+      const inProgressKey = queryKeys.opportunities.inProgress();
+      const onHoldKey = queryKeys.opportunities.onHold();
+      const completedKey = queryKeys.opportunities.completed();
+      
+      const keys = [inProgressKey, onHoldKey, completedKey];
+      
+      // Cancel outgoing refetches
+      await Promise.all(keys.map(key => queryClient.cancelQueries({ queryKey: key })));
+      
+      // Snapshot previous values
+      const previousData = keys.map(key => queryClient.getQueryData<Opportunity[]>(key));
+      
+      // Optimistically update the cache
+      keys.forEach(key => {
+        queryClient.setQueryData(key, (old: Opportunity[] = []) =>
+          old.map(opp => {
+            if (opp.id === opportunityId) {
+              return {
+                ...opp,
+                roles: opp.roles.map(role => 
+                  role.id === roleId ? { ...role, ...roleData } : role
+                )
+              };
+            }
+            return opp;
+          })
+        );
+      });
+      
+      return { previousData, keys };
+    },
+    onError: (error, { opportunityId }, context) => {
+      // Rollback on error
+      if (context) {
+        context.keys.forEach((key, index) => {
+          queryClient.setQueryData(key, context.previousData[index]);
+        });
+      }
+      console.error('Failed to update role:', error);
+    },
+    onSettled: () => {
+      // Always invalidate all opportunity caches after role update
+      queryClient.invalidateQueries({ queryKey: queryKeys.opportunities.inProgress() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.opportunities.onHold() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.opportunities.completed() });
+    },
+  });
+};
+
 export const useOpportunityFiltering = () => {
   const filterOpportunities = (opportunities: Opportunity[], filters: OpportunityFilters): Opportunity[] => {
     return opportunities.filter(opp => {
@@ -440,6 +511,7 @@ export const useOpportunities = () => {
   const moveMutation = useMoveOpportunityMutation();
   const updateMutation = useUpdateOpportunityMutation();
   const updateRoleStatusMutation = useUpdateRoleStatusMutation();
+  const updateRoleMutation = useUpdateRoleMutation();
   const { filterOpportunities } = useOpportunityFiltering();
 
   return {
@@ -460,6 +532,8 @@ export const useOpportunities = () => {
       }),
     updateRoleStatus: (opportunityId: string, roleId: string, status: string) =>
       updateRoleStatusMutation.mutateAsync({ opportunityId, roleId, status }),
+    updateRole: (opportunityId: string, roleId: string, roleData: EditRoleForm) =>
+      updateRoleMutation.mutate({ opportunityId, roleId, roleData }),
     
     // Filter-related state and functions
     filters,
@@ -479,5 +553,6 @@ export const useOpportunities = () => {
     isMoving: moveMutation.isPending,
     isUpdating: updateMutation.isPending,
     isUpdatingRole: updateRoleStatusMutation.isPending,
+    isUpdatingRole: updateRoleMutation.isPending,
   };
 }; 

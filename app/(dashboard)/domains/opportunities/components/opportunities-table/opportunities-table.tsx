@@ -20,6 +20,8 @@ export const OpportunitiesTable = ({
   onMoveToInProgress,
   onMoveToCompleted,
 }: OpportunitiesTableProps) => {
+
+  console.log(JSON.stringify(opportunities, null, 2));
   const flattenedData = useFlattenedOpportunities(opportunities);
 
   return (

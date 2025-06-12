@@ -10,9 +10,9 @@ export class OpportunityService {
 
   static createOpportunity(form: CreateOpportunityForm): Opportunity {
     return {
-      id: Date.now(),
+      id: String(Date.now()),
       ...form,
-      openDate: new Date().toISOString().split('T')[0],
+      createdAt: new Date().toISOString().split('T')[0],
       status: 'In Progress',
       roles: []
     };
@@ -23,7 +23,8 @@ export class OpportunityService {
       ...form,
       status: 'Open',
       assignedMember: null,
-      needsHire: true
+      needsHire: true,
+      allocation: 100
     };
   }
 

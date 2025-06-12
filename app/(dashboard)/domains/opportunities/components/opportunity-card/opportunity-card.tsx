@@ -149,6 +149,7 @@ export const OpportunityCard = ({
                     key={role.id}
                     role={role}
                     showActions={showActions}
+                    opportunityId={opportunity.id}
                     onUpdateStatus={(roleId, status) => onUpdateRole?.(opportunity.id, roleId, status)}
                   />
                 ))}

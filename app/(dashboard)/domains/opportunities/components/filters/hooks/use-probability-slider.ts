@@ -95,11 +95,10 @@ export const useProbabilitySlider = (
     onChangeRef.current(resetRange);
     console.log('Reset complete, called onChange with:', resetRange);
     
-    // Clear the reset flag after debounce delay to allow normal operation
     setTimeout(() => {
       resetInitiatedRef.current = false;
       console.log('Reset flag cleared after timeout');
-    }, 400); // Slightly longer than debounce delay
+    }, 400);
   };
 
   const isActive = localValue[0] !== 0 || localValue[1] !== 100;

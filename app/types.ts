@@ -1,6 +1,7 @@
 import { Opportunity, OpportunityFilters } from '@/shared/types';
+import type { OpportunityActionCallbacksAsync } from './(dashboard)/domains/opportunities/types';
 
-export interface UseDashboardReturn {
+export interface UseDashboardReturn extends OpportunityActionCallbacksAsync {
   opportunities: Opportunity[];
   onHoldOpportunities: Opportunity[];
   completedOpportunities: Opportunity[];
@@ -12,13 +13,8 @@ export interface UseDashboardReturn {
   showNewRoleDialog: boolean;
   selectedOpportunityId: string | null;
   filterOpportunities: (opportunities: Opportunity[], filters: OpportunityFilters) => Opportunity[];
-  handleAddRole: (opportunityId: string) => void;
   handleCreateRole: (roleData: unknown) => Promise<void>;
-  handleUpdateRole: (opportunityId: string, roleId: string, status: string) => Promise<void>;
   handleCreateOpportunity: (opportunity: Opportunity) => Promise<Opportunity>;
-  handleMoveToHold: (opportunityId: string) => Promise<void>;
-  handleMoveToInProgress: (opportunityId: string) => Promise<void>;
-  handleMoveToCompleted: (opportunityId: string) => Promise<void>;
   openNewOpportunityDialog: () => void;
   closeNewOpportunityDialog: () => void;
   closeNewRoleDialog: () => void;

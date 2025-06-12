@@ -13,6 +13,7 @@
           "roleName": "Senior Frontend Developer",
           "requiredGrade": "SC",
           "needsHire": true,
+          "allocation": 100,
           "comments": "",
           "status": "Staffed",
           "assignedMember": null,
@@ -33,6 +34,7 @@
           "roleName": "Devops",
           "requiredGrade": "C",
           "needsHire": false,
+          "allocation": 100,
           "comments": "Awsome ",
           "status": "Lost",
           "assignedMember": null,
@@ -53,6 +55,7 @@
           "roleName": "Web Developer",
           "requiredGrade": "SE",
           "needsHire": false,
+          "allocation": 100,
           "comments": "",
           "status": "Won",
           "assignedMember": null,
@@ -67,14 +70,15 @@
       "expectedStartDate": "2025-07-04",
       "probability": 60,
       "createdAt": "2025-06-11",
-      "status": "In Progress",
+      "status": "Done",
       "roles": [
         {
           "roleName": "be",
           "requiredGrade": "SE",
           "needsHire": false,
+          "allocation": 100,
           "comments": "",
-          "status": "Open",
+          "status": "Won",
           "assignedMember": null,
           "id": "ee407be1-2e7a-404f-83f9-522a57708c42"
         },
@@ -82,8 +86,9 @@
           "roleName": "FE",
           "requiredGrade": "SE",
           "needsHire": false,
+          "allocation": 80,
           "comments": "test",
-          "status": "Open",
+          "status": "Won",
           "assignedMember": null,
           "id": "32952c0d-13b3-43c0-a69b-d358196f8004"
         },
@@ -91,10 +96,73 @@
           "roleName": "test",
           "requiredGrade": "T",
           "needsHire": false,
+          "allocation": 50,
+          "comments": "",
+          "status": "Won",
+          "assignedMember": null,
+          "id": "3c20b3b4-7c3e-4bd9-a646-08caf3294834"
+        }
+      ]
+    },
+    {
+      "id": "d729",
+      "clientName": "Relx",
+      "opportunityName": "Test2",
+      "expectedStartDate": "2025-07-02",
+      "probability": 80,
+      "createdAt": "2025-06-12",
+      "status": "On Hold",
+      "roles": []
+    },
+    {
+      "id": "c67d",
+      "clientName": "Xalient",
+      "opportunityName": "BAckend",
+      "expectedStartDate": "2025-09-03",
+      "probability": 90,
+      "createdAt": "2025-06-12",
+      "status": "In Progress",
+      "roles": [
+        {
+          "roleName": "Devops",
+          "requiredGrade": "ST",
+          "needsHire": false,
+          "allocation": 100,
+          "comments": "test",
+          "status": "Open",
+          "assignedMember": null,
+          "id": "13fee19b-7eca-42b2-a14e-629de20103fd"
+        }
+      ]
+    },
+    {
+      "id": "2d77",
+      "clientName": "MAIB",
+      "opportunityName": "Senior Frontend developer",
+      "expectedStartDate": "2025-08-21",
+      "probability": 100,
+      "createdAt": "2025-06-12",
+      "status": "In Progress",
+      "roles": [
+        {
+          "roleName": "Senior Frontend Developer",
+          "requiredGrade": "C",
+          "needsHire": false,
+          "allocation": 100,
+          "comments": "Awesome comment here",
+          "status": "Open",
+          "assignedMember": null,
+          "id": "dce5e0b1-e950-4183-b53f-81765df912c4"
+        },
+        {
+          "roleName": "DevOps",
+          "requiredGrade": "SE",
+          "needsHire": false,
           "comments": "",
           "status": "Open",
           "assignedMember": null,
-          "id": "3c20b3b4-7c3e-4bd9-a646-08caf3294834"
+          "allocation": 100,
+          "id": "4d5e40e6-9a14-43f0-ae88-4819c124fa08"
         }
       ]
     }

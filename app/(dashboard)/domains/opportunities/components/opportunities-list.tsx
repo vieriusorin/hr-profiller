@@ -3,24 +3,8 @@
 import React from 'react';
 import { OpportunityCard } from './opportunity-card/opportunity-card';
 import { OpportunitiesTable } from '@/app/(dashboard)/domains/opportunities/components/opportunities-table/opportunities-table';
-import { ViewMode } from '@/app/(dashboard)/domains/opportunities/components/view-toggle/view-toggle';
+import { OpportunitiesListProps } from '../types';
 import { Opportunity } from '@/shared/types';
-import { OpportunityFiltersState } from '@/app/(dashboard)/domains/opportunities/components/filters/types';
-
-interface OpportunitiesListProps {
-  viewMode: ViewMode;
-  status: 'in-progress' | 'on-hold' | 'completed';
-  opportunities: Opportunity[];
-  onHoldOpportunities: Opportunity[];
-  completedOpportunities: Opportunity[];
-  filterOpportunities: (opportunities: Opportunity[], filters: OpportunityFiltersState) => Opportunity[];
-  filters: OpportunityFiltersState;
-  onAddRole: (opportunityId: string) => void;
-  onUpdateRole: (opportunityId: string, roleId: string, status: string) => void;
-  onMoveToHold?: (opportunityId: string) => void;
-  onMoveToInProgress?: (opportunityId: string) => void;
-  onMoveToCompleted?: (opportunityId: string) => void;
-}
 
 const OpportunitiesList: React.FC<OpportunitiesListProps> = ({ 
   viewMode, 

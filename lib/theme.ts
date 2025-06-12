@@ -1,4 +1,4 @@
-// Centralized theme configuration
+
 export const theme = {
   colors: {
     primary: {

@@ -44,6 +44,15 @@ export const createRoleSchema = z.object({
   
   requiredGrade: GradeSchema,
   
+  allocation: z
+    .number({
+      required_error: 'Allocation is required',
+      invalid_type_error: 'Allocation must be a number',
+    })
+    .min(0, 'Allocation cannot be negative')
+    .max(100, 'Allocation cannot exceed 100%')
+    .int('Allocation must be a whole number'),
+  
   needsHire: z
     .enum(['Yes', 'No'], {
       required_error: 'Please select if this role needs hire',

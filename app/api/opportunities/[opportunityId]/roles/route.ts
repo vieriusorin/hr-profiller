@@ -15,6 +15,7 @@ export async function PATCH(request: Request, { params }: { params: { opportunit
       ...roleData,
       status: 'Open',
       assignedMember: null,
+      allocation: 100,
       needsHire: roleData.needsHire === 'Yes',
     };
     

@@ -1,19 +1,15 @@
 import { Opportunity } from '@/shared/types';
+import type { OpportunityActionCallbacks } from '../../types';
 
-export interface OpportunityActions {
-  onAddRole?: (opportunityId: string) => void;
-  onMoveToHold?: (opportunityId: string) => void;
-  onMoveToInProgress?: (opportunityId: string) => void;
-  onMoveToCompleted?: (opportunityId: string) => void;
-}
+// Legacy alias for backward compatibility
+export interface OpportunityActions extends OpportunityActionCallbacks {}
 
-export interface OpportunityCardProps extends OpportunityActions {
+export interface OpportunityCardProps extends OpportunityActionCallbacks {
   opportunity: Opportunity;
   showActions?: boolean;
-  onUpdateRole?: (opportunityId: string, roleId: string, status: string) => void;
 }
 
-export interface UseOpportunityCardProps extends OpportunityActions {
+export interface UseOpportunityCardProps extends OpportunityActionCallbacks {
   opportunityId: string;
 }
 
