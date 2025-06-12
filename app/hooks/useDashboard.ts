@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useOpportunities } from '@/app/(dashboard)/domains/opportunities/hooks/use-opportunities-query';
 import { useOpportunityFilters } from '@/app/(dashboard)/domains/opportunities/hooks/useOpportunityFilters';
 import { UseDashboardReturn } from '../types';
-import type { Opportunity } from '@/shared/types';
+import type { CreateRoleForm, Opportunity } from '@/shared/types';
 import toast from 'react-hot-toast';
 import { Role } from '../shared/schemas/api-schemas';
 
@@ -40,17 +40,27 @@ export const useDashboard = (): UseDashboardReturn => {
     setShowNewRoleDialog(true);
   };
 
-  const handleCreateRole = async (roleData: any) => {
+  const handleCreateRole = async (roleData: CreateRoleForm) => {
     if (!roleData || !selectedOpportunityId) return;
 
     try {
       const loadingToast = toast.loading('Creating role...');
 
+      // Ensure the opportunity object is fully populated
+      const opportunity = opportunities.find(opp => opp.id === selectedOpportunityId);
+      if (!opportunity) {
+        toast.error('Opportunity not found');
+        return;
+      }
+
       await new Promise<void>((resolve, reject) => {
         addRole(
           {
             opportunityId: selectedOpportunityId,
-            roleData: roleData
+            roleData: {
+              ...roleData,
+              needsHire: roleData.needsHire
+            }
           },
           {
             onSuccess: (updatedOpportunity: Opportunity) => {
@@ -68,7 +78,7 @@ export const useDashboard = (): UseDashboardReturn => {
         );
       });
     } catch (error) {
-      console.error('❌ Error in handleCreateRole:', error);
+      console.error('Failed to create role:', error);
     }
   };
 
@@ -190,12 +200,10 @@ export const useDashboard = (): UseDashboardReturn => {
     completedOpportunities,
     loading,
     error,
-    isRefetching,
     filters,
     showNewOpportunityDialog,
     showNewRoleDialog,
     selectedOpportunityId,
-    filterOpportunities,
     handleAddRole,
     handleCreateRole,
     handleUpdateRole,
@@ -207,5 +215,8 @@ export const useDashboard = (): UseDashboardReturn => {
     closeNewOpportunityDialog,
     closeNewRoleDialog,
     closeNewRoleDialogAndReset,
+    filterOpportunities,
+    isRefetching,
+    isAddingRole
   };
 }; 

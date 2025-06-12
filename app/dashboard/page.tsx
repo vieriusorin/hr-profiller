@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 import { CreateOpportunityForm } from '@/app/(dashboard)/domains/opportunities/components/forms/create-opportunity-form';
-import { CreateRoleForm } from '@/app/(dashboard)/domains/opportunities/components/forms/create-role-form';
+import { RoleForm } from '@/app/(dashboard)/domains/opportunities/components/forms/create-role-form';
 import { OpportunityFilters } from '@/app/(dashboard)/domains/opportunities/components/filters/opportunity-filters';
 import { useDashboard } from '@/app/hooks/useDashboard';
 import { ViewMode } from '../(dashboard)/domains/opportunities/components/view-toggle/types';
@@ -40,7 +40,7 @@ export default function OpportunityDashboard() {
 
   return (
     <>
-      <DashboardHeader isRefetching={isRefetching} />
+      <DashboardHeader />
 
       <div className='p-6 max-w-7xl mx-auto'>
         <div className='flex justify-between items-center mb-6'>
@@ -64,11 +64,11 @@ export default function OpportunityDashboard() {
           completedOpportunities={completedOpportunities}
           filterOpportunities={filterOpportunities}
           filters={filters}
-          handleAddRole={handleAddRole}
-          handleUpdateRole={handleUpdateRole}
-          handleMoveToHold={handleMoveToHold}
-          handleMoveToInProgress={handleMoveToInProgress}
-          handleMoveToCompleted={handleMoveToCompleted}
+          handleAddRole={handleAddRole || (() => {})}
+          handleUpdateRole={handleUpdateRole || (() => {})}
+          handleMoveToHold={handleMoveToHold || (() => {})}
+          handleMoveToInProgress={handleMoveToInProgress || (() => {})}
+          handleMoveToCompleted={handleMoveToCompleted || (() => {})}
         />
 
         <Dialog open={showNewOpportunityDialog} onOpenChange={(open) => open ? openNewOpportunityDialog() : closeNewOpportunityDialog()}>
@@ -97,7 +97,8 @@ export default function OpportunityDashboard() {
                 Add a role to the selected opportunity
               </DialogDescription>
             </DialogHeader>
-            <CreateRoleForm
+            <RoleForm
+              mode='create'
               onSubmit={handleCreateRole}
               onCancel={closeNewRoleDialogAndReset}
             />

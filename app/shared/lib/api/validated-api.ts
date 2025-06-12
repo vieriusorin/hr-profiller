@@ -8,7 +8,8 @@ import {
   CreateRoleInputSchema,
   validateOpportunity,
   type CreateOpportunityInput,
-  type CreateRoleInput
+  type CreateRoleInput,
+  EditRoleFormSchema
 } from '@/shared/schemas/api-schemas';
 import { z } from 'zod';
 
@@ -93,6 +94,16 @@ export const opportunityApi = {
       body: JSON.stringify({ status }),
     });
     if (!response.ok) throw new Error('Failed to update role status');
+    return await response.json();
+  },
+
+  async updateRole(opportunityId: string, roleId: string, roleData: EditRoleForm): Promise<Opportunity> {
+    const response = await fetch(`${API_BASE_URL}/opportunities/${opportunityId}/roles/${roleId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(roleData),
+    });
+    if (!response.ok) throw new Error('Failed to update role');
     return await response.json();
   }
 }
@@ -403,6 +414,47 @@ export const validatedOpportunityApi = {
         error: new ApiValidationError(validation.error, 'updateRoleStatus', rawData),
       };
     } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error : new Error('Unknown error occurred'),
+      };
+    }
+  },
+
+  async updateRole(
+    opportunityId: string,
+    roleId: string,
+    roleData: EditRoleForm
+  ): Promise<ValidatedApiResult<OpportunityType>> {
+    try {
+      // Validate input
+      const validatedRoleData = EditRoleFormSchema.parse(roleData);
+
+      // Call the API
+      const rawData = await opportunityApi.updateRole(opportunityId, roleId, validatedRoleData);
+
+      // Validate the response
+      const validation = validateOpportunity(rawData);
+
+      if (validation.success) {
+        return {
+          success: true,
+          data: validation.data,
+        };
+      }
+
+      return {
+        success: false,
+        error: new ApiValidationError(validation.error, 'updateRole', rawData),
+      };
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return {
+          success: false,
+          error: new ApiValidationError(error, 'updateRole', roleData),
+        };
+      }
+
       return {
         success: false,
         error: error instanceof Error ? error : new Error('Unknown error occurred'),

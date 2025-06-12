@@ -19,6 +19,7 @@ export interface BaseRole {
   requiredGrade: Grade;
   allocation: number;
   comments: string;
+  needsHire: boolean;
 }
 
 export interface BaseOpportunity {
@@ -35,16 +36,25 @@ export interface Role extends BaseRole {
   needsHire: boolean;
 }
 
+export interface Client {
+  id: string;
+  name: string;
+}
+
 export interface Opportunity extends BaseOpportunity {
   id: OpportunityId;
   createdAt: string;
   status: OpportunityStatus;
   roles: Role[];
+  name: string;
+  client: Client;
 }
 
 export interface CreateOpportunityForm extends BaseOpportunity {}
 
-export interface CreateRoleForm extends BaseRole {}
+export interface CreateRoleForm extends BaseRole {
+  needsHire: boolean;
+}
 
 export interface EditRoleForm extends BaseRole {
   id: RoleId;

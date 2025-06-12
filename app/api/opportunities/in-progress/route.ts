@@ -22,6 +22,19 @@ const applyFilters = (opportunities: Opportunity[], filters: OpportunityFilters)
   });
 };
 
+function normalizeOpportunity(raw: any) {
+  return {
+    id: raw.id,
+    name: raw.name || raw.opportunityName || '',
+    opportunityName: raw.opportunityName || raw.name || '',
+    client: raw.client ? raw.client : { id: raw.clientId || '', name: raw.clientName || '' },
+    clientName: raw.clientName || (raw.client ? raw.client.name : ''),
+    expectedStartDate: raw.expectedStartDate || '',
+    status: raw.status,
+    probability: raw.probability,
+    roles: raw.roles || [],
+  };
+}
 
 export async function GET(request: Request) {
   try {
@@ -47,7 +60,7 @@ export async function GET(request: Request) {
       roles: filters.grades && filters.grades.length > 0
         ? opp.roles.filter(role => filters.grades.includes(role.requiredGrade))
         : opp.roles
-    }));
+    })).map(normalizeOpportunity);
 
     return NextResponse.json(filteredOpportunities);
   } catch (error) {

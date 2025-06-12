@@ -1,40 +1,36 @@
 import { z } from 'zod';
+import {
+  RoleIdSchema,
+  MemberIdSchema,
+  OpportunityStatusSchema,
+  RoleStatusSchema,
+  GradeSchema,
+  MemberSchema,
+  ClientSchema,
+  ProbabilitySchema,
+} from './base-schemas';
 
 export const OpportunityIdSchema = z.string();
-export const RoleIdSchema = z.string();
-export const MemberIdSchema = z.string();
-
-export const OpportunityStatusSchema = z.enum(['In Progress', 'On Hold', 'Done']);
-export const RoleStatusSchema = z.enum(['Open', 'Staffed', 'Won', 'Lost']);
-export const GradeSchema = z.enum(['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM']);
-
-export const MemberSchema = z.object({
-  id: MemberIdSchema,
-  fullName: z.string().min(1, 'Member name is required'),
-  actualGrade: GradeSchema,
-  allocation: z.number().min(0).max(100),
-  availableFrom: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
-});
 
 export const RoleSchema = z.object({
   id: RoleIdSchema,
   roleName: z.string().min(1, 'Role name is required'),
   requiredGrade: GradeSchema,
-  status: RoleStatusSchema,
-  assignedMember: MemberSchema.nullable(),
   allocation: z.number().min(0).max(100),
   needsHire: z.boolean(),
-  comments: z.string(),
+  comments: z.string().optional(),
+  status: RoleStatusSchema,
+  assignedMember: MemberSchema.nullable(),
 });
 
 export const OpportunitySchema = z.object({
-  id: OpportunityIdSchema,
-  clientName: z.string().min(1, 'Client name is required'),
+  id: z.string(),
   opportunityName: z.string().min(1, 'Opportunity name is required'),
-  createdAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
+  clientName: z.string().min(1, 'Client name is required'),
   expectedStartDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
-  probability: z.number().min(0).max(100),
   status: OpportunityStatusSchema,
+  probability: ProbabilitySchema,
+  createdAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format').optional(),
   roles: z.array(RoleSchema),
 });
 
@@ -51,9 +47,23 @@ export const CreateOpportunityInputSchema = z.object({
 export const CreateRoleInputSchema = z.object({
   roleName: z.string().min(1, 'Role name is required'),
   requiredGrade: GradeSchema,
-  needsHire: z.enum(['Yes', 'No']),
-  comments: z.string(),
+  allocation: z.number().min(0).max(100),
+  needsHire: z.boolean(),
+  comments: z.string().optional().or(z.literal('')),
 });
+
+export const CreateRoleFormSchema = z.object({
+  roleName: z.string().min(1, 'Role name is required'),
+  requiredGrade: GradeSchema,
+  allocation: z.number().min(0).max(100),
+  needsHire: z.boolean(),
+  comments: z.string().optional(),
+});
+
+export const EditRoleFormSchema = CreateRoleFormSchema;
+
+export const CreateOpportunityFormSchema = CreateOpportunityInputSchema;
+export const EditOpportunityFormSchema = CreateOpportunityFormSchema;
 
 export const OpportunityApiResponseSchema = z.object({
   data: OpportunitySchema,
@@ -92,6 +102,8 @@ export type Grade = z.infer<typeof GradeSchema>;
 
 export type CreateOpportunityInput = z.infer<typeof CreateOpportunityInputSchema>;
 export type CreateRoleInput = z.infer<typeof CreateRoleInputSchema>;
+export type CreateOpportunityForm = z.infer<typeof CreateOpportunityFormSchema>;
+export type EditOpportunityForm = z.infer<typeof EditOpportunityFormSchema>;
 
 export type OpportunityApiResponse = z.infer<typeof OpportunityApiResponseSchema>;
 export type OpportunitiesApiResponse = z.infer<typeof OpportunitiesApiResponseSchema>;
@@ -160,3 +172,19 @@ export const safeParseOpportunities = (data: unknown): Opportunity[] => {
   
   return []; 
 }; 
+
+export const OpportunityResponseSchema = z.object({
+  data: OpportunitySchema,
+});
+
+export const OpportunitiesResponseSchema = z.object({
+  data: z.array(OpportunitySchema),
+});
+
+export const RoleResponseSchema = z.object({
+  data: RoleSchema,
+});
+
+export const RolesResponseSchema = z.object({
+  data: z.array(RoleSchema),
+}); 

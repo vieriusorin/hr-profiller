@@ -132,6 +132,16 @@
           "status": "Open",
           "assignedMember": null,
           "id": "13fee19b-7eca-42b2-a14e-629de20103fd"
+        },
+        {
+          "roleName": "Test",
+          "requiredGrade": "SE",
+          "allocation": 100,
+          "needsHire": false,
+          "comments": "",
+          "status": "Open",
+          "assignedMember": null,
+          "id": "08ee36f5-ba3b-4d2b-9796-efcb11e3b10b"
         }
       ]
     },
@@ -159,10 +169,71 @@
           "requiredGrade": "SE",
           "needsHire": false,
           "comments": "",
-          "status": "Open",
+          "status": "Won",
           "assignedMember": null,
           "allocation": 100,
           "id": "4d5e40e6-9a14-43f0-ae88-4819c124fa08"
+        }
+      ]
+    },
+    {
+      "id": "4744",
+      "clientName": "DGTLISM",
+      "opportunityName": "Hover",
+      "expectedStartDate": "2025-08-28",
+      "probability": 80,
+      "createdAt": "2025-06-12",
+      "status": "On Hold",
+      "roles": [
+        {
+          "roleName": "Devops",
+          "requiredGrade": "SE",
+          "needsHire": false,
+          "comments": "",
+          "status": "Open",
+          "assignedMember": null,
+          "allocation": 100,
+          "id": "60bef332-9975-417e-8f48-afdeba163c6b"
+        },
+        {
+          "roleName": "Backend Developer",
+          "requiredGrade": "SC",
+          "needsHire": false,
+          "comments": "",
+          "status": "Open",
+          "assignedMember": null,
+          "allocation": 100,
+          "id": "61797a8a-8423-4ded-9d7c-f1af5a0f80e0"
+        },
+        {
+          "roleName": "Test",
+          "requiredGrade": "SE",
+          "needsHire": true,
+          "comments": "",
+          "status": "Open",
+          "assignedMember": null,
+          "allocation": 100,
+          "id": "7bbc7564-1140-44bc-96ec-8de6add18e4a"
+        },
+        {
+          "roleName": "Tests",
+          "requiredGrade": "SE",
+          "needsHire": true,
+          "comments": "",
+          "status": "Open",
+          "assignedMember": null,
+          "allocation": 100,
+          "id": "ac6bb4d2-ce9a-4a1f-8f9e-48b5ef0693ce"
+        },
+        {
+          "roleName": "Tests",
+          "requiredGrade": "SE",
+          "needsHire": true,
+          "comments": "",
+          "status": "Open",
+          "assignedMember": null,
+          "allocation": 100,
+          "id": "59ea6293-ec7e-4709-b11b-8081027b16e8"
         }
       ]
     }

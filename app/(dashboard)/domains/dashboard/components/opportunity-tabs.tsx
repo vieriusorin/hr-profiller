@@ -27,15 +27,30 @@ export const OpportunityTabs = ({
       <TabsList className='grid w-full grid-cols-3'>
         <TabsTrigger value='in-progress' className='flex items-center gap-2'>
           <Building className='h-4 w-4' />
-          In Progress ({filteredInProgress.length})
+          In Progress
+          {filteredInProgress.length > 0 && (
+            <span className='ml-2 rounded-full bg-primary/30 px-2 py-0.5 text-xs text-black'>
+              {filteredInProgress.length}
+            </span>
+          )}
         </TabsTrigger>
         <TabsTrigger value='on-hold' className='flex items-center gap-2'>
-          <Calendar className='h-3 w-3' />
-          On Hold ({filteredOnHold.length})
+          <Calendar className='h-4 w-4' />
+          On Hold
+          {filteredOnHold.length > 0 && (
+            <span className='ml-2 rounded-full bg-primary/30 px-2 py-0.5 text-xs text-black'>
+              {filteredOnHold.length}
+            </span>
+          )}
         </TabsTrigger>
         <TabsTrigger value='completed' className='flex items-center gap-2'>
-          <Users className='h-3 w-3' />
-          Completed ({filteredCompleted.length})
+          <Users className='h-4 w-4' />
+          Completed
+          {filteredCompleted.length > 0 && (
+            <span className='ml-2 rounded-full bg-primary/30 px-2 py-0.5 text-xs text-black'>
+              {filteredCompleted.length}
+            </span>
+          )}
         </TabsTrigger>
       </TabsList>
 
@@ -43,7 +58,7 @@ export const OpportunityTabs = ({
         <TabsContent value='in-progress'>
           <OpportunitiesList 
             viewMode={currentView} 
-            status='in-progress'
+            status='in-progress' 
             opportunities={opportunities}
             onHoldOpportunities={onHoldOpportunities}
             completedOpportunities={completedOpportunities}
@@ -52,11 +67,11 @@ export const OpportunityTabs = ({
             onAddRole={handleAddRole}
             onUpdateRole={handleUpdateRole}
             onMoveToHold={handleMoveToHold}
-            onMoveToInProgress={undefined}
+            onMoveToInProgress={handleMoveToInProgress}
             onMoveToCompleted={handleMoveToCompleted}
           />
         </TabsContent>
-        
+
         <TabsContent value='on-hold'>
           <OpportunitiesList 
             viewMode={currentView} 

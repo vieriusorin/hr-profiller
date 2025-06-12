@@ -1,5 +1,6 @@
 import React from 'react';
 import { UseOpportunitiesTableRowCallbacks } from '../types';
+import { Role } from '@/shared/types';
 
 
 export const useOpportunitiesTableRow = (callbacks: UseOpportunitiesTableRowCallbacks) => {
@@ -10,8 +11,8 @@ export const useOpportunitiesTableRow = (callbacks: UseOpportunitiesTableRowCall
   }, [onAddRole]);
 
   const handleUpdateRole = React.useCallback(
-    (opportunityId: string, roleId: string, status: string) => {
-      onUpdateRole?.(opportunityId, roleId, status);
+    (opportunityId: string, roleId: string, updates: Role) => {
+      onUpdateRole?.(opportunityId, roleId, updates);
     },
     [onUpdateRole]
   );

@@ -15,8 +15,8 @@ export async function PATCH(request: Request, { params }: { params: { opportunit
       ...roleData,
       status: 'Open',
       assignedMember: null,
-      allocation: 100,
-      needsHire: roleData.needsHire === 'Yes',
+      allocation: roleData.allocation || 100,
+      needsHire: roleData.needsHire,
     };
     
     const updatedRoles = [...opportunity.roles, { ...newRole, id: crypto.randomUUID() }];

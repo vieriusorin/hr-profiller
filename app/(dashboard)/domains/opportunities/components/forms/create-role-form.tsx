@@ -5,17 +5,18 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FormField } from '@/shared/components/form-field/';
 import { GRADE_OPTIONS } from '@/shared/lib/constants/grades';
-import { useCreateRoleForm } from './hooks/useCreateRoleForm';
-import { CreateRoleFormProps } from './types';
+import { useRoleForm } from './hooks/useRoleForm';
+import { RoleFormProps } from './types';
 import { Controller } from 'react-hook-form';
 
-export const CreateRoleForm = ({ onSubmit, onCancel }: CreateRoleFormProps) => {
+export const RoleForm = ({ mode = 'create', initialData, onSubmit, onCancel, isSubmitting: externalIsSubmitting }: RoleFormProps) => {
   const {
     form,
     isSubmitting,
     handleSubmit,
-    handleCancel
-  } = useCreateRoleForm({ onSubmit, onCancel });
+    handleCancel,
+    isDirty
+  } = useRoleForm({ mode, initialData, onSubmit, onCancel, isSubmitting: externalIsSubmitting });
 
   const { control, formState: { errors } } = form;
 
@@ -41,57 +42,57 @@ export const CreateRoleForm = ({ onSubmit, onCancel }: CreateRoleFormProps) => {
           Required Grade
           <span className='text-red-500 ml-1'>*</span>
         </label>
-              <Controller
-        name='requiredGrade'
-        control={control}
-        render={({ field }) => (
-          <Select 
-            value={field.value} 
-            onValueChange={field.onChange}
-          >
-            <SelectTrigger className={errors.requiredGrade ? 'border-red-500' : ''}>
-              <SelectValue placeholder='Select required grade' />
-            </SelectTrigger>
-            <SelectContent>
-              {GRADE_OPTIONS.map(grade => (
-                <SelectItem key={grade.value} value={grade.value}>
-                  {grade.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <Controller
+          name='requiredGrade'
+          control={control}
+          render={({ field }) => (
+            <Select 
+              value={field.value} 
+              onValueChange={field.onChange}
+            >
+              <SelectTrigger className={errors.requiredGrade ? 'border-red-500' : ''}>
+                <SelectValue placeholder='Select required grade' />
+              </SelectTrigger>
+              <SelectContent>
+                {GRADE_OPTIONS.map(grade => (
+                  <SelectItem key={grade.value} value={grade.value}>
+                    {grade.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
+        {errors.requiredGrade && (
+          <div className='flex items-center gap-1 text-red-600 text-sm'>
+            <span className='h-3 w-3'>⚠</span>
+            {errors.requiredGrade.message}
+          </div>
         )}
-      />
-      {errors.requiredGrade && (
-        <div className='flex items-center gap-1 text-red-600 text-sm'>
-          <span className='h-3 w-3'>⚠</span>
-          {errors.requiredGrade.message}
-        </div>
-      )}
-    </div>
-    
-    <div className='space-y-2'>
-      <Controller
-        name='allocation'
-        control={control}
-        render={({ field }) => (
-          <FormField 
-            label='Allocation (%)' 
-            value={field.value?.toString() || ''}
-            onChange={(value) => {
-              const numValue = value === '' ? undefined : Number(value);
-              field.onChange(numValue);
-            }}
-            placeholder='e.g., 100'
-            type='number'
-            min='0'
-            max='100'
-            error={errors.allocation?.message}
-            required
-          />
-        )}
-      />
-    </div>
+      </div>
+      
+      <div className='space-y-2'>
+        <Controller
+          name='allocation'
+          control={control}
+          render={({ field }) => (
+            <FormField 
+              label='Allocation (%)' 
+              value={field.value?.toString() || ''}
+              onChange={(value) => {
+                const numValue = value === '' ? undefined : Number(value);
+                field.onChange(numValue);
+              }}
+              placeholder='e.g., 100'
+              type='number'
+              min='0'
+              max='100'
+              error={errors.allocation?.message}
+              required
+            />
+          )}
+        />
+      </div>
       
       <div className='space-y-2'>
         <label className='text-sm font-medium'>
@@ -103,8 +104,8 @@ export const CreateRoleForm = ({ onSubmit, onCancel }: CreateRoleFormProps) => {
           control={control}
           render={({ field }) => (
             <Select 
-              value={field.value} 
-              onValueChange={field.onChange}
+              value={field.value === true ? 'Yes' : field.value === false ? 'No' : ''}
+              onValueChange={val => field.onChange(val === 'Yes')}
             >
               <SelectTrigger className={errors.needsHire ? 'border-red-500' : ''}>
                 <SelectValue placeholder='Select if hire is needed' />
@@ -151,9 +152,11 @@ export const CreateRoleForm = ({ onSubmit, onCancel }: CreateRoleFormProps) => {
         </Button>
         <Button 
           onClick={handleSubmit}
-          disabled={isSubmitting}
+          disabled={isSubmitting || (mode === 'edit' && !isDirty)}
         >
-          {isSubmitting ? 'Adding...' : 'Add Role'}
+          {isSubmitting 
+            ? (mode === 'create' ? 'Adding...' : 'Saving...') 
+            : (mode === 'create' ? 'Add Role' : 'Save Changes')}
         </Button>
       </div>
     </div>

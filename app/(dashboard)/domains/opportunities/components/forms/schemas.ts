@@ -53,10 +53,7 @@ export const createRoleSchema = z.object({
     .max(100, 'Allocation cannot exceed 100%')
     .int('Allocation must be a whole number'),
   
-  needsHire: z
-    .enum(['Yes', 'No'], {
-      required_error: 'Please select if this role needs hire',
-    }),
+  needsHire: z.boolean(),
   
   comments: z
     .string()

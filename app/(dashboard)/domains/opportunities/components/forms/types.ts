@@ -10,22 +10,29 @@ export interface FormActions {
 export interface UseFormBaseReturn {
   handleCancel: () => void;
   isSubmitting: boolean;
+  isDirty: boolean;
 }
 
 export interface CreateOpportunityFormProps extends FormActions {
   onSubmit: (opportunity: Opportunity) => Promise<Opportunity>;
 }
 
-export interface CreateRoleFormProps extends FormActions {
+export interface RoleFormProps extends FormActions {
+  mode?: 'create' | 'edit';
+  initialData?: Partial<Role>;
   onSubmit: (role: Role) => Promise<void>;
+  isSubmitting?: boolean;
 }
 
 export interface UseCreateOpportunityFormProps extends FormActions {
   onSubmit: (opportunity: Opportunity) => Promise<Opportunity>;
 }
 
-export interface UseCreateRoleFormProps extends FormActions {
+export interface UseRoleFormProps extends FormActions {
+  mode?: 'create' | 'edit';
+  initialData?: Partial<Role>;
   onSubmit: (role: Role) => Promise<void>;
+  isSubmitting?: boolean;
 }
 
 export interface UseCreateOpportunityFormReturn extends UseFormBaseReturn {
@@ -33,7 +40,7 @@ export interface UseCreateOpportunityFormReturn extends UseFormBaseReturn {
   handleSubmit: () => Promise<void>;
 }
 
-export interface UseCreateRoleFormReturn extends UseFormBaseReturn {
+export interface UseRoleFormReturn extends UseFormBaseReturn {
   form: UseFormReturn<CreateRoleFormData>;
   handleSubmit: () => Promise<void>;
 } 

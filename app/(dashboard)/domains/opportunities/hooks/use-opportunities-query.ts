@@ -186,9 +186,9 @@ export const useAddRoleMutation = () => {
         id: crypto.randomUUID(), // Temporary ID
         status: 'Open' as const,
         assignedMember: null,
-        allocation: 0,
         ...roleData,
-        needsHire: roleData.needsHire === 'Yes',
+        allocation: roleData.allocation || 100,
+        needsHire: roleData.needsHire,
       };
       
       queryClient.setQueryData(targetKey, (old: Opportunity[] = []) =>
