@@ -17,6 +17,7 @@ export const useFlattenedOpportunities = (opportunities: Opportunity[]): Flatten
         opportunityStatus: opportunity.status,
         rolesCount: opportunity.roles.length,
         hasHiringNeeds: opportunity.roles.some(r => r.needsHire),
+        comment: opportunity.comment,
         isFirstRowForOpportunity: true,
         isOpportunityRow: true,
         rowSpan: opportunity.roles.length + 1, // +1 for the opportunity row itself

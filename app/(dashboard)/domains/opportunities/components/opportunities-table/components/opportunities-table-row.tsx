@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from 'react';
+import { useState, useContext } from "react";
 
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +32,13 @@ import type { OpportunitiesTableRowProps } from "./types";
 import { useOpportunitiesTableRow } from "./hooks/use-opportunities-table-row";
 import { RoleStatusConfirmationDialog } from "../../role-status-confirmation";
 import { EditRoleModal } from "../../modals/edit-role-modal";
+import { EditOpportunityModal } from "../../modals/edit-role-modal";
+import { OpportunitiesContext } from "../opportunities-table";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 
 export const OpportunitiesTableRow = ({
 	row,
@@ -44,19 +51,21 @@ export const OpportunitiesTableRow = ({
 }: OpportunitiesTableRowProps) => {
 	const [confirmationDialog, setConfirmationDialog] = useState<{
 		isOpen: boolean;
-		status: 'Won' | 'Staffed' | 'Lost';
+		status: "Won" | "Staffed" | "Lost";
 		opportunityId: string;
 		roleId: string;
 		roleName?: string;
 	}>({
 		isOpen: false,
-		status: 'Won',
-		opportunityId: '',
-		roleId: '',
-		roleName: ''
+		status: "Won",
+		opportunityId: "",
+		roleId: "",
+		roleName: "",
 	});
 
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+	const [isEditOpportunityModalOpen, setIsEditOpportunityModalOpen] =
+		useState(false);
 
 	const {
 		handleMoveToHold,
@@ -72,22 +81,38 @@ export const OpportunitiesTableRow = ({
 		onUpdateRole,
 	});
 
-	const handleStatusClick = (opportunityId: string, roleId: string, status: 'Won' | 'Staffed' | 'Lost', roleName?: string) => {
+	const { opportunities } = useContext(OpportunitiesContext) || {
+		opportunities: [],
+	};
+	const fullOpportunity = opportunities.find(
+		(opp) => opp.id === row.opportunityId
+	);
+
+	const handleStatusClick = (
+		opportunityId: string,
+		roleId: string,
+		status: "Won" | "Staffed" | "Lost",
+		roleName?: string
+	) => {
 		setConfirmationDialog({
 			isOpen: true,
 			status,
 			opportunityId,
 			roleId,
-			roleName
+			roleName,
 		});
 	};
 
 	const handleConfirmStatusUpdate = () => {
-		handleUpdateRole(confirmationDialog.opportunityId, confirmationDialog.roleId, confirmationDialog.status);
+		handleUpdateRole(
+			confirmationDialog.opportunityId,
+			confirmationDialog.roleId,
+			confirmationDialog.status
+		);
 	};
 
 	const handleCloseDialog = () => {
-		setConfirmationDialog(prev => ({ ...prev, isOpen: false }));
+		setConfirmationDialog((prev) => ({ ...prev, isOpen: false }));
 	};
 
 	const handleRoleNameClick = () => {
@@ -101,10 +126,18 @@ export const OpportunitiesTableRow = ({
 
 		return (
 			<>
-				<TableRow className={`${urgencyConfig.bgClass} transition-colors duration-200`} title={tooltip}>
+				<TableRow
+					className={`${urgencyConfig.bgClass} transition-colors duration-200`}
+					title={tooltip}
+				>
 					<TableCell rowSpan={row.rowSpan} className='font-medium align-top'>
 						<div>
-							<div className='font-semibold'>{row.opportunityName}</div>
+							<div
+								className='font-semibold underline decoration-dotted underline-offset-4 cursor-pointer'
+								onClick={() => setIsEditOpportunityModalOpen(true)}
+							>
+								{row.opportunityName}
+							</div>
 							<div className='flex items-center gap-1 text-xs text-muted-foreground mt-1'>
 								{row.hasHiringNeeds && (
 									<Badge variant='outline' className='ml-1 text-xs'>
@@ -141,6 +174,28 @@ export const OpportunitiesTableRow = ({
 						<StatusBadge status={row.opportunityStatus} />
 					</TableCell>
 
+					<TableCell className='w-[180px] max-w-[180px] truncate'>
+						{row.comment ? (
+							row.comment.length > 30 ? (
+								<Popover>
+									<PopoverTrigger asChild>
+										<span className='cursor-pointer underline'>
+											{row.comment.slice(0, 30)}...{" "}
+											<span className='text-xs'>(more)</span>
+										</span>
+									</PopoverTrigger>
+									<PopoverContent className='max-w-xs whitespace-pre-wrap'>
+										{row.comment}
+									</PopoverContent>
+								</Popover>
+							) : (
+								<span>{row.comment}</span>
+							)
+						) : (
+							<span className='text-muted-foreground italic'>—</span>
+						)}
+					</TableCell>
+
 					<TableCell className='text-muted-foreground italic text-center'>
 						{row.isFirstRowForOpportunity && (
 							<span className='flex items-center gap-1 text-xs text-muted-foreground'>
@@ -149,9 +204,7 @@ export const OpportunitiesTableRow = ({
 							</span>
 						)}
 					</TableCell>
-					<TableCell className='text-muted-foreground italic text-center'>
-						—
-					</TableCell>
+
 					<TableCell className='text-muted-foreground italic text-center'>
 						—
 					</TableCell>
@@ -220,7 +273,22 @@ export const OpportunitiesTableRow = ({
 						</TableCell>
 					)}
 				</TableRow>
-				
+
+				{fullOpportunity && (
+					<EditOpportunityModal
+						isOpen={isEditOpportunityModalOpen}
+						onClose={() => setIsEditOpportunityModalOpen(false)}
+						opportunity={fullOpportunity}
+						listType={
+							fullOpportunity.status === "In Progress"
+								? "in-progress"
+								: fullOpportunity.status === "On Hold"
+								? "on-hold"
+								: "completed"
+						}
+					/>
+				)}
+
 				<RoleStatusConfirmationDialog
 					isOpen={confirmationDialog.isOpen}
 					onClose={handleCloseDialog}
@@ -237,7 +305,10 @@ export const OpportunitiesTableRow = ({
 
 	return (
 		<>
-			<TableRow className={`${urgencyConfig.bgClass} transition-colors duration-200`}>
+			<TableRow
+				className={`${urgencyConfig.bgClass} transition-colors duration-200`}
+			>
+				<TableCell className='text-muted-foreground italic text-center'></TableCell>
 				<TableCell>
 					<div
 						className={
@@ -247,7 +318,7 @@ export const OpportunitiesTableRow = ({
 						}
 					>
 						{row.roleName ? (
-							<span 
+							<span
 								className='mr-auto cursor-pointer hover:text-blue-600 transition-colors'
 								onClick={handleRoleNameClick}
 							>
@@ -302,7 +373,12 @@ export const OpportunitiesTableRow = ({
 								<DropdownMenuContent align='start' className='w-32'>
 									<DropdownMenuItem
 										onClick={() =>
-											handleStatusClick(row.opportunityId, row.roleId!, "Won", row.roleName)
+											handleStatusClick(
+												row.opportunityId,
+												row.roleId!,
+												"Won",
+												row.roleName
+											)
 										}
 										className='text-green-600'
 									>
@@ -311,7 +387,12 @@ export const OpportunitiesTableRow = ({
 									</DropdownMenuItem>
 									<DropdownMenuItem
 										onClick={() =>
-											handleStatusClick(row.opportunityId, row.roleId!, "Staffed", row.roleName)
+											handleStatusClick(
+												row.opportunityId,
+												row.roleId!,
+												"Staffed",
+												row.roleName
+											)
 										}
 										className='text-yellow-600'
 									>
@@ -320,7 +401,12 @@ export const OpportunitiesTableRow = ({
 									</DropdownMenuItem>
 									<DropdownMenuItem
 										onClick={() =>
-											handleStatusClick(row.opportunityId, row.roleId!, "Lost", row.roleName)
+											handleStatusClick(
+												row.opportunityId,
+												row.roleId!,
+												"Lost",
+												row.roleName
+											)
 										}
 										className='text-red-600'
 									>
@@ -335,7 +421,7 @@ export const OpportunitiesTableRow = ({
 
 				{showActions && <TableCell></TableCell>}
 			</TableRow>
-			
+
 			{row.roleId && (
 				<EditRoleModal
 					isOpen={isEditModalOpen}
@@ -343,13 +429,13 @@ export const OpportunitiesTableRow = ({
 					opportunityId={row.opportunityId}
 					role={{
 						id: row.roleId,
-						roleName: row.roleName || '',
+						roleName: row.roleName || "",
 						requiredGrade: row.requiredGrade as any,
 						status: row.roleStatus as any,
 						assignedMember: null,
 						allocation: row.allocation || 100,
 						needsHire: row.needsHire || false,
-						comments: ''
+						comments: "",
 					}}
 				/>
 			)}

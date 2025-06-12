@@ -15,6 +15,10 @@ export interface UseFormBaseReturn {
 
 export interface CreateOpportunityFormProps extends FormActions {
   onSubmit: (opportunity: Opportunity) => Promise<Opportunity>;
+  initialData?: Partial<Opportunity>;
+  mode?: 'create' | 'edit';
+  isSubmitting?: boolean;
+  comment?: string;
 }
 
 export interface RoleFormProps extends FormActions {
@@ -22,10 +26,15 @@ export interface RoleFormProps extends FormActions {
   initialData?: Partial<Role>;
   onSubmit: (role: Role) => Promise<void>;
   isSubmitting?: boolean;
+  comment?: string;
 }
 
 export interface UseCreateOpportunityFormProps extends FormActions {
   onSubmit: (opportunity: Opportunity) => Promise<Opportunity>;
+  initialData?: Partial<Opportunity>;
+  mode?: 'create' | 'edit';
+  isSubmitting?: boolean;
+  comment?: string;
 }
 
 export interface UseRoleFormProps extends FormActions {
@@ -33,6 +42,7 @@ export interface UseRoleFormProps extends FormActions {
   initialData?: Partial<Role>;
   onSubmit: (role: Role) => Promise<void>;
   isSubmitting?: boolean;
+  comment?: string;
 }
 
 export interface UseCreateOpportunityFormReturn extends UseFormBaseReturn {

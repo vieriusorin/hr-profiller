@@ -15,12 +15,12 @@ export const useOpportunitiesQuery = (filters: OpportunityFilters) => {
       if (result.success) {
         return result.data;
       }
-      
+
       if (result.fallbackData && result.fallbackData.length > 0) {
         console.warn('Using fallback data for in-progress opportunities:', result.error);
         return result.fallbackData;
       }
-      
+
       throw result.error;
     },
     staleTime: 1000 * 60 * 5,
@@ -33,12 +33,12 @@ export const useOpportunitiesQuery = (filters: OpportunityFilters) => {
       if (result.success) {
         return result.data;
       }
-      
+
       if (result.fallbackData && result.fallbackData.length > 0) {
         console.warn('Using fallback data for on-hold opportunities:', result.error);
         return result.fallbackData;
       }
-      
+
       throw result.error;
     },
     staleTime: 1000 * 60 * 5,
@@ -51,12 +51,12 @@ export const useOpportunitiesQuery = (filters: OpportunityFilters) => {
       if (result.success) {
         return result.data;
       }
-      
+
       if (result.fallbackData && result.fallbackData.length > 0) {
         console.warn('Using fallback data for completed opportunities:', result.error);
         return result.fallbackData;
       }
-      
+
       throw result.error;
     },
     staleTime: 1000 * 60 * 10,
@@ -168,19 +168,19 @@ export const useAddRoleMutation = () => {
       // Find which list the opportunity is in
       const inProgressKey = queryKeys.opportunities.inProgress();
       const onHoldKey = queryKeys.opportunities.onHold();
-      
+
       const inProgressOpps = queryClient.getQueryData<Opportunity[]>(inProgressKey) || [];
       const onHoldOpps = queryClient.getQueryData<Opportunity[]>(onHoldKey) || [];
-      
+
       const isInProgress = inProgressOpps.some((opp: Opportunity) => opp.id === opportunityId);
       const targetKey = isInProgress ? inProgressKey : onHoldKey;
-      
+
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: targetKey });
-      
+
       // Snapshot previous value
       const previousOpportunities = queryClient.getQueryData<Opportunity[]>(targetKey);
-      
+
       // Optimistically update the cache
       const optimisticRole = {
         id: crypto.randomUUID(), // Temporary ID
@@ -190,15 +190,15 @@ export const useAddRoleMutation = () => {
         allocation: roleData.allocation || 100,
         needsHire: roleData.needsHire,
       };
-      
+
       queryClient.setQueryData(targetKey, (old: Opportunity[] = []) =>
-        old.map((opp: Opportunity) => 
-          opp.id === opportunityId 
+        old.map((opp: Opportunity) =>
+          opp.id === opportunityId
             ? { ...opp, roles: [...opp.roles, optimisticRole] }
             : opp
         )
       );
-      
+
       return { previousOpportunities, targetKey, optimisticRole };
     },
     onSuccess: (updatedOpportunity: Opportunity, variables: AddRoleVariables, context: { previousOpportunities: Opportunity[] | undefined, targetKey: readonly unknown[], optimisticRole: any } | undefined) => {
@@ -208,7 +208,7 @@ export const useAddRoleMutation = () => {
           old.map((opp: Opportunity) => opp.id === updatedOpportunity.id ? updatedOpportunity : opp)
         );
       }
-      
+
       // Invalidate all opportunity caches to ensure fresh data
       queryClient.invalidateQueries({ queryKey: queryKeys.opportunities.inProgress() });
       queryClient.invalidateQueries({ queryKey: queryKeys.opportunities.onHold() });
@@ -234,17 +234,17 @@ export const useMoveOpportunityMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ 
-      opportunityId, 
-      fromStatus, 
-      toStatus 
-    }: { 
-      opportunityId: string; 
+    mutationFn: async ({
+      opportunityId,
+      fromStatus,
+      toStatus
+    }: {
+      opportunityId: string;
       fromStatus: 'in-progress' | 'on-hold' | 'completed';
       toStatus: 'in-progress' | 'on-hold' | 'completed';
     }) => {
-      const status = toStatus === 'in-progress' ? 'In Progress' : 
-                    toStatus === 'on-hold' ? 'On Hold' : 'Done';
+      const status = toStatus === 'in-progress' ? 'In Progress' :
+        toStatus === 'on-hold' ? 'On Hold' : 'Done';
       const result = await validatedOpportunityApi.moveOpportunity(opportunityId, status);
       if (result.success) {
         return result.data;
@@ -252,14 +252,14 @@ export const useMoveOpportunityMutation = () => {
         throw result.error;
       }
     },
-    onMutate: async ({ opportunityId, fromStatus, toStatus }: { 
-      opportunityId: string; 
+    onMutate: async ({ opportunityId, fromStatus, toStatus }: {
+      opportunityId: string;
       fromStatus: 'in-progress' | 'on-hold' | 'completed';
       toStatus: 'in-progress' | 'on-hold' | 'completed';
     }) => {
       const fromKey = queryKeys.opportunities.list(fromStatus);
       const toKey = queryKeys.opportunities.list(toStatus);
-      
+
       await queryClient.cancelQueries({ queryKey: fromKey });
       await queryClient.cancelQueries({ queryKey: toKey });
 
@@ -270,8 +270,8 @@ export const useMoveOpportunityMutation = () => {
       if (opportunity && previousFrom && previousTo) {
         const updatedOpportunity = OpportunityService.changeOpportunityStatus(
           opportunity,
-          toStatus === 'in-progress' ? 'In Progress' : 
-          toStatus === 'on-hold' ? 'On Hold' : 'Done'
+          toStatus === 'in-progress' ? 'In Progress' :
+            toStatus === 'on-hold' ? 'On Hold' : 'Done'
         );
 
         queryClient.setQueryData(fromKey, previousFrom.filter((opp: Opportunity) => opp.id !== opportunityId));
@@ -280,16 +280,16 @@ export const useMoveOpportunityMutation = () => {
 
       return { previousFrom, previousTo, fromKey, toKey };
     },
-    onSuccess: (updatedOpportunity: Opportunity, { fromStatus, toStatus }: { 
-      opportunityId: string; 
+    onSuccess: (updatedOpportunity: Opportunity, { fromStatus, toStatus }: {
+      opportunityId: string;
       fromStatus: 'in-progress' | 'on-hold' | 'completed';
       toStatus: 'in-progress' | 'on-hold' | 'completed';
     }) => {
       const fromKey = queryKeys.opportunities.list(fromStatus);
       const toKey = queryKeys.opportunities.list(toStatus);
-      
+
       // Update with the actual server response
-      queryClient.setQueryData(fromKey, (old: Opportunity[] = []) => 
+      queryClient.setQueryData(fromKey, (old: Opportunity[] = []) =>
         old.filter(opp => opp.id !== updatedOpportunity.id)
       );
       queryClient.setQueryData(toKey, (old: Opportunity[] = []) => {
@@ -297,12 +297,12 @@ export const useMoveOpportunityMutation = () => {
         return [...filtered, updatedOpportunity];
       });
     },
-    onError: (error: Error, variables: { 
-      opportunityId: string; 
+    onError: (error: Error, variables: {
+      opportunityId: string;
       fromStatus: 'in-progress' | 'on-hold' | 'completed';
       toStatus: 'in-progress' | 'on-hold' | 'completed';
-    }, context: { 
-      previousFrom: Opportunity[] | undefined, 
+    }, context: {
+      previousFrom: Opportunity[] | undefined,
       previousTo: Opportunity[] | undefined,
       fromKey: readonly unknown[],
       toKey: readonly unknown[]
@@ -312,8 +312,8 @@ export const useMoveOpportunityMutation = () => {
         queryClient.setQueryData(context.toKey, context.previousTo);
       }
     },
-    onSettled: (data: Opportunity | undefined, error: Error | null, { fromStatus, toStatus }: { 
-      opportunityId: string; 
+    onSettled: (data: Opportunity | undefined, error: Error | null, { fromStatus, toStatus }: {
+      opportunityId: string;
       fromStatus: 'in-progress' | 'on-hold' | 'completed';
       toStatus: 'in-progress' | 'on-hold' | 'completed';
     }) => {
@@ -327,13 +327,13 @@ export const useUpdateOpportunityMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ 
-      opportunityId, 
-      updatedOpportunity, 
-      listType 
-    }: { 
-      opportunityId: string; 
-      updatedOpportunity: Opportunity; 
+    mutationFn: async ({
+      opportunityId,
+      updatedOpportunity,
+      listType
+    }: {
+      opportunityId: string;
+      updatedOpportunity: Opportunity;
       listType: 'in-progress' | 'on-hold' | 'completed';
     }) => {
       const result = await validatedOpportunityApi.updateOpportunity(updatedOpportunity);
@@ -343,16 +343,36 @@ export const useUpdateOpportunityMutation = () => {
         throw result.error;
       }
     },
+    onMutate: async ({ opportunityId, updatedOpportunity, listType }) => {
+      const queryKey = queryKeys.opportunities.list(listType);
+      await queryClient.cancelQueries({ queryKey });
+      const previousOpportunities = queryClient.getQueryData<Opportunity[]>(queryKey);
+      // Optimistically update the cache
+      queryClient.setQueryData(queryKey, (old: Opportunity[] = []) =>
+        old.map((opp: Opportunity) => opp.id === opportunityId ? { ...opp, ...updatedOpportunity } : opp)
+      );
+      return { previousOpportunities, queryKey };
+    },
+    onError: (err, { listType }, context) => {
+      if (context?.previousOpportunities && context?.queryKey) {
+        queryClient.setQueryData(context.queryKey, context.previousOpportunities);
+      }
+    },
     onSuccess: (updatedOpportunity: Opportunity, { listType }: {
-      opportunityId: string; 
-      updatedOpportunity: Opportunity; 
+      opportunityId: string;
+      updatedOpportunity: Opportunity;
       listType: 'in-progress' | 'on-hold' | 'completed';
     }) => {
       const queryKey = queryKeys.opportunities.list(listType);
-      
       queryClient.setQueryData(queryKey, (old: Opportunity[] = []) =>
         old.map((opp: Opportunity) => opp.id === updatedOpportunity.id ? updatedOpportunity : opp)
       );
+    },
+    onSettled: () => {
+      // Invalidate all opportunity list queries to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: queryKeys.opportunities.inProgress() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.opportunities.onHold() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.opportunities.completed() });
     },
   });
 };
@@ -361,13 +381,13 @@ export const useUpdateRoleStatusMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ 
-      opportunityId, 
-      roleId, 
-      status 
-    }: { 
-      opportunityId: string; 
-      roleId: string; 
+    mutationFn: async ({
+      opportunityId,
+      roleId,
+      status
+    }: {
+      opportunityId: string;
+      roleId: string;
       status: string;
     }) => {
       const result = await validatedOpportunityApi.updateRoleStatus(opportunityId, roleId, status);
@@ -386,13 +406,13 @@ export const useUpdateRoleStatusMutation = () => {
       const inProgressKey = queryKeys.opportunities.inProgress();
       const onHoldKey = queryKeys.opportunities.onHold();
       const completedKey = queryKeys.opportunities.completed();
-      
+
       [inProgressKey, onHoldKey, completedKey].forEach(key => {
         queryClient.setQueryData(key, (old: Opportunity[] = []) =>
           old.map((opp: Opportunity) => opp.id === opportunityId ? updatedOpportunity : opp)
         );
       });
-      
+
       // Invalidate all opportunity caches to ensure proper filtering
       queryClient.invalidateQueries({ queryKey: queryKeys.opportunities.inProgress() });
       queryClient.invalidateQueries({ queryKey: queryKeys.opportunities.onHold() });
@@ -411,13 +431,13 @@ export const useUpdateRoleMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ 
-      opportunityId, 
-      roleId, 
-      roleData 
-    }: { 
-      opportunityId: string; 
-      roleId: string; 
+    mutationFn: async ({
+      opportunityId,
+      roleId,
+      roleData
+    }: {
+      opportunityId: string;
+      roleId: string;
       roleData: EditRoleForm;
     }) => {
       const result = await validatedOpportunityApi.updateRole(opportunityId, roleId, roleData);
@@ -432,15 +452,15 @@ export const useUpdateRoleMutation = () => {
       const inProgressKey = queryKeys.opportunities.inProgress();
       const onHoldKey = queryKeys.opportunities.onHold();
       const completedKey = queryKeys.opportunities.completed();
-      
+
       const keys = [inProgressKey, onHoldKey, completedKey];
-      
+
       // Cancel outgoing refetches
       await Promise.all(keys.map(key => queryClient.cancelQueries({ queryKey: key })));
-      
+
       // Snapshot previous values
       const previousData = keys.map(key => queryClient.getQueryData<Opportunity[]>(key));
-      
+
       // Optimistically update the cache
       keys.forEach(key => {
         queryClient.setQueryData(key, (old: Opportunity[] = []) =>
@@ -448,7 +468,7 @@ export const useUpdateRoleMutation = () => {
             if (opp.id === opportunityId) {
               return {
                 ...opp,
-                roles: opp.roles.map(role => 
+                roles: opp.roles.map(role =>
                   role.id === roleId ? { ...role, ...roleData } : role
                 )
               };
@@ -457,7 +477,7 @@ export const useUpdateRoleMutation = () => {
           })
         );
       });
-      
+
       return { previousData, keys };
     },
     onError: (error, { opportunityId }, context) => {
@@ -485,7 +505,7 @@ export const useOpportunityFiltering = () => {
       const gradeMatch = !filters.grades || filters.grades.length === 0 || opp.roles.some(role => filters.grades.includes(role.requiredGrade));
       const hireMatch = OpportunityService.filterByHiringNeeds(opp, filters.needsHire);
       const probabilityMatch = !filters.probability || (opp.probability >= filters.probability[0] && opp.probability <= filters.probability[1]);
-      
+
       return clientMatch && gradeMatch && hireMatch && probabilityMatch;
     });
   };
@@ -494,16 +514,16 @@ export const useOpportunityFiltering = () => {
 };
 
 export const useOpportunities = () => {
-  const { 
-    filters, 
-    clientInput, 
-    updateFilters, 
-    updateClientInput, 
-    updateGrades, 
-    clearFilters, 
+  const {
+    filters,
+    clientInput,
+    updateFilters,
+    updateClientInput,
+    updateGrades,
+    clearFilters,
     hasActiveFilters,
     isFiltersValid,
-    filterValidationErrors 
+    filterValidationErrors
   } = useOpportunityFilters();
   const queries = useOpportunitiesQuery(filters);
   const createMutation = useCreateOpportunityMutation();
@@ -518,23 +538,23 @@ export const useOpportunities = () => {
     ...queries,
     addOpportunity: createMutation.mutate,
     addRole: addRoleMutation.mutate,
-    moveToOnHold: (opportunityId: string) => 
+    moveToOnHold: (opportunityId: string) =>
       moveMutation.mutate({ opportunityId, fromStatus: 'in-progress', toStatus: 'on-hold' }),
-    moveToInProgress: (opportunityId: string) => 
+    moveToInProgress: (opportunityId: string) =>
       moveMutation.mutate({ opportunityId, fromStatus: 'on-hold', toStatus: 'in-progress' }),
-    moveToCompleted: (opportunityId: string, fromStatus: 'in-progress' | 'on-hold') => 
+    moveToCompleted: (opportunityId: string, fromStatus: 'in-progress' | 'on-hold') =>
       moveMutation.mutateAsync({ opportunityId, fromStatus, toStatus: 'completed' }),
-    updateOpportunityInList: (opportunityId: string, updatedOpportunity: Opportunity, list: 'inProgress' | 'onHold') => 
-      updateMutation.mutate({ 
-        opportunityId, 
-        updatedOpportunity, 
-        listType: list === 'inProgress' ? 'in-progress' : 'on-hold' 
+    updateOpportunityInList: (opportunityId: string, updatedOpportunity: Opportunity, list: 'inProgress' | 'onHold') =>
+      updateMutation.mutate({
+        opportunityId,
+        updatedOpportunity,
+        listType: list === 'inProgress' ? 'in-progress' : 'on-hold'
       }),
     updateRoleStatus: (opportunityId: string, roleId: string, status: string) =>
       updateRoleStatusMutation.mutateAsync({ opportunityId, roleId, status }),
     updateRole: (opportunityId: string, roleId: string, roleData: EditRoleForm) =>
       updateRoleMutation.mutate({ opportunityId, roleId, roleData }),
-    
+
     // Filter-related state and functions
     filters,
     clientInput,
@@ -547,7 +567,7 @@ export const useOpportunities = () => {
     filterValidationErrors,
 
     filterOpportunities,
-    
+
     isCreating: createMutation.isPending,
     isAddingRole: addRoleMutation.isPending,
     isMoving: moveMutation.isPending,
@@ -555,4 +575,18 @@ export const useOpportunities = () => {
     isUpdatingRole: updateRoleStatusMutation.isPending,
     isUpdatingRole: updateRoleMutation.isPending,
   };
+};
+
+export const useOpportunityQuery = (opportunityId: string) => {
+  return useQuery({
+    queryKey: ['opportunity', opportunityId],
+    queryFn: async () => {
+      const result = await validatedOpportunityApi.getOpportunity(opportunityId);
+      if (result.success) {
+        return result.data;
+      }
+      throw result.error;
+    },
+    enabled: !!opportunityId,
+  });
 }; 

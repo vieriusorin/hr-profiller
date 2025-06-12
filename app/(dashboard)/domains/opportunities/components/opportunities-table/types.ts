@@ -10,6 +10,7 @@ export interface FlattenedRow {
   opportunityStatus: OpportunityStatus;
   rolesCount: number;
   hasHiringNeeds: boolean;
+  comment?: string;
   roleId?: string;
   roleName?: string;
   requiredGrade?: string;
@@ -21,7 +22,7 @@ export interface FlattenedRow {
   isOpportunityRow?: boolean;
   isRoleRow?: boolean;
   rowSpan: number;
-} 
+}
 
 export interface OpportunitiesTableProps extends OpportunityActionCallbacks {
   opportunities: Opportunity[];

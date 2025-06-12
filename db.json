@@ -19,7 +19,8 @@
           "assignedMember": null,
           "id": "2d23e399-ff2c-4a59-a3f7-478e57abd52f"
         }
-      ]
+      ],
+      "comment": ""
     },
     {
       "id": "e2a7",
@@ -40,7 +41,8 @@
           "assignedMember": null,
           "id": "a96ab6ea-4720-40e5-b10d-b2c463cf7f00"
         }
-      ]
+      ],
+      "comment": ""
     },
     {
       "id": "b6c1",
@@ -61,7 +63,8 @@
           "assignedMember": null,
           "id": "7ffc7c5c-a0bf-4af9-bf6c-b405d9ca8c8e"
         }
-      ]
+      ],
+      "comment": ""
     },
     {
       "id": "4a6a",
@@ -102,7 +105,8 @@
           "assignedMember": null,
           "id": "3c20b3b4-7c3e-4bd9-a646-08caf3294834"
         }
-      ]
+      ],
+      "comment": ""
     },
     {
       "id": "d729",
@@ -112,69 +116,70 @@
       "probability": 80,
       "createdAt": "2025-06-12",
       "status": "On Hold",
-      "roles": []
+      "roles": [],
+      "comment": ""
     },
     {
       "id": "c67d",
+      "opportunityName": "Backend",
       "clientName": "Xalient",
-      "opportunityName": "BAckend",
       "expectedStartDate": "2025-09-03",
-      "probability": 90,
-      "createdAt": "2025-06-12",
       "status": "In Progress",
+      "probability": 70,
       "roles": [
         {
+          "id": "13fee19b-7eca-42b2-a14e-629de20103fd",
           "roleName": "Devops",
           "requiredGrade": "ST",
-          "needsHire": true,
           "allocation": 100,
+          "needsHire": true,
           "comments": "test",
           "status": "Open",
-          "assignedMember": null,
-          "id": "13fee19b-7eca-42b2-a14e-629de20103fd"
+          "assignedMember": null
         },
         {
+          "id": "08ee36f5-ba3b-4d2b-9796-efcb11e3b10b",
           "roleName": "Test",
           "requiredGrade": "SE",
           "allocation": 100,
           "needsHire": false,
           "comments": "",
           "status": "Open",
-          "assignedMember": null,
-          "id": "08ee36f5-ba3b-4d2b-9796-efcb11e3b10b"
+          "assignedMember": null
         }
-      ]
+      ],
+      "comment": "aweesome "
     },
     {
       "id": "2d77",
-      "clientName": "MAIB",
       "opportunityName": "Senior Frontend developer",
+      "clientName": "MAIB",
       "expectedStartDate": "2025-08-21",
-      "probability": 100,
-      "createdAt": "2025-06-12",
       "status": "In Progress",
+      "probability": 100,
       "roles": [
         {
+          "id": "dce5e0b1-e950-4183-b53f-81765df912c4",
           "roleName": "Senior Frontend Developer",
           "requiredGrade": "C",
-          "needsHire": false,
           "allocation": 100,
+          "needsHire": false,
           "comments": "Awesome comment here",
           "status": "Open",
-          "assignedMember": null,
-          "id": "dce5e0b1-e950-4183-b53f-81765df912c4"
+          "assignedMember": null
         },
         {
+          "id": "4d5e40e6-9a14-43f0-ae88-4819c124fa08",
           "roleName": "DevOps",
           "requiredGrade": "SE",
+          "allocation": 100,
           "needsHire": false,
           "comments": "",
           "status": "Won",
-          "assignedMember": null,
-          "allocation": 100,
-          "id": "4d5e40e6-9a14-43f0-ae88-4819c124fa08"
+          "assignedMember": null
         }
-      ]
+      ],
+      "comment": "test"
     },
     {
       "id": "4744",
@@ -235,7 +240,8 @@
           "allocation": 100,
           "id": "59ea6293-ec7e-4709-b11b-8081027b16e8"
         }
-      ]
+      ],
+      "comment": ""
     },
     {
       "id": "5819",
@@ -245,7 +251,8 @@
       "probability": 100,
       "createdAt": "2025-06-12",
       "status": "Done",
-      "roles": []
+      "roles": [],
+      "comment": ""
     },
     {
       "id": "d637",
@@ -266,7 +273,8 @@
           "assignedMember": null,
           "id": "fcc5a4e4-954f-412a-89a0-bc132785b238"
         }
-      ]
+      ],
+      "comment": ""
     },
     {
       "id": "3fad",
@@ -276,7 +284,8 @@
       "probability": 100,
       "createdAt": "2025-06-12",
       "status": "Done",
-      "roles": []
+      "roles": [],
+      "comment": ""
     }
   ]
 }
