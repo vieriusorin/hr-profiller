@@ -16,8 +16,6 @@ export const OpportunitySchema = z.object({
   probability: ProbabilitySchema,
   createdAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format').optional(),
   roles: z.array(RoleSchema),
-  name: z.string().min(1, 'Opportunity name is required'),
-  client: ClientSchema,
 });
 
 export const OpportunitiesArraySchema = z.array(OpportunitySchema);

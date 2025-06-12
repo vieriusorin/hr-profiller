@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { CreateOpportunityForm } from '@/app/(dashboard)/domains/opportunities/components/forms/create-opportunity-form';
 import { RoleForm } from '@/app/(dashboard)/domains/opportunities/components/forms/create-role-form';
 import { OpportunityFilters } from '@/app/(dashboard)/domains/opportunities/components/filters/opportunity-filters';
+import { QuickStatsCard } from '@/shared/components/quick-stats-card';
 import { useDashboard } from '@/app/hooks/useDashboard';
 import { ViewMode } from '../(dashboard)/domains/opportunities/components/view-toggle/types';
 import { 
@@ -55,6 +56,12 @@ export default function OpportunityDashboard() {
           </div>
         </div>
 
+        <QuickStatsCard 
+          opportunities={opportunities}
+          onHoldOpportunities={onHoldOpportunities}
+          completedOpportunities={completedOpportunities}
+        />
+
         <OpportunityFilters />
 
         <OpportunityTabs
@@ -71,35 +78,34 @@ export default function OpportunityDashboard() {
           handleMoveToCompleted={handleMoveToCompleted || (() => {})}
         />
 
-        <Dialog open={showNewOpportunityDialog} onOpenChange={(open) => open ? openNewOpportunityDialog() : closeNewOpportunityDialog()}>
+        <Dialog open={showNewOpportunityDialog} onOpenChange={closeNewOpportunityDialog}>
           <DialogTrigger asChild>
             <div style={{ display: 'none' }} />
           </DialogTrigger>
-          <DialogContent className='sm:max-w-md'>
+          <DialogContent className='sm:max-w-[425px]'>
             <DialogHeader>
               <DialogTitle>Create New Opportunity</DialogTitle>
               <DialogDescription>
-                Add a new client opportunity to the pipeline
+                Add a new opportunity to track progress and manage roles.
               </DialogDescription>
             </DialogHeader>
-            <CreateOpportunityForm
-              onSubmit={handleCreateOpportunity}
+            <CreateOpportunityForm 
+              onSubmit={handleCreateOpportunity} 
               onCancel={closeNewOpportunityDialog}
             />
           </DialogContent>
         </Dialog>
 
         <Dialog open={showNewRoleDialog} onOpenChange={closeNewRoleDialogAndReset}>
-          <DialogContent className='sm:max-w-md'>
+          <DialogContent className='sm:max-w-[425px]'>
             <DialogHeader>
               <DialogTitle>Add New Role</DialogTitle>
               <DialogDescription>
-                Add a role to the selected opportunity
+                Add a new role to the selected opportunity.
               </DialogDescription>
             </DialogHeader>
-            <RoleForm
-              mode='create'
-              onSubmit={handleCreateRole}
+            <RoleForm 
+              onSubmit={handleCreateRole} 
               onCancel={closeNewRoleDialogAndReset}
             />
           </DialogContent>

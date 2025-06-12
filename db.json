@@ -126,7 +126,7 @@
         {
           "roleName": "Devops",
           "requiredGrade": "ST",
-          "needsHire": false,
+          "needsHire": true,
           "allocation": 100,
           "comments": "test",
           "status": "Open",

@@ -1,3 +1,5 @@
+import { Grade } from '@/app/shared/schemas/api-schemas';
+
 // Re-export schema-derived types
 export type {
   OpportunityId,
@@ -16,12 +18,8 @@ export type {
   CreateOpportunityInput,
   CreateRoleInput,
   EditOpportunityForm,
-} from '../schemas/api-schemas';
+} from '@/app/shared/schemas/api-schemas';
 
-// Import types for use in interfaces below
-import type { Grade } from '../schemas/api-schemas';
-
-// Frontend-specific types that don't exist in schemas
 export interface BaseRole {
   roleName: string;
   requiredGrade: Grade;
@@ -37,7 +35,6 @@ export interface BaseOpportunity {
   probability: number;
 }
 
-// Filter types
 export interface OpportunityFilters {
   client: string;
   grades: Grade[];
