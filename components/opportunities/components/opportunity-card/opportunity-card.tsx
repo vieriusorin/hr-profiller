@@ -48,6 +48,7 @@ export const OpportunityCard = ({
 				clientName={opportunity.clientName}
 				expectedStartDate={opportunity.expectedStartDate}
 				probability={opportunity.probability}
+				createdAt={opportunity.createdAt}
 			/>
 			{isExpanded && (
 				<OpportunityCardRoles
