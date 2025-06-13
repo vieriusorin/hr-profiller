@@ -4,7 +4,7 @@ export const SignInHeader = () => {
   return (
     <div className='text-center'>
       <div className='flex justify-center mb-4'>
-        <div className='bg-yellow-600 rounded-full p-3'>
+        <div className='bg-primary rounded-full p-3'>
           <Building2 className='h-8 w-8 text-white' />
         </div>
       </div>

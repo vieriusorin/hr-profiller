@@ -32,6 +32,7 @@ function normalizeOpportunity(raw: any) {
     expectedStartDate: raw.expectedStartDate || '',
     status: raw.status,
     probability: raw.probability,
+    createdAt: raw.createdAt,
     roles: raw.roles || [],
     comment: raw.comment,
   };

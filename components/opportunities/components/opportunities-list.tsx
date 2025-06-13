@@ -5,6 +5,7 @@ import { OpportunityCard } from './opportunity-card/opportunity-card';
 import { OpportunitiesListProps } from '../types';
 import { Opportunity } from '@/shared/types';
 import { OpportunitiesTable } from './opportunities-table/opportunities-table';
+import { GroupedOpportunitiesList } from './grouped-opportunities-list';
 
 const OpportunitiesList: React.FC<OpportunitiesListProps> = ({ 
   viewMode, 
@@ -43,22 +44,21 @@ const OpportunitiesList: React.FC<OpportunitiesListProps> = ({
   return (
     <>
       {viewMode === 'cards' ? (
-        <div className='space-y-4'>
-          {opportunitiesToShow.map(opportunity => (
-            <OpportunityCard
-              key={opportunity.id}
-              opportunity={opportunity}
-              onAddRole={onAddRole}
-              onUpdateRole={onUpdateRole}
-              onMoveToHold={onMoveToHold}
-              onMoveToInProgress={onMoveToInProgress}
-              onMoveToCompleted={onMoveToCompleted}
-              showActions={status !== 'completed'}
-              onEditOpportunity={onEditOpportunity}
-            />
-          ))}
-          {opportunitiesToShow.length === 0 && <div className='text-center py-8 text-gray-500'>{emptyMessage}</div>}
-        </div>
+        <GroupedOpportunitiesList
+          viewMode={viewMode}
+          status={status}
+          opportunities={opportunitiesToShow}
+          onHoldOpportunities={onHoldOpportunities}
+          completedOpportunities={completedOpportunities}
+          filterOpportunities={filterOpportunities}
+          filters={filters}
+          onAddRole={onAddRole}
+          onUpdateRole={onUpdateRole}
+          onMoveToHold={onMoveToHold}
+          onMoveToInProgress={onMoveToInProgress}
+          onMoveToCompleted={onMoveToCompleted}
+          onEditOpportunity={onEditOpportunity}
+        />
       ) : (
         <OpportunitiesTable
           opportunities={opportunitiesToShow}

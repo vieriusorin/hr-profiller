@@ -9,7 +9,7 @@ export const SignInFooter = () => {
         </p>
         <p className='text-sm text-gray-600'>
           Don't have an account?{' '}
-          <Link href='/auth/signup' className='text-yellow-600 hover:text-yellow-700 font-medium'>
+          <Link href='/auth/signup' className='text-primary hover:text-primary/80 font-medium'>
             Sign up here
           </Link>
         </p>
