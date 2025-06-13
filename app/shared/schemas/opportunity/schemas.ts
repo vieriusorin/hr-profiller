@@ -14,6 +14,8 @@ export const OpportunitySchema = z.object({
   status: OpportunityStatusSchema,
   probability: ProbabilitySchema,
   createdAt: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/, 'Invalid date format').optional(),
+  isActive: z.boolean(),
+  activatedAt: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/, 'Invalid date format').nullable().optional(),
   roles: z.array(RoleSchema),
   comment: z.string().optional(),
 });
@@ -26,6 +28,8 @@ export const CreateOpportunityInputSchema = z.object({
   expectedStartDate: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/, 'Invalid date format'),
   probability: z.number().min(0).max(100),
   createdAt: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/, 'Invalid date format'),
+  isActive: z.boolean().optional(),
+  activatedAt: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/, 'Invalid date format').nullable().optional(),
   comment: z.string().optional(),
 });
 

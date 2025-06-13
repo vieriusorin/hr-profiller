@@ -5,12 +5,19 @@ const JSON_SERVER_URL = 'http://localhost:3001';
 export async function POST(request: Request) {
   try {
     const opportunity = await request.json();
+    
+    // Auto-activate if probability >= 80%
+    const isActive = opportunity.probability >= 80;
+    const activatedAt = isActive ? (opportunity.createdAt || new Date().toISOString().split('T')[0]) : null;
+    
     const response = await fetch(`${JSON_SERVER_URL}/opportunities`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...opportunity,
           status: 'In Progress',
+          isActive: isActive,
+          activatedAt: activatedAt,
           roles: []
         }),
     });

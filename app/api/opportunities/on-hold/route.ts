@@ -33,6 +33,8 @@ function normalizeOpportunity(raw: any) {
     status: raw.status,
     probability: raw.probability,
     createdAt: raw.createdAt,
+    isActive: raw.isActive ?? false,
+    activatedAt: raw.activatedAt,
     roles: raw.roles || [],
     comment: raw.comment,
   };
