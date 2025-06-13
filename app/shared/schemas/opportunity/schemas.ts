@@ -3,7 +3,6 @@ import {
   OpportunityIdSchema,
   OpportunityStatusSchema,
   ProbabilitySchema,
-  ClientSchema,
 } from '../base-schemas';
 import { RoleSchema } from '../role/schemas';
 
@@ -11,11 +10,12 @@ export const OpportunitySchema = z.object({
   id: OpportunityIdSchema,
   opportunityName: z.string().min(1, 'Opportunity name is required'),
   clientName: z.string().min(1, 'Client name is required'),
-  expectedStartDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
+  expectedStartDate: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/, 'Invalid date format'),
   status: OpportunityStatusSchema,
   probability: ProbabilitySchema,
-  createdAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format').optional(),
+  createdAt: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/, 'Invalid date format').optional(),
   roles: z.array(RoleSchema),
+  comment: z.string().optional(),
 });
 
 export const OpportunitiesArraySchema = z.array(OpportunitySchema);
@@ -23,9 +23,10 @@ export const OpportunitiesArraySchema = z.array(OpportunitySchema);
 export const CreateOpportunityInputSchema = z.object({
   clientName: z.string().min(1, 'Client name is required'),
   opportunityName: z.string().min(1, 'Opportunity name is required'),
-  expectedStartDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
+  expectedStartDate: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/, 'Invalid date format'),
   probability: z.number().min(0).max(100),
-  createdAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
+  createdAt: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/, 'Invalid date format'),
+  comment: z.string().optional(),
 });
 
 export const CreateOpportunityFormSchema = CreateOpportunityInputSchema;
@@ -52,12 +53,12 @@ export const OpportunitiesResponseSchema = z.object({
 });
 
 // Validation helper functions
-export const validateOpportunity = (data: unknown): { 
-  success: true; 
-  data: Opportunity; 
-} | { 
-  success: false; 
-  error: z.ZodError; 
+export const validateOpportunity = (data: unknown): {
+  success: true;
+  data: Opportunity;
+} | {
+  success: false;
+  error: z.ZodError;
 } => {
   try {
     const validated = OpportunitySchema.parse(data);
@@ -70,12 +71,12 @@ export const validateOpportunity = (data: unknown): {
   }
 };
 
-export const validateOpportunities = (data: unknown): { 
-  success: true; 
-  data: Opportunity[]; 
-} | { 
-  success: false; 
-  error: z.ZodError; 
+export const validateOpportunities = (data: unknown): {
+  success: true;
+  data: Opportunity[];
+} | {
+  success: false;
+  error: z.ZodError;
 } => {
   try {
     const validated = OpportunitiesArraySchema.parse(data);
@@ -92,13 +93,13 @@ export const validateOpportunities = (data: unknown): {
 export const safeParseOpportunities = (data: unknown): Opportunity[] => {
   console.log('safeParseOpportunities', data);
   const result = validateOpportunities(data);
-  
+
   if (result.success) {
     return result.data;
   }
-  
+
   console.error('Failed to validate opportunities data:', JSON.stringify(result.error, null, 2));
-  
+
   if (Array.isArray(data)) {
     const validOpportunities: Opportunity[] = [];
     data.forEach((item, index) => {
@@ -111,8 +112,8 @@ export const safeParseOpportunities = (data: unknown): Opportunity[] => {
     });
     return validOpportunities;
   }
-  
-  return []; 
+
+  return [];
 };
 
 // Inferred types

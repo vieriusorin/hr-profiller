@@ -1,0 +1,33 @@
+import { Opportunity } from '@/shared/types';
+import type { OpportunityActionCallbacks } from '../../types';
+
+export interface OpportunityActions extends OpportunityActionCallbacks {}
+
+export interface UseOpportunityCardProps extends OpportunityActionCallbacks {
+  opportunityId: string;
+}
+
+export interface UseOpportunityCardReturn {
+  isExpanded: boolean;
+  toggleExpanded: () => void;
+  handleAddRole: () => void;
+  handleMoveToHold: () => void;
+  handleMoveToInProgress: () => void;
+  handleMoveToCompleted: () => void;
+} 
+
+export type OpportunityCardProps = {
+	opportunity: Opportunity;
+	showActions: boolean;
+	onUpdateRole?: (opportunityId: string, roleId: string, status: string) => void;
+	onAddRole?: (opportunityId: string) => void;
+	onEditOpportunity?: (opportunity: Opportunity) => void;
+	onMoveToHold?: (opportunityId: string) => void;
+	onMoveToCompleted?: (opportunityId: string) => void;
+	onMoveToInProgress?: (opportunityId: string) => void;
+}
+
+export type TeamSizeIndicatorProps = {
+  filledRoles: number;
+  totalRoles: number;
+}

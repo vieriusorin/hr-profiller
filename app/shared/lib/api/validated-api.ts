@@ -105,6 +105,12 @@ export const opportunityApi = {
     });
     if (!response.ok) throw new Error('Failed to update role');
     return await response.json();
+  },
+
+  async getOpportunity(opportunityId: string): Promise<Opportunity> {
+    const response = await fetch(`${API_BASE_URL}/opportunities/${opportunityId}`);
+    if (!response.ok) throw new Error('Failed to fetch opportunity');
+    return await response.json();
   }
 }
 
@@ -459,6 +465,19 @@ export const validatedOpportunityApi = {
         success: false,
         error: error instanceof Error ? error : new Error('Unknown error occurred'),
       };
+    }
+  },
+
+  async getOpportunity(opportunityId: string): Promise<ValidatedApiResult<OpportunityType>> {
+    try {
+      const rawData = await opportunityApi.getOpportunity(opportunityId);
+      const validation = validateOpportunity(rawData);
+      if (validation.success) {
+        return { success: true, data: validation.data };
+      }
+      return { success: false, error: new ApiValidationError(validation.error, 'getOpportunity', rawData) };
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error : new Error('Unknown error occurred') };
     }
   }
 }; 

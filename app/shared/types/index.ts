@@ -1,4 +1,5 @@
 import { Grade } from '@/app/shared/schemas/api-schemas';
+import { ApiValidationError } from '../lib/api/validated-api';
 
 // Re-export schema-derived types
 export type {
@@ -39,14 +40,12 @@ export interface OpportunityFilters {
   client: string;
   grades: Grade[];
   needsHire: 'yes' | 'no' | 'all';
-  probability: [number, number]; // Value between 0 and 100
+  probability: [number, number];
 }
 
-// Validation error types
 export interface ValidationErrors {
   [key: string]: string;
 } 
-
 
 export type UrgencyLevel = 'urgent' | 'warning' | 'safe';
 
@@ -60,4 +59,15 @@ export interface UrgencyConfig {
 export interface GradeOption {
   value: Grade;
   label: string;
+}
+
+export type ApiErrorDisplayProps = {
+	error: ApiValidationError | Error | null;
+	onRetry?: () => void;
+	showDetails?: boolean;
+	fallbackMessage?: string;
+}
+
+export type ValidationErrorDetailsProps = {
+	error: ApiValidationError;
 }

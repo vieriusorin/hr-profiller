@@ -3,13 +3,8 @@
 import { AlertCircle, RefreshCw, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ApiValidationError } from "../../lib/api/validated-api";
+import { ApiErrorDisplayProps, ValidationErrorDetailsProps } from "../../types";
 
-interface ApiErrorDisplayProps {
-	error: ApiValidationError | Error | null;
-	onRetry?: () => void;
-	showDetails?: boolean;
-	fallbackMessage?: string;
-}
 
 export const ApiErrorDisplay = ({
 	error,
@@ -57,9 +52,7 @@ export const ApiErrorDisplay = ({
 	);
 };
 
-interface ValidationErrorDetailsProps {
-	error: ApiValidationError;
-}
+
 
 const ValidationErrorDetails = ({ error }: ValidationErrorDetailsProps) => {
 	const formattedErrors = error.getFormattedErrors();
@@ -88,8 +81,8 @@ const ValidationErrorDetails = ({ error }: ValidationErrorDetailsProps) => {
 
 					const errors = Array.isArray(fieldErrors)
 						? fieldErrors
-						: typeof fieldErrors === "object" && fieldErrors._errors
-						? fieldErrors._errors
+						: typeof fieldErrors === 'object' && fieldErrors !== null && 'errors' in fieldErrors
+						? (fieldErrors as { errors: string[] }).errors 
 						: [];
 
 					if (!Array.isArray(errors) || errors.length === 0) return null;

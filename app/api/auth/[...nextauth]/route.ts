@@ -1,7 +1,8 @@
-import NextAuth from 'next-auth';
+import NextAuth, { Session } from 'next-auth';
 import AzureADProvider from 'next-auth/providers/azure-ad';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
+import { JWT } from 'next-auth/jwt';
 
 // In-memory user store (replace with database in production)
 const users = [
@@ -117,12 +118,12 @@ const handler = NextAuth({
       
       return token;
     },
-    async session({ session, token }) {
-      session.accessToken = token.accessToken;
+    async session({ session, token }: { session: Session, token: JWT }) {
+      (session as any).accessToken = token.accessToken;
       
       // Add role to session
       if (token.role) {
-        session.user.role = token.role;
+        (session.user as any).role = token.role;
       }
       
       return session;

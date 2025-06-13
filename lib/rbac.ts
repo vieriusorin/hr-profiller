@@ -1,17 +1,17 @@
 export type UserRole = 'admin' | 'hr_manager' | 'recruiter' | 'employee' | 'user';
 
-export type Permission = 
+export type Permission =
   // Dashboard permissions
   | 'view_dashboard'
   | 'view_analytics'
-  
+
   // Client permissions
   | 'view_clients'
   | 'create_clients'
   | 'edit_clients'
   | 'delete_clients'
   | 'view_client_financials'
-  
+
   // Project permissions
   | 'view_projects'
   | 'create_projects'
@@ -19,7 +19,10 @@ export type Permission =
   | 'delete_projects'
   | 'view_project_financials'
   | 'assign_project_members'
-  
+
+  // Opportunity permissions
+  | 'edit_opportunity'
+
   // Candidate permissions
   | 'view_candidates'
   | 'create_candidates'
@@ -27,7 +30,7 @@ export type Permission =
   | 'delete_candidates'
   | 'view_candidate_salary'
   | 'schedule_interviews'
-  
+
   // Employee permissions
   | 'view_employees'
   | 'create_employees'
@@ -36,7 +39,7 @@ export type Permission =
   | 'view_employee_salary'
   | 'view_employee_performance'
   | 'manage_employee_roles'
-  
+
   // Account permissions
   | 'view_account'
   | 'edit_account'
@@ -59,6 +62,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'delete_projects',
     'view_project_financials',
     'assign_project_members',
+    'edit_opportunity',
     'view_candidates',
     'create_candidates',
     'edit_candidates',
@@ -78,7 +82,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'view_system_settings',
     'edit_system_settings',
   ],
-  
+
   hr_manager: [
     'view_dashboard',
     'view_analytics',
@@ -101,7 +105,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'view_account',
     'edit_account',
   ],
-  
+
   recruiter: [
     'view_dashboard',
     'view_projects',
@@ -113,7 +117,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'view_account',
     'edit_account',
   ],
-  
+
   employee: [
     'view_dashboard',
     'view_projects',
@@ -121,7 +125,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'view_account',
     'edit_account',
   ],
-  
+
   user: [
     'view_dashboard',
     'view_account',

@@ -1,12 +1,12 @@
 import { Opportunity } from "../../types";
 
-export interface QuickStatsCardProps {
+export type QuickStatsCardProps = {
     opportunities: Opportunity[];
     onHoldOpportunities: Opportunity[];
     completedOpportunities: Opportunity[];
   }
   
-  export interface StatCardProps {
+  export type StatCardProps = {
     title: string;
     value: number;
     icon: React.ReactNode;

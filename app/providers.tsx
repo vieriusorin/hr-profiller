@@ -17,9 +17,9 @@ export function Providers({ children }: ProvidersProps) {
           queries: {
             staleTime: 1000 * 60 * 5, 
             gcTime: 1000 * 60 * 10,
-            retry: (failureCount, error) => {
+            retry: (failureCount: number, error: Error) => {
               if (error instanceof Error && 'status' in error) {
-                const status = (error as any).status;
+                const status = (error as { status: number }).status;
                 if (status >= 400 && status < 500) return false;
               }
               return failureCount < 3;

@@ -6,3 +6,8 @@ export interface DatePickerProps {
   className?: string;
   error?: boolean;
 } 
+
+export type UseDatePickerParams = {
+  value?: Date | string;
+  onChange: (date: Date | undefined) => void;
+}

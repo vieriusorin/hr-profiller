@@ -1,9 +1,5 @@
 import { useState } from 'react';
-
-interface UseDatePickerParams {
-  value?: Date | string;
-  onChange: (date: Date | undefined) => void;
-}
+import { UseDatePickerParams } from '../types';
 
 export const useDatePicker = ({ value, onChange }: UseDatePickerParams) => {
   const [open, setOpen] = useState(false);

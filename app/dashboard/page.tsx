@@ -2,19 +2,18 @@
 
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-
-import { CreateOpportunityForm } from '@/app/(dashboard)/domains/opportunities/components/forms/create-opportunity-form';
-import { RoleForm } from '@/app/(dashboard)/domains/opportunities/components/forms/create-role-form';
-import { OpportunityFilters } from '@/app/(dashboard)/domains/opportunities/components/filters/opportunity-filters';
+import { RoleForm } from '@/components/opportunities/components/forms/create-role-form';
+import { OpportunityFilters } from '@/components/opportunities/components/filters/opportunity-filters';
 import { QuickStatsCard } from '@/shared/components/quick-stats-card';
 import { useDashboard } from '@/app/hooks/useDashboard';
-import { ViewMode } from '../(dashboard)/domains/opportunities/components/view-toggle/types';
+import { ViewMode } from '@/components/opportunities/components/view-toggle/types';
 import { 
   DashboardHeader, 
   DashboardTitle, 
   DashboardActions, 
   OpportunityTabs 
-} from '../(dashboard)/domains/dashboard/components';
+} from './_components';
+import { CreateOpportunityForm } from '@/components/opportunities/components/forms/create-opportunity-form';
 
 export default function OpportunityDashboard() {
   const [currentView, setCurrentView] = useState<ViewMode>('cards');
@@ -71,11 +70,11 @@ export default function OpportunityDashboard() {
           completedOpportunities={completedOpportunities}
           filterOpportunities={filterOpportunities}
           filters={filters}
-          handleAddRole={handleAddRole || (() => {})}
-          handleUpdateRole={handleUpdateRole || (() => {})}
-          handleMoveToHold={handleMoveToHold || (() => {})}
-          handleMoveToInProgress={handleMoveToInProgress || (() => {})}
-          handleMoveToCompleted={handleMoveToCompleted || (() => {})}
+          handleAddRole={handleAddRole}
+          handleUpdateRole={handleUpdateRole}
+          handleMoveToHold={handleMoveToHold}
+          handleMoveToInProgress={handleMoveToInProgress}
+          handleMoveToCompleted={handleMoveToCompleted}
         />
 
         <Dialog open={showNewOpportunityDialog} onOpenChange={closeNewOpportunityDialog}>

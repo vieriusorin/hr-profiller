@@ -1,4 +1,4 @@
-export interface FormInputProps {
+export type FormInputProps = {
   label: string;
   value: string | number;
   onChange: (value: string | number) => void;

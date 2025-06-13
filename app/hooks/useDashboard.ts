@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { useOpportunities } from '@/app/(dashboard)/domains/opportunities/hooks/use-opportunities-query';
-import { useOpportunityFilters } from '@/app/(dashboard)/domains/opportunities/hooks/useOpportunityFilters';
+import { useOpportunities } from '@/components/opportunities/hooks/use-opportunities-query';
+import { useOpportunityFilters } from '@/components/opportunities/hooks/useOpportunityFilters';
 import { UseDashboardReturn } from '../types';
 import type { CreateRoleForm, Opportunity } from '@/shared/types';
 import toast from 'react-hot-toast';
-import { Role } from '../shared/schemas/api-schemas';
+import { Role } from '@/shared/schemas/api-schemas';
 
 export const useDashboard = (): UseDashboardReturn => {
   const {
@@ -46,7 +46,7 @@ export const useDashboard = (): UseDashboardReturn => {
       const loadingToast = toast.loading('Creating role...');
 
       // Ensure the opportunity object is fully populated
-      const opportunity = opportunities.find(opp => opp.id === selectedOpportunityId);
+      const opportunity = opportunities.find((opp: Opportunity) => opp.id === selectedOpportunityId);
       if (!opportunity) {
         toast.error('Opportunity not found');
         return;
@@ -62,7 +62,7 @@ export const useDashboard = (): UseDashboardReturn => {
             }
           },
           {
-            onSuccess: (updatedOpportunity: Opportunity) => {
+            onSuccess: () => {
               toast.dismiss(loadingToast);
               toast.success(`Role "${roleData.roleName}" created successfully!`);
               setShowNewRoleDialog(false);
@@ -120,15 +120,15 @@ export const useDashboard = (): UseDashboardReturn => {
     }
   };
 
-  const handleCreateOpportunity = async (opportunity: Opportunity) => {
+  const handleCreateOpportunity = async (opportunity: Opportunity): Promise<Opportunity> => {
     const loadingToast = toast.loading('Creating opportunity...');
 
     try {
-      const result = await addOpportunity(opportunity);
+      await addOpportunity(opportunity);
       toast.dismiss(loadingToast);
       toast.success(`Opportunity "${opportunity.opportunityName}" created successfully!`);
       setShowNewOpportunityDialog(false);
-      return result;
+      return opportunity;
     } catch (error: any) {
       toast.dismiss(loadingToast);
       toast.error(`Failed to create opportunity: ${error.message}`);
