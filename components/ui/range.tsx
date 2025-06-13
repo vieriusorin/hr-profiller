@@ -39,8 +39,8 @@ export const Range = React.forwardRef<HTMLDivElement, RangeProps>(
             disabled={disabled}
             className={cn(
               'w-full',
-              '[&>span[data-slot="slider-track"]]:bg-gradient-to-r [&>span[data-slot="slider-track"]]:from-red-200 [&>span[data-slot="slider-track"]]:via-yellow-200 [&>span[data-slot="slider-track"]]:to-green-200',
-              '[&>span[data-slot="slider-range"]]:bg-gradient-to-r [&>span[data-slot="slider-range"]]:from-red-500 [&>span[data-slot="slider-range"]]:via-yellow-500 [&>span[data-slot="slider-range"]]:to-green-500',
+              '[&>span[data-slot="slider-track"]]:bg-gradient-to-r [&>span[data-slot="slider-track"]]:from-red-200 [&>span[data-slot="slider-track"]]:via-yellow-200 [&>span[data-slot="slider-track"]]:to-yellow-200',
+              '[&>span[data-slot="slider-range"]]:bg-gradient-to-r [&>span[data-slot="slider-range"]]:from-red-500 [&>span[data-slot="slider-range"]]:via-yellow-500 [&>span[data-slot="slider-range"]]:to-yellow-500',
               '[&>span[data-slot="slider-thumb"]]:border-blue-500 [&>span[data-slot="slider-thumb"]]:size-5 [&>span[data-slot="slider-thumb"]]:shadow-lg'
             )}
           />

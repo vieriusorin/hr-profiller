@@ -1,63 +1,73 @@
-// Core domain types
-export type OpportunityId = number;
-export type RoleId = number;
-export type MemberId = number;
+import { Grade } from '@/app/shared/schemas/api-schemas';
+import { ApiValidationError } from '../lib/api/validated-api';
 
-export type OpportunityStatus = 'In Progress' | 'On Hold' | 'Done';
-export type RoleStatus = 'Open' | 'Staffed' | 'Won' | 'Lost';
-export type Grade = 'JT' | 'T' | 'ST' | 'EN' | 'SE' | 'C' | 'SC' |'SM';
+// Re-export schema-derived types
+export type {
+  OpportunityId,
+  RoleId,
+  MemberId,
+  OpportunityStatus,
+  RoleStatus,
+  Grade,
+  Member,
+  Client,
+  Opportunity,
+  Role,
+  CreateOpportunityForm,
+  CreateRoleForm,
+  EditRoleForm,
+  CreateOpportunityInput,
+  CreateRoleInput,
+  EditOpportunityForm,
+} from '@/app/shared/schemas/api-schemas';
 
-export interface Member {
-  id: MemberId;
-  fullName: string;
-  actualGrade: Grade;
+export interface BaseRole {
+  roleName: string;
+  requiredGrade: Grade;
   allocation: number;
-  availableFrom: string;
-}
-
-export interface Role {
-  id: RoleId;
-  roleName: string;
-  requiredGrade: Grade;
-  status: RoleStatus;
-  assignedMember: Member | null;
+  comments: string;
   needsHire: boolean;
-  comments: string;
 }
 
-export interface Opportunity {
-  id: OpportunityId;
-  clientName: string;
-  opportunityName: string;
-  openDate: string;
-  expectedStartDate: string;
-  probability: number;
-  status: OpportunityStatus;
-  roles: Role[];
-}
-
-// Form types
-export interface CreateOpportunityForm {
+export interface BaseOpportunity {
   clientName: string;
   opportunityName: string;
   expectedStartDate: string;
   probability: number;
 }
 
-export interface CreateRoleForm {
-  roleName: string;
-  requiredGrade: Grade;
-  comments: string;
-}
-
-// Filter types
 export interface OpportunityFilters {
   client: string;
   grades: Grade[];
   needsHire: 'yes' | 'no' | 'all';
+  probability: [number, number];
 }
 
-// Validation error types
 export interface ValidationErrors {
   [key: string]: string;
 } 
+
+export type UrgencyLevel = 'urgent' | 'warning' | 'safe';
+
+export interface UrgencyConfig {
+  colorClass: string;
+  label: string;
+  bgClass: string;
+  textClass: string;
+}
+
+export interface GradeOption {
+  value: Grade;
+  label: string;
+}
+
+export type ApiErrorDisplayProps = {
+	error: ApiValidationError | Error | null;
+	onRetry?: () => void;
+	showDetails?: boolean;
+	fallbackMessage?: string;
+}
+
+export type ValidationErrorDetailsProps = {
+	error: ApiValidationError;
+}

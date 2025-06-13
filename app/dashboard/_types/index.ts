@@ -1,0 +1,35 @@
+import type { ReactNode } from 'react';
+import { Opportunity, OpportunityFilters, Role } from '@/app/shared/types';
+import { ViewMode, ViewToggleProps } from '@/components/opportunities/components/view-toggle/types';
+
+export type CreateDialogsProps = {
+  showNewOpportunityDialog: boolean;
+  showNewRoleDialog: boolean;
+  handleCreateOpportunity: (opportunity: Opportunity) => Promise<Opportunity>;
+  handleCreateRole: (role: Role) => Promise<void>;
+  closeNewOpportunityDialog: () => void;
+  closeNewRoleDialogAndReset: () => void;
+  children?: ReactNode;
+}
+
+export type DashboardActionsProps = ViewToggleProps & {
+    onNewOpportunity: () => void;
+  }
+
+export type DashboardTitleProps = {
+    isRefetching?: boolean;
+}
+
+export type OpportunityTabsProps = {
+    currentView: ViewMode;
+    opportunities: Opportunity[];
+    onHoldOpportunities: Opportunity[];
+    completedOpportunities: Opportunity[];
+    filterOpportunities: (opportunities: Opportunity[], filters: OpportunityFilters) => Opportunity[];
+    filters: OpportunityFilters;
+    handleAddRole: (opportunityId: string) => void;
+    handleUpdateRole: (opportunityId: string, roleId: string, status: string) => Promise<void>;
+    handleMoveToHold: (opportunityId: string) => Promise<void>;
+    handleMoveToInProgress: (opportunityId: string) => Promise<void>;
+    handleMoveToCompleted: (opportunityId: string) => Promise<void>;
+  }

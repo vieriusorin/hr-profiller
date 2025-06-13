@@ -2,13 +2,12 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
 import { Providers } from './providers';
-import { ErrorBoundary } from './shared/components/errorBoundary';
 import { Toaster } from 'react-hot-toast';
 
 const outfit = Outfit({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'HR Opportunity Dashboard',
+  title: 'Opportunity Dashboard',
   description: 'Manage client opportunities and resource allocation',
 };
 
@@ -21,9 +20,7 @@ export default function RootLayout({
     <html lang='en'>
       <body className={outfit.className}>
         <Providers>
-          <ErrorBoundary>
-            {children}
-          </ErrorBoundary>
+          {children}
         </Providers>
         <Toaster
           position='top-right'

@@ -1,168 +1,40 @@
 'use client';
 
-import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Building, Calendar, Users } from 'lucide-react';
-import { OpportunityCard } from '@/domains/opportunities/components/opportunity-card/opportunity-card';
-import { CreateOpportunityForm } from '@/domains/opportunities/components/forms/create-opportunity-form';
-import { CreateRoleForm } from '@/domains/opportunities/components/forms/create-role-form';
-import { OpportunityFilters } from '@/domains/opportunities/components/filters/opportunity-filters';
-import { useDashboard } from './hooks/useDashboard';
+import { useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { Card, CardContent } from '@/components/ui/card';
+import { Building2 } from 'lucide-react';
 
-export default function OpportunityDashboard() {
-  const {
-    loading,
-    isRefetching,
-    showNewOpportunityDialog,
-    showNewRoleDialog,
-    filteredInProgress,
-    filteredOnHold,
-    filteredCompleted,
-    handleAddRole,
-    handleCreateRole,
-    handleUpdateRole,
-    handleCreateOpportunity,
-    handleMoveToHold,
-    handleMoveToInProgress,
-    openNewOpportunityDialog,
-    closeNewOpportunityDialog,
-    closeNewRoleDialogAndReset,
-  } = useDashboard();
+export default function HomePage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-  if (loading) {
-    return (
-      <div className='p-6 text-center'>
-        <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4'></div>
-        Loading opportunities...
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (status === 'loading') return;
 
+    if (session) {
+      router.push('/dashboard');
+    } else {
+      router.push('/auth/signin');
+    }
+  }, [session, status, router]);
+
+  // Show loading while redirecting
   return (
-    <div className='p-6 max-w-7xl mx-auto'>
-      <div className='flex justify-between items-center mb-6'>
-        <div>
-          <h1 className='text-3xl font-bold flex items-center gap-2'>
-            HR Opportunity Dashboard
-            {isRefetching && (
-              <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600'></div>
-            )}
-          </h1>
-          <p className='text-gray-600 mt-1'>Manage client opportunities and resource allocation</p>
-        </div>
-        
-        <Dialog open={showNewOpportunityDialog} onOpenChange={(open) => open ? openNewOpportunityDialog() : closeNewOpportunityDialog()}>
-          <DialogTrigger asChild>
-            <Button className='flex items-center gap-2'>
-              <Plus className='h-4 w-4' />
-              New Opportunity
-            </Button>
-          </DialogTrigger>
-          <DialogContent className='sm:max-w-md'>
-            <DialogHeader>
-              <DialogTitle>Create New Opportunity</DialogTitle>
-              <DialogDescription>
-                Add a new client opportunity to the pipeline
-              </DialogDescription>
-            </DialogHeader>
-            <CreateOpportunityForm
-              onSubmit={handleCreateOpportunity}
-              onCancel={closeNewOpportunityDialog}
-            />
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      <OpportunityFilters />
-
-      <Tabs defaultValue='in-progress' className='space-y-4'>
-        <TabsList className='grid w-full grid-cols-3'>
-          <TabsTrigger value='in-progress' className='flex items-center gap-2'>
-            <Building className='h-4 w-4' />
-            In Progress ({filteredInProgress.length})
-          </TabsTrigger>
-          <TabsTrigger value='on-hold' className='flex items-center gap-2'>
-            <Calendar className='h-3 w-3' />
-            On Hold ({filteredOnHold.length})
-          </TabsTrigger>
-          <TabsTrigger value='completed' className='flex items-center gap-2'>
-            <Users className='h-3 w-3' />
-            Completed ({filteredCompleted.length})
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value='in-progress'>
-          <div className='space-y-4'>
-            {filteredInProgress.map(opportunity => (
-              <OpportunityCard
-                key={opportunity.id}
-                opportunity={opportunity}
-                onAddRole={handleAddRole}
-                onUpdateRole={handleUpdateRole}
-                onMoveToHold={handleMoveToHold}
-              />
-            ))}
-            {filteredInProgress.length === 0 && (
-              <div className='text-center py-8 text-gray-500'>
-                No opportunities in progress
-              </div>
-            )}
+    <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-emerald-100'>
+      <Card className='w-full max-w-sm'>
+        <CardContent className='flex flex-col items-center justify-center p-8 space-y-4'>
+          <div className='bg-primary rounded-full p-4'>
+            <Building2 className='h-8 w-8 text-white' />
           </div>
-        </TabsContent>
-
-        <TabsContent value='on-hold'>
-          <div className='space-y-4'>
-            {filteredOnHold.map(opportunity => (
-              <OpportunityCard
-                key={opportunity.id}
-                opportunity={opportunity}
-                onAddRole={handleAddRole}
-                onUpdateRole={handleUpdateRole}
-                onMoveToInProgress={handleMoveToInProgress}
-              />
-            ))}
-            {filteredOnHold.length === 0 && (
-              <div className='text-center py-8 text-gray-500'>
-                No opportunities on hold
-              </div>
-            )}
+          <div className='text-center'>
+            <h2 className='text-xl font-semibold text-gray-900'>DDROIDD</h2>
+            <p className='text-sm text-gray-600 mt-1'>Loading...</p>
           </div>
-        </TabsContent>
-
-        <TabsContent value='completed'>
-          <div className='space-y-4'>
-            {filteredCompleted.map(opportunity => (
-              <OpportunityCard
-                key={opportunity.id}
-                opportunity={opportunity}
-                showActions={false}
-              />
-            ))}
-            {filteredCompleted.length === 0 && (
-              <div className='text-center py-8 text-gray-500'>
-                No completed opportunities
-              </div>
-            )}
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      <Dialog open={showNewRoleDialog} onOpenChange={closeNewRoleDialogAndReset}>
-        <DialogContent className='sm:max-w-md'>
-          <DialogHeader>
-            <DialogTitle>Add New Role</DialogTitle>
-            <DialogDescription>
-              Add a role to the selected opportunity
-            </DialogDescription>
-          </DialogHeader>
-          <CreateRoleForm
-            onSubmit={handleCreateRole}
-            onCancel={closeNewRoleDialogAndReset}
-          />
-        </DialogContent>
-      </Dialog>
+          <div className='animate-spin rounded-full h-6 w-6 border-b-2 border-primary'></div>
+        </CardContent>
+      </Card>
     </div>
   );
-}; 
+}
