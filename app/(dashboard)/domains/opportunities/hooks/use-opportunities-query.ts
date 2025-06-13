@@ -280,23 +280,6 @@ export const useMoveOpportunityMutation = () => {
 
       return { previousFrom, previousTo, fromKey, toKey };
     },
-    onSuccess: (updatedOpportunity: Opportunity, { fromStatus, toStatus }: { 
-      opportunityId: string; 
-      fromStatus: 'in-progress' | 'on-hold' | 'completed';
-      toStatus: 'in-progress' | 'on-hold' | 'completed';
-    }) => {
-      const fromKey = queryKeys.opportunities.list(fromStatus);
-      const toKey = queryKeys.opportunities.list(toStatus);
-      
-      // Update with the actual server response
-      queryClient.setQueryData(fromKey, (old: Opportunity[] = []) => 
-        old.filter(opp => opp.id !== updatedOpportunity.id)
-      );
-      queryClient.setQueryData(toKey, (old: Opportunity[] = []) => {
-        const filtered = old.filter(opp => opp.id !== updatedOpportunity.id);
-        return [...filtered, updatedOpportunity];
-      });
-    },
     onError: (error: Error, variables: { 
       opportunityId: string; 
       fromStatus: 'in-progress' | 'on-hold' | 'completed';
@@ -377,27 +360,6 @@ export const useUpdateRoleStatusMutation = () => {
         throw result.error;
       }
     },
-    onSuccess: (updatedOpportunity: Opportunity, { opportunityId }: {
-      opportunityId: string;
-      roleId: string;
-      status: string;
-    }) => {
-      // Update the opportunity in all relevant query caches
-      const inProgressKey = queryKeys.opportunities.inProgress();
-      const onHoldKey = queryKeys.opportunities.onHold();
-      const completedKey = queryKeys.opportunities.completed();
-      
-      [inProgressKey, onHoldKey, completedKey].forEach(key => {
-        queryClient.setQueryData(key, (old: Opportunity[] = []) =>
-          old.map((opp: Opportunity) => opp.id === opportunityId ? updatedOpportunity : opp)
-        );
-      });
-      
-      // Invalidate all opportunity caches to ensure proper filtering
-      queryClient.invalidateQueries({ queryKey: queryKeys.opportunities.inProgress() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.opportunities.onHold() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.opportunities.completed() });
-    },
     onSettled: () => {
       // Always ensure fresh data after role status update
       queryClient.invalidateQueries({ queryKey: queryKeys.opportunities.inProgress() });
@@ -459,6 +421,17 @@ export const useUpdateRoleMutation = () => {
       });
       
       return { previousData, keys };
+    },
+    onSuccess: (updatedOpportunity, { opportunityId }) => {
+      const inProgressKey = queryKeys.opportunities.inProgress();
+      const onHoldKey = queryKeys.opportunities.onHold();
+      const completedKey = queryKeys.opportunities.completed();
+
+      [inProgressKey, onHoldKey, completedKey].forEach(key => {
+        queryClient.setQueryData(key, (old: Opportunity[] = []) =>
+          old.map((opp: Opportunity) => opp.id === opportunityId ? updatedOpportunity : opp)
+        );
+      });
     },
     onError: (error, { opportunityId }, context) => {
       // Rollback on error

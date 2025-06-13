@@ -4,7 +4,7 @@ import { OpportunityFiltersState } from '@/app/(dashboard)/domains/opportunities
 
 export interface OpportunityActionCallbacks {
   onAddRole?: (opportunityId: string) => void;
-  onUpdateRole?: (opportunityId: string, roleId: string, updates: Role) => void;
+  onUpdateRole?: (opportunityId: string, roleId: string, status: string) => void;
   onMoveToHold?: (opportunityId: string) => void;
   onMoveToInProgress?: (opportunityId: string) => void;
   onMoveToCompleted?: (opportunityId: string) => void;
@@ -12,7 +12,7 @@ export interface OpportunityActionCallbacks {
 
 export interface OpportunityActionCallbacksAsync {
   handleAddRole?: (opportunityId: string) => void;
-  handleUpdateRole?: (opportunityId: string, roleId: string, updates: Role) => Promise<void>;
+  handleUpdateRole?: (opportunityId: string, roleId: string, status: string) => Promise<void>;
   handleMoveToHold?: (opportunityId: string) => Promise<void>;
   handleMoveToInProgress?: (opportunityId: string) => Promise<void>;
   handleMoveToCompleted?: (opportunityId: string) => Promise<void>;

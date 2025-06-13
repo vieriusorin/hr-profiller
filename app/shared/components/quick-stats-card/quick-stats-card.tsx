@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Building2, Users, UserPlus, TrendingUp } from 'lucide-react';
+import { Building2, Users, UserPlus, TrendingUp, Check } from 'lucide-react';
 import { Role } from '../../types';
 import { QuickStatsCardProps, StatCardProps } from './types';
 
@@ -42,11 +42,12 @@ export const QuickStatsCard = ({
   completedOpportunities 
 }: QuickStatsCardProps) => {
   const allOpportunities = [...opportunities, ...onHoldOpportunities, ...completedOpportunities];
+  const activeOpportunitiesList = [...opportunities, ...onHoldOpportunities];
   const totalOpportunities = allOpportunities.length;
   
-  const totalRoles = allOpportunities.reduce((sum, opp) => sum + opp.roles.length, 0);
+  const totalRoles = activeOpportunitiesList.reduce((sum, opp) => sum + opp.roles.length, 0);
   
-  const hiringNeededCount = allOpportunities.reduce((sum, opp) => {
+  const hiringNeededCount = activeOpportunitiesList.reduce((sum, opp) => {
     return sum + opp.roles.filter((role: Role) => role.needsHire).length;
   }, 0);
 
@@ -92,7 +93,7 @@ export const QuickStatsCard = ({
           <StatCard
             title='Completion Rate'
             value={completionRate}
-            icon={<Badge className='h-8 w-8' />}
+            icon={<Check className='h-8 w-8' />}
             description={`${completedOpportunities.length} completed`}
             variant={completionRate >= 70 ? 'success' : completionRate >= 40 ? 'warning' : 'default'}
           />

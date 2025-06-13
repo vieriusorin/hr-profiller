@@ -12,6 +12,7 @@ import { RoleCard } from '../role-card/role-card';
 import { useOpportunityCard } from './hooks/useOpportunityCard';
 import { OpportunityCardProps } from './types';
 import { getStartDateUrgency, getUrgencyConfig, getUrgencyTooltip } from '@/shared/lib/helpers/date-urgency';
+import { TeamSizeIndicator } from './team-size-indicator';
 
 export const OpportunityCard = ({
   opportunity,
@@ -40,6 +41,9 @@ export const OpportunityCard = ({
   const urgency = getStartDateUrgency(opportunity.expectedStartDate);
   const urgencyConfig = getUrgencyConfig(urgency);
   const tooltip = getUrgencyTooltip(opportunity.expectedStartDate);
+
+  const filledRoles = opportunity.roles.filter(role => role.status === 'Staffed').length;
+  const totalRoles = opportunity.roles.length;
 
   return (
     <Card 
@@ -74,6 +78,7 @@ export const OpportunityCard = ({
                 Start: {opportunity.expectedStartDate}
               </span>
               <ProbabilityBadge probability={opportunity.probability} size='sm' />
+              <TeamSizeIndicator filledRoles={filledRoles} totalRoles={totalRoles} />
             </CardDescription>
           </div>
           
