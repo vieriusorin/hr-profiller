@@ -24,4 +24,13 @@ export interface UseDashboardReturn {
   closeNewOpportunityDialog: () => void;
   closeNewRoleDialog: () => void;
   closeNewRoleDialogAndReset: () => void;
+  fetchNextPageInProgress: () => void;
+  hasNextPageInProgress: boolean;
+  isFetchingNextPageInProgress: boolean;
+  fetchNextPageOnHold: () => void;
+  hasNextPageOnHold: boolean;
+  isFetchingNextPageOnHold: boolean;
+  fetchNextPageCompleted: () => void;
+  hasNextPageCompleted: boolean;
+  isFetchingNextPageCompleted: boolean;
 } 

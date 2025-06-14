@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { OpportunityFilters } from '@/shared/types';
 import { OpportunityService } from '../services/opportunity-service';
 import { validatedOpportunityApi, ApiValidationError } from '@/shared/lib/api/validated-api';
@@ -8,10 +8,10 @@ import { useOpportunityFilters } from './useOpportunityFilters';
 
 export const useOpportunitiesQuery = (filters: OpportunityFilters) => {
 
-  const inProgressQuery = useQuery({
+  const inProgressQuery = useInfiniteQuery({
     queryKey: queryKeys.opportunities.inProgress(filters),
-    queryFn: async () => {
-      const result = await validatedOpportunityApi.getInProgressOpportunities(filters);
+    queryFn: async ({ pageParam = 1 }) => {
+      const result = await validatedOpportunityApi.getInProgressOpportunities(filters, pageParam);
       if (result.success) {
         return result.data;
       }
@@ -23,13 +23,18 @@ export const useOpportunitiesQuery = (filters: OpportunityFilters) => {
 
       throw result.error;
     },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage: Opportunity[], pages) => {
+      // If the last page has less than 3 items, we know we're on the last page.
+      return lastPage.length < 3 ? undefined : pages.length + 1;
+    },
     staleTime: 1000 * 60 * 5,
   });
 
-  const onHoldQuery = useQuery({
+  const onHoldQuery = useInfiniteQuery({
     queryKey: queryKeys.opportunities.onHold(filters),
-    queryFn: async () => {
-      const result = await validatedOpportunityApi.getOnHoldOpportunities(filters);
+    queryFn: async ({ pageParam = 1 }) => {
+      const result = await validatedOpportunityApi.getOnHoldOpportunities(filters, pageParam);
       if (result.success) {
         return result.data;
       }
@@ -41,13 +46,17 @@ export const useOpportunitiesQuery = (filters: OpportunityFilters) => {
 
       throw result.error;
     },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage: Opportunity[], pages) => {
+      return lastPage.length < 3 ? undefined : pages.length + 1;
+    },
     staleTime: 1000 * 60 * 5,
   });
 
-  const completedQuery = useQuery({
+  const completedQuery = useInfiniteQuery({
     queryKey: queryKeys.opportunities.completed(filters),
-    queryFn: async () => {
-      const result = await validatedOpportunityApi.getCompletedOpportunities(filters);
+    queryFn: async ({ pageParam = 1 }) => {
+      const result = await validatedOpportunityApi.getCompletedOpportunities(filters, pageParam);
       if (result.success) {
         return result.data;
       }
@@ -59,6 +68,10 @@ export const useOpportunitiesQuery = (filters: OpportunityFilters) => {
 
       throw result.error;
     },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage: Opportunity[], pages) => {
+      return lastPage.length < 3 ? undefined : pages.length + 1;
+    },
     staleTime: 1000 * 60 * 10,
   });
 
@@ -69,14 +82,27 @@ export const useOpportunitiesQuery = (filters: OpportunityFilters) => {
     return validationError as ApiValidationError || null;
   };
 
+  const inProgressOpportunities = inProgressQuery.data?.pages.flatMap(page => page) || [];
+  const onHoldOpportunities = onHoldQuery.data?.pages.flatMap(page => page) || [];
+  const completedOpportunities = completedQuery.data?.pages.flatMap(page => page) || [];
+
   return {
-    opportunities: inProgressQuery.data || [],
-    onHoldOpportunities: onHoldQuery.data || [],
-    completedOpportunities: completedQuery.data || [],
+    opportunities: inProgressOpportunities,
+    onHoldOpportunities: onHoldOpportunities,
+    completedOpportunities: completedOpportunities,
     loading: inProgressQuery.isLoading || onHoldQuery.isLoading || completedQuery.isLoading,
     error: inProgressQuery.error || onHoldQuery.error || completedQuery.error,
     validationError: getValidationError(),
     isRefetching: inProgressQuery.isRefetching || onHoldQuery.isRefetching || completedQuery.isRefetching,
+    fetchNextPageInProgress: inProgressQuery.fetchNextPage,
+    hasNextPageInProgress: inProgressQuery.hasNextPage,
+    isFetchingNextPageInProgress: inProgressQuery.isFetchingNextPage,
+    fetchNextPageOnHold: onHoldQuery.fetchNextPage,
+    hasNextPageOnHold: onHoldQuery.hasNextPage,
+    isFetchingNextPageOnHold: onHoldQuery.isFetchingNextPage,
+    fetchNextPageCompleted: completedQuery.fetchNextPage,
+    hasNextPageCompleted: completedQuery.hasNextPage,
+    isFetchingNextPageCompleted: completedQuery.isFetchingNextPage,
     // Additional validation state
     hasValidationError: getValidationError() !== null,
     refetch: () => {

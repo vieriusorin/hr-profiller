@@ -28,6 +28,9 @@ export interface FlattenedRow {
 export interface OpportunitiesTableProps extends OpportunityActionCallbacks {
   opportunities: OpportunityInterface[];
   showActions?: boolean;
+  fetchNextPage?: () => void;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
 }
 
 export interface Opportunity {

@@ -20,6 +20,9 @@ const OpportunitiesList: React.FC<OpportunitiesListProps> = ({
 	onMoveToInProgress,
 	onMoveToCompleted,
 	onEditOpportunity,
+	fetchNextPage,
+	hasNextPage,
+	isFetchingNextPage,
 }: OpportunitiesListProps) => {
 	let opportunitiesToShow: Opportunity[] = [];
 
@@ -55,6 +58,9 @@ const OpportunitiesList: React.FC<OpportunitiesListProps> = ({
 					onMoveToInProgress={onMoveToInProgress}
 					onMoveToCompleted={onMoveToCompleted}
 					onEditOpportunity={onEditOpportunity}
+					fetchNextPage={fetchNextPage}
+					hasNextPage={hasNextPage}
+					isFetchingNextPage={isFetchingNextPage}
 				/>
 			) : (
 				<OpportunitiesTable
@@ -65,6 +71,9 @@ const OpportunitiesList: React.FC<OpportunitiesListProps> = ({
 					onMoveToInProgress={onMoveToInProgress}
 					onMoveToCompleted={onMoveToCompleted}
 					showActions={status !== "completed"}
+					fetchNextPage={fetchNextPage}
+					hasNextPage={hasNextPage}
+					isFetchingNextPage={isFetchingNextPage}
 				/>
 			)}
 		</>

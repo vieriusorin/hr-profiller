@@ -1,4 +1,3 @@
-
 import { Opportunity } from '@/shared/types';
 import { ViewMode } from '../components/view-toggle/types';
 import { OpportunityFiltersState } from '../hooks/useOpportunityFilters';
@@ -17,7 +16,7 @@ export interface OpportunityActionCallbacksAsync {
   handleMoveToHold?: (opportunityId: string) => Promise<void>;
   handleMoveToInProgress?: (opportunityId: string) => Promise<void>;
   handleMoveToCompleted?: (opportunityId: string) => Promise<void>;
-} 
+}
 
 export interface OpportunitiesListProps extends OpportunityActionCallbacks {
   viewMode: ViewMode;
@@ -28,4 +27,7 @@ export interface OpportunitiesListProps extends OpportunityActionCallbacks {
   filterOpportunities: (opportunities: Opportunity[], filters: OpportunityFiltersState) => Opportunity[];
   filters: OpportunityFiltersState;
   onEditOpportunity?: (opportunity: Opportunity) => void;
+  fetchNextPage: () => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
 }

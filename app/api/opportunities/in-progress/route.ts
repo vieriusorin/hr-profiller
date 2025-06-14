@@ -43,34 +43,34 @@ function normalizeOpportunity(raw: any) {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const probabilityParam = searchParams.get('probability')?.split('-').map(Number);
-    const needsHireParam = searchParams.get('needsHire');
+    const page = parseInt(searchParams.get("_page") || "1");
+    const limit = parseInt(searchParams.get("_limit") || "3");
 
     const filters: OpportunityFilters = {
       client: searchParams.get('client') || '',
       grades: (searchParams.get('grades')?.split(',') || []) as Grade[],
-      needsHire: (needsHireParam === 'yes' || needsHireParam === 'no' ? needsHireParam : 'all'),
-      probability: (probabilityParam && probabilityParam.length === 2 ? probabilityParam : [0, 100]) as [number, number],
+      needsHire: (searchParams.get('needsHire') as 'yes' | 'no' | 'all') || 'all',
+      probability: (searchParams.get('probability')?.split('-').map(Number) || [0, 100]) as [number, number],
     };
 
+    // Fetch all opportunities without pagination
     const response = await fetch(`${JSON_SERVER_URL}/opportunities?status=In Progress`);
+
     if (!response.ok) {
       throw new Error(`Failed to fetch from json-server: ${response.statusText}`);
     }
-    const allInProgressOpportunities: Opportunity[] = await response.json();
 
-    const filteredOpportunities = applyFilters(allInProgressOpportunities, filters).map(opp => {
-      const roles = (filters.grades && filters.grades.length > 0
-        ? opp.roles.filter(role => filters.grades.includes(role.requiredGrade))
-        : opp.roles) ?? [];
+    const allOpportunities: Opportunity[] = (await response.json()).map(normalizeOpportunity);
 
-      return {
-        ...opp,
-        roles,
-      };
-    }).map(normalizeOpportunity);
+    // Apply all filters on the server
+    const filteredOpportunities = applyFilters(allOpportunities, filters);
 
-    return NextResponse.json(filteredOpportunities);
+    // Manually apply pagination
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const paginatedOpportunities = filteredOpportunities.slice(startIndex, endIndex);
+
+    return NextResponse.json(paginatedOpportunities);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
     console.error('Failed to fetch in-progress opportunities:', errorMessage);

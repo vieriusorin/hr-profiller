@@ -45,6 +45,15 @@ export default function OpportunityDashboard() {
 		handleMoveToHold,
 		handleMoveToInProgress,
 		handleMoveToCompleted,
+		fetchNextPageInProgress,
+		hasNextPageInProgress,
+		isFetchingNextPageInProgress,
+		fetchNextPageOnHold,
+		hasNextPageOnHold,
+		isFetchingNextPageOnHold,
+		fetchNextPageCompleted,
+		hasNextPageCompleted,
+		isFetchingNextPageCompleted,
 	} = useDashboard();
 
 	return (
@@ -94,6 +103,15 @@ export default function OpportunityDashboard() {
 					handleMoveToHold={handleMoveToHold}
 					handleMoveToInProgress={handleMoveToInProgress}
 					handleMoveToCompleted={handleMoveToCompleted}
+					fetchNextPageInProgress={fetchNextPageInProgress}
+					hasNextPageInProgress={hasNextPageInProgress}
+					isFetchingNextPageInProgress={isFetchingNextPageInProgress}
+					fetchNextPageOnHold={fetchNextPageOnHold}
+					hasNextPageOnHold={hasNextPageOnHold}
+					isFetchingNextPageOnHold={isFetchingNextPageOnHold}
+					fetchNextPageCompleted={fetchNextPageCompleted}
+					hasNextPageCompleted={hasNextPageCompleted}
+					isFetchingNextPageCompleted={isFetchingNextPageCompleted}
 				/>
 
 				<Dialog

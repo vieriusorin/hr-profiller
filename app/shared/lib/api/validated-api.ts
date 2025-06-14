@@ -9,39 +9,41 @@ import {
   validateOpportunity,
   type CreateOpportunityInput,
   type CreateRoleInput,
-  EditRoleFormSchema
+  EditRoleFormSchema,
+  EditRoleForm
 } from '@/shared/schemas/api-schemas';
 import { z } from 'zod';
 
 const API_BASE_URL = '/api';
 
 // Helper to build query strings
-const buildQueryString = (filters: OpportunityFilters): string => {
+const buildQueryString = (filters: OpportunityFilters, page?: number): string => {
   const params = new URLSearchParams();
   if (filters.client) params.append('client', filters.client);
   if (filters.grades && filters.grades.length > 0) params.append('grades', filters.grades.join(','));
   if (filters.needsHire) params.append('needsHire', filters.needsHire);
   if (filters.probability) params.append('probability', filters.probability.join('-'));
+  if (page) params.append('_page', page.toString());
   return params.toString();
 }
 
 export const opportunityApi = {
-  async getInProgressOpportunities(filters: OpportunityFilters): Promise<Opportunity[]> {
-    const queryString = buildQueryString(filters);
+  async getInProgressOpportunities(filters: OpportunityFilters, page?: number): Promise<Opportunity[]> {
+    const queryString = buildQueryString(filters, page);
     const response = await fetch(`${API_BASE_URL}/opportunities/in-progress?${queryString}`);
     if (!response.ok) throw new Error('Failed to fetch in-progress opportunities');
     return await response.json();
   },
 
-  async getOnHoldOpportunities(filters: OpportunityFilters): Promise<Opportunity[]> {
-    const queryString = buildQueryString(filters);
+  async getOnHoldOpportunities(filters: OpportunityFilters, page?: number): Promise<Opportunity[]> {
+    const queryString = buildQueryString(filters, page);
     const response = await fetch(`${API_BASE_URL}/opportunities/on-hold?${queryString}`);
     if (!response.ok) throw new Error('Failed to fetch on-hold opportunities');
     return await response.json();
   },
 
-  async getCompletedOpportunities(filters: OpportunityFilters): Promise<Opportunity[]> {
-    const queryString = buildQueryString(filters);
+  async getCompletedOpportunities(filters: OpportunityFilters, page?: number): Promise<Opportunity[]> {
+    const queryString = buildQueryString(filters, page);
     const response = await fetch(`${API_BASE_URL}/opportunities/completed?${queryString}`);
     if (!response.ok) throw new Error('Failed to fetch completed opportunities');
     return await response.json();
@@ -146,9 +148,9 @@ export type ValidatedApiResult<T> = {
 
 // Validated API wrapper
 export const validatedOpportunityApi = {
-  async getInProgressOpportunities(filters: OpportunityFilters): Promise<ValidatedApiResult<OpportunityType[]>> {
+  async getInProgressOpportunities(filters: OpportunityFilters, page?: number): Promise<ValidatedApiResult<OpportunityType[]>> {
     try {
-      const rawData = await opportunityApi.getInProgressOpportunities(filters);
+      const rawData = await opportunityApi.getInProgressOpportunities(filters, page);
 
       if (!Array.isArray(rawData)) {
         console.error('API returned non-array data for getInProgressOpportunities:', rawData);
@@ -184,9 +186,9 @@ export const validatedOpportunityApi = {
     }
   },
 
-  async getOnHoldOpportunities(filters: OpportunityFilters): Promise<ValidatedApiResult<OpportunityType[]>> {
+  async getOnHoldOpportunities(filters: OpportunityFilters, page?: number): Promise<ValidatedApiResult<OpportunityType[]>> {
     try {
-      const rawData = await opportunityApi.getOnHoldOpportunities(filters);
+      const rawData = await opportunityApi.getOnHoldOpportunities(filters, page);
 
       if (!Array.isArray(rawData)) {
         console.error('API returned non-array data for getOnHoldOpportunities:', rawData);
@@ -219,9 +221,9 @@ export const validatedOpportunityApi = {
     }
   },
 
-  async getCompletedOpportunities(filters: OpportunityFilters): Promise<ValidatedApiResult<OpportunityType[]>> {
+  async getCompletedOpportunities(filters: OpportunityFilters, page?: number): Promise<ValidatedApiResult<OpportunityType[]>> {
     try {
-      const rawData = await opportunityApi.getCompletedOpportunities(filters);
+      const rawData = await opportunityApi.getCompletedOpportunities(filters, page);
 
       if (!Array.isArray(rawData)) {
         console.error('API returned non-array data for getCompletedOpportunities:', rawData);

@@ -18,6 +18,15 @@ export const OpportunityTabs = ({
 	handleMoveToHold,
 	handleMoveToInProgress,
 	handleMoveToCompleted,
+	fetchNextPageInProgress,
+	hasNextPageInProgress,
+	isFetchingNextPageInProgress,
+	fetchNextPageOnHold,
+	hasNextPageOnHold,
+	isFetchingNextPageOnHold,
+	fetchNextPageCompleted,
+	hasNextPageCompleted,
+	isFetchingNextPageCompleted,
 }: OpportunityTabsProps) => {
 	const allOpportunities = useMemo(() => {
 		return [
@@ -85,6 +94,9 @@ export const OpportunityTabs = ({
 						onMoveToHold={handleMoveToHold}
 						onMoveToInProgress={handleMoveToInProgress}
 						onMoveToCompleted={handleMoveToCompleted}
+						fetchNextPage={fetchNextPageInProgress}
+						hasNextPage={hasNextPageInProgress}
+						isFetchingNextPage={isFetchingNextPageInProgress}
 					/>
 				</TabsContent>
 
@@ -102,6 +114,9 @@ export const OpportunityTabs = ({
 						onUpdateRole={handleUpdateRole}
 						onMoveToHold={undefined}
 						onMoveToCompleted={handleMoveToCompleted}
+						fetchNextPage={fetchNextPageOnHold}
+						hasNextPage={hasNextPageOnHold}
+						isFetchingNextPage={isFetchingNextPageOnHold}
 					/>
 				</TabsContent>
 
@@ -118,6 +133,9 @@ export const OpportunityTabs = ({
 						onUpdateRole={handleUpdateRole}
 						onMoveToHold={undefined}
 						onMoveToInProgress={undefined}
+						fetchNextPage={fetchNextPageCompleted}
+						hasNextPage={hasNextPageCompleted}
+						isFetchingNextPage={isFetchingNextPageCompleted}
 					/>
 				</TabsContent>
 			</Suspense>
