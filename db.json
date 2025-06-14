@@ -225,7 +225,7 @@
       "expectedStartDate": "2025-08-28",
       "probability": 80,
       "createdAt": "2025-06-12",
-      "status": "On Hold",
+      "status": "In Progress",
       "roles": [
         {
           "roleName": "Devops",
@@ -466,5 +466,23 @@
       "name": "Project Gamma"
     }
   ],
-  "candidates": []
+  "candidates": [],
+  "whitelabel": {
+    "logoUrl": "/uploads/4cc975c0-1f4e-4092-aaf4-9992027c5480.svg",
+    "primaryColor": "oklch(0.5969449176034857 0.153011349092769 252.63175229748134)",
+    "logoWidth": 130,
+    "logoHeight": 40,
+    "logoAlt": "Company Logo",
+    "background": "oklch(0.9911 0 0)",
+    "foreground": "oklch(0.5348833171399984 0.004993816738801878 17.312757779385663)",
+    "card": "oklch(0.9911 0 0)",
+    "cardForeground": "oklch(0.2886439349300958 0.010382752313441507 17.76896081192649)",
+    "secondary": "oklch(0.9940 0 0)",
+    "accent": "oklch(0.9461 0 0)",
+    "destructive": "oklch(0.5523 0.1927 32.7272)",
+    "border": "oklch(0.9037 0 0)",
+    "input": "oklch(0.9731 0 0)",
+    "radius": "0.5rem",
+    "primaryForeground": "oklch(0.9333244570069921 0.0032439090926962 17.216024069563982)"
+  }
 }
