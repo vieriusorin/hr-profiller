@@ -59,12 +59,16 @@ export async function GET(request: Request) {
     }
     const allInProgressOpportunities: Opportunity[] = await response.json();
 
-    const filteredOpportunities = applyFilters(allInProgressOpportunities, filters).map(opp => ({
-      ...opp,
-      roles: filters.grades && filters.grades.length > 0
+    const filteredOpportunities = applyFilters(allInProgressOpportunities, filters).map(opp => {
+      const roles = (filters.grades && filters.grades.length > 0
         ? opp.roles.filter(role => filters.grades.includes(role.requiredGrade))
-        : opp.roles
-    })).map(normalizeOpportunity);
+        : opp.roles) ?? [];
+
+      return {
+        ...opp,
+        roles,
+      };
+    }).map(normalizeOpportunity);
 
     return NextResponse.json(filteredOpportunities);
   } catch (error) {

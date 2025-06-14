@@ -1,9 +1,10 @@
-import { Suspense } from "react";
+import { Suspense, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Building, Calendar, Users } from "lucide-react";
 import { OpportunityTabsProps } from "../_types";
 import { OpportunityCardSkeleton } from "@/components/opportunities/components/opportunity-card/opportunity-card-skeleton";
 import OpportunitiesList from "@/components/opportunities/components/opportunities-list";
+import { GanttChart } from "@/components/gantt/gantt-chart";
 
 export const OpportunityTabs = ({
 	currentView,
@@ -18,6 +19,18 @@ export const OpportunityTabs = ({
 	handleMoveToInProgress,
 	handleMoveToCompleted,
 }: OpportunityTabsProps) => {
+	const allOpportunities = useMemo(() => {
+		return [
+			...opportunities,
+			...onHoldOpportunities,
+			...completedOpportunities,
+		];
+	}, [opportunities, onHoldOpportunities, completedOpportunities]);
+
+	if (currentView === "gantt") {
+		return <GanttChart opportunities={allOpportunities} />;
+	}
+
 	const filteredInProgress = filterOpportunities(opportunities, filters);
 	const filteredOnHold = filterOpportunities(onHoldOpportunities, filters);
 	const filteredCompleted = filterOpportunities(

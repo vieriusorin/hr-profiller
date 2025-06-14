@@ -1,6 +1,6 @@
-export type ViewMode = 'cards' | 'table';
+export type ViewMode = 'cards' | 'table' | 'gantt';
 
 export type ViewToggleProps = {
-    currentView: ViewMode;
-    onViewChange: (view: ViewMode) => void;
-  }
+  currentView: ViewMode;
+  onViewChange: (view: ViewMode) => void;
+}
