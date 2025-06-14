@@ -1,3 +1,315 @@
 {
-  "opportunities": []
+  "opportunities": [
+    {
+      "id": "7df1",
+      "clientName": "Relx",
+      "opportunityName": "Popverse",
+      "expectedStartDate": "2025-07-04",
+      "probability": 90,
+      "createdAt": "2025-06-11",
+      "status": "Done",
+      "roles": [
+        {
+          "roleName": "Senior Frontend Developer",
+          "requiredGrade": "SC",
+          "needsHire": true,
+          "allocation": 100,
+          "comments": "",
+          "status": "Staffed",
+          "assignedMember": null,
+          "id": "2d23e399-ff2c-4a59-a3f7-478e57abd52f"
+        }
+      ],
+      "comment": ""
+    },
+    {
+      "id": "e2a7",
+      "clientName": "Relx",
+      "opportunityName": "Pure",
+      "expectedStartDate": "2025-07-31",
+      "probability": 100,
+      "createdAt": "2025-06-11",
+      "status": "Done",
+      "roles": [
+        {
+          "roleName": "Devops",
+          "requiredGrade": "C",
+          "needsHire": false,
+          "allocation": 100,
+          "comments": "Awsome ",
+          "status": "Lost",
+          "assignedMember": null,
+          "id": "a96ab6ea-4720-40e5-b10d-b2c463cf7f00"
+        }
+      ],
+      "comment": ""
+    },
+    {
+      "id": "b6c1",
+      "clientName": "Relx",
+      "opportunityName": "Backend Developer",
+      "expectedStartDate": "2025-07-31",
+      "probability": 100,
+      "createdAt": "2025-06-11",
+      "status": "Done",
+      "roles": [
+        {
+          "roleName": "Web Developer",
+          "requiredGrade": "SE",
+          "needsHire": false,
+          "allocation": 100,
+          "comments": "",
+          "status": "Won",
+          "assignedMember": null,
+          "id": "7ffc7c5c-a0bf-4af9-bf6c-b405d9ca8c8e"
+        }
+      ],
+      "comment": ""
+    },
+    {
+      "id": "4a6a",
+      "clientName": "test",
+      "opportunityName": "test",
+      "expectedStartDate": "2025-07-04",
+      "probability": 60,
+      "createdAt": "2025-06-11",
+      "status": "Done",
+      "roles": [
+        {
+          "roleName": "be",
+          "requiredGrade": "SE",
+          "needsHire": false,
+          "allocation": 100,
+          "comments": "",
+          "status": "Won",
+          "assignedMember": null,
+          "id": "ee407be1-2e7a-404f-83f9-522a57708c42"
+        },
+        {
+          "roleName": "FE",
+          "requiredGrade": "SE",
+          "needsHire": false,
+          "allocation": 80,
+          "comments": "test",
+          "status": "Won",
+          "assignedMember": null,
+          "id": "32952c0d-13b3-43c0-a69b-d358196f8004"
+        },
+        {
+          "roleName": "test",
+          "requiredGrade": "T",
+          "needsHire": false,
+          "allocation": 50,
+          "comments": "",
+          "status": "Won",
+          "assignedMember": null,
+          "id": "3c20b3b4-7c3e-4bd9-a646-08caf3294834"
+        }
+      ],
+      "comment": ""
+    },
+    {
+      "id": "d729",
+      "clientName": "Relx",
+      "opportunityName": "Test2",
+      "expectedStartDate": "2025-07-02",
+      "probability": 80,
+      "createdAt": "2025-06-12",
+      "status": "In Progress",
+      "roles": [],
+      "comment": ""
+    },
+    {
+      "id": "c67d",
+      "opportunityName": "Backend",
+      "clientName": "Xalient",
+      "expectedStartDate": "2025-09-03",
+      "status": "In Progress",
+      "probability": 70,
+      "roles": [
+        {
+          "id": "13fee19b-7eca-42b2-a14e-629de20103fd",
+          "roleName": "Devops",
+          "requiredGrade": "ST",
+          "allocation": 100,
+          "needsHire": true,
+          "comments": "test",
+          "status": "Open",
+          "assignedMember": null
+        },
+        {
+          "id": "08ee36f5-ba3b-4d2b-9796-efcb11e3b10b",
+          "roleName": "Test",
+          "requiredGrade": "SE",
+          "allocation": 100,
+          "needsHire": false,
+          "comments": "",
+          "status": "Open",
+          "assignedMember": null
+        }
+      ],
+      "comment": "aweesome "
+    },
+    {
+      "id": "2d77",
+      "opportunityName": "Senior Frontend developer",
+      "clientName": "MAIB",
+      "expectedStartDate": "2025-08-21",
+      "status": "Done",
+      "probability": 100,
+      "roles": [
+        {
+          "id": "dce5e0b1-e950-4183-b53f-81765df912c4",
+          "roleName": "Senior Frontend Developer",
+          "requiredGrade": "C",
+          "allocation": 100,
+          "needsHire": false,
+          "comments": "Awesome comment here",
+          "status": "Open",
+          "assignedMember": null
+        },
+        {
+          "id": "4d5e40e6-9a14-43f0-ae88-4819c124fa08",
+          "roleName": "DevOps",
+          "requiredGrade": "SE",
+          "allocation": 100,
+          "needsHire": false,
+          "comments": "",
+          "status": "Won",
+          "assignedMember": null
+        }
+      ],
+      "comment": "test"
+    },
+    {
+      "id": "4744",
+      "clientName": "DGTLISM",
+      "opportunityName": "Hover",
+      "expectedStartDate": "2025-08-28",
+      "probability": 80,
+      "createdAt": "2025-06-12",
+      "status": "On Hold",
+      "roles": [
+        {
+          "roleName": "Devops",
+          "requiredGrade": "SE",
+          "needsHire": false,
+          "comments": "",
+          "status": "Open",
+          "assignedMember": null,
+          "allocation": 100,
+          "id": "60bef332-9975-417e-8f48-afdeba163c6b"
+        },
+        {
+          "roleName": "Backend Developer",
+          "requiredGrade": "SC",
+          "needsHire": false,
+          "comments": "",
+          "status": "Open",
+          "assignedMember": null,
+          "allocation": 100,
+          "id": "61797a8a-8423-4ded-9d7c-f1af5a0f80e0"
+        },
+        {
+          "roleName": "Test",
+          "requiredGrade": "SE",
+          "needsHire": true,
+          "comments": "",
+          "status": "Open",
+          "assignedMember": null,
+          "allocation": 100,
+          "id": "7bbc7564-1140-44bc-96ec-8de6add18e4a"
+        },
+        {
+          "roleName": "Tests",
+          "requiredGrade": "SE",
+          "needsHire": true,
+          "comments": "",
+          "status": "Open",
+          "assignedMember": null,
+          "allocation": 100,
+          "id": "ac6bb4d2-ce9a-4a1f-8f9e-48b5ef0693ce"
+        },
+        {
+          "roleName": "Tests",
+          "requiredGrade": "SE",
+          "needsHire": true,
+          "comments": "",
+          "status": "Open",
+          "assignedMember": null,
+          "allocation": 100,
+          "id": "59ea6293-ec7e-4709-b11b-8081027b16e8"
+        }
+      ],
+      "comment": ""
+    },
+    {
+      "id": "5819",
+      "clientName": "Digitalism",
+      "opportunityName": "DGTl",
+      "expectedStartDate": "2025-10-02",
+      "probability": 100,
+      "createdAt": "2025-06-12",
+      "status": "Done",
+      "roles": [],
+      "comment": ""
+    },
+    {
+      "id": "d637",
+      "clientName": "Test",
+      "opportunityName": "test",
+      "expectedStartDate": "2025-12-24",
+      "probability": 50,
+      "createdAt": "2025-06-12",
+      "status": "In Progress",
+      "roles": [
+        {
+          "roleName": "FE",
+          "requiredGrade": "SE",
+          "allocation": 100,
+          "needsHire": false,
+          "comments": "",
+          "status": "Open",
+          "assignedMember": null,
+          "id": "fcc5a4e4-954f-412a-89a0-bc132785b238"
+        }
+      ],
+      "comment": ""
+    },
+    {
+      "id": "3fad",
+      "clientName": "test2",
+      "opportunityName": "test3",
+      "expectedStartDate": "2025-06-26",
+      "probability": 100,
+      "createdAt": "2025-06-12",
+      "status": "Done",
+      "roles": [],
+      "comment": ""
+    },
+    {
+      "id": "84fc",
+      "opportunityName": "test2",
+      "clientName": "Test",
+      "expectedStartDate": "2025-09-16",
+      "status": "In Progress",
+      "probability": 50,
+      "createdAt": "2025-06-14",
+      "isActive": false,
+      "activatedAt": null,
+      "roles": [
+        {
+          "id": "25b876a2-10e0-442e-9709-baadf33927dc",
+          "roleName": "BE",
+          "requiredGrade": "SE",
+          "allocation": 100,
+          "needsHire": false,
+          "comments": "",
+          "status": "Open",
+          "assignedMember": null
+        }
+      ],
+      "comment": "test"
+    }
+  ]
 }

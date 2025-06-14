@@ -6,8 +6,9 @@ import { FormField } from "@/shared/components/form-field/";
 import { useCreateOpportunityForm } from "./hooks/useCreateOpportunityForm";
 import { Controller } from "react-hook-form";
 import { useSession } from "next-auth/react";
-import { requirePermission } from "@/lib/rbac";
+import { requirePermission, UserRole } from "@/lib/rbac";
 import { CreateOpportunityFormProps } from "./types";
+import { User } from "next-auth";
 
 export const CreateOpportunityForm = ({
 	onSubmit,
@@ -18,7 +19,7 @@ export const CreateOpportunityForm = ({
 	disabled = false,
 }: CreateOpportunityFormProps) => {
 	const { data: session } = useSession();
-	const userRole = (session?.user as any)?.role;
+	const userRole = (session?.user as User)?.role as UserRole;
 
 	const canEditOpportunity = requirePermission(userRole, "edit_opportunity");
 

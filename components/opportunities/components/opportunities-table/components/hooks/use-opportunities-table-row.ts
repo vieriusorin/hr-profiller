@@ -1,9 +1,7 @@
+import { OpportunityActionCallbacks } from '@/components/opportunities/types';
 import React from 'react';
-import { UseOpportunitiesTableRowCallbacks } from '../types';
-import { Role } from '@/shared/types';
 
-
-export const useOpportunitiesTableRow = (callbacks: UseOpportunitiesTableRowCallbacks) => {
+export const useOpportunitiesTableRow = (callbacks: OpportunityActionCallbacks) => {
   const { onAddRole, onUpdateRole, onMoveToHold, onMoveToInProgress, onMoveToCompleted } = callbacks;
 
   const handleAddRole = React.useCallback((opportunityId: string) => {

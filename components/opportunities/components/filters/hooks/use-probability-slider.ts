@@ -19,7 +19,7 @@ export const useProbabilitySlider = (
   // Sync external value to local if it changes elsewhere
   useEffect(() => {
     console.log('External value changed to:', value, 'current local:', localValue);
-    
+
     // If we just initiated a reset, don't sync external changes yet
     if (resetInitiatedRef.current) {
       console.log('Reset was initiated, checking if external value matches reset...');
@@ -34,9 +34,9 @@ export const useProbabilitySlider = (
         return;
       }
     }
-    
+
     setLocalValue(value);
-  }, [value]);
+  }, [value, onChange, localValue]);
 
   // When debounced value differs, propagate external change
   useEffect(() => {
@@ -45,7 +45,7 @@ export const useProbabilitySlider = (
       console.log('Ignoring debounced update because reset is in progress');
       return;
     }
-    
+
     if (debouncedLocalValue[0] !== value[0] || debouncedLocalValue[1] !== value[1]) {
       console.log('Debounced value changed, calling onChange:', debouncedLocalValue);
       onChangeRef.current(debouncedLocalValue);
@@ -84,17 +84,17 @@ export const useProbabilitySlider = (
     console.log('Resetting probability range to:', resetRange);
     console.log('Current localValue before reset:', localValue);
     console.log('Current external value:', value);
-    
+
     // Set flag to prevent external sync from overriding our reset
     resetInitiatedRef.current = true;
-    
+
     // Update local state immediately for UI feedback
     setLocalValue(resetRange);
-    
+
     // Update URL state
     onChangeRef.current(resetRange);
     console.log('Reset complete, called onChange with:', resetRange);
-    
+
     setTimeout(() => {
       resetInitiatedRef.current = false;
       console.log('Reset flag cleared after timeout');

@@ -1,3 +1,5 @@
+import { LucideIcon } from "lucide-react";
+
 export type UserRole = 'admin' | 'hr_manager' | 'recruiter' | 'employee' | 'user';
 
 export type Permission =
@@ -136,7 +138,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
 export interface NavigationItem {
   title: string;
   url: string;
-  icon: any;
+  icon: LucideIcon;
   permission: Permission;
   description?: string;
 }

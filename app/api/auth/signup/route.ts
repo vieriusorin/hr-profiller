@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
 
 // In-memory user store (replace with database in production)
 // This would typically be in a shared database module

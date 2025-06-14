@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { ApiValidationError } from "../../lib/api/validated-api";
 import { ApiErrorDisplayProps, ValidationErrorDetailsProps } from "../../types";
 
-
 export const ApiErrorDisplay = ({
 	error,
 	onRetry,
@@ -52,8 +51,6 @@ export const ApiErrorDisplay = ({
 	);
 };
 
-
-
 const ValidationErrorDetails = ({ error }: ValidationErrorDetailsProps) => {
 	const formattedErrors = error.getFormattedErrors();
 
@@ -81,8 +78,10 @@ const ValidationErrorDetails = ({ error }: ValidationErrorDetailsProps) => {
 
 					const errors = Array.isArray(fieldErrors)
 						? fieldErrors
-						: typeof fieldErrors === 'object' && fieldErrors !== null && 'errors' in fieldErrors
-						? (fieldErrors as { errors: string[] }).errors 
+						: typeof fieldErrors === "object" &&
+						  fieldErrors !== null &&
+						  "errors" in fieldErrors
+						? (fieldErrors as { errors: string[] }).errors
 						: [];
 
 					if (!Array.isArray(errors) || errors.length === 0) return null;
@@ -144,7 +143,9 @@ export const ValidatedQueryLoader = ({
 	isLoading: boolean;
 	error: ApiValidationError | Error | null;
 	onRetry?: () => void;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	fallbackData?: any;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	renderFallback?: (data: any) => React.ReactNode;
 }) => {
 	if (isLoading) {

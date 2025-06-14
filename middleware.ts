@@ -1,9 +1,10 @@
 import { withAuth } from 'next-auth/middleware';
 import { NextRequest } from 'next/server';
 import { hasPermission, UserRole } from './lib/rbac';
+import { JWT } from 'next-auth/jwt';
 
 export default withAuth(
-  function middleware(req: NextRequest & { nextauth: { token: any } }) {
+  function middleware(req: NextRequest & { nextauth: { token: JWT | null } }) {
     const { pathname } = req.nextUrl;
     const userRole = req.nextauth?.token?.role as UserRole;
 

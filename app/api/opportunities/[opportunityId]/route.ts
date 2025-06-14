@@ -5,15 +5,15 @@ const JSON_SERVER_URL = 'http://localhost:3001';
 export async function PUT(request: Request, { params }: { params: { opportunityId: string } }) {
   try {
     const opportunity = await request.json();
-    
+
     // Get current opportunity to check existing active status
     const currentResponse = await fetch(`${JSON_SERVER_URL}/opportunities/${params.opportunityId}`);
     if (!currentResponse.ok) throw new Error('Failed to fetch current opportunity');
     const currentOpportunity = await currentResponse.json();
-    
+
     // Auto-activate logic: if probability >= 80% and not manually deactivated
-    let updatedOpportunity = { ...opportunity };
-    
+    const updatedOpportunity = { ...opportunity };
+
     if (opportunity.probability >= 80 && !currentOpportunity.isActive) {
       // Auto-activate if probability increased to >=80%
       updatedOpportunity.isActive = true;
@@ -23,7 +23,7 @@ export async function PUT(request: Request, { params }: { params: { opportunityI
       updatedOpportunity.isActive = false;
       updatedOpportunity.activatedAt = null;
     }
-    
+
     const response = await fetch(`${JSON_SERVER_URL}/opportunities/${params.opportunityId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },

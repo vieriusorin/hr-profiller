@@ -57,14 +57,14 @@ export const getThemeClasses = {
     secondary: `bg-${theme.colors.primary[100]} hover:bg-${theme.colors.primary[200]} text-${theme.colors.primary[800]}`,
     outline: `border-${theme.colors.primary[300]} text-${theme.colors.primary[700]} hover:bg-${theme.colors.primary[50]}`,
   },
-  
+
   // Background styles
   background: {
     page: `bg-${theme.colors.background.light}`,
     card: `bg-white border-${theme.colors.border.light}`,
     section: `bg-${theme.colors.background.base}`,
   },
-  
+
   // Text styles
   text: {
     heading: `text-${theme.colors.text.primary}`,
@@ -72,27 +72,27 @@ export const getThemeClasses = {
     muted: `text-${theme.colors.text.muted}`,
     light: `text-${theme.colors.text.light}`,
   },
-  
+
   // Icon styles
   icon: {
     primary: `text-${theme.colors.primary[600]}`,
     secondary: `text-${theme.colors.primary[500]}`,
     muted: `text-${theme.colors.primary[400]}`,
   },
-  
+
   // Border styles
   border: {
     light: `border-${theme.colors.border.light}`,
     base: `border-${theme.colors.border.base}`,
     dark: `border-${theme.colors.border.dark}`,
   },
-  
+
   // Loading/spinner styles
   loading: {
     spinner: `border-${theme.colors.primary[600]}`,
     background: `bg-${theme.colors.background.light}`,
   },
-  
+
   // Role-specific colors (for badges, indicators)
   roles: {
     admin: 'bg-red-100 text-red-800',
@@ -106,13 +106,14 @@ export const getThemeClasses = {
 // Utility function to get classes as string
 export const tc = (classPath: string): string => {
   const pathArray = classPath.split('.');
-  let current: any = getThemeClasses;
-  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let current = getThemeClasses as any;
+
   for (const key of pathArray) {
     current = current[key];
     if (!current) return '';
   }
-  
+
   return current;
 };
 

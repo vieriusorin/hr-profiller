@@ -6,16 +6,14 @@ export interface OpportunitiesTableRowProps extends OpportunityActionCallbacks {
   showActions: boolean;
 }
 
-export interface UseOpportunitiesTableRowCallbacks extends OpportunityActionCallbacks {}
-
 export type RoleRowProps = {
-  row: any;
+  row: FlattenedRow;
   showActions: boolean;
   onStatusClick: (opportunityId: string, roleId: string, status: 'Won' | 'Staffed' | 'Lost', roleName?: string) => void;
 }
 
 export type OpportunityRowProps = {
-  row: any;
+  row: FlattenedRow;
   showActions: boolean;
   onAddRole: (opportunityId: string) => void;
   onMoveToHold: (opportunityId: string) => void;

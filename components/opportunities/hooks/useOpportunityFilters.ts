@@ -2,13 +2,13 @@ import { useQueryStates } from 'nuqs';
 import { useState, useEffect, useRef } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Grade } from '@/shared/types';
-import { 
+import {
   parseAsValidatedClient,
   parseAsValidatedGrades,
   parseAsValidatedNeedsHire,
   parseAsValidatedProbability
 } from './filter-parsers';
-import { 
+import {
   validateOpportunityFilters,
   createSafeFilters,
 } from './filter-validation';
@@ -48,7 +48,7 @@ export const useOpportunityFilters = (): UseOpportunityFiltersReturn => {
 
   const [clientInput, setClientInput] = useState(filters.client);
   const debouncedClientFilter = useDebounce(clientInput, 300);
-  
+
   const isInitialMount = useRef(true);
   const lastDebouncedValue = useRef(debouncedClientFilter);
 
@@ -63,7 +63,7 @@ export const useOpportunityFilters = (): UseOpportunityFiltersReturn => {
 
     if (debouncedClientFilter !== lastDebouncedValue.current) {
       lastDebouncedValue.current = debouncedClientFilter;
-      
+
       const sanitizedClient = parseAsValidatedClient.parse(debouncedClientFilter);
       setFilters(prev => ({ ...prev, client: sanitizedClient }));
     }
@@ -77,7 +77,7 @@ export const useOpportunityFilters = (): UseOpportunityFiltersReturn => {
     if (filters.client !== lastDebouncedValue.current && filters.client !== clientInput) {
       setClientInput(filters.client);
     }
-  }, [filters.client]);
+  }, [filters.client, clientInput]);
 
   const updateFilters = (updates: Partial<OpportunityFiltersState>) => {
     // Create safe filters with validation
@@ -87,7 +87,7 @@ export const useOpportunityFilters = (): UseOpportunityFiltersReturn => {
       needsHire: updates.needsHire ?? filters.needsHire,
       probability: updates.probability ?? filters.probability,
     });
-    
+
     setFilters((prev: OpportunityFiltersState) => ({
       ...prev,
       ...safeUpdates,
@@ -106,7 +106,7 @@ export const useOpportunityFilters = (): UseOpportunityFiltersReturn => {
 
   const clearFilters = () => {
     setClientInput('');
-    
+
     // Use safe defaults
     const safeDefaults = createSafeFilters({
       client: '',
@@ -114,13 +114,13 @@ export const useOpportunityFilters = (): UseOpportunityFiltersReturn => {
       needsHire: 'all',
       probability: [0, 100],
     });
-    
+
     setFilters(safeDefaults);
   };
-  
-  const hasActiveFilters = 
-    filters.client !== '' || 
-    filters.grades.length > 0 || 
+
+  const hasActiveFilters =
+    filters.client !== '' ||
+    filters.grades.length > 0 ||
     filters.needsHire !== 'all' ||
     (filters.probability && (filters.probability[0] !== 0 || filters.probability[1] !== 100));
 

@@ -5,15 +5,16 @@ const JSON_SERVER_URL = 'http://localhost:3001';
 export async function PATCH(request: Request, { params }: { params: { opportunityId: string } }) {
   try {
     const { isActive } = await request.json();
-    
+
     // Get current opportunity
     const oppResponse = await fetch(`${JSON_SERVER_URL}/opportunities/${params.opportunityId}`);
     if (!oppResponse.ok) throw new Error('Failed to fetch opportunity before updating active status');
     const opportunity = await oppResponse.json();
 
     // Prepare update data
-    const updateData: any = {
-      isActive: isActive
+    const updateData: { isActive: boolean, activatedAt: string | null } = {
+      isActive: isActive,
+      activatedAt: null
     };
 
     // Set activation date based on new status

@@ -38,6 +38,8 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import { RoleStatus } from "@/app/shared/types";
+import { Grade } from "@/app/shared/types";
 
 export const OpportunitiesTableRow = ({
 	row,
@@ -429,8 +431,8 @@ export const OpportunitiesTableRow = ({
 					role={{
 						id: row.roleId,
 						roleName: row.roleName || "",
-						requiredGrade: row.requiredGrade as any,
-						status: row.roleStatus as any,
+						requiredGrade: row.requiredGrade as Grade,
+						status: row.roleStatus as RoleStatus,
 						assignedMember: null,
 						allocation: row.allocation || 100,
 						needsHire: row.needsHire || false,

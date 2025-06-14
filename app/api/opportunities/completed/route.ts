@@ -21,7 +21,7 @@ const applyFilters = (opportunities: Opportunity[], filters: OpportunityFilters)
     return clientMatch && gradeMatch && needsHireMatch && probabilityMatch;
   });
 };
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function normalizeOpportunity(raw: any) {
   return {
     id: raw.id,

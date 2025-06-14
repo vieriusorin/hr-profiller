@@ -1,7 +1,6 @@
 import NextAuth, { Session } from 'next-auth';
 import AzureADProvider from 'next-auth/providers/azure-ad';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import bcrypt from 'bcryptjs';
 import { JWT } from 'next-auth/jwt';
 
 // In-memory user store (replace with database in production)
@@ -14,7 +13,7 @@ const users = [
     role: 'admin'
   },
   {
-    id: '2', 
+    id: '2',
     email: 'user@ddroidd.com',
     password: 'password123', // Plain text for testing - will be hashed in production
     name: 'Basic User',
@@ -53,7 +52,7 @@ const handler = NextAuth({
         tenantId: process.env.AZURE_AD_TENANT_ID!,
       })
     ] : []),
-    
+
     // Credentials Provider for username/password auth
     CredentialsProvider({
       name: 'credentials',
@@ -73,14 +72,14 @@ const handler = NextAuth({
 
         // Find user in our store
         const user = users.find(u => u.email === credentials.email);
-        
+
         if (!user) {
           throw new Error('No user found with this email');
         }
 
         // Verify password (using plain text for testing - use bcrypt in production)
         const isPasswordValid = credentials.password === user.password;
-        
+
         if (!isPasswordValid) {
           throw new Error('Invalid password');
         }
@@ -106,26 +105,28 @@ const handler = NextAuth({
       }
       return true;
     },
-    async jwt({ token, account, profile, user }) {
+    async jwt({ token, account, user }) {
       if (account) {
         token.accessToken = account.access_token;
       }
-      
+
       // Add role to token
       if (user) {
         token.role = user.role;
       }
-      
+
       return token;
     },
     async session({ session, token }: { session: Session, token: JWT }) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (session as any).accessToken = token.accessToken;
-      
+
       // Add role to session
       if (token.role) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (session.user as any).role = token.role;
       }
-      
+
       return session;
     },
   },

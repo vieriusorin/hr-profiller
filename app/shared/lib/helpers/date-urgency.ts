@@ -1,4 +1,4 @@
-import { differenceInWeeks, differenceInDays, formatDistanceToNow, isPast, isFuture } from 'date-fns';
+import { differenceInWeeks, differenceInDays, isPast } from 'date-fns';
 import { UrgencyConfig, UrgencyLevel } from '../../types';
 
 export const getStartDateUrgency = (startDate: string): UrgencyLevel => {
@@ -44,7 +44,7 @@ export const getUrgencyConfig = (urgency: UrgencyLevel): UrgencyConfig => {
 export const getUrgencyTooltip = (startDate: string): string => {
   const urgency = getStartDateUrgency(startDate);
   const weeks = differenceInWeeks(new Date(startDate), new Date());
-  
+
   switch (urgency) {
     case 'urgent':
       return `Urgent: ${weeks} weeks until start - Immediate action needed`;
@@ -73,7 +73,7 @@ export const getCountdownDisplay = (startDate: string): {
   today.setHours(0, 0, 0, 0);
   const startDateOnly = new Date(start);
   startDateOnly.setHours(0, 0, 0, 0);
-  
+
   const daysUntilStart = getDaysUntilStart(startDate);
   const urgency = getStartDateUrgency(startDate);
   const isInPast = isPast(startDateOnly);
@@ -89,7 +89,7 @@ export const getCountdownDisplay = (startDate: string): {
       urgency
     };
   }
-  
+
   if (isOverdue) {
     const daysPast = Math.abs(daysUntilStart);
     return {
@@ -123,7 +123,7 @@ export const getCountdownDisplay = (startDate: string): {
 
   const weeks = Math.floor(daysUntilStart / 7);
   const remainingDays = daysUntilStart % 7;
-  
+
   if (weeks === 1 && remainingDays === 0) {
     return {
       display: '1 week to start',
@@ -133,7 +133,7 @@ export const getCountdownDisplay = (startDate: string): {
       urgency
     };
   }
-  
+
   if (remainingDays === 0) {
     return {
       display: `${weeks} weeks to start`,
@@ -143,7 +143,7 @@ export const getCountdownDisplay = (startDate: string): {
       urgency
     };
   }
-  
+
   return {
     display: `${weeks}w ${remainingDays}d to start`,
     isOverdue: false,

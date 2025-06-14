@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  UseCreateOpportunityFormProps,
   UseCreateOpportunityFormReturn
 } from '../types';
 import { createOpportunitySchema } from '../schemas';
@@ -23,6 +22,7 @@ export const useCreateOpportunityForm = ({
   initialData,
   mode = 'create',
   isSubmitting: externalIsSubmitting,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }: any): UseCreateOpportunityFormReturn => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 

@@ -97,7 +97,7 @@ export const useDashboard = (): UseDashboardReturn => {
         // Move to completed when all roles are in a final state (Won, Lost, or Staffed)
         const updatedRoles = updatedOpportunity.roles;
         const shouldMoveToCompleted = updatedRoles.length > 0 &&
-          updatedRoles.every((role: any) => role.status === 'Won' || role.status === 'Lost' || role.status === 'Staffed');
+          updatedRoles.every((role: Role) => role.status === 'Won' || role.status === 'Lost' || role.status === 'Staffed');
 
         if (shouldMoveToCompleted) {
           // Move to completed
@@ -109,6 +109,7 @@ export const useDashboard = (): UseDashboardReturn => {
           } catch (error) {
             toast.success(`${roleName} status updated to ${status}`);
             toast.error('Failed to move opportunity to completed automatically');
+            console.error(error)
           }
         } else {
           toast.success(`${roleName} status updated to ${status}`);
@@ -129,7 +130,7 @@ export const useDashboard = (): UseDashboardReturn => {
       toast.success(`Opportunity "${opportunity.opportunityName}" created successfully!`);
       setShowNewOpportunityDialog(false);
       return opportunity;
-    } catch (error: any) {
+    } catch (error: { message: string }) {
       toast.dismiss(loadingToast);
       toast.error(`Failed to create opportunity: ${error.message}`);
       throw error;
@@ -146,7 +147,7 @@ export const useDashboard = (): UseDashboardReturn => {
       await moveToOnHold(opportunityId);
       toast.dismiss(loadingToast);
       toast.success(`"${opportunity.opportunityName}" moved to hold`);
-    } catch (error: any) {
+    } catch (error: { message: string }) {
       toast.dismiss(loadingToast);
       toast.error(`Failed to move opportunity: ${error.message}`);
     }
@@ -162,7 +163,7 @@ export const useDashboard = (): UseDashboardReturn => {
       await moveToInProgress(opportunityId);
       toast.dismiss(loadingToast);
       toast.success(`"${opportunity.opportunityName}" moved back to in progress`);
-    } catch (error: any) {
+    } catch (error: { message: string }) {
       toast.dismiss(loadingToast);
       toast.error(`Failed to move opportunity: ${error.message}`);
     }
@@ -180,7 +181,7 @@ export const useDashboard = (): UseDashboardReturn => {
       await moveToCompleted(opportunityId, fromStatus as 'in-progress' | 'on-hold');
       toast.dismiss(loadingToast);
       toast.success(`"${opportunity.opportunityName}" moved to completed`);
-    } catch (error: any) {
+    } catch (error: { message: string }) {
       toast.dismiss(loadingToast);
       toast.error(`Failed to move opportunity: ${error.message}`);
     }
