@@ -59,12 +59,16 @@ export async function GET(request: Request) {
     }
     const allOnHoldOpportunities: Opportunity[] = await response.json();
 
-    const filteredOpportunities = applyFilters(allOnHoldOpportunities, filters).map(opp => ({
-      ...opp,
-      roles: filters.grades && filters.grades.length > 0
+    const filteredOpportunities = applyFilters(allOnHoldOpportunities, filters).map(opp => {
+      const roles = (filters.grades && filters.grades.length > 0
         ? opp.roles.filter(role => filters.grades.includes(role.requiredGrade))
-        : opp.roles
-    })).map(normalizeOpportunity);
+        : opp.roles) ?? [];
+
+      return {
+        ...opp,
+        roles,
+      };
+    }).map(normalizeOpportunity);
 
     return NextResponse.json(filteredOpportunities);
   } catch (error) {
