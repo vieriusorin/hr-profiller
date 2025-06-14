@@ -186,7 +186,7 @@ export const useAddRoleMutation = () => {
       const optimisticRole = {
         id: crypto.randomUUID(), // Temporary ID
         status: 'Open' as const,
-        assignedMember: null,
+        assignedMemberIds: [],
         ...roleData,
         allocation: roleData.allocation || 100,
         needsHire: roleData.needsHire,
@@ -432,7 +432,7 @@ export const useUpdateRoleMutation = () => {
     mutationFn: async ({
       opportunityId,
       roleId,
-      roleData
+      roleData,
     }: {
       opportunityId: string;
       roleId: string;
@@ -464,12 +464,10 @@ export const useUpdateRoleMutation = () => {
         queryClient.setQueryData(key, (old: Opportunity[] = []) =>
           old.map(opp => {
             if (opp.id === opportunityId) {
-              return {
-                ...opp,
-                roles: opp.roles.map(role =>
-                  role.id === roleId ? { ...role, ...roleData } : role
-                )
-              };
+              const updatedRoles = opp.roles.map(role =>
+                role.id === roleId ? { ...role, ...roleData } : role
+              );
+              return { ...opp, roles: updatedRoles };
             }
             return opp;
           })

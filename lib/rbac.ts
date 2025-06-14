@@ -106,6 +106,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'manage_employee_roles',
     'view_account',
     'edit_account',
+    'edit_system_settings',
   ],
 
   recruiter: [

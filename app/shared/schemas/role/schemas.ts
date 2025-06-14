@@ -3,7 +3,6 @@ import {
   RoleIdSchema,
   RoleStatusSchema,
   GradeSchema,
-  MemberSchema,
 } from '../base-schemas';
 
 export const RoleSchema = z.object({
@@ -14,7 +13,8 @@ export const RoleSchema = z.object({
   needsHire: z.boolean(),
   comments: z.string().optional(),
   status: RoleStatusSchema,
-  assignedMember: MemberSchema.nullable(),
+  assignedMemberIds: z.array(z.string()).optional(),
+  newHireName: z.string().optional(),
 });
 
 export const CreateRoleInputSchema = z.object({
@@ -23,6 +23,7 @@ export const CreateRoleInputSchema = z.object({
   allocation: z.number().min(0).max(100),
   needsHire: z.boolean(),
   comments: z.string().optional().or(z.literal('')),
+  newHireName: z.string().optional(),
 });
 
 export const CreateRoleFormSchema = z.object({
@@ -31,6 +32,8 @@ export const CreateRoleFormSchema = z.object({
   allocation: z.number().min(0).max(100),
   needsHire: z.boolean(),
   comments: z.string().optional(),
+  assignedMemberIds: z.array(z.string()).optional(),
+  newHireName: z.string().optional(),
 });
 
 export const EditRoleFormSchema = CreateRoleFormSchema;

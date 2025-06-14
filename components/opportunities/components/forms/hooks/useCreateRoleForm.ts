@@ -3,13 +3,13 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { 
-  UseCreateRoleFormProps, 
-  UseCreateRoleFormReturn 
+import {
+  UseCreateRoleFormProps,
+  UseCreateRoleFormReturn
 } from '../types';
-import { 
-  createRoleSchema, 
-  CreateRoleFormData 
+import {
+  createRoleSchema,
+  CreateRoleFormData
 } from '../schemas';
 
 export const useCreateRoleForm = ({
@@ -38,7 +38,7 @@ export const useCreateRoleForm = ({
           id: crypto.randomUUID(),
           ...data,
           status: 'Open' as const,
-          assignedMember: null,
+          assignedMemberId: null,
         };
 
         await onSubmit(newRole);

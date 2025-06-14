@@ -1,9 +1,9 @@
-import { Opportunity, Role, OpportunityStatus, RoleStatus, CreateOpportunityForm, CreateRoleForm } from '../../../../shared/types';
+import { Opportunity, Role, OpportunityStatus, RoleStatus, CreateOpportunityForm, CreateRoleForm } from '@/app/shared/types';
 
 export class OpportunityService {
   static checkOpportunityCompletion(opportunity: Opportunity): boolean {
     if (opportunity.roles.length === 0) return false;
-    return opportunity.roles.every(role => 
+    return opportunity.roles.every((role: Role) =>
       role.status === 'Won' || role.status === 'Lost' || role.status === 'Staffed'
     );
   }
@@ -22,7 +22,7 @@ export class OpportunityService {
     return {
       ...form,
       status: 'Open',
-      assignedMember: null,
+      assignedMemberId: null,
       needsHire: true,
       allocation: 100
     };
@@ -53,7 +53,7 @@ export class OpportunityService {
   static updateRoleInOpportunity(opportunity: Opportunity, roleId: string, updatedRole: Role): Opportunity {
     return {
       ...opportunity,
-      roles: opportunity.roles.map(role => 
+      roles: opportunity.roles.map(role =>
         role.id === roleId ? updatedRole : role
       )
     };

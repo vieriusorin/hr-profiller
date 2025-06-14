@@ -3,10 +3,10 @@ import toast from "react-hot-toast";
 import { Role } from "@/shared/types";
 import { UseEditRoleModalProps } from "../types";
 
-export const useEditRoleModal = ({opportunityId, role, onClose}: UseEditRoleModalProps) => {
+export const useEditRoleModal = ({ opportunityId, role, onClose }: UseEditRoleModalProps) => {
     const { mutate: updateRole, isPending } = useUpdateRoleMutation();
 
-    const handleSubmit = async (updatedRole: Role) => {
+    const handleSubmit = async (updatedRole: Role & { assignedMemberIds?: string[] }) => {
         const loadingToast = toast.loading("Updating role...");
 
         updateRole(
@@ -14,11 +14,7 @@ export const useEditRoleModal = ({opportunityId, role, onClose}: UseEditRoleModa
                 opportunityId,
                 roleId: role.id,
                 roleData: {
-                    roleName: updatedRole.roleName,
-                    requiredGrade: updatedRole.requiredGrade,
-                    allocation: updatedRole.allocation,
-                    needsHire: updatedRole.needsHire,
-                    comments: updatedRole.comments,
+                    ...updatedRole,
                 },
             },
             {
@@ -30,8 +26,7 @@ export const useEditRoleModal = ({opportunityId, role, onClose}: UseEditRoleModa
                 onError: (error: Error) => {
                     toast.dismiss(loadingToast);
                     toast.error(
-                        `Failed to update role: ${
-                            error instanceof Error ? error.message : "Unknown error"
+                        `Failed to update role: ${error instanceof Error ? error.message : "Unknown error"
                         }`
                     );
                     console.error("Failed to update role:", error);
@@ -39,7 +34,7 @@ export const useEditRoleModal = ({opportunityId, role, onClose}: UseEditRoleModa
             }
         );
     }
-    
+
     return {
         handleSubmit,
         isPending,

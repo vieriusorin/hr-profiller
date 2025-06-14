@@ -12,8 +12,14 @@ import {
 	LogOut,
 	ChevronUp,
 	BarChart3,
+	Upload,
 } from "lucide-react";
-import { NavigationItem, getFilteredNavigation, UserRole } from "@/lib/rbac";
+import {
+	NavigationItem,
+	getFilteredNavigation,
+	UserRole,
+	hasPermission,
+} from "@/lib/rbac";
 import { componentThemes } from "@/lib/theme";
 import {
 	Sidebar,
@@ -192,6 +198,14 @@ export const AppSidebar = () => {
 										<Settings className='w-4 h-4 mr-2' />
 										Account Settings
 									</DropdownMenuItem>
+									{hasPermission(userRole, "edit_system_settings") && (
+										<DropdownMenuItem
+											onClick={() => router.push("/dashboard/settings/import")}
+										>
+											<Upload className='w-4 h-4 mr-2' />
+											Import Data
+										</DropdownMenuItem>
+									)}
 									<DropdownMenuSeparator />
 									<DropdownMenuItem onClick={handleSignOut}>
 										<LogOut className='w-4 h-4 mr-2' />

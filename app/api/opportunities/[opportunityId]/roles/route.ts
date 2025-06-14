@@ -14,20 +14,20 @@ export async function PATCH(request: Request, { params }: { params: { opportunit
     const newRole: Omit<Role, 'id'> = {
       ...roleData,
       status: 'Open',
-      assignedMember: null,
+      assignedMemberIds: [],
       allocation: roleData.allocation || 100,
       needsHire: roleData.needsHire,
     };
-    
+
     const updatedRoles = [...opportunity.roles, { ...newRole, id: crypto.randomUUID() }];
 
     const response = await fetch(`${JSON_SERVER_URL}/opportunities/${params.opportunityId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roles: updatedRoles }),
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ roles: updatedRoles }),
     });
     if (!response.ok) {
-        throw new Error(`Failed to add role on json-server: ${response.statusText}`);
+      throw new Error(`Failed to add role on json-server: ${response.statusText}`);
     }
     const result = await response.json();
     return NextResponse.json(result, { status: 200 });

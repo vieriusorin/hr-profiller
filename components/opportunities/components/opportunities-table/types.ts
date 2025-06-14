@@ -15,7 +15,8 @@ export interface FlattenedRow {
   roleName?: string;
   requiredGrade?: string;
   roleStatus?: RoleStatus;
-  assignedMember?: string;
+  assignedMemberIds?: string[];
+  newHireName?: string;
   needsHire?: boolean;
   allocation?: number;
   isFirstRowForOpportunity: boolean;
@@ -46,7 +47,8 @@ export interface Role {
   roleName: string;
   requiredGrade?: string;
   status: 'Open' | 'Won' | 'Staffed' | 'Lost';
-  assignedMember?: string;
+  assignedMemberIds?: string[];
+  newHireName?: string;
   allocation?: number;
   needsHire: boolean;
   comments?: string;
@@ -69,7 +71,8 @@ export interface TableRow {
   roleName?: string;
   requiredGrade?: string;
   roleStatus?: 'Open' | 'Won' | 'Staffed' | 'Lost';
-  assignedMember?: string;
+  assignedMemberIds?: string[];
+  newHireName?: string;
   allocation?: number;
   needsHire?: boolean;
 }

@@ -40,6 +40,16 @@ import {
 } from "@/components/ui/popover";
 import { RoleStatus } from "@/app/shared/types";
 import { Grade } from "@/app/shared/types";
+import { useQuery } from "@tanstack/react-query";
+import { Employee } from "@/shared/types/employees";
+
+const fetchEmployees = async (): Promise<Employee[]> => {
+	const res = await fetch("/api/employees");
+	if (!res.ok) {
+		throw new Error("Failed to fetch employees");
+	}
+	return res.json();
+};
 
 export const OpportunitiesTableRow = ({
 	row,
@@ -88,6 +98,11 @@ export const OpportunitiesTableRow = ({
 	const fullOpportunity = opportunities.find(
 		(opp) => opp.id === row.opportunityId
 	);
+
+	const { data: employees = [] } = useQuery<Employee[]>({
+		queryKey: ["employees"],
+		queryFn: fetchEmployees,
+	});
 
 	const handleStatusClick = (
 		opportunityId: string,
@@ -339,10 +354,25 @@ export const OpportunitiesTableRow = ({
 					{row.roleStatus && <StatusBadge status={row.roleStatus} />}
 				</TableCell>
 				<TableCell>
-					{row.assignedMember ? (
-						<span>{row.assignedMember}</span>
+					{row.assignedMemberIds && row.assignedMemberIds.length > 0 ? (
+						<Popover>
+							<PopoverTrigger>
+								<span className='flex items-center gap-1 text-xs underline decoration-dotted underline-offset-4 cursor-pointer'>
+									<Users className='h-3 w-3' />
+									{row.assignedMemberIds.length} assigned
+								</span>
+							</PopoverTrigger>
+							<PopoverContent>
+								<ul>
+									{row.assignedMemberIds.map((id) => {
+										const employee = employees.find((e) => e.id === id);
+										return <li key={id}>{employee?.name || "Unknown"}</li>;
+									})}
+								</ul>
+							</PopoverContent>
+						</Popover>
 					) : (
-						<span className='text-muted-foreground italic'>Not assigned</span>
+						<span className='text-muted-foreground italic'>—</span>
 					)}
 				</TableCell>
 				<TableCell>
@@ -355,8 +385,25 @@ export const OpportunitiesTableRow = ({
 				<TableCell>
 					{row.needsHire ? (
 						<Badge variant='outline' className='text-xs'>
-							Hiring needed
+							{row.newHireName || "Awaiting Hire"}
 						</Badge>
+					) : row.assignedMemberIds && row.assignedMemberIds.length > 0 ? (
+						<Popover>
+							<PopoverTrigger>
+								<span className='flex items-center gap-1 text-xs underline decoration-dotted underline-offset-4 cursor-pointer'>
+									<Users className='h-3 w-3' />
+									{row.assignedMemberIds.length} assigned
+								</span>
+							</PopoverTrigger>
+							<PopoverContent>
+								<ul>
+									{row.assignedMemberIds.map((id) => {
+										const employee = employees.find((e) => e.id === id);
+										return <li key={id}>{employee?.name || "Unknown"}</li>;
+									})}
+								</ul>
+							</PopoverContent>
+						</Popover>
 					) : (
 						<span className='text-muted-foreground italic'>—</span>
 					)}
@@ -427,17 +474,19 @@ export const OpportunitiesTableRow = ({
 				<EditRoleModal
 					isOpen={isEditModalOpen}
 					onClose={() => setIsEditModalOpen(false)}
+					role={
+						fullOpportunity?.roles.find((r) => r.id === row.roleId) || {
+							id: row.roleId!,
+							roleName: row.roleName || "",
+							requiredGrade: row.requiredGrade as Grade,
+							status: row.roleStatus as RoleStatus,
+							assignedMemberIds: row.assignedMemberIds || [],
+							allocation: row.allocation || 0,
+							needsHire: row.needsHire || false,
+							newHireName: row.newHireName || "",
+						}
+					}
 					opportunityId={row.opportunityId}
-					role={{
-						id: row.roleId,
-						roleName: row.roleName || "",
-						requiredGrade: row.requiredGrade as Grade,
-						status: row.roleStatus as RoleStatus,
-						assignedMember: null,
-						allocation: row.allocation || 100,
-						needsHire: row.needsHire || false,
-						comments: "",
-					}}
 				/>
 			)}
 
