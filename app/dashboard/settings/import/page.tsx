@@ -71,7 +71,7 @@ export default function ImportPage() {
 	};
 
 	return (
-		<div className='p-6 max-w-7xl mx-auto'>
+		<div className='p-6 max-w-7xl mx-auto w-full'>
 			<PageHeader>
 				<PageHeaderHeading>Import Data</PageHeaderHeading>
 			</PageHeader>

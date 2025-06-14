@@ -1,6 +1,14 @@
 import { z } from 'zod';
 
 const oklchRegex = /^oklch\(.+\)$/;
+const hexRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+
+const ganttColorSchema = z.object({
+  backgroundColor: z.string().regex(hexRegex),
+  backgroundSelectedColor: z.string().regex(hexRegex),
+  progressColor: z.string().regex(hexRegex),
+  progressSelectedColor: z.string().regex(hexRegex),
+});
 
 export const settingsSchema = z.object({
   primaryColor: z.string().regex(oklchRegex, {
@@ -21,6 +29,19 @@ export const settingsSchema = z.object({
   input: z.string().regex(oklchRegex, { message: 'Must be a valid OKLCH color string' }),
   radius: z.string().min(1, { message: 'Radius is required' }),
   primaryForeground: z.string().regex(oklchRegex, { message: 'Must be a valid OKLCH color string' }),
+  gantt: z
+    .object({
+      highProbability: ganttColorSchema,
+      mediumProbability: ganttColorSchema,
+      lowProbability: ganttColorSchema,
+      role: z.object({
+        progressColor: z.string().regex(hexRegex),
+        progressSelectedColor: z.string().regex(hexRegex),
+      }),
+      todayColor: z.string().regex(hexRegex),
+      arrowColor: z.string().regex(hexRegex),
+    })
+    .optional(),
 });
 
 export type SettingsFormValues = z.infer<typeof settingsSchema>; 

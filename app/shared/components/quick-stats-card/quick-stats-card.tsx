@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, Users, UserPlus, TrendingUp, Check } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Building2, Users, UserPlus, Check } from "lucide-react";
 import { Role } from "../../types";
 import { QuickStatsCardProps, StatCardProps } from "./types";
 
@@ -68,14 +68,8 @@ export const QuickStatsCard = ({
 			: 0;
 
 	return (
-		<Card className='mb-4'>
-			<CardHeader>
-				<CardTitle className='flex items-center gap-2'>
-					<TrendingUp className='h-5 w-5' />
-					Quick Stats
-				</CardTitle>
-			</CardHeader>
-			<CardContent>
+		<Card>
+			<CardContent className='pt-6'>
 				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
 					<StatCard
 						title='Total Opportunities'

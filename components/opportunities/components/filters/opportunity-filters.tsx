@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
 	Select,
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Filter, Search, X, AlertTriangle } from "lucide-react";
+import { Search, X, AlertTriangle } from "lucide-react";
 import { GRADE_OPTIONS } from "@/shared/lib/constants/grades";
 import { useOpportunityFilters } from "../../hooks/useOpportunityFilters";
 import { GradeMultiSelect } from "./grade-multi-select";
@@ -46,17 +46,10 @@ export const OpportunityFilters = () => {
 	};
 
 	return (
-		<Card className='mb-4'>
-			<CardHeader>
-				<CardTitle className='flex items-center gap-2 justify-between'>
-					<div className='flex items-center gap-2'>
-						<Filter className='h-4 w-4' />
-						Filters
-						{!isFiltersValid && (
-							<AlertTriangle className='h-4 w-4 text-amber-500' />
-						)}
-					</div>
-					{hasActiveFilters && (
+		<Card>
+			<CardContent className='pt-6'>
+				{hasActiveFilters && (
+					<div className='flex justify-end mb-4'>
 						<Button
 							variant='outline'
 							size='sm'
@@ -66,10 +59,8 @@ export const OpportunityFilters = () => {
 							<X className='h-3 w-3 mr-1' />
 							Clear All
 						</Button>
-					)}
-				</CardTitle>
-			</CardHeader>
-			<CardContent>
+					</div>
+				)}
 				<div className='flex gap-6 flex-wrap items-end'>
 					<div className='grid w-full max-w-sm items-center gap-1.5'>
 						<Label htmlFor='client-search'>Client</Label>

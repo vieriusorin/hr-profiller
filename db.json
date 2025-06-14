@@ -483,6 +483,32 @@
     "border": "oklch(0.9037 0 0)",
     "input": "oklch(0.9731 0 0)",
     "radius": "0.5rem",
-    "primaryForeground": "oklch(0.9333244570069921 0.0032439090926962 17.216024069563982)"
+    "primaryForeground": "oklch(0.98 0.01 240)",
+    "gantt": {
+      "highProbability": {
+        "backgroundColor": "#979ee9",
+        "backgroundSelectedColor": "#8f6ff7",
+        "progressColor": "#724cb0",
+        "progressSelectedColor": "#44388f"
+      },
+      "mediumProbability": {
+        "backgroundColor": "#fffde7",
+        "backgroundSelectedColor": "#fff9c4",
+        "progressColor": "#ffeb3b",
+        "progressSelectedColor": "#fbc02d"
+      },
+      "lowProbability": {
+        "backgroundColor": "#ffebee",
+        "backgroundSelectedColor": "#ffcdd2",
+        "progressColor": "#f44336",
+        "progressSelectedColor": "#d32f2f"
+      },
+      "role": {
+        "progressColor": "#ffe7a3",
+        "progressSelectedColor": "#6580bb"
+      },
+      "todayColor": "#d1d4dc",
+      "arrowColor": "#000"
+    }
   }
 }
