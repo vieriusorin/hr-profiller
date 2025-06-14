@@ -71,7 +71,7 @@ export default function ImportPage() {
 	};
 
 	return (
-		<div className='container mx-auto py-8'>
+		<div className='p-6 max-w-7xl mx-auto'>
 			<PageHeader>
 				<PageHeaderHeading>Import Data</PageHeaderHeading>
 			</PageHeader>
