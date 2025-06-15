@@ -21,7 +21,8 @@
           "newHireName": ""
         }
       ],
-      "comment": ""
+      "comment": "",
+      "expectedEndDate": "2025-08-03"
     },
     {
       "id": "e2a7",
@@ -44,7 +45,8 @@
           "newHireName": ""
         }
       ],
-      "comment": ""
+      "comment": "",
+      "expectedEndDate": "2025-08-30"
     },
     {
       "id": "b6c1",
@@ -67,7 +69,8 @@
           "newHireName": ""
         }
       ],
-      "comment": ""
+      "comment": "",
+      "expectedEndDate": "2025-08-30"
     },
     {
       "id": "4a6a",
@@ -112,7 +115,8 @@
           "newHireName": ""
         }
       ],
-      "comment": ""
+      "comment": "",
+      "expectedEndDate": "2025-08-03"
     },
     {
       "id": "d729",
@@ -121,7 +125,7 @@
       "expectedStartDate": "2025-07-02",
       "probability": 80,
       "createdAt": "2025-06-12",
-      "status": "In Progress",
+      "status": "On Hold",
       "roles": [
         {
           "roleName": "Frontend Developer",
@@ -150,7 +154,8 @@
           "newHireName": ""
         }
       ],
-      "comment": ""
+      "comment": "",
+      "expectedEndDate": "2025-08-01"
     },
     {
       "id": "c67d",
@@ -183,7 +188,8 @@
           "newHireName": ""
         }
       ],
-      "comment": "aweesome "
+      "comment": "aweesome ",
+      "expectedEndDate": "2025-10-03"
     },
     {
       "id": "2d77",
@@ -216,7 +222,8 @@
           "newHireName": ""
         }
       ],
-      "comment": "test"
+      "comment": "test",
+      "expectedEndDate": "2025-09-20"
     },
     {
       "id": "4744",
@@ -283,7 +290,8 @@
           "newHireName": ""
         }
       ],
-      "comment": ""
+      "comment": "",
+      "expectedEndDate": "2025-09-27"
     },
     {
       "id": "5819",
@@ -294,7 +302,8 @@
       "createdAt": "2025-06-12",
       "status": "Done",
       "roles": [],
-      "comment": ""
+      "comment": "",
+      "expectedEndDate": "2025-11-01"
     },
     {
       "id": "d637",
@@ -309,15 +318,18 @@
           "roleName": "FE",
           "requiredGrade": "SE",
           "allocation": 100,
-          "needsHire": true,
+          "needsHire": false,
           "comments": "",
           "status": "Open",
           "id": "fcc5a4e4-954f-412a-89a0-bc132785b238",
-          "assignedMemberIds": [],
-          "newHireName": "John doe"
+          "assignedMemberIds": [
+            "3"
+          ],
+          "newHireName": ""
         }
       ],
-      "comment": ""
+      "comment": "",
+      "expectedEndDate": "2026-01-23"
     },
     {
       "id": "3fad",
@@ -328,7 +340,8 @@
       "createdAt": "2025-06-12",
       "status": "Done",
       "roles": [],
-      "comment": ""
+      "comment": "",
+      "expectedEndDate": "2025-07-26"
     },
     {
       "id": "84fc",
@@ -336,21 +349,20 @@
       "clientName": "Test",
       "expectedStartDate": "2025-09-16",
       "status": "In Progress",
-      "probability": 50,
+      "probability": 70,
       "createdAt": "2025-06-14",
       "isActive": false,
       "activatedAt": null,
       "roles": [
         {
-          "id": "25b876a2-10e0-442e-9709-baadf33927dc",
           "roleName": "BE",
           "requiredGrade": "SE",
           "allocation": 100,
           "needsHire": false,
           "comments": "",
-          "status": "Open",
-          "assignedMemberId": null,
-          "newHireName": ""
+          "newHireName": "",
+          "id": "25b876a2-10e0-442e-9709-baadf33927dc",
+          "status": "Open"
         }
       ],
       "comment": "test"
@@ -367,7 +379,13 @@
       "workStatus": "On Project",
       "hireDate": "2022-08-15",
       "jobGrade": "SE",
-      "location": "New York"
+      "location": "New York",
+      "unavailableDates": [
+        {
+          "startDate": "2025-07-10",
+          "endDate": "2025-07-20"
+        }
+      ]
     },
     {
       "id": "2",
@@ -391,7 +409,13 @@
       "workStatus": "On Bench",
       "hireDate": "2023-01-10",
       "jobGrade": "IC4",
-      "location": "Remote"
+      "location": "Remote",
+      "unavailableDates": [
+        {
+          "startDate": "2025-07-01",
+          "endDate": "2025-07-05"
+        }
+      ]
     },
     {
       "id": "4",
@@ -469,7 +493,7 @@
   "candidates": [],
   "whitelabel": {
     "logoUrl": "/uploads/4cc975c0-1f4e-4092-aaf4-9992027c5480.svg",
-    "primaryColor": "oklch(0.5969449176034857 0.153011349092769 252.63175229748134)",
+    "primaryColor": "oklch(0.71779371120156 0.06960845967734909 204.10969314994742)",
     "logoWidth": 130,
     "logoHeight": 40,
     "logoAlt": "Company Logo",

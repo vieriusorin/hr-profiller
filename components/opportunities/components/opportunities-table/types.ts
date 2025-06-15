@@ -1,95 +1,85 @@
-import type { Opportunity as OpportunityInterface, OpportunityStatus, RoleStatus } from '@/shared/types';
-import type { OpportunityActionCallbacks } from '../../types';
+import type {
+  Opportunity as OpportunityType,
+  OpportunityStatus,
+  RoleStatus,
+} from "@/app/shared/types";
+import type { OpportunityActionCallbacks } from "../../types";
+import { Employee } from "@/shared/types/employees";
+
+export type UrgencyConfig = {
+  bgClass: string;
+  textClass: string;
+  icon?: React.ElementType;
+};
+
+export type ListType = "in-progress" | "on-hold" | "completed";
+
+export interface OpportunitiesTableProps extends OpportunityActionCallbacks {
+  listType: ListType;
+  showActions?: boolean;
+  caption?: string;
+}
 
 export interface FlattenedRow {
+  isOpportunityRow: boolean;
+  isFirstRowForOpportunity: boolean;
+  rowSpan: number;
   opportunityId: string;
   opportunityName: string;
+  opportunityStatus: OpportunityStatus;
   clientName: string;
   expectedStartDate: string;
   probability: number;
-  opportunityStatus: OpportunityStatus;
   rolesCount: number;
   hasHiringNeeds: boolean;
-  comment?: string;
   roleId?: string;
   roleName?: string;
   requiredGrade?: string;
   roleStatus?: RoleStatus;
   assignedMemberIds?: string[];
-  newHireName?: string;
-  needsHire?: boolean;
   allocation?: number;
-  isFirstRowForOpportunity: boolean;
-  isOpportunityRow?: boolean;
-  isRoleRow?: boolean;
-  rowSpan: number;
+  needsHire?: boolean;
+  newHireName?: string;
+  comment?: string;
 }
 
-export interface OpportunitiesTableProps extends OpportunityActionCallbacks {
-  opportunities: OpportunityInterface[];
+export interface OpportunityRowProps {
+  row: FlattenedRow;
+  urgencyConfig: UrgencyConfig;
+  tooltip: string;
   showActions?: boolean;
-  fetchNextPage?: () => void;
-  hasNextPage?: boolean;
-  isFetchingNextPage?: boolean;
-}
-
-export interface Opportunity {
-  id: string;
-  name: string;
-  clientName: string;
-  expectedStartDate: string;
-  probability: number;
-  status: 'In Progress' | 'On Hold' | 'Completed';
-  hasHiringNeeds: boolean;
-  comment?: string;
-  rolesCount: number;
-}
-
-export interface Role {
-  id: string;
-  roleName: string;
-  requiredGrade?: string;
-  status: 'Open' | 'Won' | 'Staffed' | 'Lost';
-  assignedMemberIds?: string[];
-  newHireName?: string;
-  allocation?: number;
-  needsHire: boolean;
-  comments?: string;
-}
-
-export interface TableRow {
-  isOpportunityRow: boolean;
-  opportunityId: string;
-  opportunityName: string;
-  clientName: string;
-  expectedStartDate: string;
-  probability: number;
-  opportunityStatus: 'In Progress' | 'On Hold' | 'Completed';
-  hasHiringNeeds: boolean;
-  comment?: string;
-  rolesCount: number;
-  rowSpan: number;
-  isFirstRowForOpportunity: boolean;
-  roleId?: string;
-  roleName?: string;
-  requiredGrade?: string;
-  roleStatus?: 'Open' | 'Won' | 'Staffed' | 'Lost';
-  assignedMemberIds?: string[];
-  newHireName?: string;
-  allocation?: number;
-  needsHire?: boolean;
-}
-
-export interface OpportunitiesTableRowProps {
-  row: TableRow;
-  showActions: boolean;
+  fullOpportunity: OpportunityType | undefined;
   onAddRole: (opportunityId: string) => void;
-  onUpdateRole: (opportunityId: string, roleId: string, status: 'Won' | 'Staffed' | 'Lost') => void;
   onMoveToHold: (opportunityId: string) => void;
   onMoveToInProgress: (opportunityId: string) => void;
   onMoveToCompleted: (opportunityId: string) => void;
 }
 
+export interface RoleRowProps {
+  row: FlattenedRow;
+  urgencyConfig: UrgencyConfig;
+  showActions?: boolean;
+  fullOpportunity: OpportunityType | undefined;
+  employees: Employee[];
+  onUpdateRole: (
+    opportunityId: string,
+    roleId: string,
+    updates: string
+  ) => void;
+}
+
+export type RoleActionsProps = {
+  roleId: string;
+  opportunityId: string;
+  roleName?: string;
+  roleStatus: "Open" | "Won" | "Staffed" | "Lost";
+  onStatusClick: (
+    opportunityId: string,
+    roleId: string,
+    status: "Won" | "Staffed" | "Lost",
+    roleName?: string
+  ) => void;
+};
 
 export type ConfirmationDialogState = {
   isOpen: boolean;

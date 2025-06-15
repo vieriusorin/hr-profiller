@@ -18,8 +18,13 @@ export const EditRoleModal = ({
 	onClose,
 	opportunityId,
 	role,
+	opportunity,
 }: EditRoleModalProps) => {
-  const { handleSubmit, isPending } = useEditRoleModal({ opportunityId, role, onClose });
+	const { handleSubmit, isPending } = useEditRoleModal({
+		opportunityId,
+		role,
+		onClose,
+	});
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
@@ -33,12 +38,12 @@ export const EditRoleModal = ({
 					onSubmit={handleSubmit}
 					onCancel={onClose}
 					isSubmitting={isPending}
+					opportunity={opportunity}
 				/>
 			</DialogContent>
 		</Dialog>
 	);
 };
-
 
 export const EditOpportunityModal = ({
 	isOpen,
@@ -46,7 +51,8 @@ export const EditOpportunityModal = ({
 	opportunity,
 	listType,
 }: EditOpportunityModalProps) => {
-	const { handleSubmit, isPending, isLoading, latestOpportunity } = useEditOpportunityModal({ isOpen, opportunity, listType, onClose });
+	const { handleSubmit, isPending, isLoading, latestOpportunity } =
+		useEditOpportunityModal({ isOpen, opportunity, listType, onClose });
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>

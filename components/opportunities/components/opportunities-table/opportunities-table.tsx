@@ -1,20 +1,17 @@
-import * as React from "react";
-import { useEffect } from "react";
-import { useInView } from "react-intersection-observer";
+import React, { createContext } from "react";
+import { Opportunity } from "@/app/shared/types";
+import { Loader2 } from "lucide-react";
 import {
 	Table,
 	TableBody,
+	TableCaption,
 	TableCell,
-	TableHead,
-	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { useOpportunitiesTable } from "../../hooks/use-opportunities-table";
+import { OpportunitiesTableProps, FlattenedRow } from "./types";
 import { OpportunitiesTableRow } from "./components/opportunities-table-row";
-import { useFlattenedOpportunities } from "./hooks/use-flattened-opportunities";
-import type { FlattenedRow, OpportunitiesTableProps } from "./types";
-import { createContext } from "react";
-import { Opportunity } from "@/app/shared/types";
-import { Loader2 } from "lucide-react";
+import { OpportunitiesTableHeader } from "./components/opportunities-table-header";
 
 export const OpportunitiesContext = createContext<{
 	opportunities: Opportunity[];
@@ -23,63 +20,35 @@ export const OpportunitiesContext = createContext<{
 });
 
 export const OpportunitiesTable = ({
-	opportunities,
-	showActions = true,
+	listType,
+	showActions,
+	caption,
 	onAddRole,
 	onUpdateRole,
 	onMoveToHold,
 	onMoveToInProgress,
 	onMoveToCompleted,
-	fetchNextPage,
-	hasNextPage,
-	isFetchingNextPage,
 }: OpportunitiesTableProps) => {
-	console.log(JSON.stringify(opportunities, null, 2));
-	const flattenedData = useFlattenedOpportunities(opportunities);
+	const { data, flattenedData, ref, isFetchingNextPage, hasNextPage } =
+		useOpportunitiesTable(listType);
 
-	const { ref, inView } = useInView({
-		threshold: 0,
-		triggerOnce: false,
-	});
-
-	useEffect(() => {
-		if (inView && hasNextPage && !isFetchingNextPage) {
-			fetchNextPage?.();
-		}
-	}, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+	if (!data) return null;
 
 	return (
-		<OpportunitiesContext.Provider value={{ opportunities }}>
+		<OpportunitiesContext.Provider value={{ opportunities: data.pages.flat() }}>
 			<div className='rounded-md border h-full overflow-y-auto'>
 				<Table className='relative'>
-					<TableHeader className='sticky top-0 z-10 bg-background'>
-						<TableRow>
-							<TableHead className='w-[200px]'>Opportunity</TableHead>
-							<TableHead className='w-[150px]'>Client</TableHead>
-							<TableHead className='w-[120px]'>Start Date</TableHead>
-							<TableHead className='w-[80px]'>Probability</TableHead>
-							<TableHead className='w-[100px]'>Status</TableHead>
-							<TableHead className='w-[180px]'>Comment</TableHead>
-							<TableHead className='w-[150px]'>Role</TableHead>
-							<TableHead className='w-[80px]'>Grade</TableHead>
-							<TableHead className='w-[100px]'>Role Status</TableHead>
-							<TableHead className='w-[150px]'>Assigned</TableHead>
-							<TableHead className='w-[80px]'>Allocation</TableHead>
-							<TableHead className='w-[80px]'>Hire</TableHead>
-							{showActions && (
-								<TableHead className='w-[60px]'>Role Actions</TableHead>
-							)}
-							{showActions && (
-								<TableHead className='w-[400px]'>Opp. Actions</TableHead>
-							)}
-						</TableRow>
-					</TableHeader>
+					{caption && <TableCaption>{caption}</TableCaption>}
+					<OpportunitiesTableHeader
+						showActions={showActions}
+						className='sticky top-0 z-10'
+					/>
 					<TableBody>
 						{flattenedData.map((row: FlattenedRow) => (
 							<OpportunitiesTableRow
 								key={`${row.opportunityId}-${row.roleId || "opportunity"}`}
 								row={row}
-								showActions={showActions}
+								showActions={showActions ?? false}
 								onAddRole={onAddRole}
 								onUpdateRole={onUpdateRole}
 								onMoveToHold={onMoveToHold}
@@ -90,7 +59,7 @@ export const OpportunitiesTable = ({
 						{flattenedData.length === 0 && !isFetchingNextPage && (
 							<TableRow>
 								<TableCell
-									colSpan={showActions ? 13 : 11}
+									colSpan={showActions ? 14 : 12}
 									className='text-center py-8 text-muted-foreground'
 								>
 									No opportunities found
@@ -100,7 +69,7 @@ export const OpportunitiesTable = ({
 						{hasNextPage && (
 							<TableRow ref={ref}>
 								<TableCell
-									colSpan={showActions ? 13 : 11}
+									colSpan={showActions ? 14 : 12}
 									className='text-center'
 								>
 									{isFetchingNextPage ? (
@@ -114,10 +83,10 @@ export const OpportunitiesTable = ({
 								</TableCell>
 							</TableRow>
 						)}
-						{!hasNextPage && opportunities.length > 0 && (
+						{!hasNextPage && flattenedData.length > 0 && (
 							<TableRow>
 								<TableCell
-									colSpan={showActions ? 13 : 11}
+									colSpan={showActions ? 14 : 12}
 									className='text-center py-8 text-muted-foreground'
 								>
 									No more opportunities to load.

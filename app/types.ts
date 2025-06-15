@@ -1,4 +1,5 @@
 import { Opportunity, OpportunityFilters, CreateRoleForm } from '@/shared/types';
+import { ReactNode } from 'react';
 
 export interface UseDashboardReturn {
   opportunities: Opportunity[];
@@ -33,4 +34,8 @@ export interface UseDashboardReturn {
   fetchNextPageCompleted: () => void;
   hasNextPageCompleted: boolean;
   isFetchingNextPageCompleted: boolean;
-} 
+}
+
+export type ProvidersProps = {
+  children: ReactNode;
+}

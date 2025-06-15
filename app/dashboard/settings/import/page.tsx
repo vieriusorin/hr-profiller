@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
 import { PageHeader, PageHeaderHeading } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,55 +18,19 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { toast } from "react-hot-toast";
+import { useImportPage } from "./hooks/use-import-page";
 
 const DATA_TYPES = ["employees", "clients", "projects", "candidates"];
 
 export default function ImportPage() {
-	const [file, setFile] = useState<File | null>(null);
-	const [dataType, setDataType] = useState<string>("");
-
-	const mutation = useMutation({
-		mutationFn: async ({
-			file,
-			dataType,
-		}: {
-			file: File;
-			dataType: string;
-		}) => {
-			const formData = new FormData();
-			formData.append("file", file);
-			formData.append("dataType", dataType);
-
-			const response = await fetch("/api/import", {
-				method: "POST",
-				body: formData,
-			});
-
-			if (!response.ok) {
-				const errorData = await response.json();
-				throw new Error(errorData.message || "Something went wrong");
-			}
-
-			return response.json();
-		},
-		onSuccess: (data) => {
-			toast.success(data.message);
-			setFile(null);
-		},
-		onError: (error) => {
-			toast.error(error.message);
-		},
-	});
-
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		if (!file || !dataType) {
-			toast.error("Please select a file and a data type.");
-			return;
-		}
-		mutation.mutate({ file, dataType });
-	};
+	const {
+		file,
+		dataType,
+		setDataType,
+		handleFileChange,
+		handleSubmit,
+		isPending,
+	} = useImportPage();
 
 	return (
 		<div className='p-6 max-w-7xl mx-auto w-full'>
@@ -116,14 +78,11 @@ export default function ImportPage() {
 								id='file'
 								type='file'
 								accept='.csv'
-								onChange={(e) => setFile(e.target.files?.[0] || null)}
+								onChange={handleFileChange}
 							/>
 						</div>
-						<Button
-							type='submit'
-							disabled={!file || !dataType || mutation.isPending}
-						>
-							{mutation.isPending ? "Importing..." : "Import Data"}
+						<Button type='submit' disabled={!file || !dataType || isPending}>
+							{isPending ? "Importing..." : "Import Data"}
 						</Button>
 					</form>
 					<div className='mt-6'>

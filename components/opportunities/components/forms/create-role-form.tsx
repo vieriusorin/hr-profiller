@@ -19,12 +19,22 @@ import { Employee } from "@/shared/types/employees";
 import { Input } from "@/components/ui/input";
 import { getAvailableEmployees } from "./lib/employee-filtering";
 import { MultiSelect } from "@/components/ui/multi-select";
+import { Opportunity } from "@/shared/types";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Terminal } from "lucide-react";
 
-// Mock employee data fetch
 const fetchEmployees = async (): Promise<Employee[]> => {
-	const res = await fetch("/api/employees"); // Assuming you have an API endpoint
+	const res = await fetch("/api/employees");
 	if (!res.ok) {
 		throw new Error("Failed to fetch employees");
+	}
+	return res.json();
+};
+
+const fetchOpportunities = async (): Promise<Opportunity[]> => {
+	const res = await fetch("/api/opportunities");
+	if (!res.ok) {
+		throw new Error("Failed to fetch opportunities");
 	}
 	return res.json();
 };
@@ -35,6 +45,7 @@ export const RoleForm = ({
 	onSubmit,
 	onCancel,
 	isSubmitting: externalIsSubmitting,
+	opportunity,
 }: RoleFormProps) => {
 	const { form, isSubmitting, handleSubmit, handleCancel, isDirty } =
 		useRoleForm({
@@ -53,6 +64,23 @@ export const RoleForm = ({
 	} = form;
 	const roleName = watch("roleName");
 	const needsHire = watch("needsHire");
+	const assignedMemberIds = watch("assignedMemberIds");
+	const allocation = watch("allocation");
+
+	const [allocationWarning, setAllocationWarning] = React.useState<
+		string | null
+	>(null);
+	const [isSaveDisabled, setIsSaveDisabled] = React.useState(false);
+
+	const { data: employees = [] } = useQuery<Employee[]>({
+		queryKey: ["employees"],
+		queryFn: fetchEmployees,
+	});
+
+	const { data: opportunities = [] } = useQuery<Opportunity[]>({
+		queryKey: ["opportunities"],
+		queryFn: fetchOpportunities,
+	});
 
 	useEffect(() => {
 		if (needsHire) {
@@ -62,14 +90,82 @@ export const RoleForm = ({
 		}
 	}, [needsHire, setValue]);
 
-	const { data: employees = [] } = useQuery<Employee[]>({
-		queryKey: ["employees"],
-		queryFn: fetchEmployees,
-	});
+	useEffect(() => {
+		if (!assignedMemberIds || assignedMemberIds.length === 0 || !opportunity) {
+			setAllocationWarning(null);
+			setIsSaveDisabled(false);
+			return;
+		}
+
+		let warningMessage = "";
+		let shouldDisable = false;
+
+		const currentOppStartDate = new Date(opportunity.expectedStartDate);
+		const currentOppEndDate = opportunity.expectedEndDate
+			? new Date(opportunity.expectedEndDate)
+			: null;
+
+		if (!currentOppEndDate) {
+			setAllocationWarning(null);
+			setIsSaveDisabled(false);
+			return;
+		}
+
+		for (const memberId of assignedMemberIds) {
+			let allocationFromOtherRoles = 0;
+			for (const opp of opportunities) {
+				const oppStartDate = new Date(opp.expectedStartDate);
+				const oppEndDate = opp.expectedEndDate
+					? new Date(opp.expectedEndDate)
+					: null;
+
+				if (
+					!oppEndDate ||
+					!(
+						oppStartDate <= currentOppEndDate &&
+						oppEndDate >= currentOppStartDate
+					)
+				) {
+					continue;
+				}
+
+				for (const role of opp.roles) {
+					if (opportunity.id === opp.id && initialData?.id === role.id) {
+						continue;
+					}
+					if (role.assignedMemberIds?.includes(memberId)) {
+						allocationFromOtherRoles += role.allocation;
+					}
+				}
+			}
+
+			const currentRoleAllocation = allocation || 0;
+			const totalAllocation = allocationFromOtherRoles + currentRoleAllocation;
+			const employee = employees.find((e) => e.id === memberId);
+			const employeeName = employee?.name || "Unknown employee";
+
+			if (totalAllocation > 100) {
+				warningMessage += `${employeeName} will be over-allocated. Total allocation during this period would be ${totalAllocation}%. `;
+				shouldDisable = true;
+			} else if (totalAllocation === 100) {
+				warningMessage += `${employeeName} will be at 100% allocation for this period. `;
+			}
+		}
+
+		setAllocationWarning(warningMessage || null);
+		setIsSaveDisabled(shouldDisable);
+	}, [
+		assignedMemberIds,
+		allocation,
+		opportunities,
+		employees,
+		opportunity,
+		initialData,
+	]);
 
 	const availableEmployees = useMemo(() => {
-		return getAvailableEmployees(employees, roleName);
-	}, [employees, roleName]);
+		return getAvailableEmployees(employees, roleName, opportunity);
+	}, [employees, roleName, opportunity]);
 
 	const employeeOptions = useMemo(
 		() =>
@@ -209,6 +305,14 @@ export const RoleForm = ({
 				/>
 			)}
 
+			{allocationWarning && (
+				<Alert variant='destructive'>
+					<Terminal className='h-4 w-4' />
+					<AlertTitle>Over-allocation Warning</AlertTitle>
+					<AlertDescription>{allocationWarning}</AlertDescription>
+				</Alert>
+			)}
+
 			<div className='space-y-2'>
 				<label className='text-sm font-medium'>
 					Allocation (%)
@@ -269,7 +373,9 @@ export const RoleForm = ({
 				</Button>
 				<Button
 					onClick={handleSubmit}
-					disabled={isSubmitting || (mode === "edit" && !isDirty)}
+					disabled={
+						isSubmitting || (mode === "edit" && !isDirty) || isSaveDisabled
+					}
 				>
 					{isSubmitting
 						? mode === "create"

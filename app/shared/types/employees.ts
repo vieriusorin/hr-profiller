@@ -11,6 +11,10 @@ export const EmployeeSchema = z.object({
   hireDate: z.string(),
   jobGrade: z.string(),
   location: z.string(),
+  unavailableDates: z.array(z.object({
+    startDate: z.string(),
+    endDate: z.string(),
+  })).optional(),
 });
 
 export type Employee = z.infer<typeof EmployeeSchema>; 

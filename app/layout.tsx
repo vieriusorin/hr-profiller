@@ -5,6 +5,7 @@ import { Providers } from "./providers";
 import { Toaster } from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "./providers/theme-provider";
+import { getSettings } from "@/lib/settings";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -30,31 +31,31 @@ export default async function RootLayout({
 			<body>
 				<ThemeProvider>
 					<Providers>{children}</Providers>
+					<Toaster
+						position='top-right'
+						toastOptions={{
+							duration: 4000,
+							style: {
+								background: (await getSettings()).primaryColor,
+								color: (await getSettings()).primaryForeground,
+							},
+							success: {
+								duration: 3000,
+								iconTheme: {
+									primary: "#4ade80",
+									secondary: "#fff",
+								},
+							},
+							error: {
+								duration: 5000,
+								iconTheme: {
+									primary: "#ef4444",
+									secondary: "#fff",
+								},
+							},
+						}}
+					/>
 				</ThemeProvider>
-				<Toaster
-					position='top-right'
-					toastOptions={{
-						duration: 4000,
-						style: {
-							background: "#363636",
-							color: "#fff",
-						},
-						success: {
-							duration: 3000,
-							iconTheme: {
-								primary: "#4ade80",
-								secondary: "#fff",
-							},
-						},
-						error: {
-							duration: 5000,
-							iconTheme: {
-								primary: "#ef4444",
-								secondary: "#fff",
-							},
-						},
-					}}
-				/>
 			</body>
 		</html>
 	);

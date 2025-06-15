@@ -28,7 +28,6 @@ export const ClientSchema = z.object({
 
 export const ProbabilitySchema = z.number().min(0).max(100);
 
-// Inferred types from schemas
 export type OpportunityId = z.infer<typeof OpportunityIdSchema>;
 export type RoleId = z.infer<typeof RoleIdSchema>;
 export type MemberId = z.infer<typeof MemberIdSchema>;

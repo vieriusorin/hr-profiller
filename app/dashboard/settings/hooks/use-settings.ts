@@ -3,25 +3,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import { useTheme } from '@/app/providers/theme-provider';
-
-type SettingsData = {
-  primaryColor?: string;
-  logoUrl?: string;
-  logoWidth?: number;
-  logoHeight?: number;
-  logoAlt?: string;
-  background?: string;
-  foreground?: string;
-  card?: string;
-  cardForeground?: string;
-  secondary?: string;
-  accent?: string;
-  destructive?: string;
-  border?: string;
-  input?: string;
-  radius?: string;
-  primaryForeground?: string;
-};
+import { SettingsData } from '../types';
 
 const updateSettingsApi = async (settings: SettingsData) => {
   const response = await fetch('/api/whitelabel', {

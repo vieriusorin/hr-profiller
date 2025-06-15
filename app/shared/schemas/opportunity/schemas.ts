@@ -11,6 +11,7 @@ export const OpportunitySchema = z.object({
   opportunityName: z.string().min(1, 'Opportunity name is required'),
   clientName: z.string().min(1, 'Client name is required'),
   expectedStartDate: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/, 'Invalid date format'),
+  expectedEndDate: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/, 'Invalid date format').optional(),
   status: OpportunityStatusSchema,
   probability: ProbabilitySchema,
   createdAt: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/, 'Invalid date format').optional(),

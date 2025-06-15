@@ -5,35 +5,26 @@ import {
   GradeSchema,
 } from '../base-schemas';
 
-export const RoleSchema = z.object({
-  id: RoleIdSchema,
+const RoleBaseSchema = z.object({
   roleName: z.string().min(1, 'Role name is required'),
   requiredGrade: GradeSchema,
   allocation: z.number().min(0).max(100),
   needsHire: z.boolean(),
   comments: z.string().optional(),
-  status: RoleStatusSchema,
-  assignedMemberIds: z.array(z.string()).optional(),
   newHireName: z.string().optional(),
 });
 
-export const CreateRoleInputSchema = z.object({
-  roleName: z.string().min(1, 'Role name is required'),
-  requiredGrade: GradeSchema,
-  allocation: z.number().min(0).max(100),
-  needsHire: z.boolean(),
+export const CreateRoleFormSchema = RoleBaseSchema.extend({
+  assignedMemberIds: z.array(z.string()).optional(),
+});
+
+export const CreateRoleInputSchema = RoleBaseSchema.omit({ comments: true }).extend({
   comments: z.string().optional().or(z.literal('')),
-  newHireName: z.string().optional(),
 });
 
-export const CreateRoleFormSchema = z.object({
-  roleName: z.string().min(1, 'Role name is required'),
-  requiredGrade: GradeSchema,
-  allocation: z.number().min(0).max(100),
-  needsHire: z.boolean(),
-  comments: z.string().optional(),
-  assignedMemberIds: z.array(z.string()).optional(),
-  newHireName: z.string().optional(),
+export const RoleSchema = CreateRoleFormSchema.extend({
+  id: RoleIdSchema,
+  status: RoleStatusSchema,
 });
 
 export const EditRoleFormSchema = CreateRoleFormSchema;
@@ -46,7 +37,6 @@ export const RolesResponseSchema = z.object({
   data: z.array(RoleSchema),
 });
 
-// Inferred types
 export type Role = z.infer<typeof RoleSchema>;
 export type CreateRoleInput = z.infer<typeof CreateRoleInputSchema>;
 export type CreateRoleForm = z.infer<typeof CreateRoleFormSchema>;

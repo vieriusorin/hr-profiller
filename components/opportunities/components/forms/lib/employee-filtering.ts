@@ -1,4 +1,5 @@
-import { Employee } from '@/shared/types/employees';
+import { Employee } from '@/app/shared/types/employees';
+import { Opportunity } from '@/shared/types';
 
 const KEYWORDS = {
   frontend: ['frontend', 'fe', 'ui', 'ux', 'react', 'angular', 'vue', 'javascript'],
@@ -17,21 +18,57 @@ const getRoleDiscipline = (roleName: string): keyof typeof KEYWORDS | null => {
   return null;
 };
 
-export const getAvailableEmployees = (employees: Employee[], roleName: string | undefined): Employee[] => {
-  const activeEmployees = employees.filter(emp => emp.employeeStatus === 'Active');
+const isAvailable = (employee: Employee, opportunity: Opportunity): boolean => {
+  if (!employee.unavailableDates || employee.unavailableDates.length === 0) {
+    return true;
+  }
+
+  if (!opportunity.expectedEndDate) {
+    return true; // Cannot check availability without an end date
+  }
+
+  const opportunityStartDate = new Date(opportunity.expectedStartDate);
+  const opportunityEndDate = new Date(opportunity.expectedEndDate);
+
+  for (const unavailability of employee.unavailableDates) {
+    const unavailableStartDate = new Date(unavailability.startDate);
+    const unavailableEndDate = new Date(unavailability.endDate);
+
+    if (
+      (opportunityStartDate >= unavailableStartDate && opportunityStartDate <= unavailableEndDate) ||
+      (opportunityEndDate >= unavailableStartDate && opportunityEndDate <= unavailableEndDate) ||
+      (unavailableStartDate >= opportunityStartDate && unavailableStartDate <= opportunityEndDate)
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+export const getAvailableEmployees = (
+  employees: Employee[],
+  roleName: string | undefined,
+  opportunity?: Opportunity
+): Employee[] => {
+  let availableEmployees = employees.filter(emp => emp.employeeStatus === 'Active');
+
+  if (opportunity) {
+    availableEmployees = availableEmployees.filter(emp => isAvailable(emp, opportunity));
+  }
 
   if (!roleName) {
-    return activeEmployees;
+    return availableEmployees;
   }
 
   const discipline = getRoleDiscipline(roleName);
 
   if (discipline) {
     const disciplineKeywords = KEYWORDS[discipline];
-    return activeEmployees.filter(emp =>
+    return availableEmployees.filter(emp =>
       disciplineKeywords.some(keyword => emp.position.toLowerCase().includes(keyword))
     );
   }
 
-  return activeEmployees;
+  return availableEmployees;
 }; 
