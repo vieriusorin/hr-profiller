@@ -1,4 +1,4 @@
-import React, { createContext } from "react";
+import React, { createContext, useEffect } from "react";
 import { Opportunity } from "@/app/shared/types";
 import { Loader2 } from "lucide-react";
 import {
@@ -8,10 +8,11 @@ import {
 	TableCell,
 	TableRow,
 } from "@/components/ui/table";
-import { useOpportunitiesTable } from "../../hooks/use-opportunities-table";
+import { useFlattenedOpportunities } from "../../hooks/use-flattened-opportunities";
 import { OpportunitiesTableProps, FlattenedRow } from "./types";
 import { OpportunitiesTableRow } from "./components/opportunities-table-row";
 import { OpportunitiesTableHeader } from "./components/opportunities-table-header";
+import { useInView } from "react-intersection-observer";
 
 export const OpportunitiesContext = createContext<{
 	opportunities: Opportunity[];
@@ -20,7 +21,7 @@ export const OpportunitiesContext = createContext<{
 });
 
 export const OpportunitiesTable = ({
-	listType,
+	opportunities,
 	showActions,
 	caption,
 	onAddRole,
@@ -28,14 +29,21 @@ export const OpportunitiesTable = ({
 	onMoveToHold,
 	onMoveToInProgress,
 	onMoveToCompleted,
+	fetchNextPage,
+	hasNextPage,
+	isFetchingNextPage,
 }: OpportunitiesTableProps) => {
-	const { data, flattenedData, ref, isFetchingNextPage, hasNextPage } =
-		useOpportunitiesTable(listType);
+	const flattenedData = useFlattenedOpportunities(opportunities);
+	const { ref, inView } = useInView();
 
-	if (!data) return null;
+	useEffect(() => {
+		if (inView && hasNextPage) {
+			fetchNextPage();
+		}
+	}, [inView, hasNextPage, fetchNextPage]);
 
 	return (
-		<OpportunitiesContext.Provider value={{ opportunities: data.pages.flat() }}>
+		<OpportunitiesContext.Provider value={{ opportunities }}>
 			<div className='rounded-md border h-full overflow-y-auto'>
 				<Table className='relative'>
 					{caption && <TableCaption>{caption}</TableCaption>}

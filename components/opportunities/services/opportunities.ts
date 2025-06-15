@@ -8,18 +8,15 @@ export const fetchOpportunities = async (
   page: number,
   limit: number
 ): Promise<Opportunity[]> => {
-  const params = new URLSearchParams({
-    page: page.toString(),
-    limit: limit.toString(),
-  });
+  const status = listType === "in-progress" ? "In Progress" :
+    listType === "on-hold" ? "On Hold" :
+      "Done";
 
-  if (listType === "in-progress") {
-    params.append("status", "In Progress");
-  } else if (listType === "on-hold") {
-    params.append("status", "On Hold");
-  } else if (listType === "completed") {
-    params.append("status", "Done");
-  }
+  const params = new URLSearchParams({
+    _page: page.toString(),
+    _limit: limit.toString(),
+    status: status,
+  });
 
   const response = await fetch(`${API_BASE_URL}?${params.toString()}`);
 

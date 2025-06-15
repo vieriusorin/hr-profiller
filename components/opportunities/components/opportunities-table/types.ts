@@ -5,42 +5,41 @@ import type {
 } from "@/app/shared/types";
 import type { OpportunityActionCallbacks } from "../../types";
 import { Employee } from "@/shared/types/employees";
-
-export type UrgencyConfig = {
-  bgClass: string;
-  textClass: string;
-  icon?: React.ElementType;
-};
+import { Opportunity, UrgencyConfig } from "@/shared/types";
 
 export type ListType = "in-progress" | "on-hold" | "completed";
 
-export interface OpportunitiesTableProps extends OpportunityActionCallbacks {
-  listType: ListType;
-  showActions?: boolean;
-  caption?: string;
-}
-
 export interface FlattenedRow {
-  isOpportunityRow: boolean;
-  isFirstRowForOpportunity: boolean;
-  rowSpan: number;
   opportunityId: string;
   opportunityName: string;
-  opportunityStatus: OpportunityStatus;
   clientName: string;
   expectedStartDate: string;
   probability: number;
+  opportunityStatus: string;
   rolesCount: number;
   hasHiringNeeds: boolean;
+  comment?: string;
   roleId?: string;
   roleName?: string;
   requiredGrade?: string;
-  roleStatus?: RoleStatus;
+  roleStatus?: string;
   assignedMemberIds?: string[];
-  allocation?: number;
-  needsHire?: boolean;
   newHireName?: string;
-  comment?: string;
+  needsHire?: boolean;
+  allocation?: number;
+  isFirstRowForOpportunity: boolean;
+  isOpportunityRow: boolean;
+  isRoleRow?: boolean;
+  rowSpan: number;
+}
+
+export interface OpportunitiesTableProps extends OpportunityActionCallbacks {
+  opportunities: Opportunity[];
+  showActions?: boolean;
+  caption?: string;
+  fetchNextPage: () => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
 }
 
 export interface OpportunityRowProps {
@@ -48,7 +47,7 @@ export interface OpportunityRowProps {
   urgencyConfig: UrgencyConfig;
   tooltip: string;
   showActions?: boolean;
-  fullOpportunity: OpportunityType | undefined;
+  fullOpportunity: Opportunity | undefined;
   onAddRole: (opportunityId: string) => void;
   onMoveToHold: (opportunityId: string) => void;
   onMoveToInProgress: (opportunityId: string) => void;
