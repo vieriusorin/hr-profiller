@@ -3,7 +3,7 @@
 import React from "react";
 import { OpportunitiesListProps } from "../types";
 import { Opportunity } from "@/shared/types";
-import { OpportunitiesTable } from "./opportunities-table/opportunities-table";
+import OpportunitiesTable from "./opportunities-table/opportunities-table";
 import { GroupedOpportunitiesList } from "./grouped-opportunities-list";
 
 const OpportunitiesList: React.FC<OpportunitiesListProps> = ({

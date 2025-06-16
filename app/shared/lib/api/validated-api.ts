@@ -15,8 +15,6 @@ import {
 import { z } from 'zod';
 
 const API_BASE_URL = '/api';
-
-// Helper to build query strings
 const buildQueryString = (filters: OpportunityFilters, page?: number): string => {
   const params = new URLSearchParams();
   if (filters.client) params.append('client', filters.client);
@@ -31,21 +29,30 @@ export const opportunityApi = {
   async getInProgressOpportunities(filters: OpportunityFilters, page?: number): Promise<Opportunity[]> {
     const queryString = buildQueryString(filters, page);
     const response = await fetch(`${API_BASE_URL}/opportunities/in-progress?${queryString}`);
-    if (!response.ok) throw new Error('Failed to fetch in-progress opportunities');
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Failed to fetch in-progress opportunities (${response.status})`);
+    }
     return await response.json();
   },
 
   async getOnHoldOpportunities(filters: OpportunityFilters, page?: number): Promise<Opportunity[]> {
     const queryString = buildQueryString(filters, page);
     const response = await fetch(`${API_BASE_URL}/opportunities/on-hold?${queryString}`);
-    if (!response.ok) throw new Error('Failed to fetch on-hold opportunities');
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Failed to fetch on-hold opportunities (${response.status})`);
+    }
     return await response.json();
   },
 
   async getCompletedOpportunities(filters: OpportunityFilters, page?: number): Promise<Opportunity[]> {
     const queryString = buildQueryString(filters, page);
     const response = await fetch(`${API_BASE_URL}/opportunities/completed?${queryString}`);
-    if (!response.ok) throw new Error('Failed to fetch completed opportunities');
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Failed to fetch completed opportunities (${response.status})`);
+    }
     return await response.json();
   },
 

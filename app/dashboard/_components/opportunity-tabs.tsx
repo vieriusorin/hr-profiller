@@ -5,6 +5,18 @@ import { OpportunityTabsProps } from "../_types";
 import { OpportunityCardSkeleton } from "@/components/opportunities/components/opportunity-card/opportunity-card-skeleton";
 import OpportunitiesList from "@/components/opportunities/components/opportunities-list";
 import { GanttChart } from "@/components/gantt/gantt-chart";
+import { withErrorBoundary } from '@/app/shared/components/with-error-boundary';
+import { OpportunitiesErrorFallback } from '@/app/shared/components/error-fallbacks/opportunities-error-fallback';
+
+// Create error boundary wrapped versions of our content components
+const ErrorBoundaryWrappedContent = withErrorBoundary(
+	({ children }: { children: React.ReactNode }) => <>{children}</>,
+	{ FallbackComponent: OpportunitiesErrorFallback }
+);
+
+const ErrorBoundaryWrappedGantt = withErrorBoundary(GanttChart, {
+	FallbackComponent: OpportunitiesErrorFallback
+});
 
 export const OpportunityTabs = ({
 	currentView,
@@ -37,7 +49,7 @@ export const OpportunityTabs = ({
 	}, [opportunities, onHoldOpportunities, completedOpportunities]);
 
 	if (currentView === "gantt") {
-		return <GanttChart opportunities={allOpportunities} />;
+		return <ErrorBoundaryWrappedGantt opportunities={allOpportunities} />;
 	}
 
 	const filteredInProgress = filterOpportunities(opportunities, filters);
@@ -81,62 +93,68 @@ export const OpportunityTabs = ({
 
 			<Suspense fallback={<OpportunityCardSkeleton />}>
 				<TabsContent value='in-progress'>
-					<OpportunitiesList
-						viewMode={currentView}
-						status='in-progress'
-						opportunities={opportunities}
-						onHoldOpportunities={onHoldOpportunities}
-						completedOpportunities={completedOpportunities}
-						filterOpportunities={filterOpportunities}
-						filters={filters}
-						onAddRole={handleAddRole}
-						onUpdateRole={handleUpdateRole}
-						onMoveToHold={handleMoveToHold}
-						onMoveToInProgress={handleMoveToInProgress}
-						onMoveToCompleted={handleMoveToCompleted}
-						fetchNextPage={fetchNextPageInProgress}
-						hasNextPage={hasNextPageInProgress}
-						isFetchingNextPage={isFetchingNextPageInProgress}
-					/>
+					<ErrorBoundaryWrappedContent>
+						<OpportunitiesList
+							viewMode={currentView}
+							status='in-progress'
+							opportunities={opportunities}
+							onHoldOpportunities={onHoldOpportunities}
+							completedOpportunities={completedOpportunities}
+							filterOpportunities={filterOpportunities}
+							filters={filters}
+							onAddRole={handleAddRole}
+							onUpdateRole={handleUpdateRole}
+							onMoveToHold={handleMoveToHold}
+							onMoveToInProgress={handleMoveToInProgress}
+							onMoveToCompleted={handleMoveToCompleted}
+							fetchNextPage={fetchNextPageInProgress}
+							hasNextPage={hasNextPageInProgress}
+							isFetchingNextPage={isFetchingNextPageInProgress}
+						/>
+					</ErrorBoundaryWrappedContent>
 				</TabsContent>
 
 				<TabsContent value='on-hold'>
-					<OpportunitiesList
-						viewMode={currentView}
-						status='on-hold'
-						opportunities={opportunities}
-						onHoldOpportunities={onHoldOpportunities}
-						completedOpportunities={completedOpportunities}
-						filterOpportunities={filterOpportunities}
-						filters={filters}
-						onMoveToInProgress={handleMoveToInProgress}
-						onAddRole={handleAddRole}
-						onUpdateRole={handleUpdateRole}
-						onMoveToHold={undefined}
-						onMoveToCompleted={handleMoveToCompleted}
-						fetchNextPage={fetchNextPageOnHold}
-						hasNextPage={hasNextPageOnHold}
-						isFetchingNextPage={isFetchingNextPageOnHold}
-					/>
+					<ErrorBoundaryWrappedContent>
+						<OpportunitiesList
+							viewMode={currentView}
+							status='on-hold'
+							opportunities={opportunities}
+							onHoldOpportunities={onHoldOpportunities}
+							completedOpportunities={completedOpportunities}
+							filterOpportunities={filterOpportunities}
+							filters={filters}
+							onMoveToInProgress={handleMoveToInProgress}
+							onAddRole={handleAddRole}
+							onUpdateRole={handleUpdateRole}
+							onMoveToHold={undefined}
+							onMoveToCompleted={handleMoveToCompleted}
+							fetchNextPage={fetchNextPageOnHold}
+							hasNextPage={hasNextPageOnHold}
+							isFetchingNextPage={isFetchingNextPageOnHold}
+						/>
+					</ErrorBoundaryWrappedContent>
 				</TabsContent>
 
 				<TabsContent value='completed'>
-					<OpportunitiesList
-						viewMode={currentView}
-						status='completed'
-						opportunities={opportunities}
-						onHoldOpportunities={onHoldOpportunities}
-						completedOpportunities={completedOpportunities}
-						filterOpportunities={filterOpportunities}
-						filters={filters}
-						onAddRole={handleAddRole}
-						onUpdateRole={handleUpdateRole}
-						onMoveToHold={undefined}
-						onMoveToInProgress={undefined}
-						fetchNextPage={fetchNextPageCompleted}
-						hasNextPage={hasNextPageCompleted}
-						isFetchingNextPage={isFetchingNextPageCompleted}
-					/>
+					<ErrorBoundaryWrappedContent>
+						<OpportunitiesList
+							viewMode={currentView}
+							status='completed'
+							opportunities={opportunities}
+							onHoldOpportunities={onHoldOpportunities}
+							completedOpportunities={completedOpportunities}
+							filterOpportunities={filterOpportunities}
+							filters={filters}
+							onAddRole={handleAddRole}
+							onUpdateRole={handleUpdateRole}
+							onMoveToHold={undefined}
+							onMoveToInProgress={undefined}
+							fetchNextPage={fetchNextPageCompleted}
+							hasNextPage={hasNextPageCompleted}
+							isFetchingNextPage={isFetchingNextPageCompleted}
+						/>
+					</ErrorBoundaryWrappedContent>
 				</TabsContent>
 			</Suspense>
 		</Tabs>

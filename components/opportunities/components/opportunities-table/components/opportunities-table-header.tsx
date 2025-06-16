@@ -1,5 +1,9 @@
-import { TableHeader, TableRow, TableHead } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
+import {
+	TableHead,
+	TableHeader,
+	TableRow,
+} from '@/components/ui/table';
 
 interface OpportunitiesTableHeaderProps {
 	showActions?: boolean;

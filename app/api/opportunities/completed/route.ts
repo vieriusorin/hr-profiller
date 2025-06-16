@@ -57,7 +57,19 @@ export async function GET(request: Request) {
     const response = await fetch(`${JSON_SERVER_URL}/opportunities?status=Done`);
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch from json-server: ${response.statusText}`);
+      const errorMessage = `JSON server responded with status ${response.status}: ${response.statusText}`;
+      console.error(errorMessage);
+      return NextResponse.json(
+        { 
+          error: errorMessage,
+          details: {
+            endpoint: '/opportunities/completed',
+            status: response.status,
+            statusText: response.statusText
+          }
+        }, 
+        { status: 500 }
+      );
     }
 
     const allOpportunities: Opportunity[] = (await response.json()).map(normalizeOpportunity);
@@ -74,6 +86,16 @@ export async function GET(request: Request) {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
     console.error('Failed to fetch completed opportunities:', errorMessage);
-    return NextResponse.json({ error: `Failed to fetch completed opportunities: ${errorMessage}` }, { status: 500 });
+    return NextResponse.json(
+      { 
+        error: `Failed to fetch completed opportunities: ${errorMessage}`,
+        details: {
+          endpoint: '/opportunities/completed',
+          type: error instanceof Error ? error.name : 'UnknownError',
+          message: errorMessage
+        }
+      }, 
+      { status: 500 }
+    );
   }
 } 

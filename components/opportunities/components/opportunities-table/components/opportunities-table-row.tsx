@@ -1,9 +1,12 @@
+import React from 'react';
 import { useOpportunitiesTableRow } from "../hooks/use-opportunities-table-row";
 import { OpportunitiesTableRowProps } from "./types";
 import { OpportunityRow } from "./opportunity-row";
 import { RoleRow } from "./role-row";
+import { withErrorBoundary } from '@/app/shared/components/with-error-boundary';
+import { OpportunitiesErrorFallback } from '@/app/shared/components/error-fallbacks/opportunities-error-fallback';
 
-export const OpportunitiesTableRow = (props: OpportunitiesTableRowProps) => {
+const OpportunitiesTableRow = (props: OpportunitiesTableRowProps) => {
 	const {
 		row,
 		onAddRole,
@@ -58,3 +61,7 @@ export const OpportunitiesTableRow = (props: OpportunitiesTableRowProps) => {
 		/>
 	);
 };
+
+export default withErrorBoundary(OpportunitiesTableRow, {
+	FallbackComponent: OpportunitiesErrorFallback
+});

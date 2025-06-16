@@ -6,13 +6,16 @@ import {
 	TableBody,
 	TableCaption,
 	TableCell,
+	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
 import { useFlattenedOpportunities } from "../../hooks/use-flattened-opportunities";
 import { OpportunitiesTableProps, FlattenedRow } from "./types";
-import { OpportunitiesTableRow } from "./components/opportunities-table-row";
+import OpportunitiesTableRow from "./components/opportunities-table-row";
 import { OpportunitiesTableHeader } from "./components/opportunities-table-header";
 import { useInView } from "react-intersection-observer";
+import { withErrorBoundary } from '@/app/shared/components/with-error-boundary';
+import { OpportunitiesErrorFallback } from '@/app/shared/components/error-fallbacks/opportunities-error-fallback';
 
 export const OpportunitiesContext = createContext<{
 	opportunities: Opportunity[];
@@ -20,9 +23,9 @@ export const OpportunitiesContext = createContext<{
 	opportunities: [],
 });
 
-export const OpportunitiesTable = ({
+const OpportunitiesTable = ({
 	opportunities,
-	showActions,
+	showActions = false,
 	caption,
 	onAddRole,
 	onUpdateRole,
@@ -54,9 +57,9 @@ export const OpportunitiesTable = ({
 					<TableBody>
 						{flattenedData.map((row: FlattenedRow) => (
 							<OpportunitiesTableRow
-								key={`${row.opportunityId}-${row.roleId || "opportunity"}`}
+								key={`${row.opportunityId}-${row.roleId || 'opportunity'}`}
 								row={row}
-								showActions={showActions ?? false}
+								showActions={showActions}
 								onAddRole={onAddRole}
 								onUpdateRole={onUpdateRole}
 								onMoveToHold={onMoveToHold}
@@ -107,3 +110,7 @@ export const OpportunitiesTable = ({
 		</OpportunitiesContext.Provider>
 	);
 };
+
+export default withErrorBoundary(OpportunitiesTable, {
+	FallbackComponent: OpportunitiesErrorFallback
+});

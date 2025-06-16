@@ -7,8 +7,9 @@ import { useSettingsPage } from "./hooks/use-settings-page";
 import { GeneralSettings } from "./components/general-settings";
 import { ThemeSettings } from "./components/theme-settings";
 import { GanttSettings } from "./components/gantt-settings";
+import { withErrorBoundary } from '@/app/shared/components/with-error-boundary';
 
-export default function SettingsPage() {
+const SettingsPage = () => {
 	const {
 		form,
 		isLoading,
@@ -77,4 +78,6 @@ export default function SettingsPage() {
 			</FormProvider>
 		</div>
 	);
-}
+};
+
+export default withErrorBoundary(SettingsPage);
