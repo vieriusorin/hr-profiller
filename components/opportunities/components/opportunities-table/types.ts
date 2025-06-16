@@ -1,5 +1,13 @@
-import type { Opportunity as OpportunityInterface, OpportunityStatus, RoleStatus } from '@/shared/types';
-import type { OpportunityActionCallbacks } from '../../types';
+import type {
+  Opportunity as OpportunityType,
+  OpportunityStatus,
+  RoleStatus,
+} from "@/app/shared/types";
+import type { OpportunityActionCallbacks } from "../../types";
+import { Employee } from "@/shared/types/employees";
+import { Opportunity, UrgencyConfig } from "@/shared/types";
+
+export type ListType = "in-progress" | "on-hold" | "completed";
 
 export interface FlattenedRow {
   opportunityId: string;
@@ -7,83 +15,70 @@ export interface FlattenedRow {
   clientName: string;
   expectedStartDate: string;
   probability: number;
-  opportunityStatus: OpportunityStatus;
+  opportunityStatus: string;
   rolesCount: number;
   hasHiringNeeds: boolean;
   comment?: string;
   roleId?: string;
   roleName?: string;
   requiredGrade?: string;
-  roleStatus?: RoleStatus;
-  assignedMember?: string;
+  roleStatus?: string;
+  assignedMemberIds?: string[];
+  newHireName?: string;
   needsHire?: boolean;
   allocation?: number;
   isFirstRowForOpportunity: boolean;
-  isOpportunityRow?: boolean;
+  isOpportunityRow: boolean;
   isRoleRow?: boolean;
   rowSpan: number;
 }
 
 export interface OpportunitiesTableProps extends OpportunityActionCallbacks {
-  opportunities: OpportunityInterface[];
+  opportunities: Opportunity[];
   showActions?: boolean;
+  caption?: string;
+  fetchNextPage: () => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
 }
 
-export interface Opportunity {
-  id: string;
-  name: string;
-  clientName: string;
-  expectedStartDate: string;
-  probability: number;
-  status: 'In Progress' | 'On Hold' | 'Completed';
-  hasHiringNeeds: boolean;
-  comment?: string;
-  rolesCount: number;
-}
-
-export interface Role {
-  id: string;
-  roleName: string;
-  requiredGrade?: string;
-  status: 'Open' | 'Won' | 'Staffed' | 'Lost';
-  assignedMember?: string;
-  allocation?: number;
-  needsHire: boolean;
-  comments?: string;
-}
-
-export interface TableRow {
-  isOpportunityRow: boolean;
-  opportunityId: string;
-  opportunityName: string;
-  clientName: string;
-  expectedStartDate: string;
-  probability: number;
-  opportunityStatus: 'In Progress' | 'On Hold' | 'Completed';
-  hasHiringNeeds: boolean;
-  comment?: string;
-  rolesCount: number;
-  rowSpan: number;
-  isFirstRowForOpportunity: boolean;
-  roleId?: string;
-  roleName?: string;
-  requiredGrade?: string;
-  roleStatus?: 'Open' | 'Won' | 'Staffed' | 'Lost';
-  assignedMember?: string;
-  allocation?: number;
-  needsHire?: boolean;
-}
-
-export interface OpportunitiesTableRowProps {
-  row: TableRow;
-  showActions: boolean;
+export interface OpportunityRowProps {
+  row: FlattenedRow;
+  urgencyConfig: UrgencyConfig;
+  tooltip: string;
+  showActions?: boolean;
+  fullOpportunity: Opportunity | undefined;
   onAddRole: (opportunityId: string) => void;
-  onUpdateRole: (opportunityId: string, roleId: string, status: 'Won' | 'Staffed' | 'Lost') => void;
   onMoveToHold: (opportunityId: string) => void;
   onMoveToInProgress: (opportunityId: string) => void;
   onMoveToCompleted: (opportunityId: string) => void;
 }
 
+export interface RoleRowProps {
+  row: FlattenedRow;
+  urgencyConfig: UrgencyConfig;
+  showActions?: boolean;
+  fullOpportunity: OpportunityType | undefined;
+  employees: Employee[];
+  onUpdateRole: (
+    opportunityId: string,
+    roleId: string,
+    updates: string
+  ) => void;
+}
+
+export type RoleActionsProps = {
+  roleId: string;
+  opportunityId: string;
+  roleName?: string;
+  roleStatus: "Open" | "Won" | "Staffed" | "Lost";
+  onStatusClick: (
+    opportunityId: string,
+    roleId: string,
+    status: "Won" | "Staffed" | "Lost",
+    roleName?: string
+  ) => void;
+};
 
 export type ConfirmationDialogState = {
   isOpen: boolean;

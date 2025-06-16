@@ -16,11 +16,13 @@
           "allocation": 100,
           "comments": "",
           "status": "Staffed",
-          "assignedMember": null,
-          "id": "2d23e399-ff2c-4a59-a3f7-478e57abd52f"
+          "assignedMemberIds": [],
+          "id": "2d23e399-ff2c-4a59-a3f7-478e57abd52f",
+          "newHireName": ""
         }
       ],
-      "comment": ""
+      "comment": "",
+      "expectedEndDate": "2025-08-03"
     },
     {
       "id": "e2a7",
@@ -38,11 +40,13 @@
           "allocation": 100,
           "comments": "Awsome ",
           "status": "Lost",
-          "assignedMember": null,
-          "id": "a96ab6ea-4720-40e5-b10d-b2c463cf7f00"
+          "assignedMemberIds": [],
+          "id": "a96ab6ea-4720-40e5-b10d-b2c463cf7f00",
+          "newHireName": ""
         }
       ],
-      "comment": ""
+      "comment": "",
+      "expectedEndDate": "2025-08-30"
     },
     {
       "id": "b6c1",
@@ -60,11 +64,13 @@
           "allocation": 100,
           "comments": "",
           "status": "Won",
-          "assignedMember": null,
-          "id": "7ffc7c5c-a0bf-4af9-bf6c-b405d9ca8c8e"
+          "assignedMemberIds": [],
+          "id": "7ffc7c5c-a0bf-4af9-bf6c-b405d9ca8c8e",
+          "newHireName": ""
         }
       ],
-      "comment": ""
+      "comment": "",
+      "expectedEndDate": "2025-08-30"
     },
     {
       "id": "4a6a",
@@ -82,8 +88,9 @@
           "allocation": 100,
           "comments": "",
           "status": "Won",
-          "assignedMember": null,
-          "id": "ee407be1-2e7a-404f-83f9-522a57708c42"
+          "assignedMemberIds": [],
+          "id": "ee407be1-2e7a-404f-83f9-522a57708c42",
+          "newHireName": ""
         },
         {
           "roleName": "FE",
@@ -92,8 +99,9 @@
           "allocation": 80,
           "comments": "test",
           "status": "Won",
-          "assignedMember": null,
-          "id": "32952c0d-13b3-43c0-a69b-d358196f8004"
+          "assignedMemberIds": [],
+          "id": "32952c0d-13b3-43c0-a69b-d358196f8004",
+          "newHireName": ""
         },
         {
           "roleName": "test",
@@ -102,11 +110,13 @@
           "allocation": 50,
           "comments": "",
           "status": "Won",
-          "assignedMember": null,
-          "id": "3c20b3b4-7c3e-4bd9-a646-08caf3294834"
+          "assignedMemberIds": [],
+          "id": "3c20b3b4-7c3e-4bd9-a646-08caf3294834",
+          "newHireName": ""
         }
       ],
-      "comment": ""
+      "comment": "",
+      "expectedEndDate": "2025-08-03"
     },
     {
       "id": "d729",
@@ -115,9 +125,37 @@
       "expectedStartDate": "2025-07-02",
       "probability": 80,
       "createdAt": "2025-06-12",
-      "status": "In Progress",
-      "roles": [],
-      "comment": ""
+      "status": "On Hold",
+      "roles": [
+        {
+          "roleName": "Frontend Developer",
+          "requiredGrade": "SE",
+          "allocation": 100,
+          "needsHire": false,
+          "comments": "",
+          "status": "Open",
+          "id": "4492c879-30ff-40af-861b-272171c27a95",
+          "assignedMemberIds": [
+            "3"
+          ],
+          "newHireName": ""
+        },
+        {
+          "roleName": "Frontend Developer",
+          "requiredGrade": "SE",
+          "allocation": 100,
+          "needsHire": false,
+          "comments": "",
+          "status": "Open",
+          "assignedMemberIds": [
+            "3"
+          ],
+          "id": "4ea1ad46-b44e-48c1-9504-71ea77986256",
+          "newHireName": ""
+        }
+      ],
+      "comment": "",
+      "expectedEndDate": "2025-08-01"
     },
     {
       "id": "c67d",
@@ -135,7 +173,8 @@
           "needsHire": true,
           "comments": "test",
           "status": "Open",
-          "assignedMember": null
+          "assignedMemberIds": [],
+          "newHireName": ""
         },
         {
           "id": "08ee36f5-ba3b-4d2b-9796-efcb11e3b10b",
@@ -145,10 +184,12 @@
           "needsHire": false,
           "comments": "",
           "status": "Open",
-          "assignedMember": null
+          "assignedMemberIds": [],
+          "newHireName": ""
         }
       ],
-      "comment": "aweesome "
+      "comment": "aweesome ",
+      "expectedEndDate": "2025-10-03"
     },
     {
       "id": "2d77",
@@ -166,7 +207,8 @@
           "needsHire": false,
           "comments": "Awesome comment here",
           "status": "Open",
-          "assignedMember": null
+          "assignedMemberIds": [],
+          "newHireName": ""
         },
         {
           "id": "4d5e40e6-9a14-43f0-ae88-4819c124fa08",
@@ -176,10 +218,12 @@
           "needsHire": false,
           "comments": "",
           "status": "Won",
-          "assignedMember": null
+          "assignedMemberIds": [],
+          "newHireName": ""
         }
       ],
-      "comment": "test"
+      "comment": "test",
+      "expectedEndDate": "2025-09-20"
     },
     {
       "id": "4744",
@@ -188,7 +232,7 @@
       "expectedStartDate": "2025-08-28",
       "probability": 80,
       "createdAt": "2025-06-12",
-      "status": "On Hold",
+      "status": "In Progress",
       "roles": [
         {
           "roleName": "Devops",
@@ -196,9 +240,10 @@
           "needsHire": false,
           "comments": "",
           "status": "Open",
-          "assignedMember": null,
+          "assignedMemberIds": [],
           "allocation": 100,
-          "id": "60bef332-9975-417e-8f48-afdeba163c6b"
+          "id": "60bef332-9975-417e-8f48-afdeba163c6b",
+          "newHireName": ""
         },
         {
           "roleName": "Backend Developer",
@@ -206,9 +251,10 @@
           "needsHire": false,
           "comments": "",
           "status": "Open",
-          "assignedMember": null,
+          "assignedMemberId": null,
           "allocation": 100,
-          "id": "61797a8a-8423-4ded-9d7c-f1af5a0f80e0"
+          "id": "61797a8a-8423-4ded-9d7c-f1af5a0f80e0",
+          "newHireName": ""
         },
         {
           "roleName": "Test",
@@ -216,9 +262,10 @@
           "needsHire": true,
           "comments": "",
           "status": "Open",
-          "assignedMember": null,
+          "assignedMemberId": null,
           "allocation": 100,
-          "id": "7bbc7564-1140-44bc-96ec-8de6add18e4a"
+          "id": "7bbc7564-1140-44bc-96ec-8de6add18e4a",
+          "newHireName": ""
         },
         {
           "roleName": "Tests",
@@ -226,9 +273,10 @@
           "needsHire": true,
           "comments": "",
           "status": "Open",
-          "assignedMember": null,
+          "assignedMemberId": null,
           "allocation": 100,
-          "id": "ac6bb4d2-ce9a-4a1f-8f9e-48b5ef0693ce"
+          "id": "ac6bb4d2-ce9a-4a1f-8f9e-48b5ef0693ce",
+          "newHireName": ""
         },
         {
           "roleName": "Tests",
@@ -236,12 +284,14 @@
           "needsHire": true,
           "comments": "",
           "status": "Open",
-          "assignedMember": null,
+          "assignedMemberId": null,
           "allocation": 100,
-          "id": "59ea6293-ec7e-4709-b11b-8081027b16e8"
+          "id": "59ea6293-ec7e-4709-b11b-8081027b16e8",
+          "newHireName": ""
         }
       ],
-      "comment": ""
+      "comment": "",
+      "expectedEndDate": "2025-09-27"
     },
     {
       "id": "5819",
@@ -252,7 +302,8 @@
       "createdAt": "2025-06-12",
       "status": "Done",
       "roles": [],
-      "comment": ""
+      "comment": "",
+      "expectedEndDate": "2025-11-01"
     },
     {
       "id": "d637",
@@ -270,11 +321,15 @@
           "needsHire": false,
           "comments": "",
           "status": "Open",
-          "assignedMember": null,
-          "id": "fcc5a4e4-954f-412a-89a0-bc132785b238"
+          "id": "fcc5a4e4-954f-412a-89a0-bc132785b238",
+          "assignedMemberIds": [
+            "3"
+          ],
+          "newHireName": ""
         }
       ],
-      "comment": ""
+      "comment": "",
+      "expectedEndDate": "2026-01-23"
     },
     {
       "id": "3fad",
@@ -285,7 +340,8 @@
       "createdAt": "2025-06-12",
       "status": "Done",
       "roles": [],
-      "comment": ""
+      "comment": "",
+      "expectedEndDate": "2025-07-26"
     },
     {
       "id": "84fc",
@@ -293,23 +349,190 @@
       "clientName": "Test",
       "expectedStartDate": "2025-09-16",
       "status": "In Progress",
-      "probability": 50,
+      "probability": 70,
       "createdAt": "2025-06-14",
       "isActive": false,
       "activatedAt": null,
       "roles": [
         {
-          "id": "25b876a2-10e0-442e-9709-baadf33927dc",
           "roleName": "BE",
           "requiredGrade": "SE",
           "allocation": 100,
           "needsHire": false,
           "comments": "",
-          "status": "Open",
-          "assignedMember": null
+          "newHireName": "",
+          "id": "25b876a2-10e0-442e-9709-baadf33927dc",
+          "status": "Open"
         }
       ],
       "comment": "test"
     }
-  ]
+  ],
+  "employees": [
+    {
+      "id": "1",
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "position": "Software Engineer",
+      "department": "Technology",
+      "employeeStatus": "Active",
+      "workStatus": "On Project",
+      "hireDate": "2022-08-15",
+      "jobGrade": "SE",
+      "location": "New York",
+      "unavailableDates": [
+        {
+          "startDate": "2025-07-10",
+          "endDate": "2025-07-20"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Jane Smith",
+      "email": "jane.smith@example.com",
+      "position": "Product Manager",
+      "department": "Product",
+      "employeeStatus": "Active",
+      "workStatus": "On Project",
+      "hireDate": "2021-05-20",
+      "jobGrade": "M2",
+      "location": "London"
+    },
+    {
+      "id": "3",
+      "name": "Peter Jones",
+      "email": "peter.jones@example.com",
+      "position": "UX Designer",
+      "department": "Design",
+      "employeeStatus": "Active",
+      "workStatus": "On Bench",
+      "hireDate": "2023-01-10",
+      "jobGrade": "IC4",
+      "location": "Remote",
+      "unavailableDates": [
+        {
+          "startDate": "2025-07-01",
+          "endDate": "2025-07-05"
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "name": "Samantha Bee",
+      "email": "samantha.bee@example.com",
+      "position": "QA Engineer",
+      "department": "Technology",
+      "employeeStatus": "Active",
+      "workStatus": "On Project",
+      "hireDate": "2022-11-01",
+      "jobGrade": "SE",
+      "location": "San Francisco"
+    },
+    {
+      "id": "5",
+      "name": "Carlos Ray",
+      "email": "carlos.ray@example.com",
+      "position": "DevOps Engineer",
+      "department": "Technology",
+      "employeeStatus": "On Leave",
+      "workStatus": "On Bench",
+      "hireDate": "2020-07-22",
+      "jobGrade": "IC5",
+      "location": "Remote"
+    },
+    {
+      "id": "6",
+      "name": "Mei Lin",
+      "email": "mei.lin@example.com",
+      "position": "Data Scientist",
+      "department": "Analytics",
+      "employeeStatus": "Active",
+      "workStatus": "On Project",
+      "hireDate": "2023-09-01",
+      "jobGrade": "IC3",
+      "location": "New York "
+    }
+  ],
+  "clients": [
+    {
+      "id": "1",
+      "name": "Innovate Inc."
+    },
+    {
+      "id": "2",
+      "name": "Quantum Dynamics"
+    },
+    {
+      "id": "3",
+      "name": "Synergy Solutions"
+    },
+    {
+      "id": "4",
+      "name": "Apex Innovations"
+    },
+    {
+      "id": "5",
+      "name": "Starlight Enterprises"
+    }
+  ],
+  "projects": [
+    {
+      "id": "1",
+      "name": "Project Alpha"
+    },
+    {
+      "id": "2",
+      "name": "Project Beta"
+    },
+    {
+      "id": "3",
+      "name": "Project Gamma"
+    }
+  ],
+  "candidates": [],
+  "whitelabel": {
+    "logoUrl": "/uploads/4cc975c0-1f4e-4092-aaf4-9992027c5480.svg",
+    "primaryColor": "oklch(0.71779371120156 0.06960845967734909 204.10969314994742)",
+    "logoWidth": 130,
+    "logoHeight": 40,
+    "logoAlt": "Company Logo",
+    "background": "oklch(0.9911 0 0)",
+    "foreground": "oklch(0.5348833171399984 0.004993816738801878 17.312757779385663)",
+    "card": "oklch(0.9911 0 0)",
+    "cardForeground": "oklch(0.2886439349300958 0.010382752313441507 17.76896081192649)",
+    "secondary": "oklch(0.9940 0 0)",
+    "accent": "oklch(0.9461 0 0)",
+    "destructive": "oklch(0.5523 0.1927 32.7272)",
+    "border": "oklch(0.9037 0 0)",
+    "input": "oklch(0.9731 0 0)",
+    "radius": "0.5rem",
+    "primaryForeground": "oklch(0.98 0.01 240)",
+    "gantt": {
+      "highProbability": {
+        "backgroundColor": "#979ee9",
+        "backgroundSelectedColor": "#8f6ff7",
+        "progressColor": "#724cb0",
+        "progressSelectedColor": "#44388f"
+      },
+      "mediumProbability": {
+        "backgroundColor": "#fffde7",
+        "backgroundSelectedColor": "#fff9c4",
+        "progressColor": "#ffeb3b",
+        "progressSelectedColor": "#fbc02d"
+      },
+      "lowProbability": {
+        "backgroundColor": "#ffebee",
+        "backgroundSelectedColor": "#ffcdd2",
+        "progressColor": "#f44336",
+        "progressSelectedColor": "#d32f2f"
+      },
+      "role": {
+        "progressColor": "#ffe7a3",
+        "progressSelectedColor": "#6580bb"
+      },
+      "todayColor": "#d1d4dc",
+      "arrowColor": "#000"
+    }
+  }
 }

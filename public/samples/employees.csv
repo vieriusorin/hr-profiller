@@ -1,0 +1,7 @@
+id,name,email,position,department,employeeStatus,workStatus,hireDate,jobGrade,location
+1,John Doe,john.doe@example.com,Software Engineer,Technology,Active,On Project,2022-08-15,SE,New York
+2,Jane Smith,jane.smith@example.com,Product Manager,Product,Active,On Project,2021-05-20,M2,London
+3,Peter Jones,peter.jones@example.com,UX Designer,Design,Active,On Bench,2023-01-10,IC4,Remote
+4,Samantha Bee,samantha.bee@example.com,QA Engineer,Technology,Active,On Project,2022-11-01,SE,San Francisco
+5,Carlos Ray,carlos.ray@example.com,DevOps Engineer,Technology,On Leave,On Bench,2020-07-22,IC5,Remote
+6,Mei Lin,mei.lin@example.com,Data Scientist,Analytics,Active,On Project,2023-09-01,IC3,New York 

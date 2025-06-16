@@ -4,46 +4,26 @@ import { Gantt, Task, ViewMode } from "gantt-task-react";
 import "gantt-task-react/dist/index.css";
 import { Opportunity } from "@/shared/schemas/api-schemas";
 import { format } from "date-fns";
+import { useTheme } from "@/app/providers/theme-provider";
+import type { GanttSettings } from "@/app/providers/theme-provider";
 
 interface GanttChartProps {
 	opportunities: Opportunity[];
 }
 
-const getStylesForProbability = (probability: number) => {
+const getStylesForProbability = (
+	probability: number,
+	ganttSettings: GanttSettings | undefined
+) => {
+	if (!ganttSettings) return {};
+
 	if (probability > 70) {
-		// High probability -> Green
-		return {
-			backgroundColor: "#e8f5e9",
-			backgroundSelectedColor: "#c8e6c9",
-			progressColor: "#4caf50",
-			progressSelectedColor: "#388e3c",
-			textColor: "#000",
-			fontFamily: "Outfit",
-			fontSize: "16px",
-		};
+		return ganttSettings.highProbability;
 	}
 	if (probability > 30) {
-		// Medium probability -> Yellow
-		return {
-			backgroundColor: "#fffde7",
-			backgroundSelectedColor: "#fff9c4",
-			progressColor: "#ffeb3b",
-			progressSelectedColor: "#fbc02d",
-			textColor: "#000",
-			fontFamily: "Outfit",
-			fontSize: "16px",
-		};
+		return ganttSettings.mediumProbability;
 	}
-	// Low probability -> Red
-	return {
-		backgroundColor: "#ffebee",
-		backgroundSelectedColor: "#ffcdd2",
-		progressColor: "#f44336",
-		progressSelectedColor: "#d32f2f",
-		textColor: "#000",
-		fontFamily: "Outfit",
-		fontSize: "16px",
-	};
+	return ganttSettings.lowProbability;
 };
 
 interface TaskNew extends Task {
@@ -52,7 +32,8 @@ interface TaskNew extends Task {
 
 const transformDataForGantt = (
 	opportunities: Opportunity[],
-	expandedTasks: { [key: string]: boolean }
+	expandedTasks: { [key: string]: boolean },
+	ganttSettings: GanttSettings | undefined
 ): TaskNew[] => {
 	if (!opportunities) return [];
 
@@ -71,7 +52,7 @@ const transformDataForGantt = (
 			status: opp.status,
 			progress: opp.probability,
 			isDisabled: false,
-			styles: getStylesForProbability(opp.probability),
+			styles: getStylesForProbability(opp.probability, ganttSettings),
 			hideChildren: expandedTasks[opp.id] === false,
 		});
 
@@ -90,7 +71,10 @@ const transformDataForGantt = (
 				progress: role.status === "Won" || role.status === "Staffed" ? 100 : 0,
 				isDisabled: false,
 				project: opp.id,
-				styles: { progressColor: "#a3a3ff", progressSelectedColor: "#8f8fff" },
+				styles: {
+					progressColor: ganttSettings?.role?.progressColor,
+					progressSelectedColor: ganttSettings?.role?.progressSelectedColor,
+				},
 			});
 		});
 	});
@@ -99,6 +83,7 @@ const transformDataForGantt = (
 };
 
 export const GanttChart = ({ opportunities }: GanttChartProps) => {
+	const { settings } = useTheme();
 	const [expandedTasks, setExpandedTasks] = useState<{
 		[key: string]: boolean;
 	}>({});
@@ -112,8 +97,8 @@ export const GanttChart = ({ opportunities }: GanttChartProps) => {
 		}
 	};
 	const tasks = useMemo(
-		() => transformDataForGantt(opportunities, expandedTasks),
-		[opportunities, expandedTasks]
+		() => transformDataForGantt(opportunities, expandedTasks, settings.gantt),
+		[opportunities, expandedTasks, settings.gantt]
 	);
 
 	return (
@@ -125,8 +110,8 @@ export const GanttChart = ({ opportunities }: GanttChartProps) => {
 					viewMode={ViewMode.Month}
 					columnWidth={135}
 					onExpanderClick={handleExpanderClick}
-					todayColor='#d1d4dc'
-					arrowColor='#000'
+					todayColor={settings.gantt?.todayColor}
+					arrowColor={settings.gantt?.arrowColor}
 					arrowIndent={10}
 					barCornerRadius={3}
 					barFill={80}

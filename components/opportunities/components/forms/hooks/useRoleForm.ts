@@ -3,13 +3,13 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { 
-  UseRoleFormProps, 
-  UseRoleFormReturn 
+import {
+  UseRoleFormProps,
+  UseRoleFormReturn
 } from '../types';
-import { 
-  createRoleSchema, 
-  CreateRoleFormData 
+import {
+  createRoleSchema,
+  CreateRoleFormData
 } from '../schemas';
 import { Role } from '@/shared/types';
 
@@ -30,6 +30,8 @@ export const useRoleForm = ({
       allocation: 100,
       needsHire: false,
       comments: '',
+      assignedMemberIds: [],
+      newHireName: '',
     },
   });
 
@@ -41,7 +43,8 @@ export const useRoleForm = ({
         const roleData = {
           ...data,
           status: mode === 'create' ? 'Open' as const : initialData?.status,
-          assignedMember: mode === 'create' ? null : initialData?.assignedMember,
+          assignedMemberIds: data.needsHire ? [] : data.assignedMemberIds,
+          newHireName: data.needsHire ? data.newHireName : '',
         };
 
         await onSubmit(roleData as Role);

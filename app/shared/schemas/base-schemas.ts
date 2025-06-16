@@ -9,11 +9,16 @@ export const RoleStatusSchema = z.enum(['Open', 'Staffed', 'Won', 'Lost']);
 export const GradeSchema = z.enum(['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM']);
 
 export const MemberSchema = z.object({
-  id: MemberIdSchema,
-  fullName: z.string().min(1, 'Member name is required'),
-  actualGrade: GradeSchema,
-  allocation: z.number().min(0).max(100),
-  availableFrom: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
+  id: z.string(),
+  name: z.string(),
+  email: z.string().email(),
+  position: z.string(),
+  department: z.string(),
+  employeeStatus: z.string(),
+  workStatus: z.string(),
+  hireDate: z.string(),
+  jobGrade: z.string(),
+  location: z.string(),
 });
 
 export const ClientSchema = z.object({
@@ -23,7 +28,6 @@ export const ClientSchema = z.object({
 
 export const ProbabilitySchema = z.number().min(0).max(100);
 
-// Inferred types from schemas
 export type OpportunityId = z.infer<typeof OpportunityIdSchema>;
 export type RoleId = z.infer<typeof RoleIdSchema>;
 export type MemberId = z.infer<typeof MemberIdSchema>;

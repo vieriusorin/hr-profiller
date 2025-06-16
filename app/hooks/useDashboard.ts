@@ -21,7 +21,16 @@ export const useDashboard = (): UseDashboardReturn => {
     updateRoleStatus,
     filterOpportunities,
     isRefetching,
-    isAddingRole
+    isAddingRole,
+    fetchNextPageInProgress,
+    hasNextPageInProgress,
+    isFetchingNextPageInProgress,
+    fetchNextPageOnHold,
+    hasNextPageOnHold,
+    isFetchingNextPageOnHold,
+    fetchNextPageCompleted,
+    hasNextPageCompleted,
+    isFetchingNextPageCompleted
   } = useOpportunities();
 
   const { filters } = useOpportunityFilters();
@@ -130,9 +139,10 @@ export const useDashboard = (): UseDashboardReturn => {
       toast.success(`Opportunity "${opportunity.opportunityName}" created successfully!`);
       setShowNewOpportunityDialog(false);
       return opportunity;
-    } catch (error: { message: string }) {
+    } catch (error: unknown) {
       toast.dismiss(loadingToast);
-      toast.error(`Failed to create opportunity: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      toast.error(`Failed to create opportunity: ${errorMessage}`);
       throw error;
     }
   };
@@ -147,9 +157,10 @@ export const useDashboard = (): UseDashboardReturn => {
       await moveToOnHold(opportunityId);
       toast.dismiss(loadingToast);
       toast.success(`"${opportunity.opportunityName}" moved to hold`);
-    } catch (error: { message: string }) {
+    } catch (error: unknown) {
       toast.dismiss(loadingToast);
-      toast.error(`Failed to move opportunity: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      toast.error(`Failed to move opportunity: ${errorMessage}`);
     }
   };
 
@@ -163,9 +174,10 @@ export const useDashboard = (): UseDashboardReturn => {
       await moveToInProgress(opportunityId);
       toast.dismiss(loadingToast);
       toast.success(`"${opportunity.opportunityName}" moved back to in progress`);
-    } catch (error: { message: string }) {
+    } catch (error: unknown) {
       toast.dismiss(loadingToast);
-      toast.error(`Failed to move opportunity: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      toast.error(`Failed to move opportunity: ${errorMessage}`);
     }
   };
 
@@ -181,9 +193,10 @@ export const useDashboard = (): UseDashboardReturn => {
       await moveToCompleted(opportunityId, fromStatus as 'in-progress' | 'on-hold');
       toast.dismiss(loadingToast);
       toast.success(`"${opportunity.opportunityName}" moved to completed`);
-    } catch (error: { message: string }) {
+    } catch (error: unknown) {
       toast.dismiss(loadingToast);
-      toast.error(`Failed to move opportunity: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      toast.error(`Failed to move opportunity: ${errorMessage}`);
     }
   };
 
@@ -217,6 +230,15 @@ export const useDashboard = (): UseDashboardReturn => {
     closeNewRoleDialogAndReset,
     filterOpportunities,
     isRefetching,
-    isAddingRole
+    isAddingRole,
+    fetchNextPageInProgress,
+    hasNextPageInProgress,
+    isFetchingNextPageInProgress,
+    fetchNextPageOnHold,
+    hasNextPageOnHold,
+    isFetchingNextPageOnHold,
+    fetchNextPageCompleted,
+    hasNextPageCompleted,
+    isFetchingNextPageCompleted
   };
 }; 

@@ -12,8 +12,14 @@ import {
 	LogOut,
 	ChevronUp,
 	BarChart3,
+	Upload,
 } from "lucide-react";
-import { NavigationItem, getFilteredNavigation, UserRole } from "@/lib/rbac";
+import {
+	NavigationItem,
+	getFilteredNavigation,
+	UserRole,
+	hasPermission,
+} from "@/lib/rbac";
 import { componentThemes } from "@/lib/theme";
 import {
 	Sidebar,
@@ -37,6 +43,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { User } from "next-auth";
+import { useTheme } from "@/app/providers/theme-provider";
+import Image from "next/image";
 
 // Navigation items with permissions
 const navigationItems: NavigationItem[] = [
@@ -88,6 +96,7 @@ export const AppSidebar = () => {
 	const { data: session } = useSession();
 	const router = useRouter();
 	const pathname = usePathname();
+	const { settings, isLoading: isThemeLoading } = useTheme();
 
 	// Get user role from session
 	const userRole = (session?.user as User)?.role as UserRole;
@@ -121,12 +130,28 @@ export const AppSidebar = () => {
 		<Sidebar>
 			<SidebarHeader className={componentThemes.sidebar.header}>
 				<div className='flex items-center gap-2 px-4 py-3'>
-					<div className='flex items-center justify-center w-8 h-8 bg-primary rounded-lg'>
-						<Building2 className='w-5 h-5 text-white' />
-					</div>
-					<div className='flex flex-col flex-1'>
+					{isThemeLoading ? (
+						<div className='w-8 h-8 bg-gray-200 rounded-lg animate-pulse' />
+					) : settings.logoUrl ? (
+						<Image
+							src={settings.logoUrl}
+							alt={settings.logoAlt || "Company Logo"}
+							width={settings.logoWidth || 100}
+							height={settings.logoHeight || 40}
+							className='rounded-lg object-contain'
+							style={{
+								width: `${settings.logoWidth || 100}px`,
+								height: `${settings.logoHeight || 40}px`,
+							}}
+						/>
+					) : (
+						<div className='flex items-center justify-center w-8 h-8 bg-primary rounded-lg'>
+							<Building2 className='w-5 h-5 text-white' />
+						</div>
+					)}
+					{/* <div className='flex flex-col flex-1'>
 						<h1 className='font-semibold text-sidebar-foreground'>DDROIDD</h1>
-					</div>
+					</div> */}
 					{/* {roleInfo && (
             <div className='flex items-center gap-1'>
               <Shield className='w-3 h-3 text-primary' />
@@ -192,6 +217,22 @@ export const AppSidebar = () => {
 										<Settings className='w-4 h-4 mr-2' />
 										Account Settings
 									</DropdownMenuItem>
+									{hasPermission(userRole, "edit_system_settings") && (
+										<DropdownMenuItem
+											onClick={() => router.push("/dashboard/settings/import")}
+										>
+											<Upload className='w-4 h-4 mr-2' />
+											Import Data
+										</DropdownMenuItem>
+									)}
+									{hasPermission(userRole, "edit_system_settings") && (
+										<DropdownMenuItem
+											onClick={() => router.push("/dashboard/settings")}
+										>
+											<Settings className='w-4 h-4 mr-2' />
+											Customization
+										</DropdownMenuItem>
+									)}
 									<DropdownMenuSeparator />
 									<DropdownMenuItem onClick={handleSignOut}>
 										<LogOut className='w-4 h-4 mr-2' />

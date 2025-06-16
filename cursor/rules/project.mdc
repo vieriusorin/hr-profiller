@@ -1,0 +1,85 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+## Project Overview
+
+This is a web application built with the following technologies:
+- **Framework:** Next.js (App Router)
+- **Language:** TypeScript
+- **UI:** React
+- **Styling:** Tailwind CSS & `clsx` for conditional classes
+- **UI Components:** Shadcn/ui
+- **Data Fetching:** TanStack Query (React Query)
+- **Validation:** Zod
+- **Forms:** React Hook Form
+- **Authentication:** NextAuth.js
+
+---
+
+## Architecture & Principles
+
+Our architecture emphasizes **Separation of Concerns** and follows principles from **SOLID** to create a maintainable and scalable codebase.
+
+- **Single Responsibility Principle:** Each component, hook, or service should have one, and only one, reason to change.
+- **Component Structure:**
+  - **`components/ui`**: Contains generic, reusable UI components from Shadcn/ui (e.g., `Button`, `Input`). These are considered our design system.
+  - **`components/` (feature-specific)**: More complex components that compose UI primitives and often contain business logic are organized by feature (e.g., `components/opportunities/components/filters`).
+  - **Route Components:** Pages defined in the `app/` directory are the entry points for routes. They should be primarily used for layout and data fetching, composing smaller components to render the UI.
+- **Server-Side vs. Client-Side:** Utilize Server Components for data fetching and backend tasks whenever possible. Use Client Components (`"use client"`) only when interactivity (hooks, event listeners) is needed.
+
+---
+
+## Folder Structure Conventions
+
+- **`app/`**: Contains all routes, pages, and layouts, following the Next.js App Router structure.
+  - **`app/api/`**: Houses all backend API route handlers. Logic within these handlers should be minimal, calling out to service layers or utilities in `lib/`.
+  - **`app/dashboard/`**: Feature-based routing. Each major feature (e.g., `employees`, `projects`) has its own directory.
+    - **`_components/`**: A `_` prefix denotes a private folder. Components inside are specific to this part of the dashboard and not intended for reuse elsewhere.
+- **`components/`**: Global, shared React components.
+  - **`ui/`**: Base UI elements from Shadcn/ui. Do not modify directly unless updating the design system.
+- **`hooks/`**: Shared, reusable React hooks. Hooks specific to a feature should be co-located with that feature's components.
+- **`lib/`**: General-purpose utility functions, helper scripts, and library configurations.
+  - **`lib/db.ts`**: Database client instance (e.g., Prisma).
+  - **`lib/utils.ts`**: Generic utility functions (e.g., `cn` from `clsx`).
+- **`schemas/`**: Contains all Zod schemas for data validation. This centralizes type definitions and validation logic.
+- **`types/`**: Global TypeScript type definitions. If a type is only used within a specific component or feature, it should be defined locally in that file.
+
+---
+
+## Key Library Usage Patterns
+
+### Data Fetching with TanStack Query
+
+- **Queries (`useQuery`)**: For fetching data. The query key should be a descriptive array, typically starting with the entity name and including any filters.
+- **Mutations (`useMutation`)**: For creating, updating, or deleting data. Implement `onSuccess` and `onError` handlers for user feedback (e.g., showing toasts) and cache invalidation.
+- **Custom Hooks**: Abstract complex queries or mutations into custom hooks (e.g., `useDashboard`) to encapsulate data-fetching logic and make components cleaner. These hooks can be stored in `hooks/` or co-located with the features they serve.
+
+### Validation with Zod and React Hook Form
+
+- **Schema Definition:** Define Zod schemas for all external data sources (API responses) and user inputs (forms) in the `schemas/` directory. This ensures type safety at runtime.
+- **Form Integration:** Use the `@hookform/resolvers/zod` package to connect Zod schemas directly to React Hook Form. This provides seamless validation.
+  ```typescript
+  import { useForm } from "react-hook-form";
+  import { zodResolver } from "@hookform/resolvers/zod";
+  import { userSchema } from "@/schemas/user-schema";
+  
+  const form = useForm({
+    resolver: zodResolver(userSchema),
+    // ...
+  });
+  ```
+- **Type Inference:** Use `z.infer<typeof schema>` to derive a TypeScript type from a Zod schema, avoiding type duplication.
+
+### Styling
+
+- Use Tailwind CSS for all styling.
+- Use the `cn` utility from `lib/utils.ts` (which combines `clsx` and `tailwind-merge`) to conditionally apply classes. This is the standard for all components.
+
+---
+
+## Development Conventions
+
+### Layout
+- For consistent page layouts and main content areas, use the following Tailwind CSS classes on the main container `div`: `p-6 max-w-7xl mx-auto`. This ensures a standardized width and padding across the dashboard and settings pages.

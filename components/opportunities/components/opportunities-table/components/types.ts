@@ -1,25 +1,36 @@
-import type { FlattenedRow } from '../types';
-import type { OpportunityActionCallbacks } from '../../../types';
+import { FlattenedRow } from "../types";
+import { Opportunity, RoleStatus, UrgencyConfig } from "@/shared/types";
+import { Employee } from "@/shared/types/employees";
+import { OpportunityActionCallbacks } from "../../../types";
 
 export interface OpportunitiesTableRowProps extends OpportunityActionCallbacks {
   row: FlattenedRow;
   showActions: boolean;
 }
 
-export type RoleRowProps = {
-  row: FlattenedRow;
-  showActions: boolean;
-  onStatusClick: (opportunityId: string, roleId: string, status: 'Won' | 'Staffed' | 'Lost', roleName?: string) => void;
-}
-
 export type OpportunityRowProps = {
   row: FlattenedRow;
+  urgencyConfig: UrgencyConfig;
+  tooltip: string;
   showActions: boolean;
+  fullOpportunity?: Opportunity;
   onAddRole: (opportunityId: string) => void;
   onMoveToHold: (opportunityId: string) => void;
   onMoveToInProgress: (opportunityId: string) => void;
   onMoveToCompleted: (opportunityId: string) => void;
-  onEditOpportunity: () => void;
+}
+
+export type RoleRowProps = {
+  row: FlattenedRow;
+  urgencyConfig: UrgencyConfig;
+  showActions: boolean;
+  fullOpportunity?: Opportunity;
+  employees: Employee[];
+  onUpdateRole: (
+    opportunityId: string,
+    roleId: string,
+    status: RoleStatus
+  ) => void;
 }
 
 export type OpportunityActionsProps = {

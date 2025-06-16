@@ -1,4 +1,5 @@
 import { Opportunity, OpportunityFilters, CreateRoleForm } from '@/shared/types';
+import { ReactNode } from 'react';
 
 export interface UseDashboardReturn {
   opportunities: Opportunity[];
@@ -24,4 +25,17 @@ export interface UseDashboardReturn {
   closeNewOpportunityDialog: () => void;
   closeNewRoleDialog: () => void;
   closeNewRoleDialogAndReset: () => void;
-} 
+  fetchNextPageInProgress: () => void;
+  hasNextPageInProgress: boolean;
+  isFetchingNextPageInProgress: boolean;
+  fetchNextPageOnHold: () => void;
+  hasNextPageOnHold: boolean;
+  isFetchingNextPageOnHold: boolean;
+  fetchNextPageCompleted: () => void;
+  hasNextPageCompleted: boolean;
+  isFetchingNextPageCompleted: boolean;
+}
+
+export type ProvidersProps = {
+  children: ReactNode;
+}

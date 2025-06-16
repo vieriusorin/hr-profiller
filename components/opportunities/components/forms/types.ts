@@ -28,6 +28,7 @@ export interface RoleFormProps extends FormActions {
   onSubmit: (role: Role) => Promise<void>;
   isSubmitting?: boolean;
   comment?: string;
+  opportunity?: Opportunity;
 }
 
 export interface UseCreateOpportunityFormProps extends FormActions {

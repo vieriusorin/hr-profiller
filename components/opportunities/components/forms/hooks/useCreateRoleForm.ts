@@ -3,19 +3,19 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { 
-  UseCreateRoleFormProps, 
-  UseCreateRoleFormReturn 
-} from '../types';
-import { 
-  createRoleSchema, 
-  CreateRoleFormData 
+
+import {
+  createRoleSchema,
+  CreateRoleFormData
 } from '../schemas';
 
 export const useCreateRoleForm = ({
   onSubmit,
   onCancel,
-}: UseCreateRoleFormProps): UseCreateRoleFormReturn => {
+}: {
+  onSubmit: (data: CreateRoleFormData) => Promise<void>;
+  onCancel: () => void;
+}) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<CreateRoleFormData>({
@@ -24,7 +24,7 @@ export const useCreateRoleForm = ({
       roleName: '',
       requiredGrade: 'SE',
       allocation: 100,
-      needsHire: 'No',
+      needsHire: false,
       comments: '',
     },
   });
@@ -38,7 +38,7 @@ export const useCreateRoleForm = ({
           id: crypto.randomUUID(),
           ...data,
           status: 'Open' as const,
-          assignedMember: null,
+          assignedMemberId: null,
         };
 
         await onSubmit(newRole);
