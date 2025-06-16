@@ -1,14 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-
-interface OpportunityActionsProps {
-	opportunityId: string;
-	opportunityStatus: string;
-	onAddRole: (opportunityId: string) => void;
-	onMoveToHold: (opportunityId: string) => void;
-	onMoveToInProgress: (opportunityId: string) => void;
-	onMoveToCompleted: (opportunityId: string) => void;
-}
+import { OpportunityActionsProps } from "./types";
 
 export const OpportunityActions = ({
 	opportunityId,

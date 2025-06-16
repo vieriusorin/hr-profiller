@@ -43,6 +43,7 @@ export const RoleRow = ({
 				<TableCell></TableCell>
 				<TableCell></TableCell>
 				<TableCell></TableCell>
+				<TableCell></TableCell>
 
 				{/* Role-specific cells start here */}
 				<TableCell>
@@ -59,7 +60,9 @@ export const RoleRow = ({
 					)}
 				</TableCell>
 				<TableCell>
-					{row.roleStatus && <StatusBadge status={row.roleStatus} />}
+					{row.roleStatus && (
+						<StatusBadge status={row.roleStatus as RoleStatus} />
+					)}
 				</TableCell>
 				<TableCell>
 					{row.assignedMemberIds && row.assignedMemberIds.length > 0 ? (

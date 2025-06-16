@@ -8,11 +8,29 @@ export const useFlattenedOpportunities = (
   return useMemo(() => {
     if (!opportunities) return [];
     const flattened: FlattenedRow[] = [];
+
     opportunities.forEach((opportunity) => {
-      if (opportunity.roles.length === 0) {
+      // Always add the opportunity row first
+      flattened.push({
+        isOpportunityRow: true,
+        isFirstRowForOpportunity: true,
+        rowSpan: 1,
+        opportunityId: opportunity.id,
+        opportunityName: opportunity.opportunityName,
+        opportunityStatus: opportunity.status,
+        clientName: opportunity.clientName,
+        expectedStartDate: opportunity.expectedStartDate,
+        probability: opportunity.probability,
+        rolesCount: opportunity.roles.length,
+        hasHiringNeeds: opportunity.roles.some((r) => r.needsHire),
+        comment: opportunity.comment,
+      });
+
+      // Then add all role rows
+      opportunity.roles.forEach((role) => {
         flattened.push({
-          isOpportunityRow: true,
-          isFirstRowForOpportunity: true,
+          isOpportunityRow: false,
+          isFirstRowForOpportunity: false,
           rowSpan: 1,
           opportunityId: opportunity.id,
           opportunityName: opportunity.opportunityName,
@@ -20,38 +38,20 @@ export const useFlattenedOpportunities = (
           clientName: opportunity.clientName,
           expectedStartDate: opportunity.expectedStartDate,
           probability: opportunity.probability,
-          rolesCount: 0,
-          hasHiringNeeds: false,
-          comment: opportunity.comment,
+          rolesCount: opportunity.roles.length,
+          hasHiringNeeds: opportunity.roles.some((r) => r.needsHire),
+          roleId: role.id,
+          roleName: role.roleName,
+          requiredGrade: role.requiredGrade,
+          roleStatus: role.status,
+          assignedMemberIds: role.assignedMemberIds,
+          allocation: role.allocation,
+          needsHire: role.needsHire,
+          newHireName: role.newHireName,
         });
-      } else {
-        opportunity.roles.forEach((role, roleIndex) => {
-          const isFirstRow = roleIndex === 0;
-          flattened.push({
-            isOpportunityRow: isFirstRow,
-            isFirstRowForOpportunity: isFirstRow,
-            rowSpan: opportunity.roles.length,
-            opportunityId: opportunity.id,
-            opportunityName: opportunity.opportunityName,
-            opportunityStatus: opportunity.status,
-            clientName: opportunity.clientName,
-            expectedStartDate: opportunity.expectedStartDate,
-            probability: opportunity.probability,
-            rolesCount: opportunity.roles.length,
-            hasHiringNeeds: opportunity.roles.some((r) => r.needsHire),
-            roleId: role.id,
-            roleName: role.roleName,
-            requiredGrade: role.requiredGrade,
-            roleStatus: role.status,
-            assignedMemberIds: role.assignedMemberIds,
-            allocation: role.allocation,
-            needsHire: role.needsHire,
-            newHireName: role.newHireName,
-            comment: isFirstRow ? opportunity.comment : undefined,
-          });
-        });
-      }
+      });
     });
+
     return flattened;
   }, [opportunities]);
 }; 

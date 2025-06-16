@@ -13,6 +13,7 @@ import { EditOpportunityModal } from "../../modals/edit-role-modal";
 import { OpportunityRowProps } from "./types";
 import { useOpportunityRow } from "../hooks/use-opportunity-row";
 import { OpportunityActions } from "./opportunity-actions";
+import { OpportunityStatus } from "@/app/shared/types";
 
 export const OpportunityRow = ({
 	row,
@@ -78,7 +79,7 @@ export const OpportunityRow = ({
 					<ProbabilityBadge probability={row.probability} size='sm' />
 				</TableCell>
 				<TableCell rowSpan={row.rowSpan} className='align-top'>
-					<StatusBadge status={row.opportunityStatus} />
+					<StatusBadge status={row.opportunityStatus as OpportunityStatus} />
 				</TableCell>
 
 				{/* This cell is for the first role's comment */}
@@ -123,6 +124,10 @@ export const OpportunityRow = ({
 				<TableCell className='text-muted-foreground italic text-center'>
 					—
 				</TableCell>
+				<TableCell className='text-muted-foreground italic text-center'>
+					—
+				</TableCell>
+
 				<TableCell className='text-muted-foreground italic text-center'>
 					—
 				</TableCell>
