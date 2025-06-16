@@ -1,23 +1,23 @@
 'use client';
 
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-
 import {
   createRoleSchema,
   CreateRoleFormData
 } from '../schemas';
 
+interface UseCreateRoleFormProps {
+  onSubmit: (data: CreateRoleFormData) => Promise<void>;
+  onCancel: () => void;
+  isSubmitting?: boolean;
+}
+
 export const useCreateRoleForm = ({
   onSubmit,
   onCancel,
-}: {
-  onSubmit: (data: CreateRoleFormData) => Promise<void>;
-  onCancel: () => void;
-}) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
+  isSubmitting = false,
+}: UseCreateRoleFormProps) => {
   const form = useForm<CreateRoleFormData>({
     resolver: zodResolver(createRoleSchema),
     defaultValues: {
@@ -26,27 +26,25 @@ export const useCreateRoleForm = ({
       allocation: 100,
       needsHire: false,
       comments: '',
+      isActive: true,
+      assignedMemberIds: [],
+      newHireName: '',
     },
   });
 
   const handleSubmit = async () => {
-    await form.handleSubmit(async (data) => {
-      setIsSubmitting(true);
-
+    await form.handleSubmit(async (data: CreateRoleFormData) => {
       try {
         const newRole = {
           id: crypto.randomUUID(),
           ...data,
           status: 'Open' as const,
-          assignedMemberId: null,
         };
 
         await onSubmit(newRole);
         form.reset();
       } catch (error) {
         console.error('Failed to create role:', error);
-      } finally {
-        setIsSubmitting(false);
       }
     })();
   };
@@ -61,5 +59,6 @@ export const useCreateRoleForm = ({
     handleSubmit,
     handleCancel,
     isSubmitting,
+    isDirty: form.formState.isDirty,
   };
 }; 

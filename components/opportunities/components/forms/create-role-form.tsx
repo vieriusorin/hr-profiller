@@ -22,6 +22,7 @@ import { MultiSelect } from "@/components/ui/multi-select";
 import { Opportunity } from "@/shared/types";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
+import { useAllocationCheck } from './hooks/useAllocationCheck';
 
 const fetchEmployees = async (): Promise<Employee[]> => {
 	const res = await fetch("/api/employees");
@@ -67,9 +68,50 @@ export const RoleForm = ({
 	const assignedMemberIds = watch("assignedMemberIds");
 	const allocation = watch("allocation");
 
-	const [allocationWarning, setAllocationWarning] = React.useState<
-		string | null
-	>(null);
+	console.log('Form Values Changed:', {
+		needsHire,
+		hasStartDate: !!opportunity?.expectedStartDate,
+		startDate: opportunity?.expectedStartDate,
+		assignedMemberIds,
+		memberCount: assignedMemberIds?.length ?? 0,
+		allocation,
+	});
+
+	const { getAllocationWarning, isLoading: isCheckingAllocation } = useAllocationCheck({
+		employeeIds: assignedMemberIds || [],
+		startDate: opportunity?.expectedStartDate || '',
+		endDate: opportunity?.expectedEndDate,
+		currentOpportunityId: opportunity?.id,
+		currentRoleId: initialData?.id,
+		currentAllocation: allocation,
+		enabled: !needsHire && 
+			!!opportunity?.expectedStartDate && 
+			(assignedMemberIds?.length ?? 0) > 0 && 
+			allocation > 0,
+	});
+
+	const allocationCheck = getAllocationWarning();
+	console.log('Allocation Check Results:', {
+		isCheckingAllocation,
+		allocationCheck,
+		data: allocationCheck?.message,
+		isOverAllocated: allocationCheck?.isOverAllocated,
+		currentAllocation: allocation,
+		enabled: !needsHire && 
+			!!opportunity?.expectedStartDate && 
+			(assignedMemberIds?.length ?? 0) > 0 && 
+			allocation > 0,
+		conditions: {
+			notNeedsHire: !needsHire,
+			hasStartDate: !!opportunity?.expectedStartDate,
+			hasEmployees: (assignedMemberIds?.length ?? 0) > 0,
+			hasValidAllocation: allocation > 0,
+			startDate: opportunity?.expectedStartDate,
+			employeeCount: assignedMemberIds?.length ?? 0,
+			allocation,
+		},
+	});
+
 	const [isSaveDisabled, setIsSaveDisabled] = React.useState(false);
 
 	const { data: employees = [] } = useQuery<Employee[]>({
@@ -83,85 +125,20 @@ export const RoleForm = ({
 	});
 
 	useEffect(() => {
+		if (allocationCheck?.isOverAllocated) {
+			setIsSaveDisabled(true);
+		} else {
+			setIsSaveDisabled(false);
+		}
+	}, [allocationCheck]);
+
+	useEffect(() => {
 		if (needsHire) {
 			setValue("assignedMemberIds", []);
 		} else {
 			setValue("newHireName", "");
 		}
 	}, [needsHire, setValue]);
-
-	useEffect(() => {
-		if (!assignedMemberIds || assignedMemberIds.length === 0 || !opportunity) {
-			setAllocationWarning(null);
-			setIsSaveDisabled(false);
-			return;
-		}
-
-		let warningMessage = "";
-		let shouldDisable = false;
-
-		const currentOppStartDate = new Date(opportunity.expectedStartDate);
-		const currentOppEndDate = opportunity.expectedEndDate
-			? new Date(opportunity.expectedEndDate)
-			: null;
-
-		if (!currentOppEndDate) {
-			setAllocationWarning(null);
-			setIsSaveDisabled(false);
-			return;
-		}
-
-		for (const memberId of assignedMemberIds) {
-			let allocationFromOtherRoles = 0;
-			for (const opp of opportunities) {
-				const oppStartDate = new Date(opp.expectedStartDate);
-				const oppEndDate = opp.expectedEndDate
-					? new Date(opp.expectedEndDate)
-					: null;
-
-				if (
-					!oppEndDate ||
-					!(
-						oppStartDate <= currentOppEndDate &&
-						oppEndDate >= currentOppStartDate
-					)
-				) {
-					continue;
-				}
-
-				for (const role of opp.roles) {
-					if (opportunity.id === opp.id && initialData?.id === role.id) {
-						continue;
-					}
-					if (role.assignedMemberIds?.includes(memberId)) {
-						allocationFromOtherRoles += role.allocation;
-					}
-				}
-			}
-
-			const currentRoleAllocation = allocation || 0;
-			const totalAllocation = allocationFromOtherRoles + currentRoleAllocation;
-			const employee = employees.find((e) => e.id === memberId);
-			const employeeName = employee?.name || "Unknown employee";
-
-			if (totalAllocation > 100) {
-				warningMessage += `${employeeName} will be over-allocated. Total allocation during this period would be ${totalAllocation}%. `;
-				shouldDisable = true;
-			} else if (totalAllocation === 100) {
-				warningMessage += `${employeeName} will be at 100% allocation for this period. `;
-			}
-		}
-
-		setAllocationWarning(warningMessage || null);
-		setIsSaveDisabled(shouldDisable);
-	}, [
-		assignedMemberIds,
-		allocation,
-		opportunities,
-		employees,
-		opportunity,
-		initialData,
-	]);
 
 	const availableEmployees = useMemo(() => {
 		return getAvailableEmployees(employees, roleName, opportunity);
@@ -305,11 +282,20 @@ export const RoleForm = ({
 				/>
 			)}
 
-			{allocationWarning && (
-				<Alert variant='destructive'>
+			{isCheckingAllocation && (
+				<div className='text-sm bg-blue-50 border border-blue-200 rounded-md p-3 flex items-center gap-2'>
+					<div className='animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent'></div>
+					<span className='text-blue-700'>Checking employee allocations...</span>
+				</div>
+			)}
+
+			{allocationCheck?.message && (
+				<Alert variant={allocationCheck.isOverAllocated ? 'destructive' : 'default'}>
 					<Terminal className='h-4 w-4' />
-					<AlertTitle>Over-allocation Warning</AlertTitle>
-					<AlertDescription>{allocationWarning}</AlertDescription>
+					<AlertTitle>
+						{allocationCheck.isOverAllocated ? 'Over-allocation Warning' : 'Allocation Notice'}
+					</AlertTitle>
+					<AlertDescription>{allocationCheck.message}</AlertDescription>
 				</Alert>
 			)}
 
@@ -328,13 +314,18 @@ export const RoleForm = ({
 							min='0'
 							max='100'
 							placeholder='e.g., 100'
-							onChange={(e) =>
-								field.onChange(
-									e.target.value === "" ? undefined : Number(e.target.value)
-								)
-							}
-							value={field.value || ""}
-							className={errors.allocation ? "border-red-500" : ""}
+							onChange={(e) => {
+								const value = e.target.value === '' ? 0 : Number(e.target.value);
+								field.onChange(value);
+								console.log('Allocation Input Changed:', { 
+									rawValue: e.target.value,
+									parsedValue: value,
+									type: typeof value,
+									isValid: value > 0 && value <= 100,
+								});
+							}}
+							value={field.value ?? ''}
+							className={errors.allocation ? 'border-red-500' : ''}
 						/>
 					)}
 				/>
@@ -374,16 +365,19 @@ export const RoleForm = ({
 				<Button
 					onClick={handleSubmit}
 					disabled={
-						isSubmitting || (mode === "edit" && !isDirty) || isSaveDisabled
+						isSubmitting ||
+						(mode === 'edit' && !isDirty) ||
+						isSaveDisabled ||
+						isCheckingAllocation
 					}
 				>
 					{isSubmitting
-						? mode === "create"
-							? "Adding Role..."
-							: "Saving Changes..."
-						: mode === "create"
-						? "Add Role"
-						: "Save Changes"}
+						? mode === 'create'
+							? 'Adding Role...'
+							: 'Saving Changes...'
+						: mode === 'create'
+							? 'Add Role'
+							: 'Save Changes'}
 				</Button>
 			</div>
 		</div>

@@ -1,11 +1,9 @@
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google";
-import { Providers } from "./providers";
-import { Toaster } from "react-hot-toast";
 import { cn } from "@/lib/utils";
-import { ThemeProvider } from "./providers/theme-provider";
 import { getSettings } from "@/lib/settings";
+import { Providers } from './providers';
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -26,36 +24,13 @@ export default async function RootLayout({
 }: {
 	children: React.ReactNode;
 }) {
+	const settings = await getSettings();
 	return (
 		<html lang='en' className={cn(outfit.className)} suppressHydrationWarning>
 			<body>
-				<ThemeProvider>
-					<Providers>{children}</Providers>
-					<Toaster
-						position='top-right'
-						toastOptions={{
-							duration: 4000,
-							style: {
-								background: (await getSettings()).primaryColor,
-								color: (await getSettings()).primaryForeground,
-							},
-							success: {
-								duration: 3000,
-								iconTheme: {
-									primary: "#4ade80",
-									secondary: "#fff",
-								},
-							},
-							error: {
-								duration: 5000,
-								iconTheme: {
-									primary: "#ef4444",
-									secondary: "#fff",
-								},
-							},
-						}}
-					/>
-				</ThemeProvider>
+				<Providers settings={settings}>
+					{children}
+				</Providers>
 			</body>
 		</html>
 	);

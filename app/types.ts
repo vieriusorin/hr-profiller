@@ -1,5 +1,6 @@
 import { Opportunity, OpportunityFilters, CreateRoleForm } from '@/shared/types';
 import { ReactNode } from 'react';
+import { DehydratedState } from '@tanstack/react-query';
 
 export interface UseDashboardReturn {
   opportunities: Opportunity[];
@@ -36,6 +37,6 @@ export interface UseDashboardReturn {
   isFetchingNextPageCompleted: boolean;
 }
 
-export type ProvidersProps = {
-  children: ReactNode;
+export interface ProvidersProps {
+  children: React.ReactNode;
 }

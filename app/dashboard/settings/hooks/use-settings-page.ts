@@ -7,12 +7,15 @@ import { useTheme } from "@/app/providers/theme-provider";
 import { useUpdateSettingsMutation } from "./use-settings";
 import { settingsSchema, SettingsFormValues } from "../schema";
 
+type TabType = 'general' | 'theme' | 'gantt' | 'roles';
+
 export const useSettingsPage = () => {
   const { settings, isLoading } = useTheme();
   const mutation = useUpdateSettingsMutation();
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [activeTab, setActiveTab] = useState("general");
+  const [activeTab, setActiveTab] = useState<TabType>('general');
+  const [isPending, setIsPending] = useState(false);
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
@@ -29,11 +32,16 @@ export const useSettingsPage = () => {
     const file = event.target.files?.[0];
     if (file) {
       setLogoFile(file);
-      setLogoPreview(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const onSubmit = async (values: SettingsFormValues) => {
+    setIsPending(true);
     let newLogoUrl = values.logoUrl;
 
     if (logoFile) {
@@ -60,6 +68,7 @@ export const useSettingsPage = () => {
       ...values,
       logoUrl: newLogoUrl,
     });
+    setIsPending(false);
   };
 
   return {
@@ -70,6 +79,6 @@ export const useSettingsPage = () => {
     setActiveTab,
     handleLogoChange,
     onSubmit,
-    isPending: mutation.isPending,
+    isPending,
   };
 }; 

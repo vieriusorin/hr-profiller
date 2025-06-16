@@ -12,6 +12,7 @@ const RoleBaseSchema = z.object({
   needsHire: z.boolean(),
   comments: z.string().optional(),
   newHireName: z.string().optional(),
+  isActive: z.boolean().default(true),
 });
 
 export const CreateRoleFormSchema = RoleBaseSchema.extend({

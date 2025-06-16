@@ -69,6 +69,7 @@ export const createRoleSchema = z.object({
 
   assignedMemberIds: z.array(z.string()).optional(),
   newHireName: z.string().optional(),
+  isActive: z.literal(true),
 });
 
 export type CreateOpportunityFormData = z.infer<typeof createOpportunitySchema>;

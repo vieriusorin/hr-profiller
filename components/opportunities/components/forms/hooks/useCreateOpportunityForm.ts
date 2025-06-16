@@ -1,31 +1,28 @@
 'use client';
 
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   UseCreateOpportunityFormReturn
 } from '../types';
-import { createOpportunitySchema } from '../schemas';
+import { createOpportunitySchema, CreateOpportunityFormData } from '../schemas';
+import { Opportunity } from '@/shared/types';
 
-export type CreateOpportunityFormData = {
-  clientName: string;
-  opportunityName: string;
-  expectedStartDate: string;
-  probability: number;
-  comment?: string;
-};
+interface UseCreateOpportunityFormProps {
+  onSubmit: (data: Opportunity | CreateOpportunityFormData) => Promise<void>;
+  onCancel: () => void;
+  initialData?: Partial<CreateOpportunityFormData>;
+  mode?: 'create' | 'edit';
+  isSubmitting?: boolean;
+}
 
 export const useCreateOpportunityForm = ({
   onSubmit,
   onCancel,
   initialData,
   mode = 'create',
-  isSubmitting: externalIsSubmitting,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-}: any): UseCreateOpportunityFormReturn => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
+  isSubmitting = false,
+}: UseCreateOpportunityFormProps): UseCreateOpportunityFormReturn => {
   const form = useForm<CreateOpportunityFormData>({
     resolver: zodResolver(createOpportunitySchema),
     defaultValues: initialData
@@ -36,7 +33,13 @@ export const useCreateOpportunityForm = ({
         probability: initialData.probability ?? 0,
         comment: initialData.comment || '',
       }
-      : undefined,
+      : {
+        clientName: '',
+        opportunityName: '',
+        expectedStartDate: '',
+        probability: 0,
+        comment: '',
+      },
   });
 
   const handleSubmit = async () => {
@@ -44,26 +47,26 @@ export const useCreateOpportunityForm = ({
     if (!isValid) return;
 
     const formData = form.getValues();
-    setIsSubmitting(true);
 
     try {
       if (mode === 'edit') {
         await onSubmit(formData);
       } else {
-        const newOpportunity = {
+        const newOpportunity: Opportunity = {
           id: crypto.randomUUID(),
           ...formData,
           createdAt: new Date().toISOString().split('T')[0],
           status: 'In Progress' as const,
           roles: [],
+          isActive: true,
+          expectedEndDate: undefined,
+          activatedAt: undefined,
         };
         await onSubmit(newOpportunity);
         form.reset();
       }
     } catch (error) {
       console.error(`Failed to ${mode} opportunity:`, error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -76,7 +79,7 @@ export const useCreateOpportunityForm = ({
     form,
     handleSubmit,
     handleCancel,
-    isSubmitting: externalIsSubmitting !== undefined ? externalIsSubmitting : isSubmitting,
+    isSubmitting,
     isDirty: form.formState.isDirty,
   };
 }; 

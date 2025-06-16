@@ -14,6 +14,7 @@ export class OpportunityService {
       ...form,
       createdAt: new Date().toISOString().split('T')[0],
       status: 'In Progress',
+      isActive: true,
       roles: []
     };
   }
@@ -22,7 +23,7 @@ export class OpportunityService {
     return {
       ...form,
       status: 'Open',
-      assignedMemberId: null,
+      assignedMemberIds: [],
       needsHire: true,
       allocation: 100
     };

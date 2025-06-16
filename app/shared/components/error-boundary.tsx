@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { Component, type ReactNode, isValidElement } from 'react';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';

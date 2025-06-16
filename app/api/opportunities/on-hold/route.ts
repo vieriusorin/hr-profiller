@@ -35,7 +35,10 @@ function normalizeOpportunity(raw: any) {
     createdAt: raw.createdAt,
     isActive: raw.isActive ?? false,
     activatedAt: raw.activatedAt,
-    roles: raw.roles || [],
+    roles: (raw.roles || []).map((role: any) => ({
+      ...role,
+      isActive: role.isActive ?? true,
+    })),
     comment: raw.comment,
   };
 }

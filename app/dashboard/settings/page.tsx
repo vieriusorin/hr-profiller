@@ -55,6 +55,13 @@ const SettingsPage = () => {
 								>
 									Gantt Chart
 								</Button>
+								<Button
+									type='button'
+									variant={activeTab === "roles" ? "default" : "ghost"}
+									onClick={() => setActiveTab("roles")}
+								>
+									Roles
+								</Button>
 							</div>
 							<Button type='submit' disabled={isPending}>
 								{isPending ? "Saving..." : "Save Changes"}
@@ -72,6 +79,7 @@ const SettingsPage = () => {
 							{activeTab === "theme" && <ThemeSettings />}
 
 							{activeTab === "gantt" && <GanttSettings />}
+
 						</div>
 					</form>
 				</Form>

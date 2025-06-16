@@ -18,7 +18,8 @@
           "status": "Staffed",
           "assignedMemberIds": [],
           "id": "2d23e399-ff2c-4a59-a3f7-478e57abd52f",
-          "newHireName": ""
+          "newHireName": "",
+          "isActive": true
         }
       ],
       "comment": "",
@@ -38,11 +39,12 @@
           "requiredGrade": "C",
           "needsHire": false,
           "allocation": 100,
-          "comments": "Awsome ",
-          "status": "Lost",
+          "comments": "",
+          "status": "Open",
           "assignedMemberIds": [],
-          "id": "a96ab6ea-4720-40e5-b10d-b2c463cf7f00",
-          "newHireName": ""
+          "id": "e2a7-role-1",
+          "newHireName": "",
+          "isActive": true
         }
       ],
       "comment": "",
@@ -186,6 +188,54 @@
           "status": "Open",
           "assignedMemberIds": [],
           "newHireName": ""
+        },
+        {
+          "roleName": "Frontend",
+          "requiredGrade": "SE",
+          "allocation": 60,
+          "needsHire": false,
+          "newHireName": "",
+          "comments": "",
+          "status": "Open",
+          "assignedMemberIds": [],
+          "id": "d953dbae-89e9-4150-9a41-179998a31cff",
+          "isActive": true
+        },
+        {
+          "roleName": "Frontend",
+          "requiredGrade": "SE",
+          "allocation": 100,
+          "needsHire": false,
+          "newHireName": "",
+          "comments": "",
+          "status": "Open",
+          "assignedMemberIds": [
+            "3"
+          ],
+          "id": "73fff03a-73b6-4e67-a6e0-208009c5785c",
+          "isActive": true
+        },
+        {
+          "roleName": "Frontend",
+          "requiredGrade": "C",
+          "allocation": 80,
+          "needsHire": false,
+          "newHireName": "",
+          "comments": "",
+          "status": "Open",
+          "assignedMemberIds": [],
+          "id": "def3aa51-9ce5-471b-b581-b746e211a152"
+        },
+        {
+          "roleName": "Frontend",
+          "requiredGrade": "C",
+          "allocation": 80,
+          "needsHire": false,
+          "newHireName": "",
+          "comments": "",
+          "status": "Open",
+          "assignedMemberIds": [],
+          "id": "171198bd-89a8-456b-a3ec-b7e6d5276c6c"
         }
       ],
       "comment": "aweesome ",
@@ -232,7 +282,7 @@
       "expectedStartDate": "2025-08-28",
       "probability": 80,
       "createdAt": "2025-06-12",
-      "status": "In Progress",
+      "status": "On Hold",
       "roles": [
         {
           "roleName": "Devops",
@@ -317,7 +367,7 @@
         {
           "roleName": "FE",
           "requiredGrade": "SE",
-          "allocation": 100,
+          "allocation": 96,
           "needsHire": false,
           "comments": "",
           "status": "Open",
@@ -325,7 +375,8 @@
           "assignedMemberIds": [
             "3"
           ],
-          "newHireName": ""
+          "newHireName": "",
+          "isActive": true
         }
       ],
       "comment": "",
@@ -351,21 +402,49 @@
       "status": "In Progress",
       "probability": 70,
       "createdAt": "2025-06-14",
-      "isActive": false,
-      "activatedAt": null,
+      "isActive": true,
+      "activatedAt": "2025-06-16",
       "roles": [
         {
-          "roleName": "BE",
+          "roleName": "Backend",
           "requiredGrade": "SE",
           "allocation": 100,
           "needsHire": false,
           "comments": "",
           "newHireName": "",
           "id": "25b876a2-10e0-442e-9709-baadf33927dc",
-          "status": "Open"
+          "status": "Open",
+          "isActive": true,
+          "assignedMemberIds": []
         }
       ],
       "comment": "test"
+    },
+    {
+      "id": "df9d",
+      "opportunityName": "Test",
+      "clientName": "Digital",
+      "expectedStartDate": "2025-09-26",
+      "status": "In Progress",
+      "probability": 70,
+      "createdAt": "2025-06-16",
+      "isActive": false,
+      "activatedAt": null,
+      "roles": [
+        {
+          "roleName": "Frontend",
+          "requiredGrade": "SE",
+          "allocation": 94,
+          "needsHire": false,
+          "newHireName": "",
+          "isActive": true,
+          "comments": "",
+          "status": "Open",
+          "assignedMemberIds": [],
+          "id": "200513c3-0e88-49f4-92e7-0e96fdad31ae"
+        }
+      ],
+      "comment": "Awesome"
     }
   ],
   "employees": [
@@ -493,7 +572,7 @@
   "candidates": [],
   "whitelabel": {
     "logoUrl": "/uploads/4cc975c0-1f4e-4092-aaf4-9992027c5480.svg",
-    "primaryColor": "oklch(0.71779371120156 0.06960845967734909 204.10969314994742)",
+    "primaryColor": "oklch(0.44002890955519236 0.17917767436996945 271.71621774088834)",
     "logoWidth": 130,
     "logoHeight": 40,
     "logoAlt": "Company Logo",

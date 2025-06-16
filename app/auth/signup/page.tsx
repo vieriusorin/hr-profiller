@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,80 +8,35 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Building2, Mail, Lock, User, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { signup, type SignUpState } from './actions';
+
+const initialState: SignUpState = {
+  message: null,
+  errors: {},
+  success: false,
+};
 
 const SignUpPage = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [state, setState] = useState<SignUpState>(initialState);
   const router = useRouter();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  useEffect(() => {
+    if (state.success) {
+      setTimeout(() => {
+        router.push('/auth/signin');
+      }, 2000);
+    }
+  }, [state.success, router]);
+
+  const handleSubmit = (formData: FormData) => {
+    startTransition(async () => {
+      const result = await signup(state, formData);
+      setState(result);
+    });
   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
-
-    // Validation
-    if (!formData.email.endsWith('@ddroidd.com')) {
-      setError('Only @ddroidd.com email addresses are allowed');
-      setIsLoading(false);
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      setIsLoading(false);
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccess(true);
-        setTimeout(() => {
-          router.push('/auth/signin');
-        }, 2000);
-      } else {
-        setError(data.error || 'Sign up failed');
-      }
-    } catch (error) {
-      console.error('Sign up error:', error);
-      setError('An error occurred during sign up');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  if (success) {
+  if (state.success) {
     return (
       <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 to-amber-100 p-4'>
         <Card className='w-full max-w-md'>
@@ -123,10 +78,10 @@ const SignUpPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSignUp} className='space-y-4'>
-              {error && (
+            <form action={handleSubmit} className='space-y-4'>
+              {state.message && !state.success && (
                 <div className='bg-red-50 border border-red-200 rounded-lg p-3'>
-                  <p className='text-sm text-red-800'>{error}</p>
+                  <p className='text-sm text-red-800'>{state.message}</p>
                 </div>
               )}
 
@@ -139,12 +94,11 @@ const SignUpPage = () => {
                     name='name'
                     type='text'
                     placeholder='John Doe'
-                    value={formData.name}
-                    onChange={handleInputChange}
                     className='pl-10'
                     required
                   />
                 </div>
+                {state.errors?.name && <p className='text-sm text-red-500'>{state.errors.name[0]}</p>}
               </div>
 
               <div className='space-y-2'>
@@ -156,12 +110,11 @@ const SignUpPage = () => {
                     name='email'
                     type='email'
                     placeholder='user@ddroidd.com'
-                    value={formData.email}
-                    onChange={handleInputChange}
                     className='pl-10'
                     required
                   />
                 </div>
+                {state.errors?.email && <p className='text-sm text-red-500'>{state.errors.email[0]}</p>}
               </div>
               
               <div className='space-y-2'>
@@ -173,12 +126,11 @@ const SignUpPage = () => {
                     name='password'
                     type='password'
                     placeholder='Enter your password'
-                    value={formData.password}
-                    onChange={handleInputChange}
                     className='pl-10'
                     required
                   />
                 </div>
+                {state.errors?.password && <p className='text-sm text-red-500'>{state.errors.password[0]}</p>}
               </div>
 
               <div className='space-y-2'>
@@ -190,20 +142,19 @@ const SignUpPage = () => {
                     name='confirmPassword'
                     type='password'
                     placeholder='Confirm your password'
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
                     className='pl-10'
                     required
                   />
                 </div>
+                {state.errors?.confirmPassword && <p className='text-sm text-red-500'>{state.errors.confirmPassword[0]}</p>}
               </div>
 
               <Button 
                 type='submit'
-                disabled={isLoading}
+                disabled={isPending}
                 className='w-full bg-primary hover:bg-yellow-700 text-white py-3 rounded-md font-medium transition-colors'
               >
-                {isLoading ? (
+                {isPending ? (
                   <div className='flex items-center space-x-2'>
                     <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white'></div>
                     <span>Creating Account...</span>
