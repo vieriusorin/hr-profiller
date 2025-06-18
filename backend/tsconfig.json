@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "module": "NodeNext",
+    "target": "ES2022",
+    "moduleResolution": "nodenext",
+    "outDir": "./dist",
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@base/*": ["./src/*"],
+      "@db/*": ["./db/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@interfaces/*": ["./src/interfaces/*"],
+      "@infrastructure/*": ["./src/infrastructure/*"],
+      "@services/*": ["./src/services/*"],
+      "@controllers/*": ["./src/controllers/*"],
+      "@routes/*": ["./src/routes/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@middlewares/*": ["./src/middlewares/*"],
+      "@config/*": ["./src/config/*"],
+      "@presenters/*": ["./src/interfaces/presenters/*"],
+      "@types/*": ["./src/types/*"],
+      "@domain/*": ["./src/domain/*"]
+    },
+    "baseUrl": "."
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}

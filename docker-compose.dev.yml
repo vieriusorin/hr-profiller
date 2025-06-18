@@ -1,0 +1,105 @@
+services:
+  # PostgreSQL 16 Alpine
+  postgres:
+    image: postgres:16-alpine
+    container_name: dd-postgresql
+    ports:
+      - 5433:5432
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      PGDATA: /data/postgres
+    networks:
+      - dd-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    volumes:
+      - pgdata:/data/postgres
+
+  # PG Admin 4 Official
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: dd-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
+    networks:
+      - dd-network
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+  # Node.JS Express Server - Custom
+  express:
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      NODE_ENV: development
+    build:
+      context: ./
+      dockerfile: Dockerfile.express
+    image: dd-express:1.0
+    container_name: dd-express
+    ports:
+      - "4040:4040"
+    restart: always
+    networks:
+      - dd-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4040/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  # NextJS 15 - Custom
+  next:
+    build:
+      context: ./
+      dockerfile: Dockerfile.next
+    image: dd-next:1.0
+    container_name: dd-next
+    ports:
+      - "3000:3000"
+    restart: always
+    environment:
+      - NODE_ENV=development
+      - API_URL=http://express:4040
+    networks:
+      - dd-network
+    depends_on:
+      express:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  pgdata:
+  pgadmin_data:
+
+networks:
+  dd-network:
+    driver: bridge
