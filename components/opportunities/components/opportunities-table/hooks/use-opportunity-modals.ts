@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { ConfirmationDialogState } from '../types';
 
 export const useOpportunityModals = () => {
@@ -13,7 +13,7 @@ export const useOpportunityModals = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isEditOpportunityModalOpen, setIsEditOpportunityModalOpen] = useState(false);
 
-  const handleStatusClick = (
+  const handleStatusClick = useCallback((
     opportunityId: string,
     roleId: string,
     status: 'Won' | 'Staffed' | 'Lost',
@@ -26,13 +26,13 @@ export const useOpportunityModals = () => {
       roleId,
       roleName,
     });
-  };
+  }, []);
 
-  const handleCloseDialog = () => {
+  const handleCloseDialog = useCallback(() => {
     setConfirmationDialog((prev: ConfirmationDialogState) => ({ ...prev, isOpen: false }));
-  };
+  }, []);
 
-  const handleConfirmStatusUpdate = (
+  const handleConfirmStatusUpdate = useCallback((
     onUpdateRole: (opportunityId: string, roleId: string, status: 'Won' | 'Staffed' | 'Lost') => void
   ) => {
     if (onUpdateRole) {
@@ -43,7 +43,7 @@ export const useOpportunityModals = () => {
       );
       handleCloseDialog();
     }
-  };
+  }, [confirmationDialog, handleCloseDialog]);
 
   return {
     confirmationDialog,

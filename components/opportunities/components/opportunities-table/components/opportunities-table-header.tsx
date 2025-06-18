@@ -4,11 +4,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
-
-interface OpportunitiesTableHeaderProps {
-	showActions?: boolean;
-	className?: string;
-}
+import { OpportunitiesTableHeaderProps } from './types';
 
 export const OpportunitiesTableHeader = ({
 	showActions,

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { UseOpportunityCardProps, UseOpportunityCardReturn } from '../types';
 
 export const useOpportunityCard = ({
@@ -10,25 +10,25 @@ export const useOpportunityCard = ({
 }: UseOpportunityCardProps): UseOpportunityCardReturn => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const toggleExpanded = () => {
+  const toggleExpanded = useCallback(() => {
     setIsExpanded(!isExpanded);
-  };
+  }, [isExpanded]);
 
-  const handleAddRole = () => {
+  const handleAddRole = useCallback(() => {
     onAddRole?.(opportunityId);
-  };
+  }, [onAddRole, opportunityId]);
 
-  const handleMoveToHold = () => {
+  const handleMoveToHold = useCallback(() => {
     onMoveToHold?.(opportunityId);
-  };
+  }, [onMoveToHold, opportunityId]);
 
-  const handleMoveToInProgress = () => {
+  const handleMoveToInProgress = useCallback(() => {
     onMoveToInProgress?.(opportunityId);
-  };
+  }, [onMoveToInProgress, opportunityId]);
 
-  const handleMoveToCompleted = () => {
+  const handleMoveToCompleted = useCallback(() => {
     onMoveToCompleted?.(opportunityId);
-  };
+  }, [onMoveToCompleted, opportunityId]);
 
   return {
     isExpanded,

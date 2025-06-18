@@ -1,7 +1,7 @@
 'use client';
 
 import { signIn, getSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export const useSignIn = () => {
@@ -38,7 +38,7 @@ export const useSignIn = () => {
     }
   };
 
-  const handleCredentialsSignIn = async (e: React.FormEvent) => {
+  const handleCredentialsSignIn = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
@@ -61,12 +61,12 @@ export const useSignIn = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [email, password, router]);
 
-  const setDemoAccount = (demoEmail: string, demoPassword: string) => {
+  const setDemoAccount = useCallback((demoEmail: string, demoPassword: string) => {
     setEmail(demoEmail);
     setPassword(demoPassword);
-  };
+  }, []);
 
   return {
     isLoading,

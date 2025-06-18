@@ -1,17 +1,7 @@
 import { CardContent } from "@/components/ui/card";
 import { Users } from "lucide-react";
 import { RoleCard } from "../../role-card/role-card";
-import { Opportunity } from "@/shared/types";
-
-interface OpportunityCardRolesProps {
-	opportunity: Opportunity;
-	showActions: boolean;
-	onUpdateRole?: (
-		opportunityId: string,
-		roleId: string,
-		status: string
-	) => void;
-}
+import { OpportunityCardRolesProps } from "../types";
 
 export const OpportunityCardRoles = ({
 	opportunity,

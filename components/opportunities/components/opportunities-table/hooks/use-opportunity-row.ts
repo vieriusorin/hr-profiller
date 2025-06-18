@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, use } from 'react';
 import { getStartDateUrgency, getUrgencyConfig, getUrgencyTooltip } from '@/shared/lib/helpers/date-urgency';
 import { FlattenedRow } from '../types';
 
@@ -9,13 +9,13 @@ export const useOpportunityRow = (row: FlattenedRow) => {
   const urgencyConfig = getUrgencyConfig(urgency);
   const tooltip = getUrgencyTooltip(row.expectedStartDate);
 
-  const handleEditOpportunity = () => {
+  const handleEditOpportunity = useCallback(() => {
     setIsEditOpportunityModalOpen(true);
-  };
+  }, []);
 
-  const handleCloseEditModal = () => {
+  const handleCloseEditModal = useCallback(() => {
     setIsEditOpportunityModalOpen(false);
-  };
+  }, []);
 
   return {
     isEditOpportunityModalOpen,

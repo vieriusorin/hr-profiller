@@ -161,35 +161,35 @@
       "id": "c67d",
       "opportunityName": "Backend",
       "clientName": "Xalient",
-      "expectedStartDate": "2025-09-03",
+      "expectedStartDate": "2025-08-21",
       "status": "In Progress",
       "probability": 70,
+      "isActive": false,
       "roles": [
         {
-          "id": "13fee19b-7eca-42b2-a14e-629de20103fd",
           "roleName": "Devops",
           "requiredGrade": "ST",
           "allocation": 100,
           "needsHire": true,
           "comments": "test",
-          "status": "Open",
+          "newHireName": "",
           "assignedMemberIds": [],
-          "newHireName": ""
+          "id": "13fee19b-7eca-42b2-a14e-629de20103fd",
+          "status": "Open"
         },
         {
-          "id": "08ee36f5-ba3b-4d2b-9796-efcb11e3b10b",
           "roleName": "Test",
           "requiredGrade": "SE",
           "allocation": 100,
           "needsHire": false,
           "comments": "",
-          "status": "Open",
+          "newHireName": "",
           "assignedMemberIds": [],
-          "newHireName": ""
+          "id": "08ee36f5-ba3b-4d2b-9796-efcb11e3b10b",
+          "status": "Open"
         }
       ],
-      "comment": "aweesome ",
-      "expectedEndDate": "2025-10-03"
+      "comment": "aweesome "
     },
     {
       "id": "2d77",
@@ -235,7 +235,7 @@
       "status": "In Progress",
       "roles": [
         {
-          "roleName": "Devops",
+          "roleName": "Devops2",
           "requiredGrade": "SE",
           "needsHire": false,
           "comments": "",
@@ -355,14 +355,15 @@
       "activatedAt": null,
       "roles": [
         {
-          "roleName": "BE",
+          "roleName": "Backend2",
           "requiredGrade": "SE",
           "allocation": 100,
           "needsHire": false,
           "comments": "",
           "newHireName": "",
           "id": "25b876a2-10e0-442e-9709-baadf33927dc",
-          "status": "Open"
+          "status": "Open",
+          "assignedMemberIds": []
         }
       ],
       "comment": "test"

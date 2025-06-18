@@ -1,13 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-
-interface OpportunityCardActionsProps {
-  status: 'In Progress' | 'On Hold' | 'Completed';
-  onAddRole: () => void;
-  onMoveToHold: () => void;
-  onMoveToInProgress: () => void;
-  onMoveToCompleted: () => void;
-}
+import { OpportunityCardActionsProps } from '../types';
 
 export const OpportunityCardActions = ({
   status,

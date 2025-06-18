@@ -48,3 +48,8 @@ export type RoleStatusDropdownProps = {
   roleName?: string;
   onStatusClick: (opportunityId: string, roleId: string, status: 'Won' | 'Staffed' | 'Lost', roleName?: string) => void;
 }
+
+export type OpportunitiesTableHeaderProps = {
+	showActions?: boolean;
+	className?: string;
+}

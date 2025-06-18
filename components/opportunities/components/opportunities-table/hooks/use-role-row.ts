@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { RoleStatus } from '@/shared/types';
 
 export const useRoleRow = (onUpdateRole: (opportunityId: string, roleId: string, status: RoleStatus) => void) => {
@@ -17,15 +17,15 @@ export const useRoleRow = (onUpdateRole: (opportunityId: string, roleId: string,
     roleName: '',
   });
 
-  const handleRoleNameClick = () => {
+  const handleRoleNameClick = useCallback(() => {
     setIsEditModalOpen(true);
-  };
+  }, []);
 
-  const handleCloseEditModal = () => {
+  const handleCloseEditModal = useCallback(() => {
     setIsEditModalOpen(false);
-  }
+  }, []);
 
-  const handleStatusClick = (
+  const handleStatusClick = useCallback((
     opportunityId: string,
     roleId: string,
     status: 'Won' | 'Staffed' | 'Lost',
@@ -38,20 +38,20 @@ export const useRoleRow = (onUpdateRole: (opportunityId: string, roleId: string,
       roleId,
       roleName,
     });
-  };
+  }, []);
 
-  const handleConfirmStatusUpdate = () => {
+  const handleConfirmStatusUpdate = useCallback(() => {
     onUpdateRole(
       confirmationDialog.opportunityId,
       confirmationDialog.roleId,
       confirmationDialog.status
     );
     handleCloseDialog();
-  };
+  }, [confirmationDialog, onUpdateRole]);
 
-  const handleCloseDialog = () => {
+  const handleCloseDialog = useCallback(() => {
     setConfirmationDialog((prev) => ({ ...prev, isOpen: false }));
-  };
+  }, []);
 
   return {
     isEditModalOpen,

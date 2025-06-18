@@ -1,11 +1,5 @@
 import { format, parseISO, isValid } from 'date-fns';
-import { Opportunity } from '@/shared/types';
-
-export interface MonthGroup {
-  monthKey: string;
-  monthLabel: string;
-  opportunities: Opportunity[];
-}
+import { MonthGroup, Opportunity } from '@/shared/types';
 
 export const groupOpportunitiesByMonth = (opportunities: Opportunity[]): MonthGroup[] => {
   // Sort opportunities by createdAt date in descending order (newest first)

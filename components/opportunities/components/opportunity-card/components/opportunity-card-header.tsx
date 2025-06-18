@@ -4,16 +4,8 @@ import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/shared/components/status-badge';
 import { CountdownBadge } from '@/shared/components/countdown-badge';
 import { ChevronDown, ChevronRight, Pencil } from 'lucide-react';
-
-export interface OpportunityCardHeaderProps {
-  opportunityName: string;
-  status: 'In Progress' | 'On Hold' | 'Completed';
-  expectedStartDate: string;
-  isExpanded: boolean;
-  onToggleExpanded: () => void;
-  onEditClick: () => void;
-  actions?: React.ReactNode;
-}
+import { OpportunityCardHeaderProps } from '../types';
+import { OpportunityStatus } from '@/app/shared/schemas/base-schemas';
 
 export const OpportunityCardHeader: React.FC<OpportunityCardHeaderProps> = ({
   opportunityName,
@@ -52,7 +44,7 @@ export const OpportunityCardHeader: React.FC<OpportunityCardHeaderProps> = ({
               <Pencil className='h-4 w-4' />
             </Button>
           </CardTitle>
-          <StatusBadge status={status} />
+          <StatusBadge status={status as OpportunityStatus} />
           <CountdownBadge startDate={expectedStartDate} size='md' />
         </div>
         {actions && <div className='flex items-center gap-2'>{actions}</div>}

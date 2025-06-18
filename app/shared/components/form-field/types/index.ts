@@ -1,4 +1,4 @@
-export interface FormFieldProps {
+export type FormFieldProps = {
   label: string;
   value: string | number | Date | undefined;
   onChange: (value: string | number | Date | undefined) => void;

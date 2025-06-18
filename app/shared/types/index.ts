@@ -1,4 +1,4 @@
-import { Grade } from '@/app/shared/schemas/api-schemas';
+import { Grade, Opportunity } from '@/app/shared/schemas/api-schemas';
 import { ApiValidationError } from '../lib/api/validated-api';
 
 // Re-export schema-derived types
@@ -70,4 +70,10 @@ export type ApiErrorDisplayProps = {
 
 export type ValidationErrorDetailsProps = {
 	error: ApiValidationError;
+}
+
+export interface MonthGroup {
+  monthKey: string;
+  monthLabel: string;
+  opportunities: Opportunity[];
 }

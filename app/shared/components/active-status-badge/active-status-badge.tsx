@@ -1,16 +1,19 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { CheckCircle, Circle, Zap } from 'lucide-react';
 import { getActiveStatusConfig, formatActivatedDate } from '@/shared/lib/helpers/opportunity-status';
+import { ActiveStatusBadgeProps } from './types';
 
-interface ActiveStatusBadgeProps {
-  isActive: boolean;
-  activatedAt?: string | null;
-  size?: 'sm' | 'md' | 'lg';
-  showActivatedDate?: boolean;
-  autoActivated?: boolean; // If it was auto-activated based on probability
-  onToggle?: () => void; // Click handler for toggling status
-  isLoading?: boolean; // Show loading state during API call
-}
+const sizeClasses = {
+  sm: 'text-xs px-2 py-1',
+  md: 'text-sm px-3 py-1.5',
+  lg: 'text-base px-4 py-2'
+};
+
+const iconSizes = {
+  sm: 'h-3 w-3',
+  md: 'h-4 w-4', 
+  lg: 'h-5 w-5'
+};
 
 export const ActiveStatusBadge = ({ 
   isActive, 
@@ -23,23 +26,11 @@ export const ActiveStatusBadge = ({
 }: ActiveStatusBadgeProps) => {
   const config = getActiveStatusConfig(isActive);
   
-  const sizeClasses = {
-    sm: 'text-xs px-2 py-1',
-    md: 'text-sm px-3 py-1.5',
-    lg: 'text-base px-4 py-2'
-  };
-
-  const iconSizes = {
-    sm: 'h-3 w-3',
-    md: 'h-4 w-4', 
-    lg: 'h-5 w-5'
-  };
-
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     if (onToggle && !isLoading) {
       onToggle();
     }
-  };
+  }, [onToggle, isLoading]);
 
   return (
     <div className='flex items-center gap-2'>

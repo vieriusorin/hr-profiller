@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { UseDatePickerParams } from '../types';
 
 export const useDatePicker = ({ value, onChange }: UseDatePickerParams) => {
@@ -6,10 +6,10 @@ export const useDatePicker = ({ value, onChange }: UseDatePickerParams) => {
 
   const dateValue = value instanceof Date ? value : (value ? new Date(value) : undefined);
 
-  const handleSelect = (date: Date | undefined) => {
+  const handleSelect = useCallback((date: Date | undefined) => {
     onChange(date);
     setOpen(false);
-  };
+  }, [onChange]);
 
   return {
     open,

@@ -3,6 +3,19 @@ import { Building2, Users, UserPlus, Check } from "lucide-react";
 import { Role } from "../../types";
 import { QuickStatsCardProps, StatCardProps } from "./types";
 
+const getVariantClasses = (variant: string) => {
+	switch (variant) {
+		case "success":
+			return "bg-primary/10 border-primary/20 text-primary";
+		case "warning":
+			return "bg-amber-500/10 border-amber-500/20 text-amber-500";
+		case "info":
+			return "bg-blue-500/10 border-blue-500/20 text-blue-500";
+		default:
+			return "bg-secondary/50 border-border text-secondary-foreground";
+	}
+};
+
 const StatCard = ({
 	title,
 	value,
@@ -10,21 +23,8 @@ const StatCard = ({
 	description,
 	variant = "default",
 }: StatCardProps) => {
-	const getVariantClasses = () => {
-		switch (variant) {
-			case "success":
-				return "bg-primary/10 border-primary/20 text-primary";
-			case "warning":
-				return "bg-amber-500/10 border-amber-500/20 text-amber-500";
-			case "info":
-				return "bg-blue-500/10 border-blue-500/20 text-blue-500";
-			default:
-				return "bg-secondary/50 border-border text-secondary-foreground";
-		}
-	};
-
 	return (
-		<div className={`rounded-lg border p-4 ${getVariantClasses()}`}>
+		<div className={`rounded-lg border p-4 ${getVariantClasses(variant)}`}>
 			<div className='flex items-center justify-between'>
 				<div>
 					<p className='text-sm font-medium opacity-70'>{title}</p>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useOpportunities } from '@/components/opportunities/hooks/use-opportunities-query';
 import { useOpportunityFilters } from '@/components/opportunities/hooks/useOpportunityFilters';
 import { UseDashboardReturn } from '../types';
@@ -43,12 +43,12 @@ export const useDashboard = (): UseDashboardReturn => {
     throw error;
   }
 
-  const handleAddRole = (opportunityId: string) => {
+  const handleAddRole = useCallback((opportunityId: string) => {
     setSelectedOpportunityId(opportunityId);
     setShowNewRoleDialog(true);
-  };
+  }, []);
 
-  const handleCreateRole = async (roleData: CreateRoleForm) => {
+  const handleCreateRole = useCallback(async (roleData: CreateRoleForm) => {
     if (!roleData || !selectedOpportunityId) return;
 
     try {
@@ -88,9 +88,9 @@ export const useDashboard = (): UseDashboardReturn => {
     } catch (error) {
       console.error('Failed to create role:', error);
     }
-  };
+  }, [opportunities, selectedOpportunityId, addRole]);
 
-  const handleUpdateRole = async (opportunityId: string, roleId: string, status: string) => {
+  const handleUpdateRole = useCallback(async (opportunityId: string, roleId: string, status: string) => {
     const opportunity = opportunities.find((opp: Opportunity) => opp.id === opportunityId) ||
       onHoldOpportunities.find((opp: Opportunity) => opp.id === opportunityId);
 
@@ -128,9 +128,9 @@ export const useDashboard = (): UseDashboardReturn => {
         console.error('Failed to update role status:', error);
       }
     }
-  };
+  }, [opportunities, onHoldOpportunities, updateRoleStatus, moveToCompleted]);
 
-  const handleCreateOpportunity = async (opportunity: Opportunity): Promise<Opportunity> => {
+  const handleCreateOpportunity = useCallback(async (opportunity: Opportunity): Promise<Opportunity> => {
     const loadingToast = toast.loading('Creating opportunity...');
 
     try {
@@ -145,9 +145,9 @@ export const useDashboard = (): UseDashboardReturn => {
       toast.error(`Failed to create opportunity: ${errorMessage}`);
       throw error;
     }
-  };
+  }, [addOpportunity]);
 
-  const handleMoveToHold = async (opportunityId: string) => {
+  const handleMoveToHold = useCallback(async (opportunityId: string) => {
     const opportunity = opportunities.find((opp: Opportunity) => opp.id === opportunityId);
     if (!opportunity) return;
 
@@ -162,9 +162,9 @@ export const useDashboard = (): UseDashboardReturn => {
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
       toast.error(`Failed to move opportunity: ${errorMessage}`);
     }
-  };
+  }, [onHoldOpportunities, moveToOnHold]);
 
-  const handleMoveToInProgress = async (opportunityId: string) => {
+  const handleMoveToInProgress = useCallback(async (opportunityId: string) => {
     const opportunity = onHoldOpportunities.find((opp: Opportunity) => opp.id === opportunityId);
     if (!opportunity) return;
 
@@ -179,9 +179,9 @@ export const useDashboard = (): UseDashboardReturn => {
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
       toast.error(`Failed to move opportunity: ${errorMessage}`);
     }
-  };
+  }, [opportunities, onHoldOpportunities, moveToInProgress]);
 
-  const handleMoveToCompleted = async (opportunityId: string) => {
+  const handleMoveToCompleted = useCallback(async (opportunityId: string) => {
     const opportunity = opportunities.find((opp: Opportunity) => opp.id === opportunityId) ||
       onHoldOpportunities.find((opp: Opportunity) => opp.id === opportunityId);
     if (!opportunity) return;
@@ -198,14 +198,14 @@ export const useDashboard = (): UseDashboardReturn => {
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
       toast.error(`Failed to move opportunity: ${errorMessage}`);
     }
-  };
+  }, [opportunities, onHoldOpportunities, moveToCompleted]);
 
-  const openNewOpportunityDialog = () => setShowNewOpportunityDialog(true);
-  const closeNewOpportunityDialog = () => setShowNewOpportunityDialog(false);
-  const closeNewRoleDialog = () => setShowNewRoleDialog(false);
-  const closeNewRoleDialogAndReset = () => {
+  const openNewOpportunityDialog = useCallback(() => setShowNewOpportunityDialog(true), []);
+  const closeNewOpportunityDialog = useCallback(() => setShowNewOpportunityDialog(false), []);
+  const closeNewRoleDialog = useCallback(() => setShowNewRoleDialog(false), []);
+  const closeNewRoleDialogAndReset = useCallback(() => {
     setShowNewRoleDialog(false);
-  };
+  }, []);
 
   return {
     opportunities,

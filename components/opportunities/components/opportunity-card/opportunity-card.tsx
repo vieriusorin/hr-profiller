@@ -21,46 +21,14 @@ export const OpportunityCard = ({
 }: OpportunityCardProps) => {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-	const [isTogglingActive, setIsTogglingActive] = useState(false);
 	const [currentOpportunity, setCurrentOpportunity] = useState(opportunity);
 
-	// Sync with prop changes
 	useEffect(() => {
 		setCurrentOpportunity(opportunity);
 	}, [opportunity]);
 
 	const urgency = getStartDateUrgency(currentOpportunity.expectedStartDate);
 	const urgencyConfig = getUrgencyConfig(urgency);
-
-	const handleToggleActiveStatus = async () => {
-		if (isTogglingActive) return;
-
-		setIsTogglingActive(true);
-		try {
-			const response = await fetch(`/api/opportunities/${currentOpportunity.id}/activate`, {
-				method: 'PATCH',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					isActive: !currentOpportunity.isActive,
-				}),
-			});
-
-			if (!response.ok) {
-				throw new Error('Failed to toggle active status');
-			}
-
-			const updatedOpportunity = await response.json();
-			setCurrentOpportunity(updatedOpportunity);
-		} catch (error) {
-			console.error('Error toggling active status:', error);
-			alert('Failed to toggle active status. Please try again.');
-		} finally {
-			setIsTogglingActive(false);
-		}
-	};
-
 	return (
 		<Card className={`mb-4 ${urgencyConfig.bgClass}`}>
 			<OpportunityCardHeader
@@ -85,10 +53,6 @@ export const OpportunityCard = ({
 				expectedStartDate={currentOpportunity.expectedStartDate}
 				probability={currentOpportunity.probability}
 				createdAt={currentOpportunity.createdAt}
-				isActive={currentOpportunity.isActive}
-				activatedAt={currentOpportunity.activatedAt}
-				onToggleActive={handleToggleActiveStatus}
-				isTogglingActive={isTogglingActive}
 			/>
 			{isExpanded && (
 				<OpportunityCardRoles

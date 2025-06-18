@@ -2,11 +2,12 @@ import { useUpdateRoleMutation } from "../../../hooks/use-opportunities-query";
 import toast from "react-hot-toast";
 import { Role } from "@/shared/types";
 import { UseEditRoleModalProps } from "../types";
+import { useCallback } from "react";
 
 export const useEditRoleModal = ({ opportunityId, role, onClose }: UseEditRoleModalProps) => {
     const { mutate: updateRole, isPending } = useUpdateRoleMutation();
 
-    const handleSubmit = async (updatedRole: Role & { assignedMemberIds?: string[] }) => {
+    const handleSubmit = useCallback( async (updatedRole: Role & { assignedMemberIds?: string[] }) => {
         const loadingToast = toast.loading("Updating role...");
 
         updateRole(
@@ -33,7 +34,7 @@ export const useEditRoleModal = ({ opportunityId, role, onClose }: UseEditRoleMo
                 },
             }
         );
-    }
+    }, [opportunityId, role, onClose]);
 
     return {
         handleSubmit,

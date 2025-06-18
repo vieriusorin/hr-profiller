@@ -8,59 +8,7 @@ import {
 	ReactNode,
 	useMemo,
 } from "react";
-
-export type GanttSettings = {
-	highProbability: {
-		backgroundColor: string;
-		backgroundSelectedColor: string;
-		progressColor: string;
-		progressSelectedColor: string;
-	};
-	mediumProbability: {
-		backgroundColor: string;
-		backgroundSelectedColor: string;
-		progressColor: string;
-		progressSelectedColor: string;
-	};
-	lowProbability: {
-		backgroundColor: string;
-		backgroundSelectedColor: string;
-		progressColor: string;
-		progressSelectedColor: string;
-	};
-	role: {
-		progressColor: string;
-		progressSelectedColor: string;
-	};
-	todayColor: string;
-	arrowColor: string;
-};
-
-type Settings = {
-	primaryColor: string;
-	logoUrl: string;
-	logoWidth: number;
-	logoHeight: number;
-	logoAlt: string;
-	background: string;
-	foreground: string;
-	card: string;
-	cardForeground: string;
-	secondary: string;
-	accent: string;
-	destructive: string;
-	border: string;
-	input: string;
-	radius: string;
-	primaryForeground: string;
-	gantt?: GanttSettings;
-};
-
-type ThemeContextType = {
-	settings: Settings;
-	setSettings: (settings: Partial<Settings>) => void;
-	isLoading: boolean;
-};
+import { Settings, ThemeContextType } from "../types";
 
 const defaultSettings: Settings = {
 	primaryColor: "oklch(0.63 0.22 264)", // Default primary color
