@@ -1,33 +1,31 @@
 'use client';
 
-import { useSignIn } from '@/app/hooks/useSignIn';
 import { SignInHeader } from '@/app/auth/_components/signin-header';
 import { SignInCard } from '@/app/auth/_components/signin-card';
+import { useSignInForm } from './hooks';
 
 const SignInPage = () => {
   const {
-    isLoading,
-    email,
-    password,
+    formData,
     error,
-    setEmail,
-    setPassword,
-    handleMicrosoftSignIn,
+    isLoading,
+    handleInputChange,
     handleCredentialsSignIn,
+    handleMicrosoftSignIn,
     setDemoAccount
-  } = useSignIn();
+  } = useSignInForm();
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 to-amber-100 p-4'>
       <div className='w-full max-w-md space-y-8'>
         <SignInHeader />
         <SignInCard
-          email={email}
-          password={password}
-          error={error}
+          email={formData.email}
+          password={formData.password}
+          error={error || ''}
           isLoading={isLoading}
-          setEmail={setEmail}
-          setPassword={setPassword}
+          setEmail={(email) => handleInputChange({ target: { name: 'email', value: email } } as React.ChangeEvent<HTMLInputElement>)}
+          setPassword={(password) => handleInputChange({ target: { name: 'password', value: password } } as React.ChangeEvent<HTMLInputElement>)}
           handleCredentialsSignIn={handleCredentialsSignIn}
           handleMicrosoftSignIn={handleMicrosoftSignIn}
           setDemoAccount={setDemoAccount}

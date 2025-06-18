@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import {
 	Dialog,
 	DialogContent,
@@ -13,7 +13,8 @@ import { RoleForm } from "@/components/opportunities/components/forms/create-rol
 import { OpportunityFilters } from "@/components/opportunities/components/filters/opportunity-filters";
 import { QuickStatsCard } from "@/shared/components/quick-stats-card";
 import { useDashboard } from "@/app/hooks/useDashboard";
-import { ViewMode } from "@/components/opportunities/components/view-toggle/types";
+import { useOpportunityView } from "@/components/opportunities/hooks/useOpportunityView";
+import { useDynamicLayout } from "@/components/opportunities/hooks/useDynamicLayout";
 import {
 	DashboardHeader,
 	DashboardTitle,
@@ -25,7 +26,8 @@ import { CollapsibleSection } from "./_components/collapsible-section";
 import { TrendingUp, Filter } from "lucide-react";
 
 export default function OpportunityDashboard() {
-	const [currentView, setCurrentView] = useState<ViewMode>("cards");
+	const { currentView, setCurrentView } = useOpportunityView();
+	const { containerClassName, isGanttView } = useDynamicLayout(currentView);
 	const {
 		isRefetching,
 		showNewOpportunityDialog,
@@ -60,7 +62,10 @@ export default function OpportunityDashboard() {
 		<>
 			<DashboardHeader />
 
-			<div className='p-6 mx-auto w-full'>
+			<div 
+				className={containerClassName}
+				style={isGanttView ? { maxWidth: '100%', overflowX: 'hidden' } : {}}
+			>
 				<div className='flex justify-between items-center mb-6'>
 					<DashboardTitle isRefetching={isRefetching} />
 

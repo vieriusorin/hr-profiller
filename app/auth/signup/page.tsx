@@ -1,87 +1,24 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Building2, Mail, Lock, User, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useSignUpForm } from './hooks/useSignUpForm';
 
 const SignUpPage = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-  const router = useRouter();
+  const {
+    formData,
+    error,
+    isLoading,
+    isSuccess,
+    handleInputChange,
+    handleSubmit,
+  } = useSignUpForm();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
-
-    // Validation
-    if (!formData.email.endsWith('@ddroidd.com')) {
-      setError('Only @ddroidd.com email addresses are allowed');
-      setIsLoading(false);
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      setIsLoading(false);
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccess(true);
-        setTimeout(() => {
-          router.push('/auth/signin');
-        }, 2000);
-      } else {
-        setError(data.error || 'Sign up failed');
-      }
-    } catch (error) {
-      console.error('Sign up error:', error);
-      setError('An error occurred during sign up');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  if (success) {
+  if (isSuccess) {
     return (
       <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 to-amber-100 p-4'>
         <Card className='w-full max-w-md'>
@@ -123,7 +60,7 @@ const SignUpPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSignUp} className='space-y-4'>
+            <form onSubmit={handleSubmit} className='space-y-4'>
               {error && (
                 <div className='bg-red-50 border border-red-200 rounded-lg p-3'>
                   <p className='text-sm text-red-800'>{error}</p>

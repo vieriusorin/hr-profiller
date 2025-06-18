@@ -4,7 +4,7 @@ import { Building, Calendar, Users } from "lucide-react";
 import { OpportunityTabsProps } from "../_types";
 import { OpportunityCardSkeleton } from "@/components/opportunities/components/opportunity-card/opportunity-card-skeleton";
 import OpportunitiesList from "@/components/opportunities/components/opportunities-list";
-import { GanttChart } from "@/components/gantt/gantt-chart";
+import { GanttChartWrapper } from "@/components/gantt/gantt-chart-wrapper";
 import { withErrorBoundary } from '@/app/shared/components/with-error-boundary';
 import { OpportunitiesErrorFallback } from '@/app/shared/components/error-fallbacks/opportunities-error-fallback';
 
@@ -14,7 +14,7 @@ const ErrorBoundaryWrappedContent = withErrorBoundary(
 	{ FallbackComponent: OpportunitiesErrorFallback }
 );
 
-const ErrorBoundaryWrappedGantt = withErrorBoundary(GanttChart, {
+const ErrorBoundaryWrappedGantt = withErrorBoundary(GanttChartWrapper, {
 	FallbackComponent: OpportunitiesErrorFallback
 });
 

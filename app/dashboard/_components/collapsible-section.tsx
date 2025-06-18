@@ -1,15 +1,10 @@
 "use client";
 
-import { useState, ReactNode } from "react";
+import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CollapsibleSectionProps } from "../_types";
 
-interface CollapsibleSectionProps {
-	title: string;
-	children: ReactNode;
-	defaultOpen?: boolean;
-	icon?: ReactNode;
-}
 
 export const CollapsibleSection = ({
 	title,

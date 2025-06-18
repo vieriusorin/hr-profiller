@@ -376,7 +376,7 @@
       "probability": 90,
       "createdAt": "2025-06-18",
       "comment": "Awesome project",
-      "status": "In Progress",
+      "status": "On Hold",
       "isActive": true,
       "activatedAt": "2025-06-18",
       "roles": [
@@ -388,7 +388,9 @@
           "newHireName": "",
           "comments": "",
           "status": "Open",
-          "assignedMemberIds": [],
+          "assignedMemberIds": [
+            "4"
+          ],
           "id": "9f5e54ff-e1a1-413f-9701-4d42fd94c0d5"
         }
       ]

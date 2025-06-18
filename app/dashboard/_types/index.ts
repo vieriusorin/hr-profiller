@@ -42,3 +42,10 @@ export type OpportunityTabsProps = {
   hasNextPageCompleted: boolean;
   isFetchingNextPageCompleted: boolean;
 }
+
+export type CollapsibleSectionProps = {
+	title: string;
+	children: ReactNode;
+	defaultOpen?: boolean;
+	icon?: ReactNode;
+}

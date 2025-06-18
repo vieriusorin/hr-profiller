@@ -96,6 +96,7 @@ export const GanttChart = ({ opportunities }: GanttChartProps) => {
 			}));
 		}
 	};
+
 	const tasks = useMemo(
 		() => transformDataForGantt(opportunities, expandedTasks, settings.gantt),
 		[opportunities, expandedTasks, settings.gantt]
