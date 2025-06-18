@@ -6,7 +6,6 @@ import {
 	TableBody,
 	TableCaption,
 	TableCell,
-	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
 import { useFlattenedOpportunities } from "../../hooks/use-flattened-opportunities";

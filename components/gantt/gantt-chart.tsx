@@ -5,7 +5,7 @@ import "gantt-task-react/dist/index.css";
 import { Opportunity } from "@/shared/schemas/api-schemas";
 import { format } from "date-fns";
 import { useTheme } from "@/app/providers/theme-provider";
-import type { GanttSettings } from "@/app/providers/theme-provider";
+import type { GanttSettings } from "@/app/types";
 
 interface GanttChartProps {
 	opportunities: Opportunity[];

@@ -3,15 +3,16 @@ import { Role, EditRoleForm } from '@/shared/types';
 
 const JSON_SERVER_URL = 'http://localhost:3001';
 
-export async function PUT(request: Request, { params }: { params: { opportunityId: string, roleId: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ opportunityId: string, roleId: string }> }) {
   try {
     const { status } = await request.json();
+    const { opportunityId, roleId } = await params;
 
-    const oppResponse = await fetch(`${JSON_SERVER_URL}/opportunities/${params.opportunityId}`);
+    const oppResponse = await fetch(`${JSON_SERVER_URL}/opportunities/${opportunityId}`);
     if (!oppResponse.ok) throw new Error('Failed to fetch opportunity before updating role');
     const opportunity = await oppResponse.json();
 
-    const roleIndex = opportunity.roles.findIndex((role: Role) => role.id === params.roleId);
+    const roleIndex = opportunity.roles.findIndex((role: Role) => role.id === roleId);
 
     if (roleIndex === -1) {
       return NextResponse.json({ error: 'Role not found' }, { status: 404 });
@@ -21,7 +22,7 @@ export async function PUT(request: Request, { params }: { params: { opportunityI
     opportunity.roles[roleIndex].status = status;
 
     // Update the entire opportunity in JSON Server
-    const response = await fetch(`${JSON_SERVER_URL}/opportunities/${params.opportunityId}`, {
+    const response = await fetch(`${JSON_SERVER_URL}/opportunities/${opportunityId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ roles: opportunity.roles }),
@@ -40,15 +41,16 @@ export async function PUT(request: Request, { params }: { params: { opportunityI
   }
 }
 
-export async function PATCH(request: Request, { params }: { params: { opportunityId: string, roleId: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ opportunityId: string, roleId: string }> }) {
   try {
     const roleData: EditRoleForm = await request.json();
+    const { opportunityId, roleId } = await params;
 
-    const oppResponse = await fetch(`${JSON_SERVER_URL}/opportunities/${params.opportunityId}`);
+    const oppResponse = await fetch(`${JSON_SERVER_URL}/opportunities/${opportunityId}`);
     if (!oppResponse.ok) throw new Error('Failed to fetch opportunity before updating role');
     const opportunity = await oppResponse.json();
 
-    const roleIndex = opportunity.roles.findIndex((role: Role) => role.id === params.roleId);
+    const roleIndex = opportunity.roles.findIndex((role: Role) => role.id === roleId);
 
     if (roleIndex === -1) {
       return NextResponse.json({ error: 'Role not found' }, { status: 404 });
@@ -61,7 +63,7 @@ export async function PATCH(request: Request, { params }: { params: { opportunit
     };
 
     // Update the entire opportunity in JSON Server
-    const response = await fetch(`${JSON_SERVER_URL}/opportunities/${params.opportunityId}`, {
+    const response = await fetch(`${JSON_SERVER_URL}/opportunities/${opportunityId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ roles: opportunity.roles }),

@@ -1,13 +1,9 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
-import { Briefcase } from 'lucide-react';
+import { ProbabilityBadgeProps } from '../types';
 
-interface ProbabilityBadgeProps {
-  probability: number;
-  showIcon?: boolean;
-  size?: 'sm' | 'default' | 'lg';
-}
+
 
 const getProbabilityConfig = (probability: number) => {
   if (probability >= 76) {

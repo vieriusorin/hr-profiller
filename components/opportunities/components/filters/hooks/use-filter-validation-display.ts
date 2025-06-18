@@ -8,7 +8,7 @@ export const useFilterValidationDisplay = ({ isValid, errors }: UseFilterValidat
     if (!errors) return [];
 
     return errors.issues.map((issue, index) => ({
-      id: index,
+      id: index.toString(),
       path: issue.path.join('.') || 'root',
       message: issue.message,
       code: issue.code,

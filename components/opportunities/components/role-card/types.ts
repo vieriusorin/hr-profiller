@@ -1,4 +1,4 @@
-import { Member, Role, RoleStatus } from '@/shared/types';
+import { Member, Role, RoleStatus, Opportunity } from '@/shared/types';
 
 export interface RoleStatusActions {
   onUpdateStatus?: (roleId: string, status: RoleStatus) => void;
@@ -8,6 +8,7 @@ export interface RoleCardProps extends RoleStatusActions {
   role: Role;
   showActions?: boolean;
   opportunityId: string;
+  opportunity: Opportunity;
 }
 
 export interface UseRoleCardProps extends RoleStatusActions {

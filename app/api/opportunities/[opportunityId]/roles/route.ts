@@ -3,11 +3,12 @@ import { Role } from '@/shared/types';
 
 const JSON_SERVER_URL = 'http://localhost:3001';
 
-export async function PATCH(request: Request, { params }: { params: { opportunityId: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ opportunityId: string }> }) {
   try {
     const roleData = await request.json();
+    const { opportunityId } = await params;
 
-    const oppResponse = await fetch(`${JSON_SERVER_URL}/opportunities/${params.opportunityId}`);
+    const oppResponse = await fetch(`${JSON_SERVER_URL}/opportunities/${opportunityId}`);
     if (!oppResponse.ok) throw new Error('Failed to fetch opportunity before adding role');
     const opportunity = await oppResponse.json();
 
@@ -21,7 +22,7 @@ export async function PATCH(request: Request, { params }: { params: { opportunit
 
     const updatedRoles = [...opportunity.roles, { ...newRole, id: crypto.randomUUID() }];
 
-    const response = await fetch(`${JSON_SERVER_URL}/opportunities/${params.opportunityId}`, {
+    const response = await fetch(`${JSON_SERVER_URL}/opportunities/${opportunityId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ roles: updatedRoles }),

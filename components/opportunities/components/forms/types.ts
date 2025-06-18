@@ -13,7 +13,7 @@ export interface UseFormBaseReturn {
 }
 
 export interface CreateOpportunityFormProps extends FormActions {
-  onSubmit: (opportunity: Opportunity) => Promise<void>;
+  onSubmit: (opportunity: Opportunity) => Promise<Opportunity | void>;
   onCancel: () => void;
   initialData?: Partial<Opportunity>;
   mode?: 'create' | 'edit';
@@ -49,7 +49,7 @@ export interface UseRoleFormProps extends FormActions {
 
 export interface UseCreateOpportunityFormReturn extends UseFormBaseReturn {
   form: UseFormReturn<CreateOpportunityFormData>;
-  handleSubmit: () => Promise<Opportunity>;
+  handleSubmit: () => Promise<void>;
 }
 
 export interface UseRoleFormReturn extends UseFormBaseReturn {

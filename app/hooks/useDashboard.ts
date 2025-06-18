@@ -162,7 +162,7 @@ export const useDashboard = (): UseDashboardReturn => {
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
       toast.error(`Failed to move opportunity: ${errorMessage}`);
     }
-  }, [onHoldOpportunities, moveToOnHold]);
+  }, [opportunities, moveToOnHold]);
 
   const handleMoveToInProgress = useCallback(async (opportunityId: string) => {
     const opportunity = onHoldOpportunities.find((opp: Opportunity) => opp.id === opportunityId);
@@ -179,7 +179,7 @@ export const useDashboard = (): UseDashboardReturn => {
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
       toast.error(`Failed to move opportunity: ${errorMessage}`);
     }
-  }, [opportunities, onHoldOpportunities, moveToInProgress]);
+  }, [onHoldOpportunities, moveToInProgress]);
 
   const handleMoveToCompleted = useCallback(async (opportunityId: string) => {
     const opportunity = opportunities.find((opp: Opportunity) => opp.id === opportunityId) ||

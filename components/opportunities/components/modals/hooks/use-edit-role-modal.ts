@@ -34,7 +34,7 @@ export const useEditRoleModal = ({ opportunityId, role, onClose }: UseEditRoleMo
                 },
             }
         );
-    }, [opportunityId, role, onClose]);
+    }, [opportunityId, role, onClose, updateRole]);
 
     return {
         handleSubmit,

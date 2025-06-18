@@ -40,9 +40,11 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       // If fallback is a React element and has error and resetErrorBoundary props
       if (isValidElement(this.props.fallback) && 
-          'error' in (this.props.fallback.props || {}) && 
-          'resetErrorBoundary' in (this.props.fallback.props || {})) {
-        return React.cloneElement(this.props.fallback, {
+          this.props.fallback.props &&
+          typeof this.props.fallback.props === 'object' &&
+          'error' in this.props.fallback.props && 
+          'resetErrorBoundary' in this.props.fallback.props) {
+        return React.cloneElement(this.props.fallback as React.ReactElement<{ error?: Error | null; resetErrorBoundary?: () => void }>, {
           error: this.state.error,
           resetErrorBoundary: this.handleRetry,
         });

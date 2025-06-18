@@ -232,7 +232,7 @@
       "expectedStartDate": "2025-08-28",
       "probability": 80,
       "createdAt": "2025-06-12",
-      "status": "In Progress",
+      "status": "On Hold",
       "roles": [
         {
           "roleName": "Devops2",
@@ -345,28 +345,53 @@
     },
     {
       "id": "84fc",
-      "opportunityName": "test2",
-      "clientName": "Test",
+      "opportunityName": "Optimize",
+      "clientName": "Digitalism",
       "expectedStartDate": "2025-09-16",
-      "status": "In Progress",
-      "probability": 70,
+      "status": "Done",
+      "probability": 90,
       "createdAt": "2025-06-14",
-      "isActive": false,
-      "activatedAt": null,
+      "isActive": true,
+      "activatedAt": "2025-06-18",
       "roles": [
         {
-          "roleName": "Backend2",
+          "roleName": "Backend",
           "requiredGrade": "SE",
           "allocation": 100,
           "needsHire": false,
           "comments": "",
           "newHireName": "",
+          "assignedMemberIds": [],
           "id": "25b876a2-10e0-442e-9709-baadf33927dc",
-          "status": "Open",
-          "assignedMemberIds": []
+          "status": "Won"
         }
       ],
       "comment": "test"
+    },
+    {
+      "id": "3fd5",
+      "clientName": "Digitalism2",
+      "opportunityName": "Opp",
+      "expectedStartDate": "2025-10-15",
+      "probability": 90,
+      "createdAt": "2025-06-18",
+      "comment": "Awesome project",
+      "status": "In Progress",
+      "isActive": true,
+      "activatedAt": "2025-06-18",
+      "roles": [
+        {
+          "roleName": "Testting",
+          "requiredGrade": "C",
+          "allocation": 100,
+          "needsHire": false,
+          "newHireName": "",
+          "comments": "",
+          "status": "Open",
+          "assignedMemberIds": [],
+          "id": "9f5e54ff-e1a1-413f-9701-4d42fd94c0d5"
+        }
+      ]
     }
   ],
   "employees": [

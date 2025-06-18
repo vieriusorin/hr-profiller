@@ -2,12 +2,13 @@ import { NextResponse } from 'next/server';
 
 const JSON_SERVER_URL = 'http://localhost:3001';
 
-export async function PATCH(request: Request, { params }: { params: { opportunityId: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ opportunityId: string }> }) {
   try {
     const { isActive } = await request.json();
+    const { opportunityId } = await params;
 
     // Get current opportunity
-    const oppResponse = await fetch(`${JSON_SERVER_URL}/opportunities/${params.opportunityId}`);
+    const oppResponse = await fetch(`${JSON_SERVER_URL}/opportunities/${opportunityId}`);
     if (!oppResponse.ok) throw new Error('Failed to fetch opportunity before updating active status');
     const opportunity = await oppResponse.json();
 
@@ -27,7 +28,7 @@ export async function PATCH(request: Request, { params }: { params: { opportunit
     }
 
     // Update the opportunity
-    const response = await fetch(`${JSON_SERVER_URL}/opportunities/${params.opportunityId}`, {
+    const response = await fetch(`${JSON_SERVER_URL}/opportunities/${opportunityId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updateData),

@@ -96,7 +96,7 @@ export const useOpportunityFilters = (): UseOpportunityFiltersReturn => {
 
   const updateClientInput = (value: string) => {
     const sanitizedValue = parseAsValidatedClient.parse(value);
-    setClientInput(sanitizedValue);
+    setClientInput(sanitizedValue ?? '');
   };
 
   const updateGrades = (grades: Grade[]) => {

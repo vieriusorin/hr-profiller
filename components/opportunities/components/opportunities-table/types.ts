@@ -1,7 +1,5 @@
 import type {
   Opportunity as OpportunityType,
-  OpportunityStatus,
-  RoleStatus,
 } from "@/app/shared/types";
 import type { OpportunityActionCallbacks } from "../../types";
 import { Employee } from "@/shared/types/employees";

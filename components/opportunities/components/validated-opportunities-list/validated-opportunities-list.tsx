@@ -64,7 +64,6 @@ const ValidatedOpportunitiesList = () => {
   const validatedData = opportunities?.success ? opportunities.data : (opportunities?.fallbackData || []);
   const hasValidationError = opportunities ? !opportunities.success : false;
   const validationError = opportunities && !opportunities.success ? opportunities.error : null;
-  const fallbackData = opportunities && !opportunities.success ? opportunities.fallbackData : null;
 
   return (
     <div className='space-y-4'>

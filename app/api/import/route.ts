@@ -6,11 +6,17 @@ import path from "path";
 const dbPath = path.resolve(process.cwd(), "db.json");
 
 interface DbData {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   opportunities: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   employees: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   clients: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   projects: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   candidates: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 

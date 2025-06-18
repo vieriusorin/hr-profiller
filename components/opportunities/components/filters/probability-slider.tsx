@@ -35,7 +35,7 @@ export const ProbabilitySlider = ({ value, onChange, className }: ProbabilitySli
         <Input
           type='number'
           value={min}
-          onChange={(e) => handleInputChange('min', e.target.value)}
+          onChange={(e) => handleInputChange('min', e.target.value === '' ? '' : Number(e.target.value))}
           min={0}
           max={100}
           className='w-[70px]'
@@ -52,7 +52,7 @@ export const ProbabilitySlider = ({ value, onChange, className }: ProbabilitySli
         <Input
           type='number'
           value={max}
-          onChange={(e) => handleInputChange('max', e.target.value)}
+          onChange={(e) => handleInputChange('max', e.target.value === '' ? '' : Number(e.target.value))}
           min={0}
           max={100}
           className='w-[70px]'

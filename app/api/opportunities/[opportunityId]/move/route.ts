@@ -2,10 +2,11 @@ import { NextResponse } from 'next/server';
 
 const JSON_SERVER_URL = 'http://localhost:3001';
 
-export async function PATCH(request: Request, { params }: { params: { opportunityId: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ opportunityId: string }> }) {
     try {
       const { toStatus } = await request.json();
-              const response = await fetch(`${JSON_SERVER_URL}/opportunities/${params.opportunityId}`, {
+      const { opportunityId } = await params;
+      const response = await fetch(`${JSON_SERVER_URL}/opportunities/${opportunityId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: toStatus }),

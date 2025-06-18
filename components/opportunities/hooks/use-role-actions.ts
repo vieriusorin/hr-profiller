@@ -1,15 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Role, RoleStatus, CreateRoleForm, ValidationErrors } from '../../../../shared/types';
+import { Role, RoleStatus, CreateRoleForm, ValidationErrors } from '../../../app/shared/types';
 import { OpportunityService } from '../services/opportunity-service';
-import { validateRole, hasValidationErrors } from '../../../../shared/lib/helpers/validation';
+import { validateRole, hasValidationErrors } from '../../../app/shared/lib/helpers/validation';
 
 export const useRoleActions = () => {
   const [newRole, setNewRole] = useState<CreateRoleForm>({
     roleName: '',
     requiredGrade: 'SE',
     allocation: 100,
+    needsHire: false,
     comments: ''
   });
   const [roleErrors, setRoleErrors] = useState<ValidationErrors>({});
@@ -19,6 +20,7 @@ export const useRoleActions = () => {
       roleName: '',
       requiredGrade: 'SE',
       allocation: 100,
+      needsHire: false,
       comments: ''
     });
     setRoleErrors({});

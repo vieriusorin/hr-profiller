@@ -77,3 +77,9 @@ export interface MonthGroup {
   monthLabel: string;
   opportunities: Opportunity[];
 }
+
+export interface ProbabilityBadgeProps {
+  probability: number;
+  showIcon?: boolean;
+  size?: 'sm' | 'default' | 'lg';
+}

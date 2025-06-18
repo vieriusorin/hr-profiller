@@ -2,12 +2,13 @@ import { NextResponse } from 'next/server';
 
 const JSON_SERVER_URL = 'http://localhost:3001';
 
-export async function PUT(request: Request, { params }: { params: { opportunityId: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ opportunityId: string }> }) {
   try {
     const opportunity = await request.json();
+    const { opportunityId } = await params;
 
     // Get current opportunity to check existing active status
-    const currentResponse = await fetch(`${JSON_SERVER_URL}/opportunities/${params.opportunityId}`);
+    const currentResponse = await fetch(`${JSON_SERVER_URL}/opportunities/${opportunityId}`);
     if (!currentResponse.ok) throw new Error('Failed to fetch current opportunity');
     const currentOpportunity = await currentResponse.json();
 
@@ -24,7 +25,7 @@ export async function PUT(request: Request, { params }: { params: { opportunityI
       updatedOpportunity.activatedAt = null;
     }
 
-    const response = await fetch(`${JSON_SERVER_URL}/opportunities/${params.opportunityId}`, {
+    const response = await fetch(`${JSON_SERVER_URL}/opportunities/${opportunityId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedOpportunity),
@@ -41,9 +42,10 @@ export async function PUT(request: Request, { params }: { params: { opportunityI
   }
 }
 
-export async function GET(request: Request, { params }: { params: { opportunityId: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ opportunityId: string }> }) {
   try {
-    const response = await fetch(`${JSON_SERVER_URL}/opportunities/${params.opportunityId}`);
+    const { opportunityId } = await params;
+    const response = await fetch(`${JSON_SERVER_URL}/opportunities/${opportunityId}`);
     if (!response.ok) {
       throw new Error(`Failed to fetch opportunity: ${response.statusText}`);
     }

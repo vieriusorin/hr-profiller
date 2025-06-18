@@ -47,7 +47,7 @@ export const useRoleRow = (onUpdateRole: (opportunityId: string, roleId: string,
       confirmationDialog.status
     );
     handleCloseDialog();
-  }, [confirmationDialog, onUpdateRole]);
+  }, [confirmationDialog, onUpdateRole]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleCloseDialog = useCallback(() => {
     setConfirmationDialog((prev) => ({ ...prev, isOpen: false }));

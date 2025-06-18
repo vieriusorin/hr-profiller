@@ -2,7 +2,6 @@ import { Clock, AlertTriangle, Calendar } from 'lucide-react';
 import { getCountdownDisplay } from '@/shared/lib/helpers/date-urgency';
 import { CountdownBadgeProps } from '../types';
 
-
 export const useCountdownBadge = ({
     startDate,
     size = 'md',

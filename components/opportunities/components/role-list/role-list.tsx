@@ -5,7 +5,7 @@ import { EditRoleModal } from '../modals/edit-role-modal';
 import { useRoleList } from './hooks/use-role-list';
 import { RoleListProps } from './types';
 
-export const RoleList = ({ roles, opportunityId }: RoleListProps) => {
+export const RoleList = ({ roles, opportunityId, opportunity }: RoleListProps) => {
 const {
   selectedRole,
   setSelectedRole,
@@ -52,6 +52,7 @@ const {
           }}
           opportunityId={opportunityId}
           role={selectedRole}
+          opportunity={opportunity}
         />
       )}
     </div>

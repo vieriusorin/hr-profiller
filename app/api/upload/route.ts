@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
 
   try {
     // Ensure the directory exists
-    const fs = require('fs');
+    const fs = await import('fs');
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
