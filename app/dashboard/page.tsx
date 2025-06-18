@@ -60,7 +60,7 @@ export default function OpportunityDashboard() {
 		<>
 			<DashboardHeader />
 
-			<div className='p-6 max-w-7xl mx-auto w-full'>
+			<div className='p-6 mx-auto w-full'>
 				<div className='flex justify-between items-center mb-6'>
 					<DashboardTitle isRefetching={isRefetching} />
 

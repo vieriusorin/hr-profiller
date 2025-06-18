@@ -26,7 +26,7 @@ const SettingsPage = () => {
 	}
 
 	return (
-		<div className='p-6 max-w-7xl mx-auto w-full'>
+		<div className='p-6 mx-auto w-full'>
 			<FormProvider {...form}>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>

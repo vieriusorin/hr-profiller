@@ -33,7 +33,7 @@ export default function ImportPage() {
 	} = useImportPage();
 
 	return (
-		<div className='p-6 max-w-7xl mx-auto w-full'>
+		<div className='p-6 mx-auto w-full'>
 			<PageHeader>
 				<PageHeaderHeading>Import Data</PageHeaderHeading>
 			</PageHeader>

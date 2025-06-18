@@ -38,7 +38,6 @@ export const OpportunityCardDescription = ({
     }
   };
 
-  // Check if it was auto-activated based on probability
   const autoActivated = isActive && isOpportunityActiveByProbability(probability);
 
   return (

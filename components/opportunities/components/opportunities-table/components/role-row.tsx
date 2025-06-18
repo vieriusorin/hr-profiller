@@ -43,7 +43,6 @@ export const RoleRow = ({
 				<TableCell></TableCell>
 				<TableCell></TableCell>
 				<TableCell></TableCell>
-				<TableCell></TableCell>
 
 				{/* Role-specific cells start here */}
 				<TableCell>
@@ -96,10 +95,10 @@ export const RoleRow = ({
 				<TableCell>
 					{row.needsHire ? (
 						<Badge variant='outline' className='text-xs'>
-							{row.newHireName || "Awaiting Hire"}
+							{row.newHireName || "Needs Hire"}
 						</Badge>
 					) : (
-						<span className='text-muted-foreground italic'>Not a hire</span>
+						<span className='text-muted-foreground italic'>No Hire</span>
 					)}
 				</TableCell>
 

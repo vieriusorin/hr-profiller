@@ -39,7 +39,6 @@ const getProbabilityConfig = (probability: number) => {
 
 export const ProbabilityBadge = ({ 
   probability, 
-  showIcon = true, 
   size = 'default' 
 }: ProbabilityBadgeProps) => {
   const config = getProbabilityConfig(probability);
@@ -52,16 +51,12 @@ export const ProbabilityBadge = ({
 
   return (
     <div className='flex items-center gap-1'>
-      {showIcon && <Briefcase className={`h-3 w-3 ${config.textColor}`} />}
       <Badge 
         variant='outline' 
         className={`${config.color} ${sizeClasses[size]} font-medium border`}
       >
         {probability}%
       </Badge>
-      <span className={`text-xs ${config.textColor} font-medium`}>
-        {config.label}
-      </span>
     </div>
   );
 }; 

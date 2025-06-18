@@ -82,4 +82,4 @@ Our architecture emphasizes **Separation of Concerns** and follows principles fr
 ## Development Conventions
 
 ### Layout
-- For consistent page layouts and main content areas, use the following Tailwind CSS classes on the main container `div`: `p-6 max-w-7xl mx-auto`. This ensures a standardized width and padding across the dashboard and settings pages.
+- For consistent page layouts and main content areas, use the following Tailwind CSS classes on the main container `div`: `p-6  mx-auto`. This ensures a standardized width and padding across the dashboard and settings pages.

@@ -1,19 +1,15 @@
 import { TableRow, TableCell } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import { StatusBadge } from "@/shared/components/status-badge";
 import { ProbabilityBadge } from "@/shared/components/probability-badge";
-import { CountdownBadge } from "@/shared/components/countdown-badge";
 import { Building, Calendar, Users } from "lucide-react";
 import { EditOpportunityModal } from "../../modals/edit-role-modal";
 import { OpportunityRowProps } from "./types";
 import { useOpportunityRow } from "../hooks/use-opportunity-row";
 import { OpportunityActions } from "./opportunity-actions";
-import { OpportunityStatus } from "@/app/shared/types";
 
 export const OpportunityRow = ({
 	row,
@@ -46,13 +42,6 @@ export const OpportunityRow = ({
 						>
 							{row.opportunityName}
 						</div>
-						<div className='flex items-center gap-1 text-xs text-muted-foreground mt-1'>
-							{row.hasHiringNeeds && (
-								<Badge variant='outline' className='ml-1 text-xs'>
-									Hiring needed
-								</Badge>
-							)}
-						</div>
 					</div>
 				</TableCell>
 				<TableCell rowSpan={row.rowSpan} className='align-top'>
@@ -72,14 +61,11 @@ export const OpportunityRow = ({
 								{row.expectedStartDate}
 							</span>
 						</div>
-						<CountdownBadge startDate={row.expectedStartDate} size='sm' />
+						{/* <CountdownBadge startDate={row.expectedStartDate} size='sm' /> */}
 					</div>
 				</TableCell>
 				<TableCell rowSpan={row.rowSpan} className='align-top'>
 					<ProbabilityBadge probability={row.probability} size='sm' />
-				</TableCell>
-				<TableCell rowSpan={row.rowSpan} className='align-top'>
-					<StatusBadge status={row.opportunityStatus as OpportunityStatus} />
 				</TableCell>
 
 				{/* This cell is for the first role's comment */}

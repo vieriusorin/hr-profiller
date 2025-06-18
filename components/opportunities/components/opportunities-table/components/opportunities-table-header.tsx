@@ -21,7 +21,6 @@ export const OpportunitiesTableHeader = ({
 				<TableHead className='w-[150px]'>Client</TableHead>
 				<TableHead className='w-[150px]'>Start Date</TableHead>
 				<TableHead className='w-[100px]'>Probability</TableHead>
-				<TableHead className='w-[120px]'>Status</TableHead>
 				<TableHead className='w-[180px]'>Comment</TableHead>
 				<TableHead className='w-[100px]'>Roles</TableHead>
 				<TableHead className='w-[100px]'>Grade</TableHead>

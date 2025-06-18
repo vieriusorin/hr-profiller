@@ -32,7 +32,7 @@ export default function EmployeesPage() {
 				</Breadcrumb>
 			</header>
 
-			<div className='p-6 max-w-7xl mx-auto w-full'>
+			<div className='p-6 mx-auto w-full'>
 				<div className='mb-6'>
 					<h1 className='text-3xl font-bold flex items-center gap-2'>
 						<Briefcase className='h-8 w-8 text-primary' />
