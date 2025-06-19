@@ -33,7 +33,6 @@ const SEED_COUNT = {
 
 // Helper functions
 const getRandomItem = <T>(array: T[]): T => array[Math.floor(Math.random() * array.length)];
-const formatDateForDB = (date: Date): string => date.toISOString().split('T')[0];
 const generatePhoneNumber = () => faker.phone.number({ style: 'human' }).substring(0, 20);
 
 function getRandomDate(from: Date, to: Date): Date {
@@ -167,8 +166,8 @@ async function seedOpportunities(clientsData: any[]) {
 
   for (let i = 0; i < SEED_COUNT.OPPORTUNITIES; i++) {
     const client = getRandomItem(clientsData);
-    const startDate = getRandomDate(new Date(2023, 0, 1), new Date(2024, 0, 1));
-    const endDate = getRandomDate(startDate, new Date(startDate.getTime() + 365 * 24 * 60 * 60 * 1000));
+    const startDate = faker.date.future({ years: 1 });
+    const endDate = faker.date.future({ years: 2, refDate: startDate });
     
     const opportunityId = randomUUID();
     const opportunityData = {
@@ -216,8 +215,8 @@ async function seedOpportunityRoles(opportunitiesData: any[]) {
         jobGrade: faker.helpers.arrayElement(['T', 'C', 'SC', 'ST', 'SE', 'IC3', 'IC4', 'IC5', 'M2']),
         level: faker.helpers.arrayElement(['Low', 'Medium', 'High']),
         allocation: faker.number.int({ min: 50, max: 100 }),
-        startDate: getRandomDate(new Date(2023, 0, 1), new Date(2024, 0, 1)).toISOString().split('T')[0],
-        endDate: getRandomDate(new Date(2023, 0, 1), new Date(2024, 0, 1)).toISOString().split('T')[0],
+        startDate: faker.date.future({ years: 1 }),
+        endDate: faker.date.future({ years: 2 }),
         status: faker.helpers.arrayElement(['Open', 'Staffed', 'Won', 'Lost']),
         notes: faker.helpers.maybe(() => faker.lorem.sentence(), { probability: 0.6 }),
       };
