@@ -1,21 +1,28 @@
-export * from './schema/candidates.schema';
-export * from './schema/employees.schema';
-export * from './schema/departments.schema';
-export * from './schema/meetings.schema';
-export * from './schema/meeting-participants.schema';
-export * from './schema/clients.schema';
-export * from './schema/projects.schema';
-export * from './schema/technologies.schema';
-export * from './schema/project-technologies.schema';
-export * from './schema/project-team-members.schema';
-export * from './schema/skills.schema';
-export * from './schema/employee-skills.schema';
-export * from './schema/candidate-skills.schema';
+// CORE TABLES - Actually used in frontend
+export * from './schema/people.schema';
+export * from './schema/person-status.schema';
+export * from './schema/employment-details.schema';
+export * from './schema/person-unavailable-dates.schema';
 export * from './schema/education.schema';
-export * from './schema/work-experience.schema';
-export * from './schema/positions.schema';
+export * from './schema/skills.schema';
+export * from './schema/person-skills.schema';
+export * from './schema/technologies.schema';
+export * from './schema/person-technologies.schema';
+export * from './schema/clients.schema';
+
+// OPPORTUNITIES - Main feature of the app
+export * from './schema/opportunities.schema';
+export * from './schema/opportunity-roles.schema';
+export * from './schema/opportunity-role-assignments.schema';
+
+// RELATIONS
 export * from './schema/relations';
 
-export * from './enums/applicant-status.enum';
-export * from './enums/department-type.enum';
-export * from './enums/employment-type.enum';
+// ENUMS - Keep necessary enums
+export * from './enums/opportunity-status.enum';
+export * from './enums/job-grade.enum';
+export * from './enums/opportunity-level.enum';
+export * from './enums/role-status.enum';
+export * from './enums/employee-status.enum';
+export * from './enums/work-status.enum';
+export * from './enums/person-status.enum';

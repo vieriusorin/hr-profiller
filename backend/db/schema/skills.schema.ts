@@ -1,34 +1,13 @@
-import { pgTable, serial, varchar, timestamp } from 'drizzle-orm/pg-core';
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
-import { z } from 'zod';
+import { pgTable, uuid, varchar, timestamp, text } from 'drizzle-orm/pg-core';
 
-/**
- * Skills table
- *
- * @description
- * This is a table for skills.
- * It stores information about different skills that employees and candidates may have.
- */
 export const skills = pgTable('skills', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').primaryKey().defaultRandom(),
   name: varchar('name', { length: 100 }).notNull().unique(),
+  category: varchar('category', { length: 50 }),
+  description: text('description'),
   createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-// Create the base insert schema
-const baseInsertSchema = createInsertSchema(skills);
-
-// Create a modified insert schema that excludes auto-generated fields
-export const insertSkillSchema = baseInsertSchema.omit({
-  id: true,
-  createdAt: true,
-});
-
-// Create the base select schema
-const baseSelectSchema = createSelectSchema(skills);
-
-// Create a modified select schema
-export const selectSkillSchema = baseSelectSchema;
-
-export type TypeSkill = z.infer<typeof selectSkillSchema>;
-export type TypeNewSkill = z.infer<typeof insertSkillSchema>;
+export type Skill = typeof skills.$inferSelect;
+export type NewSkill = typeof skills.$inferInsert; 

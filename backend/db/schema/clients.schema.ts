@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, timestamp, text } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, timestamp, text } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
@@ -10,7 +10,7 @@ import { z } from 'zod';
  * It stores information about client companies.
  */
 export const clients = pgTable('clients', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').primaryKey().defaultRandom(),
   name: varchar('name', { length: 255 }).notNull(),
   industry: varchar('industry', { length: 100 }),
   contactPerson: varchar('contact_person', { length: 255 }),
