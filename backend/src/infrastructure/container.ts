@@ -1,18 +1,23 @@
-import { DrizzleOpportunityRepository } from './database/repositories/drizzle-opportunity.repository';
+import { Container } from 'inversify';
+import db from '../../db';
+import { TYPES, DatabaseType } from '../shared/types';
 import { OpportunityService } from '../domain/opportunity/services/opportunity.service';
+import { DrizzleOpportunityRepository } from './database/repositories/drizzle-opportunity.repository';
 import { OpportunityController } from './http/controllers/opportunity.controller';
+import { OpportunityRepository } from '../domain/opportunity/repositories/opportunity.repository';
 
-import db from './database/index';
+const container = new Container();
 
-export const container = {
-  db: db as any,
-  opportunityRepository: new DrizzleOpportunityRepository(db as any),
-  resolve: function (target: typeof OpportunityController) {
-    if (target === OpportunityController) {
-      const opportunityService = new OpportunityService(this.opportunityRepository);
-      return new OpportunityController(opportunityService);
-    }
+// Infrastructure bindings - Using centralized type
+container.bind<DatabaseType>(TYPES.Database).toConstantValue(db);
 
-    throw new Error(`Cannot resolve dependency for ${target.name}`);
-  },
-};
+// Repository bindings
+container.bind<OpportunityRepository>(TYPES.OpportunityRepository).to(DrizzleOpportunityRepository);
+
+// Service bindings 
+container.bind<OpportunityService>(TYPES.OpportunityService).to(OpportunityService);
+
+// Controller bindings
+container.bind<OpportunityController>(TYPES.OpportunityController).to(OpportunityController);
+
+export { container };

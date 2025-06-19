@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import express, { ErrorRequestHandler } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';

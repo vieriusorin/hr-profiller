@@ -1,15 +1,17 @@
+import { injectable, inject } from 'inversify';
 import { eq } from 'drizzle-orm';
-import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { Opportunity, OpportunityStatus } from '../../../domain/opportunity/entities/opportunity.entity';
-import { 
-  OpportunityRepository, 
-  CreateOpportunityData 
-} from '../../../domain/opportunity/repositories/opportunity.repository';
+import { TYPES, DatabaseType } from '../../../shared/types';
+import { Opportunity } from '../../../domain/opportunity/entities/opportunity.entity';
+import { OpportunityRepository } from '../../../domain/opportunity/repositories/opportunity.repository';
+import { CreateOpportunityData } from '../../../shared/types/schema.types';
 import { opportunities } from '../../../../db/schema/opportunities.schema';
-import * as schema from '../../../../db/schema';
 
+@injectable()
 export class DrizzleOpportunityRepository implements OpportunityRepository {
-  constructor(private readonly db: NodePgDatabase<typeof schema>) {}
+  constructor(
+    @inject(TYPES.Database) 
+    private readonly db: DatabaseType
+  ) {}
 
   async findAll(): Promise<Opportunity[]> {
     const result = await this.db.select().from(opportunities);
@@ -26,15 +28,14 @@ export class DrizzleOpportunityRepository implements OpportunityRepository {
   }
 
   async create(data: CreateOpportunityData): Promise<Opportunity> {
-    // The database will auto-generate the UUID using DEFAULT gen_random_uuid()
     const [inserted] = await this.db
       .insert(opportunities)
       .values({
         opportunityName: data.opportunityName,
         clientId: data.clientId || null,
         clientName: data.clientName || null,
-        expectedStartDate: data.expectedStartDate ? data.expectedStartDate.toISOString().split('T')[0] : null,
-        expectedEndDate: data.expectedEndDate ? data.expectedEndDate.toISOString().split('T')[0] : null,
+        expectedStartDate: data.expectedStartDate || null,
+        expectedEndDate: data.expectedEndDate || null,
         probability: data.probability || null,
         status: (data.status as any) || 'In Progress',
         comment: data.comment || null,
@@ -53,10 +54,10 @@ export class DrizzleOpportunityRepository implements OpportunityRepository {
     if (data.clientId !== undefined) updateData.clientId = data.clientId;
     if (data.clientName !== undefined) updateData.clientName = data.clientName;
     if (data.expectedStartDate !== undefined) {
-      updateData.expectedStartDate = data.expectedStartDate ? data.expectedStartDate.toISOString().split('T')[0] : null;
+      updateData.expectedStartDate = data.expectedStartDate;
     }
     if (data.expectedEndDate !== undefined) {
-      updateData.expectedEndDate = data.expectedEndDate ? data.expectedEndDate.toISOString().split('T')[0] : null;
+      updateData.expectedEndDate = data.expectedEndDate;
     }
     if (data.probability !== undefined) updateData.probability = data.probability;
     if (data.status !== undefined) updateData.status = data.status;
@@ -92,20 +93,20 @@ export class DrizzleOpportunityRepository implements OpportunityRepository {
   }
 
   private mapToEntity(data: any): Opportunity {
-    return new Opportunity(
-      data.id,
-      data.opportunityName,
-      data.clientId,
-      data.clientName,
-      data.expectedStartDate ? new Date(data.expectedStartDate) : null,
-      data.expectedEndDate ? new Date(data.expectedEndDate) : null,
-      data.probability,
-      data.status as OpportunityStatus,
-      data.comment,
-      data.isActive,
-      data.activatedAt ? new Date(data.activatedAt) : null,
-      new Date(data.createdAt),
-      new Date(data.updatedAt)
-    );
+    return new Opportunity({
+      id: data.id,
+      opportunityName: data.opportunityName,
+      clientId: data.clientId,
+      clientName: data.clientName,
+      expectedStartDate: data.expectedStartDate,
+      expectedEndDate: data.expectedEndDate,
+      probability: data.probability,
+      status: data.status,
+      comment: data.comment,
+      isActive: data.isActive,
+      activatedAt: data.activatedAt,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+    });
   }
 } 

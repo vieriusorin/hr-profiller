@@ -1,11 +1,17 @@
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../../../shared/types';
 import { 
-  OpportunityRepository, 
-  CreateOpportunityData 
+  OpportunityRepository
 } from '../repositories/opportunity.repository';
+import { CreateOpportunityData } from '../../../shared/types/schema.types';
 import { Opportunity } from '../entities/opportunity.entity';
 
+@injectable()
 export class OpportunityService {
-  constructor(private readonly opportunityRepository: OpportunityRepository) {}
+  constructor(
+    @inject(TYPES.OpportunityRepository) 
+    private readonly opportunityRepository: OpportunityRepository
+  ) {}
 
   async getAllOpportunities(): Promise<Opportunity[]> {
     return this.opportunityRepository.findAll();
@@ -20,15 +26,14 @@ export class OpportunityService {
     // For example, auto-activate if probability >= 80%
     const processedData = {
       ...data,
-      isActive: data.isActive ?? (data.probability ? data.probability >= 80 : false),
-      activatedAt: data.isActive ?? (data.probability ? data.probability >= 80 : false) ? new Date() : null,
+      isActive: data.isActive ?? (data.probability != null ? data.probability >= 80 : false),
+      activatedAt: data.isActive ?? (data.probability != null ? data.probability >= 80 : false) ? new Date() : null,
     };
 
     return this.opportunityRepository.create(processedData);
   }
 
   async updateOpportunity(id: string, data: Partial<CreateOpportunityData>): Promise<Opportunity> {
-    // Get current opportunity to apply business logic
     const current = await this.opportunityRepository.findById(id);
     if (!current) {
       throw new Error(`Opportunity with id ${id} not found`);
@@ -37,7 +42,7 @@ export class OpportunityService {
     // Apply business logic for auto-activation
     const processedData = { ...data };
     
-    if (data.probability !== undefined) {
+    if (data.probability !== undefined && data.probability !== null) {
       if (data.probability >= 80 && !current.isActive) {
         // Auto-activate if probability increased to >= 80%
         processedData.isActive = true;

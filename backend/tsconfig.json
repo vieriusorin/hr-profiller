@@ -6,6 +6,8 @@
     "module": "NodeNext",
     "target": "ES2022",
     "moduleResolution": "nodenext",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "outDir": "./dist",
     "forceConsistentCasingInFileNames": true,
     "paths": {

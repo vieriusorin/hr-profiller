@@ -1,31 +1,30 @@
+import { injectable, inject } from 'inversify';
 import { Request, Response } from 'express';
+import { TYPES } from '../../../shared/types';
 import { OpportunityService } from '../../../domain/opportunity/services/opportunity.service';
+import { OpportunityPresenter } from '../../../interfaces/presenters/opportunity.presenter';
 
+@injectable()
 export class OpportunityController {
-  constructor(private readonly opportunityService: OpportunityService) {}
+  private readonly presenter = new OpportunityPresenter();
+
+  constructor(
+    @inject(TYPES.OpportunityService) 
+    private readonly opportunityService: OpportunityService
+  ) {}
 
   async getAll(req: Request, res: Response): Promise<void> {
     try {
       const opportunities = await this.opportunityService.getAllOpportunities();
-      res.status(200).json({
-        status: 'success',
-        data: opportunities,
-        meta: {
-          count: opportunities.length,
-          timestamp: new Date().toISOString(),
-          endpoint: req.originalUrl,
-        },
-      });
+      
+      // Use the enhanced presenter with full query support (pagination, filtering, search, sort)
+      const response = this.presenter.successPaginated(opportunities, req);
+      
+      res.status(200).json(response);
     } catch (error: any) {
       console.error('Error fetching opportunities:', error);
-      res.status(500).json({
-        status: 'error',
-        message: error.message || 'Failed to fetch opportunities',
-        meta: {
-          timestamp: new Date().toISOString(),
-          endpoint: req.originalUrl,
-        },
-      });
+      const errorResponse = this.presenter.error(error);
+      res.status(500).json(errorResponse);
     }
   }
 
@@ -35,35 +34,17 @@ export class OpportunityController {
       const opportunity = await this.opportunityService.getOpportunityById(id);
       
       if (!opportunity) {
-        res.status(404).json({
-          status: 'error',
-          message: 'Opportunity not found',
-          meta: {
-            timestamp: new Date().toISOString(),
-            endpoint: req.originalUrl,
-          },
-        });
+        const errorResponse = this.presenter.error({ message: 'Opportunity not found', code: 'NOT_FOUND' });
+        res.status(404).json(errorResponse);
         return;
       }
 
-      res.status(200).json({
-        status: 'success',
-        data: opportunity,
-        meta: {
-          timestamp: new Date().toISOString(),
-          endpoint: req.originalUrl,
-        },
-      });
+      const response = this.presenter.success(opportunity);
+      res.status(200).json(response);
     } catch (error: any) {
       console.error('Error fetching opportunity:', error);
-      res.status(500).json({
-        status: 'error',
-        message: error.message || 'Failed to fetch opportunity',
-        meta: {
-          timestamp: new Date().toISOString(),
-          endpoint: req.originalUrl,
-        },
-      });
+      const errorResponse = this.presenter.error(error);
+      res.status(500).json(errorResponse);
     }
   }
 
@@ -74,14 +55,11 @@ export class OpportunityController {
 
       // Validate required fields
       if (!opportunityData.opportunityName) {
-        res.status(400).json({
-          status: 'error',
-          message: 'opportunityName is required',
-          meta: {
-            timestamp: new Date().toISOString(),
-            endpoint: req.originalUrl,
-          },
+        const errorResponse = this.presenter.error({ 
+          message: 'opportunityName is required', 
+          code: 'VALIDATION_ERROR' 
         });
+        res.status(400).json(errorResponse);
         return;
       }
 
@@ -94,25 +72,12 @@ export class OpportunityController {
       }
 
       const opportunity = await this.opportunityService.createOpportunity(opportunityData);
-
-      res.status(201).json({
-        status: 'success',
-        data: opportunity,
-        meta: {
-          timestamp: new Date().toISOString(),
-          endpoint: req.originalUrl,
-        },
-      });
+      const response = this.presenter.success(opportunity);
+      res.status(201).json(response);
     } catch (error: any) {
       console.error('Error creating opportunity:', error);
-      res.status(500).json({
-        status: 'error',
-        message: error.message || 'Failed to create opportunity',
-        meta: {
-          timestamp: new Date().toISOString(),
-          endpoint: req.originalUrl,
-        },
-      });
+      const errorResponse = this.presenter.error(error);
+      res.status(500).json(errorResponse);
     }
   }
 
@@ -130,26 +95,13 @@ export class OpportunityController {
       }
 
       const opportunity = await this.opportunityService.updateOpportunity(id, updateData);
-
-      res.status(200).json({
-        status: 'success',
-        data: opportunity,
-        meta: {
-          timestamp: new Date().toISOString(),
-          endpoint: req.originalUrl,
-        },
-      });
+      const response = this.presenter.success(opportunity);
+      res.status(200).json(response);
     } catch (error: any) {
       console.error('Error updating opportunity:', error);
       const statusCode = error.message.includes('not found') ? 404 : 500;
-      res.status(statusCode).json({
-        status: 'error',
-        message: error.message || 'Failed to update opportunity',
-        meta: {
-          timestamp: new Date().toISOString(),
-          endpoint: req.originalUrl,
-        },
-      });
+      const errorResponse = this.presenter.error(error);
+      res.status(statusCode).json(errorResponse);
     }
   }
 
@@ -162,14 +114,8 @@ export class OpportunityController {
     } catch (error: any) {
       console.error('Error deleting opportunity:', error);
       const statusCode = error.message.includes('not found') ? 404 : 500;
-      res.status(statusCode).json({
-        status: 'error',
-        message: error.message || 'Failed to delete opportunity',
-        meta: {
-          timestamp: new Date().toISOString(),
-          endpoint: req.originalUrl,
-        },
-      });
+      const errorResponse = this.presenter.error(error);
+      res.status(statusCode).json(errorResponse);
     }
   }
 } 
