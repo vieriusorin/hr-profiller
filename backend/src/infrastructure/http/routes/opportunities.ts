@@ -47,13 +47,8 @@ const opportunityController = container.get<OpportunityController>(TYPES.Opportu
  *       - in: query
  *         name: searchFields
  *         schema:
- *           type: array
- *           items:
- *             type: string
- *             enum: [opportunityName, clientName, comment]
- *         style: form
- *         explode: false
- *         description: Specific fields to search in (comma-separated)
+ *           type: string
+ *         description: 'Specific fields to search in (comma-separated). Allowed values: `opportunityName`, `clientName`, `comment`'
  *         example: "opportunityName,clientName"
  *       # Filter parameters
  *       - in: query
@@ -67,7 +62,7 @@ const opportunityController = container.get<OpportunityController>(TYPES.Opportu
  *         schema:
  *           type: string
  *           pattern: '^[0-9]+-[0-9]+$'
- *         description: Probability range filter (format: min-max)
+ *         description: "Probability range filter (format: min-max)"
  *         example: "80-100"
  *       - in: query
  *         name: status
@@ -217,12 +212,12 @@ const opportunityController = container.get<OpportunityController>(TYPES.Opportu
  *                 example: "TechCorp Inc."
  *               expectedStartDate:
  *                 type: string
- *                 format: date
- *                 example: "2024-03-15"
+ *                 format: date-time
+ *                 example: "2024-03-15T09:00:00.000Z"
  *               expectedEndDate:
  *                 type: string
- *                 format: date
- *                 example: "2024-09-15"
+ *                 format: date-time
+ *                 example: "2024-09-15T17:00:00.000Z"
  *               probability:
  *                 type: integer
  *                 minimum: 0
@@ -333,10 +328,10 @@ router.post('/', (req, res) => opportunityController.create(req, res));
  *                 type: string
  *               expectedStartDate:
  *                 type: string
- *                 format: date
+ *                 format: date-time
  *               expectedEndDate:
  *                 type: string
- *                 format: date
+ *                 format: date-time
  *               probability:
  *                 type: integer
  *                 minimum: 0

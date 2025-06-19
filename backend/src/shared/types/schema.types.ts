@@ -1,24 +1,16 @@
-// ===================================================================
-// SCHEMA-DERIVED TYPES
-// Single source of truth for all database-related types
-// When schema changes, TypeScript will catch all needed updates
-// ===================================================================
-
-// Opportunities
 export { 
   TypeOpportunity, 
   TypeNewOpportunity, 
   selectOpportunitySchema,
-  insertOpportunitySchema 
+  CreateOpportunitySchema,
+  UpdateOpportunitySchema
 } from '../../../db/schema/opportunities.schema';
 
-// People (for future use)
 export { 
   TypePerson, 
   TypeNewPerson 
 } from '../../../db/schema/people.schema';
 
-// Clients (for future use) 
 export {
   TypeClient,
   TypeNewClient

@@ -4,9 +4,9 @@ const options: swaggerJsdoc.Options = {
   definition: {
     openapi: '3.1.0',
     info: {
-      title: 'Profiller HR API',
+      title: 'Opportunit',
       version: '1.0.0',
-      description: 'HR management system API with opportunities management',
+      description: 'Opportunity with management',
       contact: {
         name: 'API Support',
         email: 'support@example.com',

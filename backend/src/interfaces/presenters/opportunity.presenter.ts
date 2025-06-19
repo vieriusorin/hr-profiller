@@ -18,13 +18,15 @@ export class OpportunityPresenter extends EnhancedBasePresenter<Opportunity, Opp
         .setSortBuilder(new OpportunitySortBuilder());
   }
 
-  /**
-   * Transform a single opportunity
-   * Uses schema as base + adds computed fields from business logic
-   */
   present(opportunity: Opportunity, options?: any): OpportunityPresentation {
-    return {
+    const formattedOpportunity = {
       ...opportunity,
+      expectedStartDate: opportunity.expectedStartDate ? new Date(opportunity.expectedStartDate) : null,
+      expectedEndDate: opportunity.expectedEndDate ? new Date(opportunity.expectedEndDate) : null,
+    };
+
+    return {
+      ...formattedOpportunity,
       // Add computed fields from business logic
       isHighProbability: opportunity.isHighProbability(),
       duration: opportunity.getDuration(),

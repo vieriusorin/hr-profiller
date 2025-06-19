@@ -1,8 +1,3 @@
-// ================================================================
-// PRESENTER TYPES - Unified Response System
-// Supports pagination, filtering, search, and sorting
-// ================================================================
-
 export interface PaginationParams {
   page?: number;
   limit?: number;

@@ -92,7 +92,7 @@ async function seedPeople() {
       fullName,
       email: faker.internet.email({ firstName, lastName }),
       phone: generatePhoneNumber(),
-      birthDate: formatDateForDB(faker.date.birthdate({ min: 22, max: 65, mode: 'age' })),
+      birthDate: getRandomDate(new Date(2020, 0, 1), new Date()).toISOString().split('T')[0],
       address: faker.location.streetAddress({ useFullAddress: true }),
       city: faker.location.city(),
       country: faker.location.country(),
@@ -123,7 +123,7 @@ async function seedPeople() {
           id: employmentDetailsId,
           personId: personId,
           employeeId: `EMP${String(i + 1).padStart(4, '0')}`,
-          hireDate: formatDateForDB(getRandomDate(new Date(2020, 0, 1), new Date())),
+          hireDate: getRandomDate(new Date(2020, 0, 1), new Date()).toISOString().split('T')[0],
           position,
           employmentType: faker.helpers.arrayElement(['full_time', 'part_time']),
           salary: faker.number.int({ min: 50000, max: isManager ? 200000 : 150000 }).toString(),
@@ -167,8 +167,8 @@ async function seedOpportunities(clientsData: any[]) {
 
   for (let i = 0; i < SEED_COUNT.OPPORTUNITIES; i++) {
     const client = getRandomItem(clientsData);
-    const startDate = faker.date.future({ years: 1 });
-    const endDate = faker.date.future({ years: 2, refDate: startDate });
+    const startDate = getRandomDate(new Date(2023, 0, 1), new Date(2024, 0, 1));
+    const endDate = getRandomDate(startDate, new Date(startDate.getTime() + 365 * 24 * 60 * 60 * 1000));
     
     const opportunityId = randomUUID();
     const opportunityData = {
@@ -176,8 +176,8 @@ async function seedOpportunities(clientsData: any[]) {
       opportunityName: opportunityNames[i] || faker.company.buzzPhrase(),
       clientId: client.id,
       clientName: client.name,
-      expectedStartDate: formatDateForDB(startDate),
-      expectedEndDate: formatDateForDB(endDate),
+      expectedStartDate: startDate,
+      expectedEndDate: endDate,
       probability: faker.number.int({ min: 20, max: 100 }),
       status: faker.helpers.arrayElement(['In Progress', 'On Hold', 'Done']),
       comment: faker.lorem.paragraph(),
@@ -216,8 +216,8 @@ async function seedOpportunityRoles(opportunitiesData: any[]) {
         jobGrade: faker.helpers.arrayElement(['T', 'C', 'SC', 'ST', 'SE', 'IC3', 'IC4', 'IC5', 'M2']),
         level: faker.helpers.arrayElement(['Low', 'Medium', 'High']),
         allocation: faker.number.int({ min: 50, max: 100 }),
-        startDate: faker.date.future({ years: 1 }),
-        endDate: faker.date.future({ years: 2 }),
+        startDate: getRandomDate(new Date(2023, 0, 1), new Date(2024, 0, 1)).toISOString().split('T')[0],
+        endDate: getRandomDate(new Date(2023, 0, 1), new Date(2024, 0, 1)).toISOString().split('T')[0],
         status: faker.helpers.arrayElement(['Open', 'Staffed', 'Won', 'Lost']),
         notes: faker.helpers.maybe(() => faker.lorem.sentence(), { probability: 0.6 }),
       };
@@ -280,15 +280,15 @@ async function seedPersonUnavailableDates(peopleData: any[]) {
       const numPeriods = faker.number.int({ min: 1, max: SEED_COUNT.UNAVAILABLE_DATES_PER_PERSON });
       
       for (let i = 0; i < numPeriods; i++) {
-        const startDate = faker.date.future({ years: 1 });
+        const startDate = getRandomDate(new Date(2023, 0, 1), new Date(2024, 0, 1));
         const endDate = new Date(startDate.getTime() + faker.number.int({ min: 1, max: 14 }) * 24 * 60 * 60 * 1000);
         
         const unavailableId = randomUUID();
         const unavailableData = {
           id: unavailableId,
           personId: person.id,
-          startDate: formatDateForDB(startDate),
-          endDate: formatDateForDB(endDate),
+          startDate: startDate.toISOString().split('T')[0],
+          endDate: endDate.toISOString().split('T')[0],
           reason: faker.helpers.arrayElement(['Vacation', 'Sick Leave', 'Personal', 'Training', 'Conference']),
         };
 
@@ -387,7 +387,7 @@ async function seedEducation(peopleData: any[]) {
     const numEducation = faker.number.int({ min: 1, max: SEED_COUNT.EDUCATION_PER_PERSON });
     
     for (let i = 0; i < numEducation; i++) {
-      const startDate = faker.date.past({ years: 10 });
+      const startDate = getRandomDate(new Date(2010, 0, 1), new Date(2024, 0, 1));
       const endDate = new Date(startDate.getTime() + (faker.number.int({ min: 2, max: 6 }) * 365 * 24 * 60 * 60 * 1000));
       
       const educationId = randomUUID();
@@ -397,8 +397,8 @@ async function seedEducation(peopleData: any[]) {
         institution: getRandomItem(institutions),
         degree: getRandomItem(degrees),
         fieldOfStudy: getRandomItem(fields),
-        startDate: formatDateForDB(startDate),
-        graduationDate: formatDateForDB(endDate),
+        startDate: startDate.toISOString().split('T')[0],
+        graduationDate: endDate.toISOString().split('T')[0],
         description: faker.helpers.maybe(() => faker.lorem.sentence(), { probability: 0.6 }),
         gpa: faker.helpers.maybe(() => faker.number.float({ min: 2.5, max: 4.0, fractionDigits: 1 }).toString(), { probability: 0.7 }),
         isCurrentlyEnrolled: faker.datatype.boolean({ probability: 0.1 }) ? 'true' : 'false',
@@ -427,10 +427,10 @@ async function seedPersonSkills(peopleData: any[], skillsData: any[]) {
         skillId: skill.id,
         proficiencyLevel: getRandomItem(proficiencyLevels),
         yearsOfExperience: faker.number.int({ min: 1, max: 15 }).toString(),
-        lastUsed: formatDateForDB(faker.date.recent({ days: 365 })),
+        lastUsed: getRandomDate(new Date(2023, 0, 1), new Date()).toISOString().split('T')[0],
         isCertified: faker.datatype.boolean({ probability: 0.3 }),
         certificationName: faker.helpers.maybe(() => `${skill.name} Certification`, { probability: 0.3 }),
-        certificationDate: faker.helpers.maybe(() => formatDateForDB(faker.date.past({ years: 3 })), { probability: 0.3 }),
+        certificationDate: faker.helpers.maybe(() => getRandomDate(new Date(2020, 0, 1), new Date()).toISOString().split('T')[0], { probability: 0.3 }),
         notes: faker.helpers.maybe(() => faker.lorem.sentence(), { probability: 0.4 }),
       };
 
@@ -464,7 +464,7 @@ async function seedPersonTechnologies(peopleData: any[], technologiesData: any[]
         technologyId: technology.id,
         proficiencyLevel: getRandomItem(proficiencyLevels),
         yearsOfExperience: faker.number.int({ min: 1, max: 12 }).toString(),
-        lastUsed: formatDateForDB(faker.date.recent({ days: 180 })),
+        lastUsed: getRandomDate(new Date(2023, 0, 1), new Date()).toISOString().split('T')[0],
         context: getRandomItem(contexts),
         projectName: faker.helpers.maybe(() => faker.company.buzzPhrase(), { probability: 0.6 }),
         description: faker.helpers.maybe(() => faker.lorem.paragraph(), { probability: 0.5 }),

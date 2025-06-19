@@ -1,13 +1,12 @@
 import { TypeOpportunity } from '../../../shared/types/schema.types';
 
-// Entity inherits ALL properties from schema automatically
 export class Opportunity implements TypeOpportunity {
   readonly id!: string;
   readonly opportunityName!: string;
   readonly clientId!: string | null;
   readonly clientName!: string | null;
-  readonly expectedStartDate!: string | null;
-  readonly expectedEndDate!: string | null;
+  readonly expectedStartDate!: Date | null;
+  readonly expectedEndDate!: Date | null;
   readonly probability!: number | null;
   readonly status!: 'In Progress' | 'On Hold' | 'Done';
   readonly comment!: string | null;
@@ -41,7 +40,6 @@ export class Opportunity implements TypeOpportunity {
   }
 }
 
-// Keep the enum for backwards compatibility
 export enum OpportunityStatus {
   IN_PROGRESS = 'In Progress',
   ON_HOLD = 'On Hold',

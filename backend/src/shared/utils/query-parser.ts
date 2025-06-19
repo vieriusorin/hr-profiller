@@ -1,8 +1,3 @@
-// ================================================================
-// QUERY PARSER - Extract pagination, filters, search from URL
-// Matches your frontend implementation patterns
-// ================================================================
-
 import { Request } from 'express';
 import { 
   PaginationParams, 
@@ -13,12 +8,18 @@ import {
   OpportunityFilters 
 } from '../types/presenter.types';
 
+const getFullUrl = (req: Request): URL => {
+  const protocol = req.protocol || 'http';
+  const host = req.get('host') || 'localhost';
+  return new URL(req.originalUrl || req.url || '/', `${protocol}://${host}`);
+};
+
 export class QueryParser {
   /**
    * Parse pagination parameters from request
    */
   static parsePagination(req: Request): PaginationParams {
-    const { searchParams } = new URL(req.url!, `http://localhost`);
+    const { searchParams } = getFullUrl(req);
     
     const page = Math.max(1, parseInt(searchParams.get('_page') || searchParams.get('page') || '1'));
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('_limit') || searchParams.get('limit') || '10')));
@@ -27,11 +28,8 @@ export class QueryParser {
     return { page, limit, offset };
   }
 
-  /**
-   * Parse sort parameters from request
-   */
   static parseSort(req: Request): SortParams {
-    const { searchParams } = new URL(req.url!, `http://localhost`);
+    const { searchParams } = getFullUrl(req);
     
     const sortBy = searchParams.get('sortBy') || searchParams.get('_sort') || undefined;
     const sortOrder = (searchParams.get('sortOrder') || searchParams.get('_order') || 'asc') as 'asc' | 'desc';
@@ -39,23 +37,17 @@ export class QueryParser {
     return { sortBy, sortOrder };
   }
 
-  /**
-   * Parse search parameters from request
-   */
   static parseSearch(req: Request): SearchParams {
-    const { searchParams } = new URL(req.url!, `http://localhost`);
+    const { searchParams } = getFullUrl(req);
     
     const search = searchParams.get('search') || searchParams.get('q') || undefined;
-    const searchFields = searchParams.get('searchFields')?.split(',') || undefined;
+    const searchFields = searchParams.get('searchFields')?.split(',');
 
     return { search, searchFields };
   }
 
-  /**
-   * Parse generic filter parameters from request
-   */
   static parseFilters(req: Request, excludeKeys: string[] = []): FilterParams {
-    const { searchParams } = new URL(req.url!, `http://localhost`);
+    const { searchParams } = getFullUrl(req);
     const filters: FilterParams = {};
     
     const defaultExcludeKeys = [
@@ -68,7 +60,6 @@ export class QueryParser {
 
     for (const [key, value] of searchParams.entries()) {
       if (!allExcludeKeys.includes(key) && value) {
-        // Handle arrays (comma-separated values)
         if (value.includes(',')) {
           filters[key] = value.split(',');
         }
@@ -99,29 +90,22 @@ export class QueryParser {
     return filters;
   }
 
-  /**
-   * Parse opportunity-specific filters (matching your frontend)
-   */
   static parseOpportunityFilters(req: Request): OpportunityFilters {
-    const { searchParams } = new URL(req.url!, `http://localhost`);
+    const { searchParams } = getFullUrl(req);
     
     const filters: OpportunityFilters = {};
 
-    // Client filter
     const client = searchParams.get('client');
     if (client) filters.client = client;
 
-    // Grades filter (array)
     const grades = searchParams.get('grades');
     if (grades) filters.grades = grades.split(',');
 
-    // Needs hire filter
     const needsHire = searchParams.get('needsHire') as 'yes' | 'no' | 'all';
     if (needsHire && ['yes', 'no', 'all'].includes(needsHire)) {
       filters.needsHire = needsHire;
     }
 
-    // Probability range filter
     const probability = searchParams.get('probability');
     if (probability) {
       const parts = probability.split('-').map(Number);
@@ -130,15 +114,12 @@ export class QueryParser {
       }
     }
 
-    // Status filter
     const status = searchParams.get('status');
     if (status) filters.status = status;
 
-    // Active filter
     const isActive = searchParams.get('isActive');
     if (isActive !== null) filters.isActive = isActive === 'true';
 
-    // Date range filter
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
     if (startDate || endDate) {
@@ -150,9 +131,6 @@ export class QueryParser {
     return filters;
   }
 
-  /**
-   * Parse all query parameters at once
-   */
   static parseAll(req: Request): QueryParams {
     return {
       ...this.parsePagination(req),

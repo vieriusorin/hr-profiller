@@ -16,18 +16,24 @@ import { payloadLimiter, speedLimiter } from './middlewares/request-limiter.midd
 import { securityHeaders } from './middlewares/security-header.middleware';
 import { errorHandler } from './middlewares/error-handler.middleware';
 
-/**
- * Create a new server instance
- * @returns The server instance
- */
 const createServer = () => {
   const app = express();
 
   app.use(helmetMiddleware);
 
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
+
   app.use(
     cors({
-      origin: process.env.ALLOWED_ORIGINS?.split(',') || 'http://localhost:3000',
+      origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        // Allow the server's own origin for Swagger UI
+        if (allowedOrigins.indexOf(origin) !== -1 || origin.includes(`http://localhost:${process.env.PORT || 3001}`)) {
+          return callback(null, true);
+        }
+        return callback(new Error('Not allowed by CORS'));
+      },
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true,

@@ -16,8 +16,8 @@ export const opportunities = pgTable('opportunities', {
   opportunityName: varchar('opportunity_name', { length: 255 }).notNull(),
   clientId: uuid('client_id').references(() => clients.id),
   clientName: varchar('client_name', { length: 255 }), // Backup for cases where client isn't in clients table
-  expectedStartDate: date('expected_start_date'),
-  expectedEndDate: date('expected_end_date'),
+  expectedStartDate: timestamp('expected_start_date'),
+  expectedEndDate: timestamp('expected_end_date'),
   probability: integer('probability'), // Percentage 0-100
   status: opportunityStatusEnum('status').notNull().default('In Progress'),
   comment: text('comment'),
@@ -27,21 +27,24 @@ export const opportunities = pgTable('opportunities', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-// Create the base insert schema
 const baseInsertSchema = createInsertSchema(opportunities);
 
-// Create a modified insert schema that excludes auto-generated fields
-export const insertOpportunitySchema = baseInsertSchema.omit({
+export const CreateOpportunitySchema = baseInsertSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-// Create the base select schema
+export const UpdateOpportunitySchema = baseInsertSchema.partial().omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 const baseSelectSchema = createSelectSchema(opportunities);
 
-// Create a modified select schema
 export const selectOpportunitySchema = baseSelectSchema;
 
 export type TypeOpportunity = z.infer<typeof selectOpportunitySchema>;
-export type TypeNewOpportunity = z.infer<typeof insertOpportunitySchema>; 
+export type TypeNewOpportunity = z.infer<typeof CreateOpportunitySchema>; 
+export type TypeUpdateOpportunity = z.infer<typeof UpdateOpportunitySchema>; 
