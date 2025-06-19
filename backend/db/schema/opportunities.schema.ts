@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, timestamp, text, date, integer, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, timestamp, text, integer, boolean } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { clients } from './clients.schema';
@@ -46,5 +46,5 @@ const baseSelectSchema = createSelectSchema(opportunities);
 export const selectOpportunitySchema = baseSelectSchema;
 
 export type TypeOpportunity = z.infer<typeof selectOpportunitySchema>;
-export type TypeNewOpportunity = z.infer<typeof CreateOpportunitySchema>; 
+export type TypeNewOpportunity = z.infer<typeof CreateOpportunitySchema>;
 export type TypeUpdateOpportunity = z.infer<typeof UpdateOpportunitySchema>; 

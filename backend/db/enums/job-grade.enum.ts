@@ -8,15 +8,7 @@ import { pgEnum } from 'drizzle-orm/pg-core';
  * It represents the seniority and skill level of employees and role requirements.
  */
 export const jobGradeEnum = pgEnum('job_grade', [
-  'T',      // Trainee
-  'C',      // Consultant
-  'SC',     // Senior Consultant
-  'ST',     // Staff
-  'SE',     // Senior Engineer
-  'IC3',    // Individual Contributor Level 3
-  'IC4',    // Individual Contributor Level 4
-  'IC5',    // Individual Contributor Level 5
-  'M2',     // Manager Level 2
+  'JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'
 ]);
 
 /**

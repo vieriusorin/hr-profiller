@@ -24,7 +24,7 @@ DROP TYPE IF EXISTS role_status;
 
 -- Create enums (only the ones actually used)
 CREATE TYPE person_status_enum AS ENUM ('candidate', 'employee', 'former_employee', 'inactive');
-CREATE TYPE job_grade AS ENUM ('T', 'C', 'SC', 'ST', 'SE', 'IC3', 'IC4', 'IC5', 'M2');
+CREATE TYPE job_grade AS ENUM ('JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM');
 CREATE TYPE employee_status AS ENUM ('Active', 'On Leave', 'Inactive');
 CREATE TYPE work_status AS ENUM ('On Project', 'On Bench', 'Available');
 CREATE TYPE opportunity_status AS ENUM ('In Progress', 'On Hold', 'Done');
@@ -194,8 +194,8 @@ CREATE TABLE opportunity_roles (
   job_grade job_grade,
   level opportunity_level,
   allocation INTEGER CHECK (allocation >= 0 AND allocation <= 100),
-  start_date DATE,
-  end_date DATE,
+  start_date TIMESTAMP,
+  end_date TIMESTAMP,
   status role_status DEFAULT 'Open',
   notes TEXT,
   created_at TIMESTAMP DEFAULT NOW(),

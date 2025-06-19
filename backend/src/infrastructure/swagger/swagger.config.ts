@@ -23,6 +23,48 @@ const options: swaggerJsdoc.Options = {
       },
     ],
     components: {
+      responses: {
+        NotFound: {
+          description: 'The specified resource was not found',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/ErrorResponse'
+              }
+            }
+          }
+        },
+        BadRequest: {
+          description: 'The request was invalid',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/ErrorResponse'
+              }
+            }
+          }
+        },
+        Unauthorized: {
+          description: 'Authentication is required',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/ErrorResponse'
+              }
+            }
+          }
+        },
+        Forbidden: {
+          description: 'Permission denied',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/ErrorResponse'
+              }
+            }
+          }
+        }
+      },
       schemas: {
         Opportunity: {
           type: 'object',
@@ -128,6 +170,86 @@ const options: swaggerJsdoc.Options = {
             }
           },
           required: ['id', 'opportunityName', 'status', 'isActive', 'createdAt', 'updatedAt', 'isHighProbability', 'duration', 'isExpiringSoon']
+        },
+        Role: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+              description: 'Unique identifier (UUID) for the role',
+              example: '123e4567-e89b-12d3-a456-426614174000'
+            },
+            opportunityId: {
+              type: 'string',
+              format: 'uuid',
+              description: 'UUID of the associated opportunity',
+              example: '456e7890-e89b-12d3-a456-426614174001'
+            },
+            roleName: {
+              type: 'string',
+              description: 'Name of the role',
+              example: 'Senior Frontend Developer'
+            },
+            jobGrade: {
+              type: 'string',
+              nullable: true,
+              description: 'Job grade level',
+              example: 'Senior'
+            },
+            level: {
+              type: 'string',
+              nullable: true,
+              description: 'Opportunity level',
+              example: 'Expert'
+            },
+            allocation: {
+              type: 'number',
+              nullable: true,
+              minimum: 0,
+              maximum: 100,
+              description: 'Allocation percentage',
+              example: 80
+            },
+            startDate: {
+              type: 'string',
+              format: 'date',
+              nullable: true,
+              description: 'Role start date',
+              example: '2024-03-15'
+            },
+            endDate: {
+              type: 'string',
+              format: 'date',
+              nullable: true,
+              description: 'Role end date',
+              example: '2024-09-15'
+            },
+            status: {
+              type: 'string',
+              description: 'Current status of the role',
+              example: 'Open'
+            },
+            notes: {
+              type: 'string',
+              nullable: true,
+              description: 'Additional notes about the role',
+              example: 'Experience with React required'
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'When the role was created',
+              example: '2024-01-10T09:00:00Z'
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'When the role was last updated',
+              example: '2024-01-16T14:20:00Z'
+            }
+          },
+          required: ['id', 'opportunityId', 'roleName', 'status', 'createdAt', 'updatedAt']
         },
         // Enhanced presenter response schemas
         PaginationMeta: {

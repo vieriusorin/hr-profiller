@@ -1,3 +1,4 @@
+import { TypeOpportunityStatus } from '@db/enums/opportunity-status.enum';
 import { TypeOpportunity } from '../../../shared/types/schema.types';
 
 export class Opportunity implements TypeOpportunity {
@@ -8,7 +9,7 @@ export class Opportunity implements TypeOpportunity {
   readonly expectedStartDate!: Date | null;
   readonly expectedEndDate!: Date | null;
   readonly probability!: number | null;
-  readonly status!: 'In Progress' | 'On Hold' | 'Done';
+  readonly status!: TypeOpportunityStatus;
   readonly comment!: string | null;
   readonly isActive!: boolean | null;
   readonly activatedAt!: Date | null;
@@ -19,7 +20,6 @@ export class Opportunity implements TypeOpportunity {
     Object.assign(this, data);
   }
 
-  // ADD DOMAIN LOGIC: Business methods that belong to the entity
   isHighProbability(): boolean {
     return this.probability !== null && this.probability >= 80;
   }
@@ -39,9 +39,3 @@ export class Opportunity implements TypeOpportunity {
     return Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
   }
 }
-
-export enum OpportunityStatus {
-  IN_PROGRESS = 'In Progress',
-  ON_HOLD = 'On Hold',
-  DONE = 'Done',
-} 

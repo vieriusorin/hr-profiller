@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import opportunityRoutes from '../../infrastructure/http/routes/opportunities';
+import roleRoutes from '../../infrastructure/http/routes/roles';
 import { metricsHandler } from './middlewares/loggs.middleware';
 
 const router = Router();
@@ -23,8 +24,18 @@ router.get('/', (req, res) => {
             'GET /api/v1/opportunities': 'List all opportunities',
             'POST /api/v1/opportunities': 'Create new opportunity (UUID auto-generated)',
             'GET /api/v1/opportunities/:id': 'Get opportunity by UUID',
-            'PUT /api/v1/opportunities/:id': 'Update opportunity by UUID', 
+            'PUT /api/v1/opportunities/:id': 'Update opportunity by UUID',
             'DELETE /api/v1/opportunities/:id': 'Delete opportunity by UUID'
+          }
+        },
+        roles: {
+          base: '/api/v1/roles',
+          methods: {
+            'GET /api/v1/roles/opportunity/:opportunityId': 'List all roles for an opportunity',
+            'GET /api/v1/roles/:id': 'Get role by ID',
+            'POST /api/v1/roles': 'Create new role',
+            'PUT /api/v1/roles/:id': 'Update role by ID',
+            'DELETE /api/v1/roles/:id': 'Delete role by ID'
           }
         }
       },
@@ -50,5 +61,6 @@ router.get('/', (req, res) => {
 
 router.get('/metrics', metricsHandler);
 router.use('/opportunities', opportunityRoutes);
+router.use('/roles', roleRoutes);
 
 export default router;

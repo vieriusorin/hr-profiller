@@ -22,8 +22,8 @@ export const opportunityRoles = pgTable('opportunity_roles', {
   jobGrade: jobGradeEnum('job_grade'),
   level: opportunityLevelEnum('level'),
   allocation: integer('allocation'), // Percentage 0-100
-  startDate: timestamp('start_date', { mode: 'date' }),
-  endDate: timestamp('end_date', { mode: 'date' }),
+  startDate: timestamp('start_date'),
+  endDate: timestamp('end_date'),
   status: roleStatusEnum('status').notNull().default('Open'),
   notes: text('notes'),
   createdAt: timestamp('created_at').defaultNow(),

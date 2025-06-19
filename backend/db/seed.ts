@@ -2,10 +2,11 @@
 import { faker } from '@faker-js/faker';
 import { randomUUID } from 'crypto';
 import db from './index';
+import { eq } from 'drizzle-orm';
 
 import { clients } from './schema/clients.schema';
-import { opportunities } from './schema/opportunities.schema';
-import { opportunityRoles } from './schema/opportunity-roles.schema';
+import { opportunities, TypeNewOpportunity } from './schema/opportunities.schema';
+import { opportunityRoles, TypeNewOpportunityRole } from './schema/opportunity-roles.schema';
 import { opportunityRoleAssignments } from './schema/opportunity-role-assignments.schema';
 import { people } from './schema/people.schema';
 import { personStatus } from './schema/person-status.schema';
@@ -16,6 +17,10 @@ import { skills } from './schema/skills.schema';
 import { personSkills } from './schema/person-skills.schema';
 import { technologies } from './schema/technologies.schema';
 import { personTechnologies } from './schema/person-technologies.schema';
+
+import { jobGradeEnum, TypeJobGrade } from './enums/job-grade.enum';
+import { opportunityLevelEnum, TypeOpportunityLevel } from './enums/opportunity-level.enum';
+import { roleStatusEnum, TypeRoleStatus } from './enums/role-status.enum';
 
 const SEED_COUNT = {
   CLIENTS: 10,
@@ -32,18 +37,21 @@ const SEED_COUNT = {
 };
 
 // Helper functions
-const getRandomItem = <T>(array: T[]): T => array[Math.floor(Math.random() * array.length)];
 const generatePhoneNumber = () => faker.phone.number({ style: 'human' }).substring(0, 20);
 
 function getRandomDate(from: Date, to: Date): Date {
-  const fromTime = from.getTime();
-  const toTime = to.getTime();
-
-  if (fromTime > toTime) {
-    console.warn(`getRandomDate: "from" date was after "to" date. Swapping them.`);
-    return faker.date.between({ from: to, to: from });
+  // Ensure both dates are valid
+  if (!(from instanceof Date && !isNaN(from.getTime())) || !(to instanceof Date && !isNaN(to.getTime()))) {
+    // If either date is invalid, use a safe default range
+    const now = new Date();
+    from = now;
+    to = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
   }
   return faker.date.between({ from, to });
+}
+
+function getRandomArrayElement<T>(array: T[]): T {
+  return array[Math.floor(Math.random() * array.length)];
 }
 
 // Seed clients
@@ -128,7 +136,7 @@ async function seedPeople() {
           salary: faker.number.int({ min: 50000, max: isManager ? 200000 : 150000 }).toString(),
           employeeStatus: faker.helpers.arrayElement(['Active', 'On Leave', 'Inactive']),
           workStatus: faker.helpers.arrayElement(['On Project', 'On Bench', 'Available']),
-          jobGrade: faker.helpers.arrayElement(['T', 'C', 'SC', 'ST', 'SE', 'IC3', 'IC4', 'IC5', 'M2']),
+          jobGrade: faker.helpers.arrayElement(['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM']),
           location: faker.helpers.arrayElement(['New York', 'London', 'Remote', 'San Francisco', 'Berlin']),
           emergencyContactName: faker.person.fullName(),
           emergencyContactPhone: generatePhoneNumber(),
@@ -147,87 +155,81 @@ async function seedPeople() {
   return peopleData;
 }
 
-// Seed opportunities
-async function seedOpportunities(clientsData: any[]) {
+async function seedOpportunities(): Promise<{ id: string, expectedStartDate: Date | null, expectedEndDate: Date | null }[]> {
   console.log('Seeding opportunities...');
-  const opportunitiesData: any[] = [];
+  const opportunitiesData: TypeNewOpportunity[] = [];
 
-  if (clientsData.length === 0) {
-    console.warn('No clients available for opportunities');
-    return opportunitiesData;
-  }
+  for (let i = 0; i < 10; i++) {
+    const now = new Date();
+    const startDate = getRandomDate(now, new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000)); // Up to 90 days in future
+    const endDate = getRandomDate(startDate, new Date(startDate.getTime() + 180 * 24 * 60 * 60 * 1000)); // Up to 180 days after start
 
-  const opportunityNames = [
-    'E-Commerce Platform Redesign', 'Mobile Banking App', 'Cloud Migration Project',
-    'AI-Powered Analytics Dashboard', 'Customer Portal Development', 'Legacy System Modernization',
-    'Real-time Data Processing System', 'Microservices Architecture', 'Digital Transformation Initiative',
-    'API Integration Platform', 'Content Management System', 'Supply Chain Optimization'
-  ];
-
-  for (let i = 0; i < SEED_COUNT.OPPORTUNITIES; i++) {
-    const client = getRandomItem(clientsData);
-    const startDate = faker.date.future({ years: 1 });
-    const endDate = faker.date.future({ years: 2, refDate: startDate });
-    
-    const opportunityId = randomUUID();
-    const opportunityData = {
-      id: opportunityId,
-      opportunityName: opportunityNames[i] || faker.company.buzzPhrase(),
-      clientId: client.id,
-      clientName: client.name,
+    const opportunityData: TypeNewOpportunity = {
+      opportunityName: faker.company.name(),
+      clientId: null, // We'll update this after creating clients
+      clientName: faker.company.name(),
       expectedStartDate: startDate,
       expectedEndDate: endDate,
-      probability: faker.number.int({ min: 20, max: 100 }),
-      status: faker.helpers.arrayElement(['In Progress', 'On Hold', 'Done']),
-      comment: faker.lorem.paragraph(),
-      isActive: faker.datatype.boolean({ probability: 0.7 }),
-      activatedAt: faker.datatype.boolean({ probability: 0.5 }) ? new Date() : null,
+      probability: faker.number.int({ min: 0, max: 100 }),
+      status: 'In Progress',
     };
 
-    await db.insert(opportunities).values(opportunityData);
     opportunitiesData.push(opportunityData);
   }
 
-  console.log(`Seeded ${opportunitiesData.length} opportunities`);
-  return opportunitiesData;
+  // Insert opportunities into database
+  const insertedOpportunities = await db.insert(opportunities).values(opportunitiesData).returning();
+  console.log('Created', insertedOpportunities.length, 'opportunities');
+  return insertedOpportunities;
 }
 
-// Seed opportunity roles
-async function seedOpportunityRoles(opportunitiesData: any[]) {
+async function seedOpportunityRoles(insertedOpportunities: { id: string, expectedStartDate: Date | null, expectedEndDate: Date | null }[]): Promise<TypeNewOpportunityRole[]> {
   console.log('Seeding opportunity roles...');
+  const rolesData: TypeNewOpportunityRole[] = [];
   const roleNames = [
-    'Senior Frontend Developer', 'Backend Developer', 'Full Stack Developer', 
+    'Senior Frontend Developer', 'Backend Developer', 'Full Stack Developer',
     'DevOps Engineer', 'UI/UX Designer', 'Product Manager', 'QA Engineer',
-    'Data Scientist', 'Mobile Developer', 'Security Engineer', 'Tech Lead'
+    'Data Engineer', 'Cloud Architect', 'Technical Lead', 'Scrum Master',
+    'Business Analyst', 'Solution Architect', 'Mobile Developer'
   ];
-  
-  const rolesData: any[] = [];
 
-  for (const opportunity of opportunitiesData) {
-    const numRoles = faker.number.int({ min: 1, max: SEED_COUNT.ROLES_PER_OPPORTUNITY });
-    
+  for (const opportunity of insertedOpportunities) {
+    const numRoles = faker.number.int({ min: 1, max: 3 });
+
     for (let i = 0; i < numRoles; i++) {
-      const roleId = randomUUID();
-      const roleData = {
-        id: roleId,
+      const now = new Date();
+      // Set default dates if opportunity dates are null
+      const defaultStartDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+      const defaultEndDate = new Date(defaultStartDate.getTime() + 90 * 24 * 60 * 60 * 1000);
+
+      // Use opportunity dates if they exist and are valid, otherwise use defaults
+      const roleStartDate = opportunity.expectedStartDate instanceof Date && !isNaN(opportunity.expectedStartDate.getTime())
+        ? opportunity.expectedStartDate
+        : defaultStartDate;
+
+      const roleEndDate = opportunity.expectedEndDate instanceof Date && !isNaN(opportunity.expectedEndDate.getTime())
+        ? opportunity.expectedEndDate
+        : defaultEndDate;
+
+      const roleData: TypeNewOpportunityRole = {
         opportunityId: opportunity.id,
-        roleName: getRandomItem(roleNames),
-        jobGrade: faker.helpers.arrayElement(['T', 'C', 'SC', 'ST', 'SE', 'IC3', 'IC4', 'IC5', 'M2']),
-        level: faker.helpers.arrayElement(['Low', 'Medium', 'High']),
-        allocation: faker.number.int({ min: 50, max: 100 }),
-        startDate: faker.date.future({ years: 1 }),
-        endDate: faker.date.future({ years: 2 }),
-        status: faker.helpers.arrayElement(['Open', 'Staffed', 'Won', 'Lost']),
-        notes: faker.helpers.maybe(() => faker.lorem.sentence(), { probability: 0.6 }),
+        roleName: getRandomArrayElement(roleNames),
+        jobGrade: getRandomArrayElement(jobGradeEnum.enumValues),
+        level: getRandomArrayElement(opportunityLevelEnum.enumValues),
+        allocation: faker.number.int({ min: 25, max: 100 }),
+        startDate: roleStartDate,
+        endDate: roleEndDate,
+        status: getRandomArrayElement(roleStatusEnum.enumValues),
+        notes: faker.lorem.paragraph()
       };
 
-      await db.insert(opportunityRoles).values(roleData);
       rolesData.push(roleData);
     }
   }
 
-  console.log(`Seeded ${rolesData.length} opportunity roles`);
-  return rolesData;
+  // Insert roles into database
+  const insertedRoles = await db.insert(opportunityRoles).values(rolesData).returning();
+  return insertedRoles;
 }
 
 // Seed opportunity role assignments
@@ -236,7 +238,7 @@ async function seedOpportunityRoleAssignments(rolesData: any[], peopleData: any[
 
   // Get only employees
   const employees = peopleData.filter(person => person.isEmployee);
-  
+
   if (employees.length === 0) {
     console.warn('No employees available for role assignments');
     return;
@@ -245,10 +247,10 @@ async function seedOpportunityRoleAssignments(rolesData: any[], peopleData: any[
   for (const role of rolesData) {
     if (role.status !== 'Lost') {
       const shouldAssign = faker.datatype.boolean({ probability: 0.6 });
-      
+
       if (shouldAssign) {
-        const employee = getRandomItem(employees);
-        
+        const employee = getRandomArrayElement(employees);
+
         try {
           const assignmentId = randomUUID();
           await db.insert(opportunityRoleAssignments).values({
@@ -274,14 +276,14 @@ async function seedPersonUnavailableDates(peopleData: any[]) {
 
   for (const person of peopleData) {
     const hasUnavailableDates = faker.datatype.boolean({ probability: 0.3 });
-    
+
     if (hasUnavailableDates) {
       const numPeriods = faker.number.int({ min: 1, max: SEED_COUNT.UNAVAILABLE_DATES_PER_PERSON });
-      
+
       for (let i = 0; i < numPeriods; i++) {
         const startDate = getRandomDate(new Date(2023, 0, 1), new Date(2024, 0, 1));
         const endDate = new Date(startDate.getTime() + faker.number.int({ min: 1, max: 14 }) * 24 * 60 * 60 * 1000);
-        
+
         const unavailableId = randomUUID();
         const unavailableData = {
           id: unavailableId,
@@ -384,18 +386,18 @@ async function seedEducation(peopleData: any[]) {
 
   for (const person of peopleData) {
     const numEducation = faker.number.int({ min: 1, max: SEED_COUNT.EDUCATION_PER_PERSON });
-    
+
     for (let i = 0; i < numEducation; i++) {
       const startDate = getRandomDate(new Date(2010, 0, 1), new Date(2024, 0, 1));
       const endDate = new Date(startDate.getTime() + (faker.number.int({ min: 2, max: 6 }) * 365 * 24 * 60 * 60 * 1000));
-      
+
       const educationId = randomUUID();
       const educationData = {
         id: educationId,
         personId: person.id,
-        institution: getRandomItem(institutions),
-        degree: getRandomItem(degrees),
-        fieldOfStudy: getRandomItem(fields),
+        institution: getRandomArrayElement(institutions),
+        degree: getRandomArrayElement(degrees),
+        fieldOfStudy: getRandomArrayElement(fields),
         startDate: startDate.toISOString().split('T')[0],
         graduationDate: endDate.toISOString().split('T')[0],
         description: faker.helpers.maybe(() => faker.lorem.sentence(), { probability: 0.6 }),
@@ -419,12 +421,12 @@ async function seedPersonSkills(peopleData: any[], skillsData: any[]) {
   for (const person of peopleData) {
     const numSkills = faker.number.int({ min: 3, max: SEED_COUNT.SKILLS_PER_PERSON });
     const selectedSkills = faker.helpers.arrayElements(skillsData, numSkills);
-    
+
     for (const skill of selectedSkills) {
       const personSkillData = {
         personId: person.id,
         skillId: skill.id,
-        proficiencyLevel: getRandomItem(proficiencyLevels),
+        proficiencyLevel: getRandomArrayElement(proficiencyLevels),
         yearsOfExperience: faker.number.int({ min: 1, max: 15 }).toString(),
         lastUsed: getRandomDate(new Date(2023, 0, 1), new Date()).toISOString().split('T')[0],
         isCertified: faker.datatype.boolean({ probability: 0.3 }),
@@ -456,15 +458,15 @@ async function seedPersonTechnologies(peopleData: any[], technologiesData: any[]
   for (const person of peopleData) {
     const numTechnologies = faker.number.int({ min: 2, max: SEED_COUNT.TECHNOLOGIES_PER_PERSON });
     const selectedTechnologies = faker.helpers.arrayElements(technologiesData, numTechnologies);
-    
+
     for (const technology of selectedTechnologies) {
       const personTechData = {
         personId: person.id,
         technologyId: technology.id,
-        proficiencyLevel: getRandomItem(proficiencyLevels),
+        proficiencyLevel: getRandomArrayElement(proficiencyLevels),
         yearsOfExperience: faker.number.int({ min: 1, max: 12 }).toString(),
         lastUsed: getRandomDate(new Date(2023, 0, 1), new Date()).toISOString().split('T')[0],
-        context: getRandomItem(contexts),
+        context: getRandomArrayElement(contexts),
         projectName: faker.helpers.maybe(() => faker.company.buzzPhrase(), { probability: 0.6 }),
         description: faker.helpers.maybe(() => faker.lorem.paragraph(), { probability: 0.5 }),
       };
@@ -489,20 +491,20 @@ async function main() {
   try {
     const clientsData = await seedClients();
     const peopleData = await seedPeople();
-    
+
     // Seed foundation data for skills and technologies
     const skillsData = await seedSkills();
     const technologiesData = await seedTechnologies();
-    
+
     // Seed person-related data
     await seedEducation(peopleData);
     await seedPersonSkills(peopleData, skillsData);
     await seedPersonTechnologies(peopleData, technologiesData);
-    
-    const opportunitiesData = await seedOpportunities(clientsData);
-    const rolesData = await seedOpportunityRoles(opportunitiesData);
+
+    const insertedOpportunities = await seedOpportunities();
+    const rolesData = await seedOpportunityRoles(insertedOpportunities);
     await seedOpportunityRoleAssignments(rolesData, peopleData);
-    
+
     await seedPersonUnavailableDates(peopleData);
 
     console.log('✅ Database seed process completed successfully!');

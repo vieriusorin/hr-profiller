@@ -16,15 +16,17 @@ import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 const TYPES = {
   // Infrastructure
   Database: Symbol.for('Database') as symbol,
-  
+
   // Repositories
   OpportunityRepository: Symbol.for('OpportunityRepository'),
-  
+  RoleRepository: Symbol.for('RoleRepository'),
+
   // Services
   OpportunityService: Symbol.for('OpportunityService'),
-  
+
   // Controllers
   OpportunityController: Symbol.for('OpportunityController'),
+  RoleController: Symbol.for('RoleController'),
 };
 
 // Type alias for the database with proper schema

@@ -1,11 +1,12 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { Pool } from 'pg';
+import 'dotenv/config';
 
 const __dirname = path.dirname(require.resolve('./reset.ts'));
 
-// Your database connection string
-const DATABASE_URL = 'postgres://admin:admin@localhost:5433/dd-tia';
+// Use environment variable or fallback to default development configuration
+const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://postgres:admin@localhost:5433/profiller_dev';
 
 async function resetDatabase() {
   console.log('🔄 Starting database reset process...');
