@@ -8,7 +8,6 @@ export type EmployeeJoinedData = {
   personId: string;
   firstName: string;
   lastName: string;
-  fullName: string;
   email: string;
   phone: string | null;
   birthDate: Date | null;
@@ -43,7 +42,6 @@ export class Employee {
   readonly personId!: string;
   readonly firstName!: string;
   readonly lastName!: string;
-  readonly fullName!: string;
   readonly email!: string;
   readonly phone!: string | null;
   readonly birthDate!: Date | null;
@@ -75,6 +73,24 @@ export class Employee {
 
   constructor(data: EmployeeJoinedData) {
     Object.assign(this, data);
+  }
+
+  // Getter for consistent ID field for CRUD operations
+  get id(): string {
+    return this.personId;
+  }
+
+  // Computed fullName from firstName and lastName
+  get fullName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
+
+  // Computed fields for years of experience
+  get yearsOfExperience(): number {
+    if (!this.hireDate) return 0;
+    const now = new Date();
+    const hireDate = new Date(this.hireDate);
+    return Math.floor((now.getTime() - hireDate.getTime()) / (1000 * 60 * 60 * 24 * 365));
   }
 
   isInactive(): boolean {

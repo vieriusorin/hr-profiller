@@ -29,7 +29,29 @@ const options: swaggerJsdoc.Options = {
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/ErrorResponse'
+                type: 'object',
+                properties: {
+                  status: {
+                    type: 'string',
+                    enum: ['error'],
+                    example: 'error'
+                  },
+                  data: {
+                    type: 'object',
+                    properties: {
+                      message: {
+                        type: 'string',
+                        example: 'Resource not found'
+                      },
+                      code: {
+                        type: 'string',
+                        example: 'NOT_FOUND'
+                      }
+                    },
+                    required: ['message', 'code']
+                  }
+                },
+                required: ['status', 'data']
               }
             }
           }
@@ -69,7 +91,73 @@ const options: swaggerJsdoc.Options = {
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/ErrorResponse'
+                type: 'object',
+                properties: {
+                  status: {
+                    type: 'string',
+                    enum: ['error'],
+                    example: 'error'
+                  },
+                  data: {
+                    type: 'object',
+                    properties: {
+                      message: {
+                        type: 'string',
+                        example: 'Internal server error'
+                      },
+                      code: {
+                        type: 'string',
+                        example: 'INTERNAL_ERROR'
+                      }
+                    },
+                    required: ['message', 'code']
+                  }
+                },
+                required: ['status', 'data']
+              }
+            }
+          }
+        },
+        ValidationError: {
+          description: 'Validation error',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  status: {
+                    type: 'string',
+                    enum: ['error'],
+                    example: 'error'
+                  },
+                  data: {
+                    type: 'object',
+                    properties: {
+                      message: {
+                        type: 'string',
+                        example: 'Invalid request body'
+                      },
+                      code: {
+                        type: 'string',
+                        example: 'VALIDATION_ERROR'
+                      },
+                      details: {
+                        type: 'object',
+                        description: 'Detailed validation errors',
+                        example: {
+                          firstName: {
+                            _errors: ['String must contain at least 1 character(s)']
+                          },
+                          email: {
+                            _errors: ['Invalid email']
+                          }
+                        }
+                      }
+                    },
+                    required: ['message', 'code']
+                  }
+                },
+                required: ['status', 'data']
               }
             }
           }
@@ -79,10 +167,16 @@ const options: swaggerJsdoc.Options = {
         Employee: {
           type: 'object',
           properties: {
+            id: { 
+              type: 'string', 
+              format: 'uuid',
+              description: 'Unique identifier for the employee (used for CRUD operations)',
+              example: '123e4567-e89b-12d3-a456-426614174000'
+            },
             personId: { 
               type: 'string', 
               format: 'uuid',
-              description: 'Unique identifier for the person',
+              description: 'Unique identifier for the person record',
               example: '123e4567-e89b-12d3-a456-426614174000'
             },
             firstName: { 
@@ -244,40 +338,45 @@ const options: swaggerJsdoc.Options = {
               type: 'string', 
               nullable: true,
               description: 'Emergency contact phone',
-              example: '+1-555-0124'
+              example: '+1-555-0456'
             },
             employmentNotes: { 
               type: 'string', 
               nullable: true,
               description: 'Employment-related notes',
-              example: 'Eligible for promotion review'
+              example: 'Promoted to senior level in 2023'
             },
             employmentCreatedAt: { 
               type: 'string', 
               format: 'date-time', 
               nullable: true,
-              description: 'When the employment record was created',
-              example: '2024-01-15T10:30:00Z'
+              description: 'When employment record was created',
+              example: '2022-01-15T10:00:00Z'
             },
             employmentUpdatedAt: { 
               type: 'string', 
               format: 'date-time', 
               nullable: true,
-              description: 'When the employment record was last updated',
-              example: '2024-01-16T14:20:00Z'
+              description: 'When employment record was last updated',
+              example: '2024-01-15T14:30:00Z'
+            },
+            yearsOfExperience: { 
+              type: 'number',
+              description: 'Years of experience since hire date',
+              example: 2
             },
             isInactive: { 
               type: 'boolean',
-              description: 'Whether the employee is inactive (computed field)',
+              description: 'Whether the employee is inactive',
               example: false
             },
             isOnBench: { 
               type: 'boolean',
-              description: 'Whether the employee is on bench (computed field)',
+              description: 'Whether the employee is on bench',
               example: false
             }
           },
-          required: ['personId', 'firstName', 'lastName', 'fullName', 'email', 'personCreatedAt', 'isInactive', 'isOnBench']
+          required: ['id', 'personId', 'firstName', 'lastName', 'fullName', 'email', 'personCreatedAt', 'isInactive', 'isOnBench']
         },
         Opportunity: {
           type: 'object',
@@ -846,6 +945,293 @@ const options: swaggerJsdoc.Options = {
             }
           },
           required: ['status', 'message', 'meta']
+        },
+        CreateEmployee: {
+          type: 'object',
+          required: ['firstName', 'lastName', 'email', 'hireDate', 'position'],
+          properties: {
+            firstName: { 
+              type: 'string',
+              minLength: 1,
+              maxLength: 100,
+              description: 'First name of the employee',
+              example: 'Jane'
+            },
+            lastName: { 
+              type: 'string',
+              minLength: 1,
+              maxLength: 100,
+              description: 'Last name of the employee',
+              example: 'Smith'
+            },
+            email: { 
+              type: 'string', 
+              format: 'email',
+              maxLength: 255,
+              description: 'Email address of the employee',
+              example: 'jane.smith@company.com'
+            },
+            phone: { 
+              type: 'string',
+              maxLength: 20,
+              description: 'Phone number of the employee',
+              example: '+1-555-0123'
+            },
+            birthDate: { 
+              type: 'string',
+              format: 'date',
+              description: 'Birth date of the employee',
+              example: '1990-05-15'
+            },
+            address: { 
+              type: 'string',
+              description: 'Address of the employee',
+              example: '123 Main St, Anytown, USA'
+            },
+            city: { 
+              type: 'string',
+              maxLength: 100,
+              description: 'City where the employee lives',
+              example: 'San Francisco'
+            },
+            country: { 
+              type: 'string',
+              maxLength: 100,
+              description: 'Country where the employee lives',
+              example: 'USA'
+            },
+            personNotes: { 
+              type: 'string',
+              description: 'Personal notes about the employee',
+              example: 'Excellent team player'
+            },
+            hireDate: { 
+              type: 'string',
+              format: 'date',
+              description: 'Date when the employee was hired',
+              example: '2024-01-15'
+            },
+            position: { 
+              type: 'string',
+              minLength: 1,
+              maxLength: 100,
+              description: 'Job position/title',
+              example: 'Product Manager'
+            },
+            employmentType: { 
+              type: 'string',
+              maxLength: 50,
+              description: 'Type of employment',
+              example: 'Full-time'
+            },
+            salary: { 
+              type: 'number',
+              minimum: 0,
+              description: 'Annual salary',
+              example: 95000
+            },
+            hourlyRate: { 
+              type: 'number',
+              minimum: 0,
+              description: 'Hourly rate (for hourly employees)',
+              example: 45.50
+            },
+            managerId: { 
+              type: 'string',
+              format: 'uuid',
+              description: 'Manager\'s person ID',
+              example: '789e0123-e89b-12d3-a456-426614174002'
+            },
+            employeeStatus: { 
+              type: 'string',
+              enum: ['Active', 'On Leave', 'Inactive'],
+              default: 'Active',
+              description: 'Current employment status',
+              example: 'Active'
+            },
+            workStatus: { 
+              type: 'string',
+              enum: ['On Project', 'On Bench', 'Available'],
+              default: 'Available',
+              description: 'Current work assignment status',
+              example: 'Available'
+            },
+            jobGrade: { 
+              type: 'string',
+              enum: ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'],
+              description: 'Job grade level',
+              example: 'SE'
+            },
+            location: { 
+              type: 'string',
+              maxLength: 100,
+              description: 'Work location',
+              example: 'San Francisco'
+            },
+            emergencyContactName: { 
+              type: 'string',
+              maxLength: 255,
+              description: 'Emergency contact name',
+              example: 'John Smith'
+            },
+            emergencyContactPhone: { 
+              type: 'string',
+              maxLength: 20,
+              description: 'Emergency contact phone',
+              example: '+1-555-0456'
+            },
+            employmentNotes: { 
+              type: 'string',
+              description: 'Employment-related notes',
+              example: 'Starting as Product Manager'
+            }
+          }
+        },
+        UpdateEmployee: {
+          type: 'object',
+          description: 'Schema for PATCH operations. All fields are optional - only send the fields you want to update.',
+          additionalProperties: false,
+          properties: {
+            firstName: { 
+              type: 'string',
+              minLength: 1,
+              maxLength: 100,
+              description: 'First name of the employee',
+              example: 'Jane'
+            },
+            lastName: { 
+              type: 'string',
+              minLength: 1,
+              maxLength: 100,
+              description: 'Last name of the employee',
+              example: 'Smith'
+            },
+            email: { 
+              type: 'string', 
+              format: 'email',
+              maxLength: 255,
+              description: 'Email address of the employee',
+              example: 'jane.smith@company.com'
+            },
+            phone: { 
+              type: 'string',
+              maxLength: 20,
+              description: 'Phone number of the employee',
+              example: '+1-555-0123'
+            },
+            birthDate: { 
+              type: 'string',
+              format: 'date',
+              description: 'Birth date of the employee',
+              example: '1990-05-15'
+            },
+            address: { 
+              type: 'string',
+              description: 'Address of the employee',
+              example: '123 Main St, Anytown, USA'
+            },
+            city: { 
+              type: 'string',
+              maxLength: 100,
+              description: 'City where the employee lives',
+              example: 'San Francisco'
+            },
+            country: { 
+              type: 'string',
+              maxLength: 100,
+              description: 'Country where the employee lives',
+              example: 'USA'
+            },
+            personNotes: { 
+              type: 'string',
+              description: 'Personal notes about the employee',
+              example: 'Excellent team player'
+            },
+            hireDate: { 
+              type: 'string',
+              format: 'date',
+              description: 'Date when the employee was hired',
+              example: '2024-01-15'
+            },
+            terminationDate: { 
+              type: 'string',
+              format: 'date',
+              description: 'Date when employment was terminated',
+              example: '2024-12-31'
+            },
+            position: { 
+              type: 'string',
+              minLength: 1,
+              maxLength: 100,
+              description: 'Job position/title',
+              example: 'Senior Product Manager'
+            },
+            employmentType: { 
+              type: 'string',
+              maxLength: 50,
+              description: 'Type of employment',
+              example: 'Full-time'
+            },
+            salary: { 
+              type: 'number',
+              minimum: 0,
+              description: 'Annual salary',
+              example: 105000
+            },
+            hourlyRate: { 
+              type: 'number',
+              minimum: 0,
+              description: 'Hourly rate (for hourly employees)',
+              example: 50.00
+            },
+            managerId: { 
+              type: 'string',
+              format: 'uuid',
+              description: 'Manager\'s person ID',
+              example: '789e0123-e89b-12d3-a456-426614174002'
+            },
+            employeeStatus: { 
+              type: 'string',
+              enum: ['Active', 'On Leave', 'Inactive'],
+              description: 'Current employment status',
+              example: 'Active'
+            },
+            workStatus: { 
+              type: 'string',
+              enum: ['On Project', 'On Bench', 'Available'],
+              description: 'Current work assignment status',
+              example: 'On Project'
+            },
+            jobGrade: { 
+              type: 'string',
+              enum: ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'],
+              description: 'Job grade level',
+              example: 'SE'
+            },
+            location: { 
+              type: 'string',
+              maxLength: 100,
+              description: 'Work location',
+              example: 'Remote'
+            },
+            emergencyContactName: { 
+              type: 'string',
+              maxLength: 255,
+              description: 'Emergency contact name',
+              example: 'John Smith'
+            },
+            emergencyContactPhone: { 
+              type: 'string',
+              maxLength: 20,
+              description: 'Emergency contact phone',
+              example: '+1-555-0456'
+            },
+            employmentNotes: { 
+              type: 'string',
+              description: 'Employment-related notes',
+              example: 'Promoted to senior level'
+            }
+          }
         }
       }
     }

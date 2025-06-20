@@ -299,6 +299,141 @@ try {
    *         $ref: '#/components/responses/InternalServerError'
    */
   employeeRouter.get('/:id', (req, res) => employeeController.getById(req, res));
+
+  /**
+   * @swagger
+   * /api/v1/employees:
+   *   post:
+   *     summary: Create a new employee
+   *     tags: [Employees]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/CreateEmployee'
+   *           examples:
+   *             create_employee:
+   *               summary: Create new employee example
+   *               value:
+   *                 firstName: "Jane"
+   *                 lastName: "Smith"
+   *                 email: "jane.smith@company.com"
+   *                 phone: "+1-555-0123"
+   *                 hireDate: "2024-01-15"
+   *                 position: "Product Manager"
+   *                 employmentType: "Full-time"
+   *                 salary: 95000
+   *                 employeeStatus: "Active"
+   *                 workStatus: "Available"
+   *                 jobGrade: "SE"
+   *                 location: "San Francisco"
+   *     responses:
+   *       201:
+   *         description: Employee created successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   enum: [success]
+   *                 data:
+   *                   $ref: '#/components/schemas/Employee'
+   *       400:
+   *         $ref: '#/components/responses/ValidationError'
+   *       500:
+   *         $ref: '#/components/responses/InternalServerError'
+   */
+  employeeRouter.post('/', (req, res) => employeeController.create(req, res));
+
+  /**
+   * @swagger
+   * /api/v1/employees/{id}:
+   *   patch:
+   *     summary: Partially update an existing employee
+   *     description: Update specific fields of an employee. Only send the fields you want to change.
+   *     tags: [Employees]
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *           format: uuid
+   *         description: The employee person ID
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/UpdateEmployee'
+   *           examples:
+   *             update_position_salary:
+   *               summary: Update position and salary only
+   *               value:
+   *                 position: "Senior Product Manager"
+   *                 salary: 105000
+   *             update_work_status:
+   *               summary: Update work status only
+   *               value:
+   *                 workStatus: "On Project"
+   *             update_location:
+   *               summary: Update location only
+   *               value:
+   *                 location: "Remote"
+   *             update_personal_info:
+   *               summary: Update personal information
+   *               value:
+   *                 phone: "+1-555-9876"
+   *                 address: "456 New Street"
+   *                 city: "Boston"
+   *     responses:
+   *       200:
+   *         description: Employee updated successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   enum: [success]
+   *                 data:
+   *                   $ref: '#/components/schemas/Employee'
+   *       400:
+   *         $ref: '#/components/responses/ValidationError'
+   *       404:
+   *         $ref: '#/components/responses/NotFound'
+   *       500:
+   *         $ref: '#/components/responses/InternalServerError'
+   */
+  employeeRouter.patch('/:id', (req, res) => employeeController.update(req, res));
+
+  /**
+   * @swagger
+   * /api/v1/employees/{id}:
+   *   delete:
+   *     summary: Delete an employee
+   *     tags: [Employees]
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *           format: uuid
+   *         description: The employee person ID
+   *     responses:
+   *       204:
+   *         description: Employee deleted successfully
+   *       404:
+   *         $ref: '#/components/responses/NotFound'
+   *       500:
+   *         $ref: '#/components/responses/InternalServerError'
+   */
+  employeeRouter.delete('/:id', (req, res) => employeeController.delete(req, res));
 } catch (error) {
   console.error('Error getting EmployeeController from container:', error);
   throw error;

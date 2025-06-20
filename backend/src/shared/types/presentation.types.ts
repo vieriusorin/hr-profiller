@@ -15,6 +15,8 @@ export interface OpportunityPresentation extends TypeOpportunity {
 }
 
 export type EmployeePresentation = EmployeeJoinedData & {
-  isInactive: boolean;
-  isOnBench: boolean;
+  id: string;                   // Consistent ID field for CRUD operations
+  yearsOfExperience: number;    // Computed years since hire date
+  isInactive: boolean;          // Computed from employeeStatus
+  isOnBench: boolean;           // Computed from workStatus
 };

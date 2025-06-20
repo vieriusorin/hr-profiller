@@ -28,8 +28,11 @@ export class EmployeePresenter extends EnhancedBasePresenter<Employee, EmployeeP
     };
 
     return {
+      // Add the consistent ID field first
+      id: employee.id,
       ...formattedEmployee,
       // Add computed fields from business logic
+      yearsOfExperience: employee.yearsOfExperience,
       isInactive: employee.isInactive(),
       isOnBench: employee.isOnBench(),
     };

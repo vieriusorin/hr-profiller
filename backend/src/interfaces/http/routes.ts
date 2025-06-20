@@ -43,7 +43,10 @@ router.get('/', (req, res) => {
           base: '/api/v1/employees',
           methods: {
             'GET /api/v1/employees': 'List all employees with filtering and pagination',
-            'GET /api/v1/employees/:id': 'Get employee by ID'
+            'POST /api/v1/employees': 'Create new employee',
+            'GET /api/v1/employees/:id': 'Get employee by ID',
+            'PATCH /api/v1/employees/:id': 'Partially update employee by ID',
+            'DELETE /api/v1/employees/:id': 'Delete employee by ID'
           }
         }
       },
