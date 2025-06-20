@@ -108,12 +108,22 @@ export class EmployeeService {
     return this.employeeRepository.addEducationToEmployee(employeeId, educationData);
   }
 
-  async updateEmployeeEducation(educationId: string, educationData: Partial<CreateEmployeeEducationData>): Promise<void> {
-    return this.employeeRepository.updateEmployeeEducation(educationId, educationData);
+  async updateEmployeeEducation(employeeId: string, educationIdentifier: string, educationData: Partial<CreateEmployeeEducationData>): Promise<void> {
+    const existingEmployee = await this.employeeRepository.findById(employeeId);
+    if (!existingEmployee) {
+      throw new Error('Employee not found');
+    }
+    
+    return this.employeeRepository.updateEmployeeEducation(employeeId, educationIdentifier, educationData);
   }
 
-  async removeEducationFromEmployee(educationId: string): Promise<void> {
-    return this.employeeRepository.removeEducationFromEmployee(educationId);
+  async removeEducationFromEmployee(employeeId: string, educationIdentifier: string): Promise<void> {
+    const existingEmployee = await this.employeeRepository.findById(employeeId);
+    if (!existingEmployee) {
+      throw new Error('Employee not found');
+    }
+    
+    return this.employeeRepository.removeEducationFromEmployee(employeeId, educationIdentifier);
   }
 
   // Search methods for RAG functionality

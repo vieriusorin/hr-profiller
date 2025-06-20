@@ -426,9 +426,9 @@ export class EmployeeController {
     }
   }
 
-  async updateEducation(req: Request<{ educationId: string }, {}, Partial<CreateEmployeeEducationRequestData>>, res: Response): Promise<void> {
+  async updateEducation(req: Request<{ id: string; educationId: string }, {}, Partial<CreateEmployeeEducationRequestData>>, res: Response): Promise<void> {
     try {
-      const { educationId } = req.params;
+      const { id, educationId } = req.params;
       const educationValidation = CreateEmployeeEducationRequestSchema.partial().safeParse(req.body);
 
       if (!educationValidation.success) {
@@ -447,7 +447,7 @@ export class EmployeeController {
         graduationDate: educationValidation.data.graduationDate ? new Date(educationValidation.data.graduationDate) : undefined,
       };
 
-      await this.employeeService.updateEmployeeEducation(educationId, educationData);
+      await this.employeeService.updateEmployeeEducation(id, educationId, educationData);
       res.status(200).json({
         status: 'success',
         data: { message: 'Education updated successfully' },
@@ -461,10 +461,10 @@ export class EmployeeController {
     }
   }
 
-  async removeEducation(req: Request<{ educationId: string }>, res: Response): Promise<void> {
+  async removeEducation(req: Request<{ id: string; educationId: string }>, res: Response): Promise<void> {
     try {
-      const { educationId } = req.params;
-      await this.employeeService.removeEducationFromEmployee(educationId);
+      const { id, educationId } = req.params;
+      await this.employeeService.removeEducationFromEmployee(id, educationId);
       res.status(204).send();
     } catch (error: any) {
       console.error('Error removing education from employee:', error);

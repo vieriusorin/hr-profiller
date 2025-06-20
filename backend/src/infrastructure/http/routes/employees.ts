@@ -923,18 +923,24 @@ try {
 
   /**
    * @swagger
-   * /api/v1/employees/education/{educationId}:
+   * /api/v1/employees/{id}/education/{educationId}:
    *   patch:
    *     summary: Update education record
    *     tags: [Employee Education]
    *     parameters:
    *       - in: path
-   *         name: educationId
+   *         name: id
    *         required: true
    *         schema:
    *           type: string
    *           format: uuid
-   *         description: The education record ID
+   *         description: The employee ID
+   *       - in: path
+   *         name: educationId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The education record ID (UUID) or institution name (e.g., "Stanford University", "MIT")
    *     requestBody:
    *       required: true
    *       content:
@@ -977,22 +983,28 @@ try {
    *       500:
    *         $ref: '#/components/responses/InternalServerError'
    */
-  employeeRouter.patch('/education/:educationId', (req, res) => employeeController.updateEducation(req, res));
+  employeeRouter.patch('/:id/education/:educationId', (req, res) => employeeController.updateEducation(req, res));
 
   /**
    * @swagger
-   * /api/v1/employees/education/{educationId}:
+   * /api/v1/employees/{id}/education/{educationId}:
    *   delete:
-   *     summary: Remove education record
+   *     summary: Remove education record from an employee
    *     tags: [Employee Education]
    *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *           format: uuid
+   *         description: The employee ID
    *       - in: path
    *         name: educationId
    *         required: true
    *         schema:
    *           type: string
-   *           format: uuid
-   *         description: The education record ID
+   *         description: The education record ID (UUID) or institution name (e.g., "Stanford University", "MIT")
    *     responses:
    *       204:
    *         description: Education removed successfully
@@ -1001,7 +1013,7 @@ try {
    *       500:
    *         $ref: '#/components/responses/InternalServerError'
    */
-  employeeRouter.delete('/education/:educationId', (req, res) => employeeController.removeEducation(req, res));
+  employeeRouter.delete('/:id/education/:educationId', (req, res) => employeeController.removeEducation(req, res));
 
   // ===== RAG SEARCH ENDPOINTS =====
 

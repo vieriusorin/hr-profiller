@@ -796,7 +796,44 @@ export class DrizzleEmployeeRepository implements EmployeeRepository {
     return result.rows[0].id as string;
   }
 
-  async updateEmployeeEducation(educationId: string, educationData: Partial<CreateEmployeeEducationData>): Promise<void> {
+  async updateEmployeeEducation(employeeId: string, educationIdentifier: string, educationData: Partial<CreateEmployeeEducationData>): Promise<void> {
+    const employeeIdResult = EmployeeIdSchema.safeParse(employeeId);
+    if (!employeeIdResult.success) {
+      throw new Error(`Invalid employee ID: ${employeeIdResult.error.issues.map(i => i.message).join(', ')}`);
+    }
+
+    // Look up education by ID or institution name
+    let educationId: string;
+    
+    // First, try by UUID (direct education ID)
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (uuidRegex.test(educationIdentifier)) {
+      const educationByIdResult = await this.db.execute(sql`
+        SELECT id FROM education 
+        WHERE id = ${educationIdentifier} AND person_id = ${employeeIdResult.data}
+      `);
+      
+      if (educationByIdResult.rows.length > 0) {
+        educationId = educationIdentifier;
+      } else {
+        throw new Error(`Education record with ID '${educationIdentifier}' not found for this employee`);
+      }
+    } else {
+      // Try to find by institution name for this employee
+      const educationByInstitutionResult = await this.db.execute(sql`
+        SELECT id FROM education 
+        WHERE LOWER(institution) = LOWER(${educationIdentifier}) AND person_id = ${employeeIdResult.data}
+        ORDER BY start_date DESC
+        LIMIT 1
+      `);
+      
+      if (educationByInstitutionResult.rows.length > 0) {
+        educationId = educationByInstitutionResult.rows[0].id as string;
+      } else {
+        throw new Error(`Education record at institution '${educationIdentifier}' not found for this employee`);
+      }
+    }
+
     const updateParts: any[] = [];
     
     if (educationData.institution !== undefined) {
@@ -835,7 +872,44 @@ export class DrizzleEmployeeRepository implements EmployeeRepository {
     }
   }
 
-  async removeEducationFromEmployee(educationId: string): Promise<void> {
+  async removeEducationFromEmployee(employeeId: string, educationIdentifier: string): Promise<void> {
+    const employeeIdResult = EmployeeIdSchema.safeParse(employeeId);
+    if (!employeeIdResult.success) {
+      throw new Error(`Invalid employee ID: ${employeeIdResult.error.issues.map(i => i.message).join(', ')}`);
+    }
+
+    // Look up education by ID or institution name
+    let educationId: string;
+    
+    // First, try by UUID (direct education ID)
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (uuidRegex.test(educationIdentifier)) {
+      const educationByIdResult = await this.db.execute(sql`
+        SELECT id FROM education 
+        WHERE id = ${educationIdentifier} AND person_id = ${employeeIdResult.data}
+      `);
+      
+      if (educationByIdResult.rows.length > 0) {
+        educationId = educationIdentifier;
+      } else {
+        throw new Error(`Education record with ID '${educationIdentifier}' not found for this employee`);
+      }
+    } else {
+      // Try to find by institution name for this employee
+      const educationByInstitutionResult = await this.db.execute(sql`
+        SELECT id FROM education 
+        WHERE LOWER(institution) = LOWER(${educationIdentifier}) AND person_id = ${employeeIdResult.data}
+        ORDER BY start_date DESC
+        LIMIT 1
+      `);
+      
+      if (educationByInstitutionResult.rows.length > 0) {
+        educationId = educationByInstitutionResult.rows[0].id as string;
+      } else {
+        throw new Error(`Education record at institution '${educationIdentifier}' not found for this employee`);
+      }
+    }
+
     await this.db.execute(sql`
       DELETE FROM education WHERE id = ${educationId}
     `);

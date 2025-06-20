@@ -22,8 +22,8 @@ export interface EmployeeRepository {
 
   // Education management
   addEducationToEmployee(employeeId: string, educationData: CreateEmployeeEducationData): Promise<string>;
-  updateEmployeeEducation(educationId: string, educationData: Partial<CreateEmployeeEducationData>): Promise<void>;
-  removeEducationFromEmployee(educationId: string): Promise<void>;
+  updateEmployeeEducation(employeeId: string, educationIdentifier: string, educationData: Partial<CreateEmployeeEducationData>): Promise<void>;
+  removeEducationFromEmployee(employeeId: string, educationIdentifier: string): Promise<void>;
 
   // Search methods for RAG functionality
   searchEmployeesBySkills(skillNames: string[]): Promise<Employee[]>;
