@@ -3,7 +3,17 @@ import { sql, eq } from 'drizzle-orm';
 import { TYPES, DatabaseType } from '../../../shared/types';
 import { Employee, EmployeeJoinedData } from '../../../domain/employee/entities/employee.entity';
 import { EmployeeRepository } from '../../../domain/employee/repositories/employee.repository';
-import { TypeNewEmployee, TypeUpdateEmployee } from '../../../../db/schema/employee.schema';
+import { 
+  CreateEmployeeSchema, 
+  UpdateEmployeeSchema,
+  PersonUpdateSchema,
+  EmploymentUpdateSchema,
+  EmployeeIdSchema,
+  TypeNewEmployee, 
+  TypeUpdateEmployee,
+  TypePersonUpdate,
+  TypeEmploymentUpdate
+} from '../../../../db/schema/employee.schema';
 import { people } from '../../../../db/schema/people.schema';
 import { employmentDetails } from '../../../../db/schema/employment-details.schema';
 
@@ -55,7 +65,14 @@ export class DrizzleEmployeeRepository implements EmployeeRepository {
   }
 
   async findById(id: string): Promise<Employee | null> {
-    const result = await this.db.execute(sql`
+    // Validate ID with Zod
+    const result = EmployeeIdSchema.safeParse(id);
+    if (!result.success) {
+      throw new Error(`Invalid employee ID: ${result.error.issues.map(i => i.message).join(', ')}`);
+    }
+    const validatedId = result.data;
+
+    const queryResult = await this.db.execute(sql`
       SELECT 
         people.id as "personId",
         people.first_name as "firstName",
@@ -88,264 +105,195 @@ export class DrizzleEmployeeRepository implements EmployeeRepository {
         employment_details.updated_at as "employmentUpdatedAt"
       FROM people
       INNER JOIN employment_details ON people.id = employment_details.person_id
-      WHERE people.id = ${id}
+      WHERE people.id = ${validatedId}
     `);
 
-    return result.rows.length > 0 ? this.mapToEntity(result.rows[0] as EmployeeJoinedData) : null;
+    return queryResult.rows.length > 0 ? this.mapToEntity(queryResult.rows[0] as EmployeeJoinedData) : null;
   }
 
   async create(employeeData: TypeNewEmployee): Promise<Employee> {
-    // Create the person first
-    const personResult = await this.db.execute(sql`
-      INSERT INTO people (first_name, last_name, email, phone, birth_date, address, city, country, notes)
-      VALUES (
-        ${employeeData.firstName},
-        ${employeeData.lastName},
-        ${employeeData.email},
-        ${employeeData.phone || null},
-        ${employeeData.birthDate ? new Date(employeeData.birthDate) : null},
-        ${employeeData.address || null},
-        ${employeeData.city || null},
-        ${employeeData.country || null},
-        ${employeeData.personNotes || null}
-      )
-      RETURNING id
-    `);
-
-    const personId = personResult.rows[0].id;
-
-    // Create the employment details
-    await this.db.execute(sql`
-      INSERT INTO employment_details (
-        person_id, hire_date, position, employment_type, salary, hourly_rate, 
-        manager_id, employee_status, work_status, job_grade, location,
-        emergency_contact_name, emergency_contact_phone, notes
-      )
-      VALUES (
-        ${personId},
-        ${new Date(employeeData.hireDate)},
-        ${employeeData.position},
-        ${employeeData.employmentType || null},
-        ${employeeData.salary || null},
-        ${employeeData.hourlyRate || null},
-        ${employeeData.managerId || null},
-        ${employeeData.employeeStatus || 'Active'},
-        ${employeeData.workStatus || 'Available'},
-        ${employeeData.jobGrade || null},
-        ${employeeData.location || null},
-        ${employeeData.emergencyContactName || null},
-        ${employeeData.emergencyContactPhone || null},
-        ${employeeData.employmentNotes || null}
-      )
-    `);
-
-    // Return the created employee
-    const createdEmployee = await this.findById(personId as string);
-    if (!createdEmployee) {
-      throw new Error('Failed to retrieve created employee');
+    // Validate and transform with Zod
+    const result = CreateEmployeeSchema.safeParse(employeeData);
+    if (!result.success) {
+      throw new Error(`Validation failed: ${result.error.issues.map(i => i.message).join(', ')}`);
     }
+    const validatedData = result.data;
 
-    return createdEmployee;
+    return await this.db.transaction(async (tx) => {
+      // Create person record - Zod has already transformed all the data
+      const personResult = await tx.execute(sql`
+        INSERT INTO people (first_name, last_name, email, phone, birth_date, address, city, country, notes)
+        VALUES (
+          ${validatedData.firstName},
+          ${validatedData.lastName},
+          ${validatedData.email},
+          ${validatedData.phone},
+          ${validatedData.birthDate},
+          ${validatedData.address},
+          ${validatedData.city},
+          ${validatedData.country},
+          ${validatedData.personNotes}
+        )
+        RETURNING id
+      `);
+
+      const personId = personResult.rows[0].id;
+
+      // Create employment details - Zod has already transformed all the data
+      await tx.execute(sql`
+        INSERT INTO employment_details (
+          person_id, hire_date, position, employment_type, salary, hourly_rate, 
+          manager_id, employee_status, work_status, job_grade, location,
+          emergency_contact_name, emergency_contact_phone, notes
+        )
+        VALUES (
+          ${personId},
+          ${validatedData.hireDate},
+          ${validatedData.position},
+          ${validatedData.employmentType},
+          ${validatedData.salary},
+          ${validatedData.hourlyRate},
+          ${validatedData.managerId},
+          ${validatedData.employeeStatus},
+          ${validatedData.workStatus},
+          ${validatedData.jobGrade},
+          ${validatedData.location},
+          ${validatedData.emergencyContactName},
+          ${validatedData.emergencyContactPhone},
+          ${validatedData.employmentNotes}
+        )
+      `);
+
+      // Return the created employee
+      const createdEmployee = await this.findById(personId as string);
+      if (!createdEmployee) {
+        throw new Error('Failed to retrieve created employee');
+      }
+
+      return createdEmployee;
+    });
   }
 
   async update(id: string, employeeData: TypeUpdateEmployee): Promise<Employee> {
-    console.log('Updating employee with ID:', id);
-    console.log('Update data:', employeeData);
+    // Validate ID with Zod
+    const idResult = EmployeeIdSchema.safeParse(id);
+    if (!idResult.success) {
+      throw new Error(`Invalid employee ID: ${idResult.error.issues.map(i => i.message).join(', ')}`);
+    }
+    const validatedId = idResult.data;
 
-    // Update person data if provided
-    if (employeeData.firstName !== undefined || 
-        employeeData.lastName !== undefined || 
-        employeeData.email !== undefined ||
-        employeeData.phone !== undefined ||
-        employeeData.birthDate !== undefined ||
-        employeeData.address !== undefined ||
-        employeeData.city !== undefined ||
-        employeeData.country !== undefined ||
-        employeeData.personNotes !== undefined) {
+    // Validate and transform employee data with Zod
+    const dataResult = UpdateEmployeeSchema.safeParse(employeeData);
+    if (!dataResult.success) {
+      throw new Error(`Validation failed: ${dataResult.error.issues.map(i => i.message).join(', ')}`);
+    }
+    const validatedData = dataResult.data;
+
+    console.log('Updating employee with ID:', validatedId);
+    console.log('Update data:', validatedData);
+
+    return await this.db.transaction(async (tx) => {
+      // Prepare person update data using Zod schema
+      const personData = this.extractPersonData(validatedData);
+      const personResult = PersonUpdateSchema.safeParse(personData);
       
-      // Prepare person update data
-      const personUpdateData: any = {};
-
-      // Handle name updates and compute fullName
-      if (employeeData.firstName !== undefined || employeeData.lastName !== undefined) {
-        // Get current employee data for missing fields
-        const currentEmployee = await this.findById(id);
-        const firstName = employeeData.firstName ?? currentEmployee?.firstName;
-        const lastName = employeeData.lastName ?? currentEmployee?.lastName;
-        
-        console.log(`Updating names: firstName="${firstName}", lastName="${lastName}"`);
-        
-        if (employeeData.firstName !== undefined) {
-          personUpdateData.firstName = firstName;
-        }
-        if (employeeData.lastName !== undefined) {
-          personUpdateData.lastName = lastName;
-        }
+      if (personResult.success && Object.keys(personResult.data).length > 0) {
+        const personUpdateData = {
+          ...personResult.data,
+          birthDate: personResult.data.birthDate?.toISOString().split('T')[0]
+        };
+        console.log('Executing person update with data:', personUpdateData);
+        await tx.update(people).set(personUpdateData).where(eq(people.id, validatedId));
       }
 
-      if (employeeData.email !== undefined) {
-        personUpdateData.email = employeeData.email;
-      }
-      if (employeeData.phone !== undefined) {
-        personUpdateData.phone = employeeData.phone;
-      }
-      if (employeeData.birthDate !== undefined) {
-        personUpdateData.birthDate = employeeData.birthDate ? new Date(employeeData.birthDate) : null;
-      }
-      if (employeeData.address !== undefined) {
-        personUpdateData.address = employeeData.address;
-      }
-      if (employeeData.city !== undefined) {
-        personUpdateData.city = employeeData.city;
-      }
-      if (employeeData.country !== undefined) {
-        personUpdateData.country = employeeData.country;
-      }
-      if (employeeData.personNotes !== undefined) {
-        personUpdateData.notes = employeeData.personNotes;
+      // Prepare employment update data using Zod schema
+      const employmentData = this.extractEmploymentData(validatedData);
+      const employmentResult = EmploymentUpdateSchema.safeParse(employmentData);
+      
+      if (employmentResult.success && Object.keys(employmentResult.data).length > 0) {
+        const employmentUpdateData = employmentResult.data;
+        console.log('Executing employment update with data:', employmentUpdateData);
+        await tx.update(employmentDetails).set(employmentUpdateData).where(eq(employmentDetails.personId, validatedId));
       }
 
-      // Always update the updated_at timestamp
-      personUpdateData.updatedAt = new Date();
-
-      // Execute person update using Drizzle's update method
-      console.log('Executing person update with data:', personUpdateData);
-      await this.db.update(people).set(personUpdateData).where(eq(people.id, id));
-    }
-
-    // Update employment details if provided
-    if (employeeData.hireDate !== undefined ||
-        employeeData.terminationDate !== undefined ||
-        employeeData.position !== undefined ||
-        employeeData.employmentType !== undefined ||
-        employeeData.salary !== undefined ||
-        employeeData.hourlyRate !== undefined ||
-        employeeData.managerId !== undefined ||
-        employeeData.employeeStatus !== undefined ||
-        employeeData.workStatus !== undefined ||
-        employeeData.jobGrade !== undefined ||
-        employeeData.location !== undefined ||
-        employeeData.emergencyContactName !== undefined ||
-        employeeData.emergencyContactPhone !== undefined ||
-        employeeData.employmentNotes !== undefined) {
-
-      // Prepare employment update data
-      const employmentUpdateData: any = {};
-
-      if (employeeData.hireDate !== undefined) {
-        employmentUpdateData.hireDate = new Date(employeeData.hireDate);
-      }
-      if (employeeData.terminationDate !== undefined) {
-        employmentUpdateData.terminationDate = employeeData.terminationDate ? new Date(employeeData.terminationDate) : null;
-      }
-      if (employeeData.position !== undefined) {
-        employmentUpdateData.position = employeeData.position;
-      }
-      if (employeeData.employmentType !== undefined) {
-        employmentUpdateData.employmentType = employeeData.employmentType;
-      }
-      if (employeeData.salary !== undefined) {
-        employmentUpdateData.salary = employeeData.salary.toString();
-      }
-      if (employeeData.hourlyRate !== undefined) {
-        employmentUpdateData.hourlyRate = employeeData.hourlyRate.toString();
-      }
-      if (employeeData.managerId !== undefined) {
-        employmentUpdateData.managerId = employeeData.managerId;
-      }
-      if (employeeData.employeeStatus !== undefined) {
-        employmentUpdateData.employeeStatus = employeeData.employeeStatus;
-      }
-      if (employeeData.workStatus !== undefined) {
-        employmentUpdateData.workStatus = employeeData.workStatus;
-      }
-      if (employeeData.jobGrade !== undefined) {
-        employmentUpdateData.jobGrade = employeeData.jobGrade;
-      }
-      if (employeeData.location !== undefined) {
-        employmentUpdateData.location = employeeData.location;
-      }
-      if (employeeData.emergencyContactName !== undefined) {
-        employmentUpdateData.emergencyContactName = employeeData.emergencyContactName;
-      }
-      if (employeeData.emergencyContactPhone !== undefined) {
-        employmentUpdateData.emergencyContactPhone = employeeData.emergencyContactPhone;
-      }
-      if (employeeData.employmentNotes !== undefined) {
-        employmentUpdateData.notes = employeeData.employmentNotes;
+      // Return the updated employee
+      const updatedEmployee = await this.findById(validatedId);
+      if (!updatedEmployee) {
+        throw new Error('Failed to retrieve updated employee');
       }
 
-      // Always update the updated_at timestamp
-      employmentUpdateData.updatedAt = new Date();
-
-      // Execute employment update using Drizzle's update method
-      console.log('Executing employment update with data:', employmentUpdateData);
-      await this.db.update(employmentDetails).set(employmentUpdateData).where(eq(employmentDetails.personId, id));
-    }
-
-    // Return the updated employee
-    const updatedEmployee = await this.findById(id);
-    if (!updatedEmployee) {
-      throw new Error('Failed to retrieve updated employee');
-    }
-
-    console.log('Successfully updated employee');
-    return updatedEmployee;
+      console.log('Successfully updated employee');
+      return updatedEmployee;
+    });
   }
 
   async delete(id: string): Promise<void> {
-    console.log('Deleting employee with ID:', id);
+    // Validate ID with Zod
+    const result = EmployeeIdSchema.safeParse(id);
+    if (!result.success) {
+      throw new Error(`Invalid employee ID: ${result.error.issues.map(i => i.message).join(', ')}`);
+    }
+    const validatedId = result.data;
+
+    console.log('Deleting employee with ID:', validatedId);
     
-    // Delete in correct order to avoid foreign key violations
+    await this.db.transaction(async (tx) => {
+      // Delete in correct order to avoid foreign key violations
+      await tx.execute(sql`DELETE FROM employment_details WHERE person_id = ${validatedId}`);
+      await tx.execute(sql`DELETE FROM person_status WHERE person_id = ${validatedId}`);
+      await tx.execute(sql`DELETE FROM person_skills WHERE person_id = ${validatedId}`);
+      await tx.execute(sql`DELETE FROM person_technologies WHERE person_id = ${validatedId}`);
+      await tx.execute(sql`DELETE FROM education WHERE person_id = ${validatedId}`);
+      await tx.execute(sql`DELETE FROM person_unavailable_dates WHERE person_id = ${validatedId}`);
+      await tx.execute(sql`DELETE FROM opportunity_role_assignments WHERE person_id = ${validatedId}`);
+      await tx.execute(sql`DELETE FROM people WHERE id = ${validatedId}`);
+      
+      console.log('Successfully deleted employee and all related records');
+    });
+  }
+
+  // Helper to extract person-related fields from update data
+  private extractPersonData(data: TypeUpdateEmployee): Partial<TypePersonUpdate> {
+    const personFields: (keyof TypeUpdateEmployee)[] = [
+      'firstName', 'lastName', 'email', 'phone', 'birthDate', 
+      'address', 'city', 'country', 'personNotes'
+    ];
     
-    // 1. Delete employment details first
-    await this.db.execute(sql`
-      DELETE FROM employment_details WHERE person_id = ${id}
-    `);
-    console.log('Deleted employment details');
+    const personData: any = {};
+    personFields.forEach(field => {
+      if (data[field] !== undefined) {
+        if (field === 'personNotes') {
+          personData.notes = data[field]; // Map to 'notes' for DB
+        } else {
+          personData[field] = data[field];
+        }
+      }
+    });
+    
+    return personData;
+  }
 
-    // 2. Delete person status
-    await this.db.execute(sql`
-      DELETE FROM person_status WHERE person_id = ${id}
-    `);
-    console.log('Deleted person status');
-
-    // 3. Delete any other related records that might reference this person
-    // Delete person skills
-    await this.db.execute(sql`
-      DELETE FROM person_skills WHERE person_id = ${id}
-    `);
-    console.log('Deleted person skills');
-
-    // Delete person technologies
-    await this.db.execute(sql`
-      DELETE FROM person_technologies WHERE person_id = ${id}
-    `);
-    console.log('Deleted person technologies');
-
-    // Delete education records
-    await this.db.execute(sql`
-      DELETE FROM education WHERE person_id = ${id}
-    `);
-    console.log('Deleted education records');
-
-    // Delete unavailable dates
-    await this.db.execute(sql`
-      DELETE FROM person_unavailable_dates WHERE person_id = ${id}
-    `);
-    console.log('Deleted unavailable dates');
-
-    // Delete opportunity role assignments
-    await this.db.execute(sql`
-      DELETE FROM opportunity_role_assignments WHERE person_id = ${id}
-    `);
-    console.log('Deleted opportunity role assignments');
-
-    // 4. Finally delete the person record
-    await this.db.execute(sql`
-      DELETE FROM people WHERE id = ${id}
-    `);
-    console.log('Deleted person record');
+  // Helper to extract employment-related fields from update data
+  private extractEmploymentData(data: TypeUpdateEmployee): Partial<TypeEmploymentUpdate> {
+    const employmentFields: (keyof TypeUpdateEmployee)[] = [
+      'hireDate', 'terminationDate', 'position', 'employmentType', 
+      'salary', 'hourlyRate', 'managerId', 'employeeStatus', 
+      'workStatus', 'jobGrade', 'location', 'emergencyContactName', 
+      'emergencyContactPhone', 'employmentNotes'
+    ];
+    
+    const employmentData: any = {};
+    employmentFields.forEach(field => {
+      if (data[field] !== undefined) {
+        if (field === 'employmentNotes') {
+          employmentData.notes = data[field]; // Map to 'notes' for DB
+        } else {
+          employmentData[field] = data[field];
+        }
+      }
+    });
+    
+    return employmentData;
   }
 
   private mapToEntity(data: EmployeeJoinedData): Employee {
