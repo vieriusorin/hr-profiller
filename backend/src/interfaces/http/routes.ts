@@ -2,6 +2,7 @@ import { Router } from 'express';
 import opportunityRoutes from '../../infrastructure/http/routes/opportunities';
 import roleRoutes from '../../infrastructure/http/routes/roles';
 import employeeRoutes from '../../infrastructure/http/routes/employees';
+import { lookupRoutes } from '../../infrastructure/http/routes/lookup';
 import { metricsHandler } from './middlewares/loggs.middleware';
 
 const router = Router();
@@ -46,7 +47,29 @@ router.get('/', (req, res) => {
             'POST /api/v1/employees': 'Create new employee',
             'GET /api/v1/employees/:id': 'Get employee by ID',
             'PATCH /api/v1/employees/:id': 'Partially update employee by ID',
-            'DELETE /api/v1/employees/:id': 'Delete employee by ID'
+            'DELETE /api/v1/employees/:id': 'Delete employee by ID',
+            'POST /api/v1/employees/:id/skills': 'Add skill to employee',
+            'PATCH /api/v1/employees/:id/skills/:skillId': 'Update employee skill',
+            'DELETE /api/v1/employees/:id/skills/:skillId': 'Remove skill from employee',
+            'POST /api/v1/employees/:id/technologies': 'Add technology to employee',
+            'PATCH /api/v1/employees/:id/technologies/:technologyId': 'Update employee technology',
+            'DELETE /api/v1/employees/:id/technologies/:technologyId': 'Remove technology from employee',
+            'POST /api/v1/employees/:id/education': 'Add education to employee',
+            'PATCH /api/v1/employees/education/:educationId': 'Update employee education',
+            'DELETE /api/v1/employees/education/:educationId': 'Remove education from employee',
+            'POST /api/v1/employees/search/skills': 'Search employees by skills',
+            'POST /api/v1/employees/search/technologies': 'Search employees by technologies',
+            'POST /api/v1/employees/search/education': 'Search employees by education',
+            'GET /api/v1/employees/:id/searchable-content': 'Get employee searchable content for RAG'
+          }
+        },
+        lookup: {
+          base: '/api/v1/lookup',
+          methods: {
+            'GET /api/v1/lookup/skills': 'Get all available skills with search and filtering',
+            'GET /api/v1/lookup/skills/categories': 'Get all skill categories',
+            'GET /api/v1/lookup/technologies': 'Get all available technologies with search and filtering',
+            'GET /api/v1/lookup/technologies/categories': 'Get all technology categories'
           }
         }
       },
@@ -56,7 +79,11 @@ router.get('/', (req, res) => {
         'Rate limiting',
         'Request validation',
         'Comprehensive logging',
-        'Swagger documentation'
+        'Swagger documentation',
+        'Employee skills and technologies management',
+        'Education tracking',
+        'RAG-ready searchable content generation',
+        'Lookup endpoints for skills/technologies discovery'
       ],
       links: {
         documentation: `${req.protocol}://${req.get('host')}/api-docs`,
@@ -74,5 +101,6 @@ router.get('/metrics', metricsHandler);
 router.use('/opportunities', opportunityRoutes);
 router.use('/roles', roleRoutes);
 router.use('/employees', employeeRoutes);
+router.use('/lookup', lookupRoutes);
 
 export default router;

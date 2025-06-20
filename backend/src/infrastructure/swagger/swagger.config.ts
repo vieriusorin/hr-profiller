@@ -374,6 +374,75 @@ const options: swaggerJsdoc.Options = {
               type: 'boolean',
               description: 'Whether the employee is on bench',
               example: false
+            },
+            skills: {
+              type: 'array',
+              description: 'Employee skills (included by default, excluded when includeRelated=false)',
+              items: {
+                $ref: '#/components/schemas/EmployeeSkill'
+              },
+              example: [
+                {
+                  skillId: '550e8400-e29b-41d4-a716-446655440000',
+                  skillName: 'JavaScript',
+                  skillCategory: 'Programming Language',
+                  skillDescription: 'High-level programming language',
+                  proficiencyLevel: 'ADVANCED',
+                  yearsOfExperience: '5',
+                  lastUsed: '2024-01-15T00:00:00Z',
+                  isCertified: true,
+                  certificationName: 'JavaScript Professional Certificate',
+                  certificationDate: '2023-06-15T00:00:00Z',
+                  notes: 'Extensive experience with React and Node.js',
+                  createdAt: '2024-01-01T00:00:00Z',
+                  updatedAt: '2024-01-15T00:00:00Z'
+                }
+              ]
+            },
+            technologies: {
+              type: 'array',
+              description: 'Employee technologies (included by default, excluded when includeRelated=false)',
+              items: {
+                $ref: '#/components/schemas/EmployeeTechnology'
+              },
+              example: [
+                {
+                  technologyId: '550e8400-e29b-41d4-a716-446655440001',
+                  technologyName: 'React',
+                  technologyCategory: 'Frontend Framework',
+                  technologyDescription: 'JavaScript library for building user interfaces',
+                  proficiencyLevel: 'ADVANCED',
+                  yearsOfExperience: '4',
+                  lastUsed: '2024-01-10T00:00:00Z',
+                  context: 'Frontend Development',
+                  projectName: 'E-commerce Platform',
+                  description: 'Built scalable React components for user interfaces',
+                  createdAt: '2024-01-01T00:00:00Z',
+                  updatedAt: '2024-01-10T00:00:00Z'
+                }
+              ]
+            },
+            education: {
+              type: 'array',
+              description: 'Employee education (included by default, excluded when includeRelated=false)',
+              items: {
+                $ref: '#/components/schemas/EmployeeEducation'
+              },
+              example: [
+                {
+                  educationId: '550e8400-e29b-41d4-a716-446655440002',
+                  institution: 'Stanford University',
+                  degree: 'Bachelor of Science',
+                  fieldOfStudy: 'Computer Science',
+                  startDate: '2018-09-01T00:00:00Z',
+                  graduationDate: '2022-06-15T00:00:00Z',
+                  description: 'Focused on software engineering and algorithms',
+                  gpa: '3.8',
+                  isCurrentlyEnrolled: 'false',
+                  createdAt: '2024-01-01T00:00:00Z',
+                  updatedAt: '2024-01-01T00:00:00Z'
+                }
+              ]
             }
           },
           required: ['id', 'personId', 'firstName', 'lastName', 'fullName', 'email', 'personCreatedAt', 'isInactive', 'isOnBench']
@@ -1230,6 +1299,677 @@ const options: swaggerJsdoc.Options = {
               type: 'string',
               description: 'Employment-related notes',
               example: 'Promoted to senior level'
+            }
+          }
+        },
+        // ===== EMPLOYEE SKILLS SCHEMAS =====
+        CreateEmployeeSkill: {
+          type: 'object',
+          required: ['skillName'],
+          additionalProperties: false,
+          properties: {
+            skillName: {
+              type: 'string',
+              minLength: 1,
+              description: 'Name of the skill to add to the employee. If the skill doesn\'t exist in the database, it will be automatically created. Examples: JavaScript, Python, React, Node.js, Communication, Leadership, Problem Solving, etc.',
+              example: 'JavaScript'
+            },
+            proficiencyLevel: {
+              type: 'string',
+              description: 'Level of proficiency with this skill',
+              example: 'ADVANCED'
+            },
+            yearsOfExperience: {
+              type: 'string',
+              description: 'Years of experience with this skill',
+              example: '5'
+            },
+            lastUsed: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Date when the skill was last used',
+              example: '2024-01-15T00:00:00Z'
+            },
+            isCertified: {
+              type: 'boolean',
+              description: 'Whether the employee is certified in this skill',
+              example: true
+            },
+            certificationName: {
+              type: 'string',
+              description: 'Name of the certification',
+              example: 'JavaScript Professional Certificate'
+            },
+            certificationDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Date when the certification was obtained',
+              example: '2023-06-15T00:00:00Z'
+            },
+            notes: {
+              type: 'string',
+              description: 'Additional notes about this skill',
+              example: 'Extensive experience with React and Node.js'
+            }
+          }
+        },
+        UpdateEmployeeSkill: {
+          type: 'object',
+          additionalProperties: false,
+          description: 'Schema for updating employee skills. All fields are optional.',
+          properties: {
+            proficiencyLevel: {
+              type: 'string',
+              description: 'Level of proficiency with this skill',
+              example: 'EXPERT'
+            },
+            yearsOfExperience: {
+              type: 'string',
+              description: 'Years of experience with this skill',
+              example: '7'
+            },
+            lastUsed: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Date when the skill was last used',
+              example: '2024-01-15T00:00:00Z'
+            },
+            isCertified: {
+              type: 'boolean',
+              description: 'Whether the employee is certified in this skill',
+              example: true
+            },
+            certificationName: {
+              type: 'string',
+              description: 'Name of the certification',
+              example: 'Advanced JavaScript Certification'
+            },
+            certificationDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Date when the certification was obtained',
+              example: '2024-01-01T00:00:00Z'
+            },
+            notes: {
+              type: 'string',
+              description: 'Additional notes about this skill',
+              example: 'Updated to expert level after recent certification'
+            }
+          }
+        },
+        // ===== EMPLOYEE TECHNOLOGIES SCHEMAS =====
+        CreateEmployeeTechnology: {
+          type: 'object',
+          required: ['technologyName'],
+          additionalProperties: false,
+          properties: {
+            technologyName: {
+              type: 'string',
+              minLength: 1,
+              description: 'Name of the technology to add to the employee. If the technology doesn\'t exist in the database, it will be automatically created. Examples: React, JavaScript, Python, Java, C#, Node.js, PostgreSQL, MySQL, Docker, Kubernetes, Vue.js, Angular, TypeScript, etc.',
+              example: 'React'
+            },
+            proficiencyLevel: {
+              type: 'string',
+              description: 'Level of proficiency with this technology',
+              example: 'ADVANCED'
+            },
+            yearsOfExperience: {
+              type: 'string',
+              description: 'Years of experience with this technology',
+              example: '4'
+            },
+            lastUsed: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Date when the technology was last used',
+              example: '2024-01-10T00:00:00Z'
+            },
+            context: {
+              type: 'string',
+              description: 'Context in which the technology is used',
+              example: 'Frontend Development'
+            },
+            projectName: {
+              type: 'string',
+              description: 'Name of the project where technology was used',
+              example: 'E-commerce Platform'
+            },
+            description: {
+              type: 'string',
+              description: 'Description of how the technology was used',
+              example: 'Built scalable React components for user interfaces'
+            }
+          }
+        },
+        UpdateEmployeeTechnology: {
+          type: 'object',
+          additionalProperties: false,
+          description: 'Schema for updating employee technologies. All fields are optional.',
+          properties: {
+            proficiencyLevel: {
+              type: 'string',
+              description: 'Level of proficiency with this technology',
+              example: 'EXPERT'
+            },
+            yearsOfExperience: {
+              type: 'string',
+              description: 'Years of experience with this technology',
+              example: '6'
+            },
+            lastUsed: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Date when the technology was last used',
+              example: '2024-01-15T00:00:00Z'
+            },
+            context: {
+              type: 'string',
+              description: 'Context in which the technology is used',
+              example: 'Full-stack Development'
+            },
+            projectName: {
+              type: 'string',
+              description: 'Name of the project where technology was used',
+              example: 'Microservices Platform'
+            },
+            description: {
+              type: 'string',
+              description: 'Description of how the technology was used',
+              example: 'Leading React development across multiple projects'
+            }
+          }
+        },
+        // ===== EMPLOYEE EDUCATION SCHEMAS =====
+        CreateEmployeeEducation: {
+          type: 'object',
+          required: ['institution'],
+          additionalProperties: false,
+          properties: {
+            institution: {
+              type: 'string',
+              minLength: 1,
+              description: 'Name of the educational institution. You can use any institution name (e.g., Stanford University, MIT, Harvard, local colleges, online platforms like Coursera, etc.)',
+              example: 'Stanford University'
+            },
+            degree: {
+              type: 'string',
+              description: 'Type of degree obtained',
+              example: 'Bachelor of Science'
+            },
+            fieldOfStudy: {
+              type: 'string',
+              description: 'Field of study or major',
+              example: 'Computer Science'
+            },
+            startDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Start date of the education',
+              example: '2018-09-01T00:00:00Z'
+            },
+            graduationDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Graduation date',
+              example: '2022-06-15T00:00:00Z'
+            },
+            description: {
+              type: 'string',
+              description: 'Description of the education',
+              example: 'Focused on software engineering and algorithms'
+            },
+            gpa: {
+              type: 'string',
+              description: 'Grade Point Average',
+              example: '3.8'
+            },
+            isCurrentlyEnrolled: {
+              type: 'string',
+              description: 'Whether currently enrolled',
+              example: 'false'
+            }
+          }
+        },
+        UpdateEmployeeEducation: {
+          type: 'object',
+          additionalProperties: false,
+          description: 'Schema for updating employee education. All fields are optional.',
+          properties: {
+            institution: {
+              type: 'string',
+              minLength: 1,
+              description: 'Name of the educational institution. You can use any institution name (e.g., Stanford University, MIT, Harvard, local colleges, online platforms like Coursera, etc.)',
+              example: 'Stanford University'
+            },
+            degree: {
+              type: 'string',
+              description: 'Type of degree obtained',
+              example: 'Bachelor of Science'
+            },
+            fieldOfStudy: {
+              type: 'string',
+              description: 'Field of study or major',
+              example: 'Computer Science'
+            },
+            startDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Start date of the education',
+              example: '2018-09-01T00:00:00Z'
+            },
+            graduationDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Graduation date',
+              example: '2022-06-15T00:00:00Z'
+            },
+            description: {
+              type: 'string',
+              description: 'Description of the education',
+              example: 'Graduated summa cum laude with honors in Computer Science'
+            },
+            gpa: {
+              type: 'string',
+              description: 'Grade Point Average',
+              example: '3.9'
+            },
+            isCurrentlyEnrolled: {
+              type: 'string',
+              description: 'Whether currently enrolled',
+              example: 'false'
+            }
+          }
+        },
+        // ===== EMPLOYEE EXTENDED SCHEMA WITH RELATED DATA =====
+        EmployeeSkill: {
+          type: 'object',
+          properties: {
+            skillId: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID of the skill',
+              example: '550e8400-e29b-41d4-a716-446655440000'
+            },
+            skillName: {
+              type: 'string',
+              description: 'Name of the skill',
+              example: 'JavaScript'
+            },
+            skillCategory: {
+              type: 'string',
+              description: 'Category of the skill',
+              example: 'Programming Language'
+            },
+            skillDescription: {
+              type: 'string',
+              description: 'Description of the skill',
+              example: 'High-level programming language'
+            },
+            proficiencyLevel: {
+              type: 'string',
+              description: 'Employee\'s proficiency level',
+              example: 'ADVANCED'
+            },
+            yearsOfExperience: {
+              type: 'string',
+              description: 'Years of experience',
+              example: '5'
+            },
+            lastUsed: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Last used date',
+              example: '2024-01-15T00:00:00Z'
+            },
+            isCertified: {
+              type: 'boolean',
+              description: 'Certification status',
+              example: true
+            },
+            certificationName: {
+              type: 'string',
+              description: 'Certification name',
+              example: 'JavaScript Professional Certificate'
+            },
+            certificationDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Certification date',
+              example: '2023-06-15T00:00:00Z'
+            },
+            notes: {
+              type: 'string',
+              description: 'Additional notes',
+              example: 'Extensive experience with React and Node.js'
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Creation timestamp',
+              example: '2024-01-01T00:00:00Z'
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Last update timestamp',
+              example: '2024-01-15T00:00:00Z'
+            }
+          }
+        },
+        EmployeeTechnology: {
+          type: 'object',
+          properties: {
+            technologyId: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID of the technology',
+              example: '550e8400-e29b-41d4-a716-446655440001'
+            },
+            technologyName: {
+              type: 'string',
+              description: 'Name of the technology',
+              example: 'React'
+            },
+            technologyCategory: {
+              type: 'string',
+              description: 'Category of the technology',
+              example: 'Frontend Framework'
+            },
+            technologyDescription: {
+              type: 'string',
+              description: 'Description of the technology',
+              example: 'JavaScript library for building user interfaces'
+            },
+            proficiencyLevel: {
+              type: 'string',
+              description: 'Employee\'s proficiency level',
+              example: 'ADVANCED'
+            },
+            yearsOfExperience: {
+              type: 'string',
+              description: 'Years of experience',
+              example: '4'
+            },
+            lastUsed: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Last used date',
+              example: '2024-01-10T00:00:00Z'
+            },
+            context: {
+              type: 'string',
+              description: 'Usage context',
+              example: 'Frontend Development'
+            },
+            projectName: {
+              type: 'string',
+              description: 'Project name',
+              example: 'E-commerce Platform'
+            },
+            description: {
+              type: 'string',
+              description: 'Usage description',
+              example: 'Built scalable React components for user interfaces'
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Creation timestamp',
+              example: '2024-01-01T00:00:00Z'
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Last update timestamp',
+              example: '2024-01-10T00:00:00Z'
+            }
+          }
+        },
+        EmployeeEducation: {
+          type: 'object',
+          properties: {
+            educationId: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID of the education record',
+              example: '550e8400-e29b-41d4-a716-446655440002'
+            },
+            institution: {
+              type: 'string',
+              description: 'Educational institution',
+              example: 'Stanford University'
+            },
+            degree: {
+              type: 'string',
+              description: 'Degree type',
+              example: 'Bachelor of Science'
+            },
+            fieldOfStudy: {
+              type: 'string',
+              description: 'Field of study',
+              example: 'Computer Science'
+            },
+            startDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Start date',
+              example: '2018-09-01T00:00:00Z'
+            },
+            graduationDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Graduation date',
+              example: '2022-06-15T00:00:00Z'
+            },
+            description: {
+              type: 'string',
+              description: 'Education description',
+              example: 'Focused on software engineering and algorithms'
+            },
+            gpa: {
+              type: 'string',
+              description: 'Grade Point Average',
+              example: '3.8'
+            },
+            isCurrentlyEnrolled: {
+              type: 'string',
+              description: 'Current enrollment status',
+              example: 'false'
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Creation timestamp',
+              example: '2024-01-01T00:00:00Z'
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Last update timestamp',
+              example: '2024-01-01T00:00:00Z'
+            }
+          }
+        },
+        // ===== LOOKUP SCHEMAS =====
+        Skill: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+              description: 'Unique identifier for the skill',
+              example: '550e8400-e29b-41d4-a716-446655440000'
+            },
+            name: {
+              type: 'string',
+              description: 'Name of the skill',
+              example: 'JavaScript'
+            },
+            category: {
+              type: 'string',
+              description: 'Category of the skill',
+              example: 'Programming Language'
+            },
+            description: {
+              type: 'string',
+              description: 'Description of the skill',
+              example: 'High-level programming language for web development'
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Creation timestamp',
+              example: '2024-01-01T00:00:00Z'
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Last update timestamp', 
+              example: '2024-01-01T00:00:00Z'
+            }
+          }
+        },
+        Technology: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+              description: 'Unique identifier for the technology',
+              example: '550e8400-e29b-41d4-a716-446655440001'
+            },
+            name: {
+              type: 'string',
+              description: 'Name of the technology',
+              example: 'React'
+            },
+            category: {
+              type: 'string',
+              description: 'Category of the technology',
+              example: 'Frontend Framework'
+            },
+            description: {
+              type: 'string',
+              description: 'Description of the technology',
+              example: 'JavaScript library for building user interfaces'
+            },
+            version: {
+              type: 'string',
+              description: 'Version of the technology',
+              example: '18.0'
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Creation timestamp',
+              example: '2024-01-01T00:00:00Z'
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Last update timestamp',
+              example: '2024-01-01T00:00:00Z'
+            }
+          }
+        },
+        SkillsResponse: {
+          type: 'object',
+          properties: {
+            status: {
+              type: 'string',
+              enum: ['success'],
+              example: 'success'
+            },
+            data: {
+              type: 'array',
+              items: {
+                $ref: '#/components/schemas/Skill'
+              }
+            },
+            pagination: {
+              type: 'object',
+              properties: {
+                total: {
+                  type: 'integer',
+                  description: 'Total number of skills',
+                  example: 55
+                },
+                limit: {
+                  type: 'integer',
+                  description: 'Number of items per page',
+                  example: 50
+                },
+                offset: {
+                  type: 'integer',
+                  description: 'Number of items skipped',
+                  example: 0
+                },
+                hasMore: {
+                  type: 'boolean',
+                  description: 'Whether there are more items',
+                  example: false
+                }
+              }
+            }
+          }
+        },
+        TechnologiesResponse: {
+          type: 'object',
+          properties: {
+            status: {
+              type: 'string',
+              enum: ['success'],
+              example: 'success'
+            },
+            data: {
+              type: 'array',
+              items: {
+                $ref: '#/components/schemas/Technology'
+              }
+            },
+            pagination: {
+              type: 'object',
+              properties: {
+                total: {
+                  type: 'integer',
+                  description: 'Total number of technologies',
+                  example: 42
+                },
+                limit: {
+                  type: 'integer',
+                  description: 'Number of items per page',
+                  example: 50
+                },
+                offset: {
+                  type: 'integer',
+                  description: 'Number of items skipped',
+                  example: 0
+                },
+                hasMore: {
+                  type: 'boolean',
+                  description: 'Whether there are more items',
+                  example: false
+                }
+              }
+            }
+          }
+        },
+        CategoriesResponse: {
+          type: 'object',
+          properties: {
+            status: {
+              type: 'string',
+              enum: ['success'],
+              example: 'success'
+            },
+            data: {
+              type: 'array',
+              items: {
+                type: 'string'
+              },
+              description: 'List of categories',
+              example: ['Programming Language', 'Frontend Framework', 'Database', 'Cloud Platform']
             }
           }
         }

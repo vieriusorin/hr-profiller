@@ -2,6 +2,53 @@ import { TypeEmployeeStatus } from '../../../../db/enums/employee-status.enum';
 import { TypeWorkStatus } from '../../../../db/enums/work-status.enum';
 import { TypeJobGrade } from '../../../../db/enums/job-grade.enum';
 
+// Related entity types for Employee
+export type EmployeeSkill = {
+  skillId: string;
+  skillName: string;
+  skillCategory?: string | null;
+  skillDescription?: string | null;
+  proficiencyLevel?: string | null;
+  yearsOfExperience?: string | null;
+  lastUsed?: Date | null;
+  isCertified?: boolean;
+  certificationName?: string | null;
+  certificationDate?: Date | null;
+  notes?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type EmployeeTechnology = {
+  technologyId: string;
+  technologyName: string;
+  technologyCategory?: string | null;
+  technologyDescription?: string | null;
+  technologyVersion?: string | null;
+  proficiencyLevel?: string | null;
+  yearsOfExperience?: string | null;
+  lastUsed?: Date | null;
+  context?: string | null;
+  projectName?: string | null;
+  description?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type EmployeeEducation = {
+  id: string;
+  institution: string;
+  degree?: string | null;
+  fieldOfStudy?: string | null;
+  startDate?: Date | null;
+  graduationDate?: Date | null;
+  description?: string | null;
+  gpa?: string | null;
+  isCurrentlyEnrolled?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
 // Type for the joined employee data from people + employment_details
 export type EmployeeJoinedData = {
   // From people table
@@ -71,6 +118,11 @@ export class Employee {
   readonly employmentCreatedAt!: Date | null;
   readonly employmentUpdatedAt!: Date | null;
 
+  // Related entities for RAG functionality
+  public skills: EmployeeSkill[] = [];
+  public technologies: EmployeeTechnology[] = [];
+  public education: EmployeeEducation[] = [];
+
   constructor(data: EmployeeJoinedData) {
     Object.assign(this, data);
   }
@@ -99,5 +151,40 @@ export class Employee {
 
   isOnBench(): boolean {
     return this.workStatus === 'On Bench';
+  }
+
+  // Methods for RAG functionality - to get searchable content
+  getSkillsText(): string {
+    return this.skills.map(skill => 
+      `${skill.skillName} (${skill.skillCategory || 'General'}) - ${skill.proficiencyLevel || 'Unknown level'} - ${skill.yearsOfExperience || '0'} years experience${skill.notes ? ` - ${skill.notes}` : ''}`
+    ).join('; ');
+  }
+
+  getTechnologiesText(): string {
+    return this.technologies.map(tech => 
+      `${tech.technologyName} ${tech.technologyVersion ? `v${tech.technologyVersion}` : ''} (${tech.technologyCategory || 'General'}) - ${tech.proficiencyLevel || 'Unknown level'} - ${tech.yearsOfExperience || '0'} years experience${tech.context ? ` in ${tech.context}` : ''}${tech.description ? ` - ${tech.description}` : ''}`
+    ).join('; ');
+  }
+
+  getEducationText(): string {
+    return this.education.map(edu => 
+      `${edu.degree || 'Degree'} in ${edu.fieldOfStudy || 'Field'} from ${edu.institution}${edu.gpa ? ` (GPA: ${edu.gpa})` : ''}${edu.description ? ` - ${edu.description}` : ''}`
+    ).join('; ');
+  }
+
+  // Combined text for RAG search
+  getSearchableContent(): string {
+    const sections = [
+      `Employee: ${this.fullName}`,
+      `Position: ${this.position || 'N/A'}`,
+      `Location: ${this.location || 'N/A'}`,
+      `Skills: ${this.getSkillsText()}`,
+      `Technologies: ${this.getTechnologiesText()}`,
+      `Education: ${this.getEducationText()}`,
+      this.personNotes ? `Notes: ${this.personNotes}` : '',
+      this.employmentNotes ? `Employment Notes: ${this.employmentNotes}` : ''
+    ].filter(section => section.trim().length > 0);
+
+    return sections.join('\n');
   }
 } 

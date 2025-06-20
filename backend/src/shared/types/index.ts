@@ -30,6 +30,7 @@ const TYPES = {
   OpportunityController: Symbol.for('OpportunityController'),
   RoleController: Symbol.for('RoleController'),
   EmployeeController: Symbol.for('EmployeeController'),
+  LookupController: Symbol.for('LookupController'),
 };
 
 // Type alias for the database with proper schema

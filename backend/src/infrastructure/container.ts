@@ -13,6 +13,7 @@ import { EmployeeRepository } from '../domain/employee/repositories/employee.rep
 import { DrizzleEmployeeRepository } from './database/repositories/drizzle-employee.repository';
 import { EmployeeService } from '../domain/employee/services/employee.service';
 import { EmployeeController } from './http/controllers/employee.controller';
+import { LookupController } from './http/controllers/lookup.controller';
 
 const container = new Container();
 
@@ -33,5 +34,6 @@ container.bind<EmployeeService>(TYPES.EmployeeService).to(EmployeeService);
 container.bind<OpportunityController>(TYPES.OpportunityController).to(OpportunityController);
 container.bind<RoleController>(TYPES.RoleController).to(RoleController);
 container.bind<EmployeeController>(TYPES.EmployeeController).to(EmployeeController);
+container.bind<LookupController>(TYPES.LookupController).to(LookupController);
 
 export { container };
