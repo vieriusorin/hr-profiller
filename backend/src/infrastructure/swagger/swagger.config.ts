@@ -63,9 +63,222 @@ const options: swaggerJsdoc.Options = {
               }
             }
           }
+        },
+        InternalServerError: {
+          description: 'Internal server error',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/ErrorResponse'
+              }
+            }
+          }
         }
       },
       schemas: {
+        Employee: {
+          type: 'object',
+          properties: {
+            personId: { 
+              type: 'string', 
+              format: 'uuid',
+              description: 'Unique identifier for the person',
+              example: '123e4567-e89b-12d3-a456-426614174000'
+            },
+            firstName: { 
+              type: 'string',
+              description: 'First name of the employee',
+              example: 'John'
+            },
+            lastName: { 
+              type: 'string',
+              description: 'Last name of the employee',
+              example: 'Doe'
+            },
+            fullName: { 
+              type: 'string',
+              description: 'Full name of the employee',
+              example: 'John Doe'
+            },
+            email: { 
+              type: 'string', 
+              format: 'email',
+              description: 'Email address of the employee',
+              example: 'john.doe@company.com'
+            },
+            phone: { 
+              type: 'string', 
+              nullable: true,
+              description: 'Phone number of the employee',
+              example: '+1-555-0123'
+            },
+            birthDate: { 
+              type: 'string', 
+              format: 'date-time', 
+              nullable: true,
+              description: 'Birth date of the employee',
+              example: '1990-05-15T00:00:00Z'
+            },
+            address: { 
+              type: 'string', 
+              nullable: true,
+              description: 'Address of the employee',
+              example: '123 Main St, Anytown, USA'
+            },
+            city: { 
+              type: 'string', 
+              nullable: true,
+              description: 'City where the employee lives',
+              example: 'New York'
+            },
+            country: { 
+              type: 'string', 
+              nullable: true,
+              description: 'Country where the employee lives',
+              example: 'USA'
+            },
+            personNotes: { 
+              type: 'string', 
+              nullable: true,
+              description: 'Personal notes about the employee',
+              example: 'Prefers remote work'
+            },
+            personCreatedAt: { 
+              type: 'string', 
+              format: 'date-time',
+              description: 'When the person record was created',
+              example: '2024-01-10T09:00:00Z'
+            },
+            employmentDetailsId: { 
+              type: 'string', 
+              format: 'uuid', 
+              nullable: true,
+              description: 'Unique identifier for employment details',
+              example: '456e7890-e89b-12d3-a456-426614174001'
+            },
+            employeeId: { 
+              type: 'string', 
+              nullable: true,
+              description: 'Employee ID (company-specific)',
+              example: 'EMP001'
+            },
+            hireDate: { 
+              type: 'string', 
+              format: 'date-time', 
+              nullable: true,
+              description: 'Date when the employee was hired',
+              example: '2024-01-15T00:00:00Z'
+            },
+            terminationDate: { 
+              type: 'string', 
+              format: 'date-time', 
+              nullable: true,
+              description: 'Date when the employee was terminated (if applicable)',
+              example: null
+            },
+            position: { 
+              type: 'string', 
+              nullable: true,
+              description: 'Job position/title',
+              example: 'Senior Software Engineer'
+            },
+            employmentType: { 
+              type: 'string', 
+              nullable: true,
+              description: 'Type of employment',
+              example: 'Full-time'
+            },
+            salary: { 
+              type: 'number', 
+              nullable: true,
+              description: 'Annual salary',
+              example: 75000.00
+            },
+            hourlyRate: { 
+              type: 'number', 
+              nullable: true,
+              description: 'Hourly rate (for hourly employees)',
+              example: 45.50
+            },
+            managerId: { 
+              type: 'string', 
+              format: 'uuid', 
+              nullable: true,
+              description: 'Manager\'s person ID',
+              example: '789e0123-e89b-12d3-a456-426614174002'
+            },
+            employeeStatus: { 
+              type: 'string', 
+              enum: ['Active', 'On Leave', 'Inactive'], 
+              nullable: true,
+              description: 'Current employment status',
+              example: 'Active'
+            },
+            workStatus: { 
+              type: 'string', 
+              enum: ['On Project', 'On Bench', 'Available'], 
+              nullable: true,
+              description: 'Current work assignment status',
+              example: 'On Project'
+            },
+            jobGrade: { 
+              type: 'string', 
+              enum: ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'], 
+              nullable: true,
+              description: 'Job grade level',
+              example: 'SE'
+            },
+            location: { 
+              type: 'string', 
+              nullable: true,
+              description: 'Work location',
+              example: 'New York Office'
+            },
+            emergencyContactName: { 
+              type: 'string', 
+              nullable: true,
+              description: 'Emergency contact name',
+              example: 'Jane Doe'
+            },
+            emergencyContactPhone: { 
+              type: 'string', 
+              nullable: true,
+              description: 'Emergency contact phone',
+              example: '+1-555-0124'
+            },
+            employmentNotes: { 
+              type: 'string', 
+              nullable: true,
+              description: 'Employment-related notes',
+              example: 'Eligible for promotion review'
+            },
+            employmentCreatedAt: { 
+              type: 'string', 
+              format: 'date-time', 
+              nullable: true,
+              description: 'When the employment record was created',
+              example: '2024-01-15T10:30:00Z'
+            },
+            employmentUpdatedAt: { 
+              type: 'string', 
+              format: 'date-time', 
+              nullable: true,
+              description: 'When the employment record was last updated',
+              example: '2024-01-16T14:20:00Z'
+            },
+            isInactive: { 
+              type: 'boolean',
+              description: 'Whether the employee is inactive (computed field)',
+              example: false
+            },
+            isOnBench: { 
+              type: 'boolean',
+              description: 'Whether the employee is on bench (computed field)',
+              example: false
+            }
+          },
+          required: ['personId', 'firstName', 'lastName', 'fullName', 'email', 'personCreatedAt', 'isInactive', 'isOnBench']
+        },
         Opportunity: {
           type: 'object',
           properties: {
@@ -369,6 +582,80 @@ const options: swaggerJsdoc.Options = {
             }
           }
         },
+        EmployeeFilterParams: {
+          type: 'object',
+          properties: {
+            position: {
+              type: 'string',
+              description: 'Filter by position (partial match)',
+              example: 'Engineer'
+            },
+            employeeStatus: {
+              type: 'string',
+              enum: ['Active', 'On Leave', 'Inactive'],
+              description: 'Filter by employee status',
+              example: 'Active'
+            },
+            workStatus: {
+              type: 'string',
+              enum: ['On Project', 'On Bench', 'Available'],
+              description: 'Filter by work status',
+              example: 'On Project'
+            },
+            jobGrade: {
+              type: 'string',
+              enum: ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'],
+              description: 'Filter by job grade',
+              example: 'SE'
+            },
+            location: {
+              type: 'string',
+              description: 'Filter by location (partial match)',
+              example: 'New York'
+            },
+            isActive: {
+              type: 'boolean',
+              description: 'Filter by active status',
+              example: true
+            },
+            dateRange: {
+              type: 'object',
+              properties: {
+                start: {
+                  type: 'string',
+                  format: 'date',
+                  description: 'Filter by hire date (from)',
+                  example: '2024-01-01'
+                },
+                end: {
+                  type: 'string',
+                  format: 'date',
+                  description: 'Filter by hire date (to)',
+                  example: '2024-12-31'
+                }
+              }
+            }
+          }
+        },
+        EmployeeSearchParams: {
+          type: 'object',
+          properties: {
+            search: {
+              type: 'string',
+              description: 'Search term',
+              example: 'John'
+            },
+            searchFields: {
+              type: 'array',
+              items: {
+                type: 'string',
+                enum: ['firstName', 'lastName', 'fullName', 'email', 'position', 'location']
+              },
+              description: 'Fields to search in',
+              example: ['firstName', 'lastName', 'email']
+            }
+          }
+        },
         SortParams: {
           type: 'object',
           properties: {
@@ -383,6 +670,23 @@ const options: swaggerJsdoc.Options = {
               enum: ['asc', 'desc'],
               description: 'Sort order',
               example: 'desc'
+            }
+          }
+        },
+        EmployeeSortParams: {
+          type: 'object',
+          properties: {
+            sortBy: {
+              type: 'string',
+              enum: ['firstName', 'lastName', 'fullName', 'email', 'position', 'hireDate', 'employeeStatus', 'workStatus', 'jobGrade', 'location'],
+              description: 'Field to sort by',
+              example: 'lastName'
+            },
+            sortOrder: {
+              type: 'string',
+              enum: ['asc', 'desc'],
+              description: 'Sort order',
+              example: 'asc'
             }
           }
         },
@@ -412,7 +716,39 @@ const options: swaggerJsdoc.Options = {
               description: 'Sort parameters (if any)'
             }
           },
-          required: ['data', 'pagination']
+          required: ['data', 'pagination'],
+          deprecated: true,
+          description: 'DEPRECATED: This schema is deprecated. Use the flatter response structure instead.'
+        },
+        EmployeePaginatedResponse: {
+          type: 'object',
+          properties: {
+            data: {
+              type: 'array',
+              items: {
+                $ref: '#/components/schemas/Employee'
+              },
+              description: 'Array of employees'
+            },
+            pagination: {
+              $ref: '#/components/schemas/PaginationMeta'
+            },
+            filters: {
+              $ref: '#/components/schemas/EmployeeFilterParams',
+              description: 'Applied filters (if any)'
+            },
+            search: {
+              $ref: '#/components/schemas/EmployeeSearchParams',
+              description: 'Search parameters (if any)'
+            },
+            sort: {
+              $ref: '#/components/schemas/EmployeeSortParams',
+              description: 'Sort parameters (if any)'
+            }
+          },
+          required: ['data', 'pagination'],
+          deprecated: true,
+          description: 'DEPRECATED: This schema is deprecated. Use the flatter response structure instead.'
         },
         EnhancedMeta: {
           type: 'object',

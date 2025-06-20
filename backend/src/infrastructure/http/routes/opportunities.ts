@@ -127,66 +127,101 @@ const opportunityController = container.get<OpportunityController>(TYPES.Opportu
  *         content:
  *           application/json:
  *             schema:
- *               allOf:
- *                 - $ref: '#/components/schemas/ApiResponse'
- *                 - type: object
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   enum: [success]
+ *                   example: success
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Opportunity'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/PaginationMeta'
+ *                 filters:
+ *                   $ref: '#/components/schemas/FilterParams'
+ *                 search:
+ *                   $ref: '#/components/schemas/SearchParams'
+ *                 sort:
+ *                   $ref: '#/components/schemas/SortParams'
+ *                 meta:
+ *                   type: object
  *                   properties:
- *                     data:
- *                       $ref: '#/components/schemas/PaginatedResponse'
- *                     meta:
- *                       $ref: '#/components/schemas/EnhancedMeta'
+ *                     count:
+ *                       type: integer
+ *                       description: Number of items in current page
+ *                       example: 5
+ *                     filtered:
+ *                       type: integer
+ *                       description: Total items after filtering
+ *                       example: 25
+ *                     total:
+ *                       type: integer
+ *                       description: Total items in database
+ *                       example: 25
+ *                     timestamp:
+ *                       type: string
+ *                       format: date-time
+ *                       description: Response timestamp
+ *                       example: "2025-06-19T11:47:43.584Z"
+ *                     endpoint:
+ *                       type: string
+ *                       description: API endpoint that was called
+ *                       example: "/api/v1/opportunities"
  *             examples:
- *               basic_pagination:
- *                 summary: Basic pagination example
+ *               all_opportunities:
+ *                 summary: All opportunities without filters
  *                 value:
  *                   status: "success"
  *                   data:
- *                     data: []
- *                     pagination:
- *                       page: 1
- *                       limit: 5
- *                       total: 25
- *                       totalPages: 5
- *                       hasNextPage: true
- *                       hasPreviousPage: false
- *                       nextPage: 2
- *                       previousPage: null
+ *                     - id: "93def6e5-7237-4960-8855-f3f9f44b0a71"
+ *                       opportunityName: "E-Commerce Platform Redesign"
+ *                       clientId: "30335021-148c-4fac-9959-ce0bf7fc5d7a"
+ *                       clientName: "TechCorp Inc."
+ *                       expectedStartDate: "2024-03-15T00:00:00Z"
+ *                       expectedEndDate: "2024-09-15T00:00:00Z"
+ *                       probability: 85
+ *                       status: "In Progress"
+ *                       comment: "High priority client project"
+ *                       isActive: true
+ *                       activatedAt: "2024-01-15T10:30:00Z"
+ *                       createdAt: "2024-01-10T09:00:00Z"
+ *                       updatedAt: "2024-01-16T14:20:00Z"
+ *                       isHighProbability: true
+ *                       duration: 184
+ *                       isExpiringSoon: false
+ *                     - id: "456e7890-e89b-12d3-a456-426614174001"
+ *                       opportunityName: "Mobile App Development"
+ *                       clientId: "789e0123-e89b-12d3-a456-426614174002"
+ *                       clientName: "StartupXYZ"
+ *                       expectedStartDate: "2024-02-01T00:00:00Z"
+ *                       expectedEndDate: "2024-08-01T00:00:00Z"
+ *                       probability: 70
+ *                       status: "In Progress"
+ *                       comment: "React Native application"
+ *                       isActive: true
+ *                       activatedAt: "2024-01-20T11:00:00Z"
+ *                       createdAt: "2024-01-18T10:00:00Z"
+ *                       updatedAt: "2024-01-20T11:00:00Z"
+ *                       isHighProbability: false
+ *                       duration: 182
+ *                       isExpiringSoon: false
+ *                   pagination:
+ *                     page: 1
+ *                     limit: 10
+ *                     total: 2
+ *                     totalPages: 1
+ *                     hasNextPage: false
+ *                     hasPreviousPage: false
+ *                     nextPage: null
+ *                     previousPage: null
  *                   meta:
- *                     count: 5
- *                     filtered: 25
- *                     total: 25
+ *                     count: 2
+ *                     filtered: 2
+ *                     total: 2
  *                     timestamp: "2025-06-19T11:47:43.584Z"
- *                     endpoint: "/api/v1/opportunities?page=1&limit=5"
- *               filtered_search:
- *                 summary: Filtered and searched results
- *                 value:
- *                   status: "success"
- *                   data:
- *                     data: []
- *                     pagination:
- *                       page: 1
- *                       limit: 10
- *                       total: 3
- *                       totalPages: 1
- *                       hasNextPage: false
- *                       hasPreviousPage: false
- *                       nextPage: null
- *                       previousPage: null
- *                     filters:
- *                       probability: [80, 100]
- *                       status: "Done"
- *                     search:
- *                       search: "Platform"
- *                       searchFields: ["opportunityName"]
- *                     sort:
- *                       sortBy: "probability"
- *                       sortOrder: "desc"
- *                   meta:
- *                     count: 3
- *                     filtered: 3
- *                     total: 25
- *                     timestamp: "2025-06-19T11:47:43.584Z"
- *                     endpoint: "/api/v1/opportunities?search=Platform&probability=80-100&status=Done&sortBy=probability&sortOrder=desc"
+ *                     endpoint: "/api/v1/opportunities"
  *   post:
  *     summary: Create a new opportunity
  *     description: Create a new opportunity (ID will be auto-generated by the server)

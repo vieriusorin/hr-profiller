@@ -21,12 +21,11 @@ export const employmentDetails = pgTable('employment_details', {
     .notNull()
     .unique(), // Each person can only have one current employment record
   
-  // Employment identification
   employeeId: varchar('employee_id', { length: 50 }).unique(),
   
   // Employment dates and terms
-  hireDate: date('hire_date').notNull(),
-  terminationDate: date('termination_date'),
+  hireDate: timestamp('hire_date').notNull(),
+  terminationDate: timestamp('termination_date'),
   
   // Position and department
   position: varchar('position', { length: 100 }).notNull(),
@@ -56,20 +55,14 @@ export const employmentDetails = pgTable('employment_details', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-// Create the base insert schema
 const baseInsertSchema = createInsertSchema(employmentDetails);
-
-// Create a modified insert schema that excludes auto-generated fields
 export const insertEmploymentDetailsSchema = baseInsertSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-// Create the base select schema
 const baseSelectSchema = createSelectSchema(employmentDetails);
-
-// Create a modified select schema
 export const selectEmploymentDetailsSchema = baseSelectSchema;
 
 export type TypeEmploymentDetails = z.infer<typeof selectEmploymentDetailsSchema>;

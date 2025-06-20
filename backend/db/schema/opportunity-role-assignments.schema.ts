@@ -25,10 +25,7 @@ export const opportunityRoleAssignments = pgTable('opportunity_role_assignments'
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-// Create the base insert schema
 const baseInsertSchema = createInsertSchema(opportunityRoleAssignments);
-
-// Create a modified insert schema that excludes auto-generated fields
 export const insertOpportunityRoleAssignmentSchema = baseInsertSchema.omit({
   id: true,
   assignedAt: true,
@@ -36,10 +33,7 @@ export const insertOpportunityRoleAssignmentSchema = baseInsertSchema.omit({
   updatedAt: true,
 });
 
-// Create the base select schema
 const baseSelectSchema = createSelectSchema(opportunityRoleAssignments);
-
-// Create a modified select schema
 export const selectOpportunityRoleAssignmentSchema = baseSelectSchema;
 
 export type TypeOpportunityRoleAssignment = z.infer<typeof selectOpportunityRoleAssignmentSchema>;

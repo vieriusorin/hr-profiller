@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import opportunityRoutes from '../../infrastructure/http/routes/opportunities';
 import roleRoutes from '../../infrastructure/http/routes/roles';
+import employeeRoutes from '../../infrastructure/http/routes/employees';
 import { metricsHandler } from './middlewares/loggs.middleware';
 
 const router = Router();
@@ -37,6 +38,13 @@ router.get('/', (req, res) => {
             'PUT /api/v1/roles/:id': 'Update role by ID',
             'DELETE /api/v1/roles/:id': 'Delete role by ID'
           }
+        },
+        employees: {
+          base: '/api/v1/employees',
+          methods: {
+            'GET /api/v1/employees': 'List all employees with filtering and pagination',
+            'GET /api/v1/employees/:id': 'Get employee by ID'
+          }
         }
       },
       features: [
@@ -62,5 +70,6 @@ router.get('/', (req, res) => {
 router.get('/metrics', metricsHandler);
 router.use('/opportunities', opportunityRoutes);
 router.use('/roles', roleRoutes);
+router.use('/employees', employeeRoutes);
 
 export default router;

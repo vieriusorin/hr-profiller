@@ -13,12 +13,10 @@ import { personSkills } from './person-skills.schema';
 import { technologies } from './technologies.schema';
 import { personTechnologies } from './person-technologies.schema';
 
-// Clients relations
 export const clientsRelations = relations(clients, ({ many }) => ({
   opportunities: many(opportunities),
 }));
 
-// Opportunities relations
 export const opportunitiesRelations = relations(opportunities, ({ one, many }) => ({
   client: one(clients, {
     fields: [opportunities.clientId],
@@ -27,7 +25,6 @@ export const opportunitiesRelations = relations(opportunities, ({ one, many }) =
   roles: many(opportunityRoles),
 }));
 
-// Opportunity Roles relations
 export const opportunityRolesRelations = relations(opportunityRoles, ({ one, many }) => ({
   opportunity: one(opportunities, {
     fields: [opportunityRoles.opportunityId],
@@ -36,7 +33,6 @@ export const opportunityRolesRelations = relations(opportunityRoles, ({ one, man
   assignments: many(opportunityRoleAssignments),
 }));
 
-// Opportunity Role Assignments relations
 export const opportunityRoleAssignmentsRelations = relations(opportunityRoleAssignments, ({ one }) => ({
   opportunityRole: one(opportunityRoles, {
     fields: [opportunityRoleAssignments.opportunityRoleId],
@@ -48,7 +44,6 @@ export const opportunityRoleAssignmentsRelations = relations(opportunityRoleAssi
   }),
 }));
 
-// People relations
 export const peopleRelations = relations(people, ({ one, many }) => ({
   status: one(personStatus, {
     fields: [people.id],
@@ -69,7 +64,6 @@ export const peopleRelations = relations(people, ({ one, many }) => ({
   }),
 }));
 
-// Person Status relations
 export const personStatusRelations = relations(personStatus, ({ one }) => ({
   person: one(people, {
     fields: [personStatus.personId],
@@ -77,7 +71,7 @@ export const personStatusRelations = relations(personStatus, ({ one }) => ({
   }),
 }));
 
-// Employment Details relations
+
 export const employmentDetailsRelations = relations(employmentDetails, ({ one }) => ({
   person: one(people, {
     fields: [employmentDetails.personId],
@@ -90,7 +84,6 @@ export const employmentDetailsRelations = relations(employmentDetails, ({ one })
   }),
 }));
 
-// Person Unavailable Dates relations
 export const personUnavailableDatesRelations = relations(personUnavailableDates, ({ one }) => ({
   person: one(people, {
     fields: [personUnavailableDates.personId],
@@ -98,7 +91,6 @@ export const personUnavailableDatesRelations = relations(personUnavailableDates,
   }),
 }));
 
-// Education relations
 export const educationRelations = relations(education, ({ one }) => ({
   person: one(people, {
     fields: [education.personId],
@@ -106,12 +98,10 @@ export const educationRelations = relations(education, ({ one }) => ({
   }),
 }));
 
-// Skills relations
 export const skillsRelations = relations(skills, ({ many }) => ({
   personSkills: many(personSkills),
 }));
 
-// Person Skills relations
 export const personSkillsRelations = relations(personSkills, ({ one }) => ({
   person: one(people, {
     fields: [personSkills.personId],
@@ -123,12 +113,10 @@ export const personSkillsRelations = relations(personSkills, ({ one }) => ({
   }),
 }));
 
-// Technologies relations
 export const technologiesRelations = relations(technologies, ({ many }) => ({
   personTechnologies: many(personTechnologies),
 }));
 
-// Person Technologies relations
 export const personTechnologiesRelations = relations(personTechnologies, ({ one }) => ({
   person: one(people, {
     fields: [personTechnologies.personId],

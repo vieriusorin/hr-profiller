@@ -10,15 +10,12 @@ export * from './schema/technologies.schema';
 export * from './schema/person-technologies.schema';
 export * from './schema/clients.schema';
 
-// OPPORTUNITIES - Main feature of the app
 export * from './schema/opportunities.schema';
 export * from './schema/opportunity-roles.schema';
 export * from './schema/opportunity-role-assignments.schema';
 
-// RELATIONS
 export * from './schema/relations';
 
-// ENUMS - Keep necessary enums
 export * from './enums/opportunity-status.enum';
 export * from './enums/job-grade.enum';
 export * from './enums/opportunity-level.enum';

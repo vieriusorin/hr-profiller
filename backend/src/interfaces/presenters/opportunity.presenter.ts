@@ -27,6 +27,7 @@ export class OpportunityPresenter extends EnhancedBasePresenter<Opportunity, Opp
 
     return {
       ...formattedOpportunity,
+      roles: [], // TODO: This should be fetched from the RoleService
       // Add computed fields from business logic
       isHighProbability: opportunity.isHighProbability(),
       duration: opportunity.getDuration(),

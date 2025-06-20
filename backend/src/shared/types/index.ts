@@ -20,13 +20,16 @@ const TYPES = {
   // Repositories
   OpportunityRepository: Symbol.for('OpportunityRepository'),
   RoleRepository: Symbol.for('RoleRepository'),
+  EmployeeRepository: Symbol.for('EmployeeRepository'),
 
   // Services
   OpportunityService: Symbol.for('OpportunityService'),
+  EmployeeService: Symbol.for('EmployeeService'),
 
   // Controllers
   OpportunityController: Symbol.for('OpportunityController'),
   RoleController: Symbol.for('RoleController'),
+  EmployeeController: Symbol.for('EmployeeController'),
 };
 
 // Type alias for the database with proper schema

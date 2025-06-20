@@ -30,20 +30,14 @@ export const opportunityRoles = pgTable('opportunity_roles', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-// Create the base insert schema
 const baseInsertSchema = createInsertSchema(opportunityRoles);
-
-// Create a modified insert schema that excludes auto-generated fields
 export const insertOpportunityRoleSchema = baseInsertSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-// Create the base select schema
 const baseSelectSchema = createSelectSchema(opportunityRoles);
-
-// Create a modified select schema
 export const selectOpportunityRoleSchema = baseSelectSchema;
 
 export type TypeOpportunityRole = z.infer<typeof selectOpportunityRoleSchema>;

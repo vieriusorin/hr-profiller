@@ -24,20 +24,16 @@ export const personUnavailableDates = pgTable('person_unavailable_dates', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-// Create the base insert schema
 const baseInsertSchema = createInsertSchema(personUnavailableDates);
 
-// Create a modified insert schema that excludes auto-generated fields
 export const insertPersonUnavailableDateSchema = baseInsertSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-// Create the base select schema
 const baseSelectSchema = createSelectSchema(personUnavailableDates);
 
-// Create a modified select schema
 export const selectPersonUnavailableDateSchema = baseSelectSchema;
 
 export type TypePersonUnavailableDate = z.infer<typeof selectPersonUnavailableDateSchema>;

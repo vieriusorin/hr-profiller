@@ -33,7 +33,7 @@ export class RoleController {
     res.status(201).json({ status: 'success', data: role });
   }
 
-  async update(req: Request, res: Response) {
+  async update(req: Request<{ id: string }>, res: Response) {
     const { id } = req.params;
     const parseResult = insertOpportunityRoleSchema.partial().safeParse(req.body);
     if (!parseResult.success) {

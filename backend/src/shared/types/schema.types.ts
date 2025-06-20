@@ -16,6 +16,11 @@ export {
   TypeNewClient
 } from '../../../db/schema/clients.schema';
 
+export {
+  TypeEmploymentDetails,
+  TypeNewEmploymentDetails
+} from '../../../db/schema/employment-details.schema';
+
 // Import the types for re-export
 import type { TypeNewOpportunity, TypeOpportunity } from '../../../db/schema/opportunities.schema';
 

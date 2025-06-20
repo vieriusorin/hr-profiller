@@ -26,20 +26,14 @@ export const people = pgTable('people', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-// Create the base insert schema
 const baseInsertSchema = createInsertSchema(people);
-
-// Create a modified insert schema that excludes auto-generated fields
 export const insertPersonSchema = baseInsertSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-// Create the base select schema
 const baseSelectSchema = createSelectSchema(people);
-
-// Create a modified select schema
 export const selectPersonSchema = baseSelectSchema;
 
 export type TypePerson = z.infer<typeof selectPersonSchema>;

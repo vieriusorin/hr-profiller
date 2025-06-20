@@ -24,21 +24,16 @@ export const personStatus = pgTable('person_status', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
-
-// Create the base insert schema
 const baseInsertSchema = createInsertSchema(personStatus);
 
-// Create a modified insert schema that excludes auto-generated fields
 export const insertPersonStatusSchema = baseInsertSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-// Create the base select schema
 const baseSelectSchema = createSelectSchema(personStatus);
 
-// Create a modified select schema
 export const selectPersonStatusSchema = baseSelectSchema;
 
 export type TypePersonStatusRecord = z.infer<typeof selectPersonStatusSchema>;

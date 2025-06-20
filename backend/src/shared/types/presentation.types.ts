@@ -1,9 +1,6 @@
-// ================================================================
-// PRESENTATION TYPES - Single Source of Truth
-// Extends schema types with computed fields from business logic
-// ================================================================
-
 import { TypeOpportunity } from './schema.types';
+import { Role } from '../../domain/opportunity/entities/role.entity';
+import { EmployeeJoinedData } from '../../domain/employee/entities/employee.entity';
 
 /**
  * Opportunity presentation type
@@ -11,12 +8,13 @@ import { TypeOpportunity } from './schema.types';
  * + Computed fields from business logic
  */
 export interface OpportunityPresentation extends TypeOpportunity {
-  // Computed fields (not stored in database)
   isHighProbability: boolean;   // >= 80% probability
   duration: number | null;      // Project duration in days
   isExpiringSoon: boolean;      // Expiring within 30 days
+  roles: Role[];
 }
 
-// Add more presentation types here as you expand:
-// export interface PersonPresentation extends TypePerson { ... }
-// export interface ClientPresentation extends TypeClient { ... } 
+export type EmployeePresentation = EmployeeJoinedData & {
+  isInactive: boolean;
+  isOnBench: boolean;
+};
