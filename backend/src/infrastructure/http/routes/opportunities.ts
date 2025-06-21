@@ -238,10 +238,6 @@ const opportunityController = container.get<OpportunityController>(TYPES.Opportu
  *               opportunityName:
  *                 type: string
  *                 example: "E-Commerce Platform Redesign"
- *               clientId:
- *                 type: string
- *                 format: uuid
- *                 example: "123e4567-e89b-12d3-a456-426614174000"
  *               clientName:
  *                 type: string
  *                 example: "TechCorp Inc."
@@ -335,9 +331,24 @@ router.post('/', (req, res) => opportunityController.create(req, res));
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
- *   put:
- *     summary: Update opportunity
- *     description: Update an existing opportunity by its UUID
+ *   patch:
+ *     summary: Update opportunity (partial)
+ *     description: |
+ *       Update an existing opportunity with partial data. Only send the fields you want to change.
+ *       
+ *       **Available Fields to Update:**
+ *       - `opportunityName` - Name/title of the opportunity
+ *       - `clientName` - Client company name
+ *       - `expectedStartDate` - Expected project start date (ISO 8601 format)
+ *       - `expectedEndDate` - Expected project end date (ISO 8601 format)
+ *       - `probability` - Success probability percentage (0-100)
+ *       - `status` - Current opportunity status
+ *       - `comment` - Additional notes or comments
+ *       - `isActive` - Whether the opportunity is currently active
+ *       
+ *       **Business Logic:**
+ *       - If `probability` ≥ 80% and opportunity is inactive, it will be auto-activated
+ *       - If `probability` < 80% and opportunity was auto-activated, it may be auto-deactivated
  *     tags: [Opportunities]
  *     parameters:
  *       - in: path
@@ -356,33 +367,95 @@ router.post('/', (req, res) => opportunityController.create(req, res));
  *             properties:
  *               opportunityName:
  *                 type: string
- *               clientId:
- *                 type: string
- *                 format: uuid
+ *                 minLength: 1
+ *                 maxLength: 255
+ *                 description: Update the opportunity name
+ *                 example: "Updated E-Commerce Platform Redesign"
  *               clientName:
  *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 255
+ *                 description: Update the client name
+ *                 example: "TechCorp Inc."
  *               expectedStartDate:
  *                 type: string
  *                 format: date-time
+ *                 description: Update the expected start date (ISO 8601 format)
+ *                 example: "2024-03-15T09:00:00.000Z"
  *               expectedEndDate:
  *                 type: string
  *                 format: date-time
+ *                 description: Update the expected end date (ISO 8601 format)
+ *                 example: "2024-09-15T17:00:00.000Z"
  *               probability:
  *                 type: integer
  *                 minimum: 0
  *                 maximum: 100
+ *                 description: Update the probability percentage (triggers auto-activation at ≥80%)
+ *                 example: 85
  *               status:
  *                 type: string
  *                 enum: [In Progress, On Hold, Done]
+ *                 description: Update the opportunity status
+ *                 example: "In Progress"
  *               comment:
  *                 type: string
+ *                 maxLength: 1000
+ *                 description: Update the comment or notes
+ *                 example: "Updated priority project with new requirements"
  *               isActive:
  *                 type: boolean
+ *                 description: Update the active status (manual override of auto-activation)
+ *                 example: true
+ *           examples:
+ *             statusUpdate:
+ *               summary: Update only status
+ *               value:
+ *                 status: "Done"
+ *             probabilityUpdate:
+ *               summary: Update probability (triggers auto-activation)
+ *               value:
+ *                 probability: 90
+ *                 comment: "Increased probability due to positive client feedback"
+ *             comprehensive:
+ *               summary: Update multiple fields
+ *               value:
+ *                 opportunityName: "Enhanced E-Commerce Platform Redesign"
+ *                 probability: 95
+ *                 status: "In Progress"
+ *                 comment: "Project scope expanded, probability increased"
+ *                 isActive: true
+ *           description: Only include the fields you want to update. All fields are optional.
  *     responses:
  *       200:
  *         description: Opportunity updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       $ref: '#/components/schemas/Opportunity'
+ *       400:
+ *         description: Bad request - invalid data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       404:
  *         description: Opportunity not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *   delete:
  *     summary: Delete opportunity
  *     description: Delete an opportunity by its UUID
@@ -402,7 +475,7 @@ router.post('/', (req, res) => opportunityController.create(req, res));
  *         description: Opportunity not found
  */
 router.get('/:id', (req, res) => opportunityController.getById(req, res));
-router.put('/:id', (req, res) => opportunityController.update(req, res));
+router.patch('/:id', (req, res) => opportunityController.update(req, res));
 router.delete('/:id', (req, res) => opportunityController.delete(req, res));
 
 export default router; 

@@ -1,6 +1,5 @@
 import { TypeOpportunity } from './schema.types';
 import { Role } from '../../domain/opportunity/entities/role.entity';
-import { EmployeeJoinedData } from '../../domain/employee/entities/employee.entity';
 
 /**
  * Opportunity presentation type
@@ -14,9 +13,70 @@ export interface OpportunityPresentation extends TypeOpportunity {
   roles: Role[];
 }
 
-export type EmployeePresentation = EmployeeJoinedData & {
-  id: string;                   // Consistent ID field for CRUD operations
+export interface EmployeePresentation {
+  id: string;                   // Person ID for CRUD operations
+  personId: string;             // Person ID
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  email: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  country?: string;
+  birthDate?: string;
+
+  // Employment details
+  position?: string;
+  employeeStatus?: string;
+  workStatus?: string;
+  jobGrade?: string;
+  location?: string;
+  hireDate?: string;
+  terminationDate?: string;
+  salary?: number;
+  hourlyRate?: number;
+  managerId?: string;
+
+  // Computed fields
   yearsOfExperience: number;    // Computed years since hire date
   isInactive: boolean;          // Computed from employeeStatus
   isOnBench: boolean;           // Computed from workStatus
-};
+  isActive: boolean;            // Whether employment is currently active
+
+  // Related data (when included)
+  skills?: Array<{
+    id: string;
+    name: string;
+    proficiencyLevel?: string;
+    yearsOfExperience?: number;
+    lastUsed?: string;
+    isCertified?: boolean;
+    certificationName?: string;
+    certificationDate?: string;
+    notes?: string;
+  }>;
+
+  technologies?: Array<{
+    id: string;
+    name: string;
+    proficiencyLevel?: string;
+    yearsOfExperience?: number;
+    lastUsed?: string;
+    context?: string;
+    projectName?: string;
+    description?: string;
+  }>;
+
+  education?: Array<{
+    id: string;
+    institution: string;
+    degree?: string;
+    fieldOfStudy?: string;
+    startDate?: string;
+    graduationDate?: string;
+    gpa?: string;
+    description?: string;
+    isCurrentlyEnrolled?: boolean;
+  }>;
+}

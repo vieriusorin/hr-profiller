@@ -1,11 +1,11 @@
 import { Request } from 'express';
-import { 
-  PaginationParams, 
-  SortParams, 
-  SearchParams, 
+import {
+  PaginationParams,
+  SortParams,
+  SearchParams,
   FilterParams,
   QueryParams,
-  OpportunityFilters 
+  OpportunityFilters
 } from '../types/presenter.types';
 
 const getFullUrl = (req: Request): URL => {
@@ -20,7 +20,7 @@ export class QueryParser {
    */
   static parsePagination(req: Request): PaginationParams {
     const { searchParams } = getFullUrl(req);
-    
+
     const page = Math.max(1, parseInt(searchParams.get('_page') || searchParams.get('page') || '1'));
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('_limit') || searchParams.get('limit') || '10')));
     const offset = (page - 1) * limit;
@@ -30,7 +30,7 @@ export class QueryParser {
 
   static parseSort(req: Request): SortParams {
     const { searchParams } = getFullUrl(req);
-    
+
     const sortBy = searchParams.get('sortBy') || searchParams.get('_sort') || undefined;
     const sortOrder = (searchParams.get('sortOrder') || searchParams.get('_order') || 'asc') as 'asc' | 'desc';
 
@@ -39,7 +39,7 @@ export class QueryParser {
 
   static parseSearch(req: Request): SearchParams {
     const { searchParams } = getFullUrl(req);
-    
+
     const search = searchParams.get('search') || searchParams.get('q') || undefined;
     const searchFields = searchParams.get('searchFields')?.split(',');
 
@@ -49,16 +49,17 @@ export class QueryParser {
   static parseFilters(req: Request, excludeKeys: string[] = []): FilterParams {
     const { searchParams } = getFullUrl(req);
     const filters: FilterParams = {};
-    
+
     const defaultExcludeKeys = [
-      '_page', 'page', '_limit', 'limit', 
+      '_page', 'page', '_limit', 'limit',
       'sortBy', '_sort', 'sortOrder', '_order',
       'search', 'q', 'searchFields'
     ];
-    
+
     const allExcludeKeys = [...defaultExcludeKeys, ...excludeKeys];
 
-    for (const [key, value] of searchParams.entries()) {
+    // Use forEach instead of for...of to avoid iterator issues
+    searchParams.forEach((value, key) => {
       if (!allExcludeKeys.includes(key) && value) {
         if (value.includes(',')) {
           filters[key] = value.split(',');
@@ -85,14 +86,14 @@ export class QueryParser {
           filters[key] = value;
         }
       }
-    }
+    });
 
     return filters;
   }
 
   static parseOpportunityFilters(req: Request): OpportunityFilters {
     const { searchParams } = getFullUrl(req);
-    
+
     const filters: OpportunityFilters = {};
 
     const client = searchParams.get('client');

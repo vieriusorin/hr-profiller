@@ -21,25 +21,47 @@ const createServer = () => {
 
   app.use(helmetMiddleware);
 
-  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001'
+  ];
 
   app.use(
     cors({
       origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl requests)
+        // Allow requests with no origin (like mobile apps, curl requests, or Postman)
         if (!origin) return callback(null, true);
-        // Allow the server's own origin for Swagger UI
-        if (allowedOrigins.indexOf(origin) !== -1 || origin.includes(`http://localhost:${process.env.PORT || 3001}`)) {
+
+        // In development, be more permissive
+        if (process.env.NODE_ENV === 'development') {
+          // Allow localhost and 127.0.0.1 with any port
+          if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+            return callback(null, true);
+          }
+        }
+
+        // Check against allowed origins
+        if (allowedOrigins.indexOf(origin) !== -1) {
           return callback(null, true);
         }
+
+        // Allow the server's own origin for Swagger UI
+        if (origin.includes(`http://localhost:${process.env.PORT || 3001}`)) {
+          return callback(null, true);
+        }
+
+        console.log(`CORS: Rejecting origin: ${origin}`);
         return callback(new Error('Not allowed by CORS'));
       },
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
       credentials: true,
     })
   );
   app.use(morgan('dev'));
+  app.use(express.json());
   app.use(payloadLimiter);
   app.use(speedLimiter);
   app.use(express.urlencoded({ extended: true }));

@@ -167,210 +167,210 @@ const options: swaggerJsdoc.Options = {
         Employee: {
           type: 'object',
           properties: {
-            id: { 
-              type: 'string', 
+            id: {
+              type: 'string',
               format: 'uuid',
               description: 'Unique identifier for the employee (used for CRUD operations)',
               example: '123e4567-e89b-12d3-a456-426614174000'
             },
-            personId: { 
-              type: 'string', 
+            personId: {
+              type: 'string',
               format: 'uuid',
               description: 'Unique identifier for the person record',
               example: '123e4567-e89b-12d3-a456-426614174000'
             },
-            firstName: { 
+            firstName: {
               type: 'string',
               description: 'First name of the employee',
               example: 'John'
             },
-            lastName: { 
+            lastName: {
               type: 'string',
               description: 'Last name of the employee',
               example: 'Doe'
             },
-            fullName: { 
+            fullName: {
               type: 'string',
               description: 'Full name of the employee',
               example: 'John Doe'
             },
-            email: { 
-              type: 'string', 
+            email: {
+              type: 'string',
               format: 'email',
               description: 'Email address of the employee',
               example: 'john.doe@company.com'
             },
-            phone: { 
-              type: 'string', 
+            phone: {
+              type: 'string',
               nullable: true,
               description: 'Phone number of the employee',
               example: '+1-555-0123'
             },
-            birthDate: { 
-              type: 'string', 
-              format: 'date-time', 
+            birthDate: {
+              type: 'string',
+              format: 'date-time',
               nullable: true,
               description: 'Birth date of the employee',
               example: '1990-05-15T00:00:00Z'
             },
-            address: { 
-              type: 'string', 
+            address: {
+              type: 'string',
               nullable: true,
               description: 'Address of the employee',
               example: '123 Main St, Anytown, USA'
             },
-            city: { 
-              type: 'string', 
+            city: {
+              type: 'string',
               nullable: true,
               description: 'City where the employee lives',
               example: 'New York'
             },
-            country: { 
-              type: 'string', 
+            country: {
+              type: 'string',
               nullable: true,
               description: 'Country where the employee lives',
               example: 'USA'
             },
-            personNotes: { 
-              type: 'string', 
+            personNotes: {
+              type: 'string',
               nullable: true,
               description: 'Personal notes about the employee',
               example: 'Prefers remote work'
             },
-            personCreatedAt: { 
-              type: 'string', 
+            personCreatedAt: {
+              type: 'string',
               format: 'date-time',
               description: 'When the person record was created',
               example: '2024-01-10T09:00:00Z'
             },
-            employmentDetailsId: { 
-              type: 'string', 
-              format: 'uuid', 
+            employmentDetailsId: {
+              type: 'string',
+              format: 'uuid',
               nullable: true,
               description: 'Unique identifier for employment details',
               example: '456e7890-e89b-12d3-a456-426614174001'
             },
-            employeeId: { 
-              type: 'string', 
+            employeeId: {
+              type: 'string',
               nullable: true,
               description: 'Employee ID (company-specific)',
               example: 'EMP001'
             },
-            hireDate: { 
-              type: 'string', 
-              format: 'date-time', 
+            hireDate: {
+              type: 'string',
+              format: 'date-time',
               nullable: true,
               description: 'Date when the employee was hired',
               example: '2024-01-15T00:00:00Z'
             },
-            terminationDate: { 
-              type: 'string', 
-              format: 'date-time', 
+            terminationDate: {
+              type: 'string',
+              format: 'date-time',
               nullable: true,
               description: 'Date when the employee was terminated (if applicable)',
               example: null
             },
-            position: { 
-              type: 'string', 
+            position: {
+              type: 'string',
               nullable: true,
               description: 'Job position/title',
               example: 'Senior Software Engineer'
             },
-            employmentType: { 
-              type: 'string', 
+            employmentType: {
+              type: 'string',
               nullable: true,
               description: 'Type of employment',
               example: 'Full-time'
             },
-            salary: { 
-              type: 'number', 
+            salary: {
+              type: 'number',
               nullable: true,
               description: 'Annual salary',
               example: 75000.00
             },
-            hourlyRate: { 
-              type: 'number', 
+            hourlyRate: {
+              type: 'number',
               nullable: true,
               description: 'Hourly rate (for hourly employees)',
               example: 45.50
             },
-            managerId: { 
-              type: 'string', 
-              format: 'uuid', 
+            managerId: {
+              type: 'string',
+              format: 'uuid',
               nullable: true,
               description: 'Manager\'s person ID',
               example: '789e0123-e89b-12d3-a456-426614174002'
             },
-            employeeStatus: { 
-              type: 'string', 
-              enum: ['Active', 'On Leave', 'Inactive'], 
+            employeeStatus: {
+              type: 'string',
+              enum: ['Active', 'On Leave', 'Inactive'],
               nullable: true,
               description: 'Current employment status',
               example: 'Active'
             },
-            workStatus: { 
-              type: 'string', 
-              enum: ['On Project', 'On Bench', 'Available'], 
+            workStatus: {
+              type: 'string',
+              enum: ['On Project', 'On Bench', 'Available'],
               nullable: true,
               description: 'Current work assignment status',
               example: 'On Project'
             },
-            jobGrade: { 
-              type: 'string', 
-              enum: ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'], 
+            jobGrade: {
+              type: 'string',
+              enum: ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'],
               nullable: true,
               description: 'Job grade level',
               example: 'SE'
             },
-            location: { 
-              type: 'string', 
+            location: {
+              type: 'string',
               nullable: true,
               description: 'Work location',
               example: 'New York Office'
             },
-            emergencyContactName: { 
-              type: 'string', 
+            emergencyContactName: {
+              type: 'string',
               nullable: true,
               description: 'Emergency contact name',
               example: 'Jane Doe'
             },
-            emergencyContactPhone: { 
-              type: 'string', 
+            emergencyContactPhone: {
+              type: 'string',
               nullable: true,
               description: 'Emergency contact phone',
               example: '+1-555-0456'
             },
-            employmentNotes: { 
-              type: 'string', 
+            employmentNotes: {
+              type: 'string',
               nullable: true,
               description: 'Employment-related notes',
               example: 'Promoted to senior level in 2023'
             },
-            employmentCreatedAt: { 
-              type: 'string', 
-              format: 'date-time', 
+            employmentCreatedAt: {
+              type: 'string',
+              format: 'date-time',
               nullable: true,
               description: 'When employment record was created',
               example: '2022-01-15T10:00:00Z'
             },
-            employmentUpdatedAt: { 
-              type: 'string', 
-              format: 'date-time', 
+            employmentUpdatedAt: {
+              type: 'string',
+              format: 'date-time',
               nullable: true,
               description: 'When employment record was last updated',
               example: '2024-01-15T14:30:00Z'
             },
-            yearsOfExperience: { 
+            yearsOfExperience: {
               type: 'number',
               description: 'Years of experience since hire date',
               example: 2
             },
-            isInactive: { 
+            isInactive: {
               type: 'boolean',
               description: 'Whether the employee is inactive',
               example: false
             },
-            isOnBench: { 
+            isOnBench: {
               type: 'boolean',
               description: 'Whether the employee is on bench',
               example: false
@@ -631,6 +631,75 @@ const options: swaggerJsdoc.Options = {
             }
           },
           required: ['id', 'opportunityId', 'roleName', 'status', 'createdAt', 'updatedAt']
+        },
+        CreateRole: {
+          type: 'object',
+          required: ['opportunityId', 'roleName', 'status'],
+          additionalProperties: false,
+          properties: {
+            opportunityId: {
+              type: 'string',
+              format: 'uuid',
+              description: 'UUID of the associated opportunity (must exist in database)',
+              example: '123e4567-e89b-12d3-a456-426614174000'
+            },
+            roleName: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 255,
+              description: 'Name/title of the role',
+              example: 'Senior Frontend Developer'
+            },
+            jobGrade: {
+              type: 'string',
+              enum: ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'],
+              nullable: true,
+              description: 'Job grade/seniority level: JT=Junior Trainee, T=Trainee, ST=Senior Trainee, EN=Engineer, SE=Senior Engineer, C=Consultant, SC=Senior Consultant, SM=Senior Manager',
+              example: 'SE'
+            },
+            level: {
+              type: 'string',
+              enum: ['Low', 'Medium', 'High'],
+              nullable: true,
+              description: 'Opportunity priority/importance level',
+              example: 'High'
+            },
+            allocation: {
+              type: 'integer',
+              minimum: 0,
+              maximum: 100,
+              nullable: true,
+              description: 'Percentage of time allocated to this role (0-100%)',
+              example: 80
+            },
+            startDate: {
+              type: 'string',
+              format: 'date',
+              nullable: true,
+              description: 'Role start date (YYYY-MM-DD format)',
+              example: '2024-03-15'
+            },
+            endDate: {
+              type: 'string',
+              format: 'date',
+              nullable: true,
+              description: 'Role end date (YYYY-MM-DD format)',
+              example: '2024-09-15'
+            },
+            status: {
+              type: 'string',
+              enum: ['Open', 'Staffed', 'Won', 'Lost'],
+              description: 'Current status of the role: Open=needs to be filled, Staffed=assigned to someone, Won=successfully filled and project won, Lost=lost to competition',
+              example: 'Open'
+            },
+            notes: {
+              type: 'string',
+              nullable: true,
+              maxLength: 1000,
+              description: 'Additional notes, requirements, or comments about the role',
+              example: 'Requires 5+ years React experience and team leadership skills'
+            }
+          }
         },
         // Enhanced presenter response schemas
         PaginationMeta: {
@@ -1019,137 +1088,137 @@ const options: swaggerJsdoc.Options = {
           type: 'object',
           required: ['firstName', 'lastName', 'email', 'hireDate', 'position'],
           properties: {
-            firstName: { 
+            firstName: {
               type: 'string',
               minLength: 1,
               maxLength: 100,
               description: 'First name of the employee',
               example: 'Jane'
             },
-            lastName: { 
+            lastName: {
               type: 'string',
               minLength: 1,
               maxLength: 100,
               description: 'Last name of the employee',
               example: 'Smith'
             },
-            email: { 
-              type: 'string', 
+            email: {
+              type: 'string',
               format: 'email',
               maxLength: 255,
               description: 'Email address of the employee',
               example: 'jane.smith@company.com'
             },
-            phone: { 
+            phone: {
               type: 'string',
               maxLength: 20,
               description: 'Phone number of the employee',
               example: '+1-555-0123'
             },
-            birthDate: { 
+            birthDate: {
               type: 'string',
               format: 'date',
               description: 'Birth date of the employee',
               example: '1990-05-15'
             },
-            address: { 
+            address: {
               type: 'string',
               description: 'Address of the employee',
               example: '123 Main St, Anytown, USA'
             },
-            city: { 
+            city: {
               type: 'string',
               maxLength: 100,
               description: 'City where the employee lives',
               example: 'San Francisco'
             },
-            country: { 
+            country: {
               type: 'string',
               maxLength: 100,
               description: 'Country where the employee lives',
               example: 'USA'
             },
-            personNotes: { 
+            personNotes: {
               type: 'string',
               description: 'Personal notes about the employee',
               example: 'Excellent team player'
             },
-            hireDate: { 
+            hireDate: {
               type: 'string',
               format: 'date',
               description: 'Date when the employee was hired',
               example: '2024-01-15'
             },
-            position: { 
+            position: {
               type: 'string',
               minLength: 1,
               maxLength: 100,
               description: 'Job position/title',
               example: 'Product Manager'
             },
-            employmentType: { 
+            employmentType: {
               type: 'string',
               maxLength: 50,
               description: 'Type of employment',
               example: 'Full-time'
             },
-            salary: { 
+            salary: {
               type: 'number',
               minimum: 0,
               description: 'Annual salary',
               example: 95000
             },
-            hourlyRate: { 
+            hourlyRate: {
               type: 'number',
               minimum: 0,
               description: 'Hourly rate (for hourly employees)',
               example: 45.50
             },
-            managerId: { 
+            managerId: {
               type: 'string',
               format: 'uuid',
               description: 'Manager\'s person ID',
               example: '789e0123-e89b-12d3-a456-426614174002'
             },
-            employeeStatus: { 
+            employeeStatus: {
               type: 'string',
               enum: ['Active', 'On Leave', 'Inactive'],
               default: 'Active',
               description: 'Current employment status',
               example: 'Active'
             },
-            workStatus: { 
+            workStatus: {
               type: 'string',
               enum: ['On Project', 'On Bench', 'Available'],
               default: 'Available',
               description: 'Current work assignment status',
               example: 'Available'
             },
-            jobGrade: { 
+            jobGrade: {
               type: 'string',
               enum: ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'],
               description: 'Job grade level',
               example: 'SE'
             },
-            location: { 
+            location: {
               type: 'string',
               maxLength: 100,
               description: 'Work location',
               example: 'San Francisco'
             },
-            emergencyContactName: { 
+            emergencyContactName: {
               type: 'string',
               maxLength: 255,
               description: 'Emergency contact name',
               example: 'John Smith'
             },
-            emergencyContactPhone: { 
+            emergencyContactPhone: {
               type: 'string',
               maxLength: 20,
               description: 'Emergency contact phone',
               example: '+1-555-0456'
             },
-            employmentNotes: { 
+            employmentNotes: {
               type: 'string',
               description: 'Employment-related notes',
               example: 'Starting as Product Manager'
@@ -1161,141 +1230,300 @@ const options: swaggerJsdoc.Options = {
           description: 'Schema for PATCH operations. All fields are optional - only send the fields you want to update.',
           additionalProperties: false,
           properties: {
-            firstName: { 
+            firstName: {
               type: 'string',
               minLength: 1,
               maxLength: 100,
               description: 'First name of the employee',
               example: 'Jane'
             },
-            lastName: { 
+            lastName: {
               type: 'string',
               minLength: 1,
               maxLength: 100,
               description: 'Last name of the employee',
               example: 'Smith'
             },
-            email: { 
-              type: 'string', 
+            email: {
+              type: 'string',
               format: 'email',
               maxLength: 255,
               description: 'Email address of the employee',
               example: 'jane.smith@company.com'
             },
-            phone: { 
+            phone: {
               type: 'string',
               maxLength: 20,
               description: 'Phone number of the employee',
               example: '+1-555-0123'
             },
-            birthDate: { 
+            birthDate: {
               type: 'string',
               format: 'date',
               description: 'Birth date of the employee',
               example: '1990-05-15'
             },
-            address: { 
+            address: {
               type: 'string',
               description: 'Address of the employee',
               example: '123 Main St, Anytown, USA'
             },
-            city: { 
+            city: {
               type: 'string',
               maxLength: 100,
               description: 'City where the employee lives',
               example: 'San Francisco'
             },
-            country: { 
+            country: {
               type: 'string',
               maxLength: 100,
               description: 'Country where the employee lives',
               example: 'USA'
             },
-            personNotes: { 
+            personNotes: {
               type: 'string',
               description: 'Personal notes about the employee',
               example: 'Excellent team player'
             },
-            hireDate: { 
+            hireDate: {
               type: 'string',
               format: 'date',
               description: 'Date when the employee was hired',
               example: '2024-01-15'
             },
-            terminationDate: { 
+            terminationDate: {
               type: 'string',
               format: 'date',
               description: 'Date when employment was terminated',
               example: '2024-12-31'
             },
-            position: { 
+            position: {
               type: 'string',
               minLength: 1,
               maxLength: 100,
               description: 'Job position/title',
               example: 'Senior Product Manager'
             },
-            employmentType: { 
+            employmentType: {
               type: 'string',
               maxLength: 50,
               description: 'Type of employment',
               example: 'Full-time'
             },
-            salary: { 
+            salary: {
               type: 'number',
               minimum: 0,
               description: 'Annual salary',
               example: 105000
             },
-            hourlyRate: { 
+            hourlyRate: {
               type: 'number',
               minimum: 0,
               description: 'Hourly rate (for hourly employees)',
               example: 50.00
             },
-            managerId: { 
+            managerId: {
               type: 'string',
               format: 'uuid',
               description: 'Manager\'s person ID',
               example: '789e0123-e89b-12d3-a456-426614174002'
             },
-            employeeStatus: { 
+            employeeStatus: {
               type: 'string',
               enum: ['Active', 'On Leave', 'Inactive'],
               description: 'Current employment status',
               example: 'Active'
             },
-            workStatus: { 
+            workStatus: {
               type: 'string',
               enum: ['On Project', 'On Bench', 'Available'],
               description: 'Current work assignment status',
               example: 'On Project'
             },
-            jobGrade: { 
+            jobGrade: {
               type: 'string',
               enum: ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'],
               description: 'Job grade level',
               example: 'SE'
             },
-            location: { 
+            location: {
               type: 'string',
               maxLength: 100,
               description: 'Work location',
               example: 'Remote'
             },
-            emergencyContactName: { 
+            emergencyContactName: {
               type: 'string',
               maxLength: 255,
               description: 'Emergency contact name',
               example: 'John Smith'
             },
-            emergencyContactPhone: { 
+            emergencyContactPhone: {
               type: 'string',
               maxLength: 20,
               description: 'Emergency contact phone',
               example: '+1-555-0456'
             },
-            employmentNotes: { 
+            employmentNotes: {
+              type: 'string',
+              description: 'Employment-related notes',
+              example: 'Promoted to senior level'
+            }
+          }
+        },
+        UpdatePersonData: {
+          type: 'object',
+          description: 'Schema for updating personal information. All fields are optional.',
+          additionalProperties: false,
+          properties: {
+            firstName: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 100,
+              description: 'First name of the employee',
+              example: 'Jane'
+            },
+            lastName: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 100,
+              description: 'Last name of the employee',
+              example: 'Smith'
+            },
+            fullName: {
+              type: 'string',
+              maxLength: 200,
+              description: 'Full name of the employee',
+              example: 'Jane Smith'
+            },
+            email: {
+              type: 'string',
+              format: 'email',
+              maxLength: 255,
+              description: 'Email address of the employee',
+              example: 'jane.smith@company.com'
+            },
+            phone: {
+              type: 'string',
+              maxLength: 20,
+              description: 'Phone number of the employee',
+              example: '+1-555-0123'
+            },
+            birthDate: {
+              type: 'string',
+              format: 'date',
+              description: 'Birth date of the employee',
+              example: '1990-05-15'
+            },
+            address: {
+              type: 'string',
+              description: 'Address of the employee',
+              example: '123 Main St, Anytown, USA'
+            },
+            city: {
+              type: 'string',
+              maxLength: 100,
+              description: 'City where the employee lives',
+              example: 'San Francisco'
+            },
+            country: {
+              type: 'string',
+              maxLength: 100,
+              description: 'Country where the employee lives',
+              example: 'USA'
+            },
+            notes: {
+              type: 'string',
+              description: 'Personal notes about the employee',
+              example: 'Excellent team player'
+            }
+          }
+        },
+        UpdateEmploymentData: {
+          type: 'object',
+          description: 'Schema for updating employment information. All fields are optional.',
+          additionalProperties: false,
+          properties: {
+            position: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 100,
+              description: 'Job position/title',
+              example: 'Senior Software Engineer'
+            },
+            hireDate: {
+              type: 'string',
+              format: 'date',
+              description: 'Date when the employee was hired',
+              example: '2024-01-15'
+            },
+            terminationDate: {
+              type: 'string',
+              format: 'date',
+              description: 'Date when employment was terminated',
+              example: '2024-12-31'
+            },
+            employmentType: {
+              type: 'string',
+              maxLength: 50,
+              description: 'Type of employment',
+              example: 'Full-time'
+            },
+            salary: {
+              type: 'number',
+              minimum: 0,
+              description: 'Annual salary',
+              example: 110000
+            },
+            hourlyRate: {
+              type: 'number',
+              minimum: 0,
+              description: 'Hourly rate (for hourly employees)',
+              example: 50.00
+            },
+            managerId: {
+              type: 'string',
+              format: 'uuid',
+              description: 'Manager\'s person ID',
+              example: '789e0123-e89b-12d3-a456-426614174002'
+            },
+            employeeStatus: {
+              type: 'string',
+              enum: ['Active', 'On Leave', 'Inactive'],
+              description: 'Current employment status',
+              example: 'Active'
+            },
+            workStatus: {
+              type: 'string',
+              enum: ['On Project', 'On Bench', 'Available'],
+              description: 'Current work assignment status',
+              example: 'On Project'
+            },
+            jobGrade: {
+              type: 'string',
+              enum: ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'],
+              description: 'Job grade level',
+              example: 'SE'
+            },
+            location: {
+              type: 'string',
+              maxLength: 100,
+              description: 'Work location',
+              example: 'Remote'
+            },
+            emergencyContactName: {
+              type: 'string',
+              maxLength: 255,
+              description: 'Emergency contact name',
+              example: 'John Smith'
+            },
+            emergencyContactPhone: {
+              type: 'string',
+              maxLength: 20,
+              description: 'Emergency contact phone',
+              example: '+1-555-0456'
+            },
+            notes: {
               type: 'string',
               description: 'Employment-related notes',
               example: 'Promoted to senior level'
@@ -1825,7 +2053,7 @@ const options: swaggerJsdoc.Options = {
             updatedAt: {
               type: 'string',
               format: 'date-time',
-              description: 'Last update timestamp', 
+              description: 'Last update timestamp',
               example: '2024-01-01T00:00:00Z'
             }
           }
@@ -1972,6 +2200,819 @@ const options: swaggerJsdoc.Options = {
               example: ['Programming Language', 'Frontend Framework', 'Database', 'Cloud Platform']
             }
           }
+        },
+        // ===== PERSON SCHEMAS =====
+        Person: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+              description: 'Unique identifier for the person',
+              example: '123e4567-e89b-12d3-a456-426614174000'
+            },
+            firstName: {
+              type: 'string',
+              description: 'First name of the person',
+              example: 'John'
+            },
+            lastName: {
+              type: 'string',
+              description: 'Last name of the person',
+              example: 'Doe'
+            },
+            fullName: {
+              type: 'string',
+              description: 'Full name of the person',
+              example: 'John Doe'
+            },
+            email: {
+              type: 'string',
+              format: 'email',
+              description: 'Email address of the person',
+              example: 'john.doe@example.com'
+            },
+            phone: {
+              type: 'string',
+              nullable: true,
+              description: 'Phone number of the person',
+              example: '+1-555-0123'
+            },
+            birthDate: {
+              type: 'string',
+              format: 'date-time',
+              nullable: true,
+              description: 'Birth date of the person',
+              example: '1990-05-15T00:00:00Z'
+            },
+            address: {
+              type: 'string',
+              nullable: true,
+              description: 'Address of the person',
+              example: '123 Main St, Anytown, USA'
+            },
+            city: {
+              type: 'string',
+              nullable: true,
+              description: 'City where the person lives',
+              example: 'New York'
+            },
+            country: {
+              type: 'string',
+              nullable: true,
+              description: 'Country where the person lives',
+              example: 'USA'
+            },
+            notes: {
+              type: 'string',
+              nullable: true,
+              description: 'Notes about the person',
+              example: 'Software engineer with expertise in full-stack development'
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'When the person record was created',
+              example: '2024-01-10T09:00:00Z'
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'When the person record was last updated',
+              example: '2024-01-15T14:30:00Z'
+            }
+          },
+          required: ['id', 'firstName', 'lastName', 'fullName', 'email', 'createdAt', 'updatedAt']
+        },
+        CreatePerson: {
+          type: 'object',
+          required: ['firstName', 'lastName', 'email'],
+          properties: {
+            firstName: {
+              type: 'string',
+              minLength: 1,
+              description: 'First name of the person',
+              example: 'Jane'
+            },
+            lastName: {
+              type: 'string',
+              minLength: 1,
+              description: 'Last name of the person',
+              example: 'Smith'
+            },
+            fullName: {
+              type: 'string',
+              description: 'Full name (auto-generated if not provided)',
+              example: 'Jane Smith'
+            },
+            email: {
+              type: 'string',
+              format: 'email',
+              description: 'Email address of the person',
+              example: 'jane.smith@example.com'
+            },
+            phone: {
+              type: 'string',
+              description: 'Phone number of the person',
+              example: '+1-555-0123'
+            },
+            birthDate: {
+              type: 'string',
+              format: 'date',
+              description: 'Birth date of the person',
+              example: '1990-05-15'
+            },
+            address: {
+              type: 'string',
+              description: 'Address of the person',
+              example: '123 Main St, Anytown, USA'
+            },
+            city: {
+              type: 'string',
+              description: 'City where the person lives',
+              example: 'San Francisco'
+            },
+            country: {
+              type: 'string',
+              description: 'Country where the person lives',
+              example: 'USA'
+            },
+            notes: {
+              type: 'string',
+              description: 'Notes about the person',
+              example: 'Software engineer with expertise in full-stack development'
+            }
+          }
+        },
+        UpdatePerson: {
+          type: 'object',
+          description: 'Schema for PATCH operations. All fields are optional.',
+          additionalProperties: false,
+          properties: {
+            firstName: {
+              type: 'string',
+              minLength: 1,
+              description: 'First name of the person',
+              example: 'Jane'
+            },
+            lastName: {
+              type: 'string',
+              minLength: 1,
+              description: 'Last name of the person',
+              example: 'Smith'
+            },
+            fullName: {
+              type: 'string',
+              description: 'Full name of the person',
+              example: 'Jane Smith'
+            },
+            email: {
+              type: 'string',
+              format: 'email',
+              description: 'Email address of the person',
+              example: 'jane.smith@example.com'
+            },
+            phone: {
+              type: 'string',
+              description: 'Phone number of the person',
+              example: '+1-555-0123'
+            },
+            birthDate: {
+              type: 'string',
+              format: 'date',
+              description: 'Birth date of the person',
+              example: '1990-05-15'
+            },
+            address: {
+              type: 'string',
+              description: 'Address of the person',
+              example: '123 Main St, Anytown, USA'
+            },
+            city: {
+              type: 'string',
+              description: 'City where the person lives',
+              example: 'San Francisco'
+            },
+            country: {
+              type: 'string',
+              description: 'Country where the person lives',
+              example: 'USA'
+            },
+            notes: {
+              type: 'string',
+              description: 'Notes about the person',
+              example: 'Software engineer with expertise in full-stack development'
+            }
+          }
+        },
+        CreatePersonSkill: {
+          type: 'object',
+          required: ['skillName'],
+          properties: {
+            skillName: {
+              type: 'string',
+              minLength: 1,
+              description: 'Name of the skill (will be auto-created if not exists)',
+              example: 'JavaScript'
+            },
+            proficiencyLevel: {
+              type: 'string',
+              enum: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT'],
+              description: 'Proficiency level in the skill',
+              example: 'ADVANCED'
+            },
+            yearsOfExperience: {
+              type: 'string',
+              description: 'Years of experience with this skill',
+              example: '5'
+            },
+            lastUsed: {
+              type: 'string',
+              format: 'date-time',
+              description: 'When the skill was last used',
+              example: '2024-01-15T00:00:00Z'
+            },
+            isCertified: {
+              type: 'boolean',
+              description: 'Whether the person is certified in this skill',
+              example: true
+            },
+            certificationName: {
+              type: 'string',
+              description: 'Name of the certification',
+              example: 'JavaScript Professional Certificate'
+            },
+            certificationDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Date when certification was obtained',
+              example: '2023-06-15T00:00:00Z'
+            },
+            notes: {
+              type: 'string',
+              description: 'Additional notes about this skill',
+              example: 'Extensive experience with React and Node.js'
+            }
+          }
+        },
+        UpdatePersonSkill: {
+          type: 'object',
+          description: 'Schema for updating person skills. All fields are optional.',
+          additionalProperties: false,
+          properties: {
+            skillName: {
+              type: 'string',
+              minLength: 1,
+              description: 'Name of the skill',
+              example: 'JavaScript'
+            },
+            proficiencyLevel: {
+              type: 'string',
+              enum: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT'],
+              description: 'Proficiency level in the skill',
+              example: 'EXPERT'
+            },
+            yearsOfExperience: {
+              type: 'string',
+              description: 'Years of experience with this skill',
+              example: '6'
+            },
+            lastUsed: {
+              type: 'string',
+              format: 'date-time',
+              description: 'When the skill was last used',
+              example: '2024-01-15T00:00:00Z'
+            },
+            isCertified: {
+              type: 'boolean',
+              description: 'Whether the person is certified in this skill',
+              example: true
+            },
+            certificationName: {
+              type: 'string',
+              description: 'Name of the certification',
+              example: 'JavaScript Professional Certificate'
+            },
+            certificationDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Date when certification was obtained',
+              example: '2023-06-15T00:00:00Z'
+            },
+            notes: {
+              type: 'string',
+              description: 'Additional notes about this skill',
+              example: 'Extensive experience with React and Node.js'
+            }
+          }
+        },
+        CreatePersonTechnology: {
+          type: 'object',
+          required: ['technologyName'],
+          properties: {
+            technologyName: {
+              type: 'string',
+              minLength: 1,
+              description: 'Name of the technology (will be auto-created if not exists)',
+              example: 'React'
+            },
+            proficiencyLevel: {
+              type: 'string',
+              description: 'Proficiency level in the technology',
+              example: 'Advanced'
+            },
+            yearsOfExperience: {
+              type: 'string',
+              description: 'Years of experience with this technology',
+              example: '4'
+            },
+            lastUsed: {
+              type: 'string',
+              format: 'date-time',
+              description: 'When the technology was last used',
+              example: '2024-01-15T00:00:00Z'
+            },
+            context: {
+              type: 'string',
+              description: 'Context in which the technology was used',
+              example: 'Frontend Development'
+            },
+            projectName: {
+              type: 'string',
+              description: 'Name of project where technology was used',
+              example: 'E-commerce Platform'
+            },
+            description: {
+              type: 'string',
+              description: 'Description of technology usage',
+              example: 'Built responsive user interfaces using React hooks and Redux'
+            }
+          }
+        },
+        UpdatePersonTechnology: {
+          type: 'object',
+          description: 'Schema for updating person technologies. All fields are optional.',
+          additionalProperties: false,
+          properties: {
+            technologyName: {
+              type: 'string',
+              minLength: 1,
+              description: 'Name of the technology',
+              example: 'React'
+            },
+            proficiencyLevel: {
+              type: 'string',
+              description: 'Proficiency level in the technology',
+              example: 'Expert'
+            },
+            yearsOfExperience: {
+              type: 'string',
+              description: 'Years of experience with this technology',
+              example: '5'
+            },
+            lastUsed: {
+              type: 'string',
+              format: 'date-time',
+              description: 'When the technology was last used',
+              example: '2024-01-15T00:00:00Z'
+            },
+            context: {
+              type: 'string',
+              description: 'Context in which the technology was used',
+              example: 'Full-stack Development'
+            },
+            projectName: {
+              type: 'string',
+              description: 'Name of project where technology was used',
+              example: 'Enterprise CRM System'
+            },
+            description: {
+              type: 'string',
+              description: 'Description of technology usage',
+              example: 'Led development of complex React applications with TypeScript'
+            }
+          }
+        },
+        CreatePersonEducation: {
+          type: 'object',
+          required: ['institution'],
+          properties: {
+            institution: {
+              type: 'string',
+              minLength: 1,
+              description: 'Name of the educational institution',
+              example: 'Stanford University'
+            },
+            degree: {
+              type: 'string',
+              description: 'Type of degree obtained',
+              example: 'Bachelor of Science'
+            },
+            fieldOfStudy: {
+              type: 'string',
+              description: 'Field of study or major',
+              example: 'Computer Science'
+            },
+            startDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Start date of the education',
+              example: '2018-09-01T00:00:00Z'
+            },
+            graduationDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Graduation date',
+              example: '2022-06-15T00:00:00Z'
+            },
+            description: {
+              type: 'string',
+              description: 'Description of the education',
+              example: 'Focused on software engineering and algorithms'
+            },
+            gpa: {
+              type: 'string',
+              description: 'Grade Point Average',
+              example: '3.8'
+            },
+            isCurrentlyEnrolled: {
+              type: 'string',
+              description: 'Whether currently enrolled',
+              example: 'false'
+            }
+          }
+        },
+        UpdatePersonEducation: {
+          type: 'object',
+          description: 'Schema for updating person education. All fields are optional.',
+          additionalProperties: false,
+          properties: {
+            institution: {
+              type: 'string',
+              minLength: 1,
+              description: 'Name of the educational institution',
+              example: 'Stanford University'
+            },
+            degree: {
+              type: 'string',
+              description: 'Type of degree obtained',
+              example: 'Bachelor of Science'
+            },
+            fieldOfStudy: {
+              type: 'string',
+              description: 'Field of study or major',
+              example: 'Computer Science'
+            },
+            startDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Start date of the education',
+              example: '2018-09-01T00:00:00Z'
+            },
+            graduationDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Graduation date',
+              example: '2022-06-15T00:00:00Z'
+            },
+            description: {
+              type: 'string',
+              description: 'Description of the education',
+              example: 'Graduated summa cum laude with honors in Computer Science'
+            },
+            gpa: {
+              type: 'string',
+              description: 'Grade Point Average',
+              example: '3.9'
+            },
+            isCurrentlyEnrolled: {
+              type: 'string',
+              description: 'Whether currently enrolled',
+              example: 'false'
+            }
+          }
+        },
+        // ===== EMPLOYEE PROFILE SCHEMA =====
+        EmployeeProfile: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+              description: 'Unique identifier for the person (used for CRUD operations)',
+              example: '123e4567-e89b-12d3-a456-426614174000'
+            },
+            personId: {
+              type: 'string',
+              format: 'uuid',
+              description: 'Unique identifier for the person record',
+              example: '123e4567-e89b-12d3-a456-426614174000'
+            },
+            firstName: {
+              type: 'string',
+              description: 'First name of the employee',
+              example: 'John'
+            },
+            lastName: {
+              type: 'string',
+              description: 'Last name of the employee',
+              example: 'Doe'
+            },
+            fullName: {
+              type: 'string',
+              description: 'Full name of the employee',
+              example: 'John Doe'
+            },
+            email: {
+              type: 'string',
+              format: 'email',
+              description: 'Email address of the employee',
+              example: 'john.doe@company.com'
+            },
+            phone: {
+              type: 'string',
+              nullable: true,
+              description: 'Phone number of the employee',
+              example: '+1-555-0123'
+            },
+            address: {
+              type: 'string',
+              nullable: true,
+              description: 'Address of the employee',
+              example: '123 Main St, Anytown, USA'
+            },
+            city: {
+              type: 'string',
+              nullable: true,
+              description: 'City where the employee lives',
+              example: 'New York'
+            },
+            country: {
+              type: 'string',
+              nullable: true,
+              description: 'Country where the employee lives',
+              example: 'USA'
+            },
+            birthDate: {
+              type: 'string',
+              format: 'date-time',
+              nullable: true,
+              description: 'Birth date of the employee',
+              example: '1990-05-15T00:00:00Z'
+            },
+            position: {
+              type: 'string',
+              nullable: true,
+              description: 'Job position/title',
+              example: 'Senior Software Engineer'
+            },
+            employeeStatus: {
+              type: 'string',
+              enum: ['Active', 'On Leave', 'Inactive'],
+              nullable: true,
+              description: 'Current employment status',
+              example: 'Active'
+            },
+            workStatus: {
+              type: 'string',
+              enum: ['On Project', 'On Bench', 'Available'],
+              nullable: true,
+              description: 'Current work assignment status',
+              example: 'On Project'
+            },
+            jobGrade: {
+              type: 'string',
+              enum: ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'],
+              nullable: true,
+              description: 'Job grade level',
+              example: 'SE'
+            },
+            location: {
+              type: 'string',
+              nullable: true,
+              description: 'Work location',
+              example: 'New York Office'
+            },
+            hireDate: {
+              type: 'string',
+              format: 'date-time',
+              nullable: true,
+              description: 'Date when the employee was hired',
+              example: '2024-01-15T00:00:00Z'
+            },
+            terminationDate: {
+              type: 'string',
+              format: 'date-time',
+              nullable: true,
+              description: 'Date when the employee was terminated (if applicable)',
+              example: null
+            },
+            salary: {
+              type: 'number',
+              nullable: true,
+              description: 'Annual salary',
+              example: 75000.00
+            },
+            hourlyRate: {
+              type: 'number',
+              nullable: true,
+              description: 'Hourly rate (for hourly employees)',
+              example: 45.50
+            },
+            managerId: {
+              type: 'string',
+              format: 'uuid',
+              nullable: true,
+              description: 'Manager\'s person ID',
+              example: '789e0123-e89b-12d3-a456-426614174002'
+            },
+            yearsOfExperience: {
+              type: 'number',
+              description: 'Years of experience since hire date',
+              example: 2
+            },
+            isInactive: {
+              type: 'boolean',
+              description: 'Whether the employee is inactive',
+              example: false
+            },
+            isOnBench: {
+              type: 'boolean',
+              description: 'Whether the employee is on bench',
+              example: false
+            },
+            isActive: {
+              type: 'boolean',
+              description: 'Whether the employee is active',
+              example: true
+            },
+            skills: {
+              type: 'array',
+              description: 'Employee skills',
+              items: {
+                type: 'object',
+                properties: {
+                  id: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'Skill ID',
+                    example: '550e8400-e29b-41d4-a716-446655440000'
+                  },
+                  name: {
+                    type: 'string',
+                    description: 'Skill name',
+                    example: 'JavaScript'
+                  },
+                  proficiencyLevel: {
+                    type: 'string',
+                    description: 'Proficiency level',
+                    example: 'ADVANCED'
+                  },
+                  yearsOfExperience: {
+                    type: 'number',
+                    description: 'Years of experience',
+                    example: 5
+                  },
+                  lastUsed: {
+                    type: 'string',
+                    format: 'date-time',
+                    description: 'Last used date',
+                    example: '2024-01-15T00:00:00Z'
+                  },
+                  isCertified: {
+                    type: 'boolean',
+                    description: 'Certification status',
+                    example: true
+                  },
+                  certificationName: {
+                    type: 'string',
+                    description: 'Certification name',
+                    example: 'JavaScript Professional Certificate'
+                  },
+                  certificationDate: {
+                    type: 'string',
+                    format: 'date-time',
+                    description: 'Certification date',
+                    example: '2023-06-15T00:00:00Z'
+                  },
+                  notes: {
+                    type: 'string',
+                    description: 'Additional notes',
+                    example: 'Extensive experience with React and Node.js'
+                  }
+                }
+              }
+            },
+            technologies: {
+              type: 'array',
+              description: 'Employee technologies',
+              items: {
+                type: 'object',
+                properties: {
+                  id: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'Technology ID',
+                    example: '550e8400-e29b-41d4-a716-446655440001'
+                  },
+                  name: {
+                    type: 'string',
+                    description: 'Technology name',
+                    example: 'React'
+                  },
+                  proficiencyLevel: {
+                    type: 'string',
+                    description: 'Proficiency level',
+                    example: 'ADVANCED'
+                  },
+                  yearsOfExperience: {
+                    type: 'number',
+                    description: 'Years of experience',
+                    example: 4
+                  },
+                  lastUsed: {
+                    type: 'string',
+                    format: 'date-time',
+                    description: 'Last used date',
+                    example: '2024-01-10T00:00:00Z'
+                  },
+                  context: {
+                    type: 'string',
+                    description: 'Usage context',
+                    example: 'Frontend Development'
+                  },
+                  projectName: {
+                    type: 'string',
+                    description: 'Project name',
+                    example: 'E-commerce Platform'
+                  },
+                  description: {
+                    type: 'string',
+                    description: 'Usage description',
+                    example: 'Built scalable React components for user interfaces'
+                  }
+                }
+              }
+            },
+            education: {
+              type: 'array',
+              description: 'Employee education',
+              items: {
+                type: 'object',
+                properties: {
+                  id: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'Education record ID',
+                    example: '550e8400-e29b-41d4-a716-446655440002'
+                  },
+                  institution: {
+                    type: 'string',
+                    description: 'Educational institution',
+                    example: 'Stanford University'
+                  },
+                  degree: {
+                    type: 'string',
+                    description: 'Degree type',
+                    example: 'Bachelor of Science'
+                  },
+                  fieldOfStudy: {
+                    type: 'string',
+                    description: 'Field of study',
+                    example: 'Computer Science'
+                  },
+                  startDate: {
+                    type: 'string',
+                    format: 'date-time',
+                    description: 'Start date',
+                    example: '2018-09-01T00:00:00Z'
+                  },
+                  graduationDate: {
+                    type: 'string',
+                    format: 'date-time',
+                    description: 'Graduation date',
+                    example: '2022-06-15T00:00:00Z'
+                  },
+                  gpa: {
+                    type: 'string',
+                    description: 'Grade Point Average',
+                    example: '3.8'
+                  },
+                  description: {
+                    type: 'string',
+                    description: 'Education description',
+                    example: 'Focused on software engineering and algorithms'
+                  },
+                  isCurrentlyEnrolled: {
+                    type: 'boolean',
+                    description: 'Current enrollment status',
+                    example: false
+                  }
+                }
+              }
+            }
+          },
+          required: ['id', 'personId', 'firstName', 'lastName', 'fullName', 'email', 'yearsOfExperience', 'isInactive', 'isOnBench', 'isActive']
         }
       }
     }

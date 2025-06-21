@@ -1,24 +1,36 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../shared/types';
-import { 
+import {
   OpportunityRepository
 } from '../repositories/opportunity.repository';
+import { RoleService } from './role.service';
 import { CreateOpportunityData } from '../../../shared/types/schema.types';
 import { Opportunity } from '../entities/opportunity.entity';
 
 @injectable()
 export class OpportunityService {
   constructor(
-    @inject(TYPES.OpportunityRepository) 
-    private readonly opportunityRepository: OpportunityRepository
-  ) {}
+    @inject(TYPES.OpportunityRepository)
+    private readonly opportunityRepository: OpportunityRepository,
+    @inject(TYPES.RoleService)
+    private readonly roleService: RoleService
+  ) { }
 
   async getAllOpportunities(): Promise<Opportunity[]> {
     return this.opportunityRepository.findAll();
   }
 
   async getOpportunityById(id: string): Promise<Opportunity | null> {
-    return this.opportunityRepository.findById(id);
+    const opportunity = await this.opportunityRepository.findById(id);
+    if (!opportunity) {
+      return null;
+    }
+
+    // Fetch associated roles and attach them to the opportunity
+    const roles = await this.roleService.findAllByOpportunity(id);
+    (opportunity as any).roles = roles;
+
+    return opportunity;
   }
 
   async createOpportunity(data: CreateOpportunityData): Promise<Opportunity> {
@@ -27,7 +39,7 @@ export class OpportunityService {
     const processedData = {
       ...data,
       isActive: data.isActive ?? (data.probability != null ? data.probability >= 80 : false),
-      activatedAt: data.isActive ?? (data.probability != null ? data.probability >= 80 : false) ? new Date() : null,
+      activatedAt: data.isActive ?? (data.probability != null ? data.probability >= 80 : false) ? new Date() : undefined,
     };
 
     return this.opportunityRepository.create(processedData);
@@ -41,7 +53,7 @@ export class OpportunityService {
 
     // Apply business logic for auto-activation
     const processedData = { ...data };
-    
+
     if (data.probability !== undefined && data.probability !== null) {
       if (data.probability >= 80 && !current.isActive) {
         // Auto-activate if probability increased to >= 80%
@@ -52,7 +64,7 @@ export class OpportunityService {
         const wasAutoActivated = current.activatedAt.getTime() === current.createdAt.getTime();
         if (wasAutoActivated) {
           processedData.isActive = false;
-          processedData.activatedAt = null;
+          processedData.activatedAt = undefined;
         }
       }
     }

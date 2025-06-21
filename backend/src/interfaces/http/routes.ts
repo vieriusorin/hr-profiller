@@ -2,6 +2,7 @@ import { Router } from 'express';
 import opportunityRoutes from '../../infrastructure/http/routes/opportunities';
 import roleRoutes from '../../infrastructure/http/routes/roles';
 import employeeRoutes from '../../infrastructure/http/routes/employees';
+import personRoutes from '../../infrastructure/http/routes/persons';
 import { lookupRoutes } from '../../infrastructure/http/routes/lookup';
 import { metricsHandler } from './middlewares/loggs.middleware';
 
@@ -63,6 +64,29 @@ router.get('/', (req, res) => {
             'GET /api/v1/employees/:id/searchable-content': 'Get employee searchable content for RAG'
           }
         },
+        persons: {
+          base: '/api/v1/persons',
+          methods: {
+            'GET /api/v1/persons': 'List all persons with filtering and pagination',
+            'POST /api/v1/persons': 'Create new person',
+            'GET /api/v1/persons/:id': 'Get person by ID',
+            'PATCH /api/v1/persons/:id': 'Partially update person by ID',
+            'DELETE /api/v1/persons/:id': 'Delete person by ID',
+            'POST /api/v1/persons/:id/skills': 'Add skill to person',
+            'PATCH /api/v1/persons/:id/skills/:skillId': 'Update person skill',
+            'DELETE /api/v1/persons/:id/skills/:skillId': 'Remove skill from person',
+            'POST /api/v1/persons/:id/technologies': 'Add technology to person',
+            'PATCH /api/v1/persons/:id/technologies/:technologyId': 'Update person technology',
+            'DELETE /api/v1/persons/:id/technologies/:technologyId': 'Remove technology from person',
+            'POST /api/v1/persons/:id/education': 'Add education to person',
+            'PATCH /api/v1/persons/:id/education/:educationId': 'Update person education',
+            'DELETE /api/v1/persons/:id/education/:educationId': 'Remove education from person',
+            'POST /api/v1/persons/search/skills': 'Search persons by skills',
+            'POST /api/v1/persons/search/technologies': 'Search persons by technologies',
+            'POST /api/v1/persons/search/education': 'Search persons by education',
+            'GET /api/v1/persons/:id/capabilities': 'Get person capabilities summary'
+          }
+        },
         lookup: {
           base: '/api/v1/lookup',
           methods: {
@@ -101,6 +125,7 @@ router.get('/metrics', metricsHandler);
 router.use('/opportunities', opportunityRoutes);
 router.use('/roles', roleRoutes);
 router.use('/employees', employeeRoutes);
+router.use('/persons', personRoutes);
 router.use('/lookup', lookupRoutes);
 
 export default router;

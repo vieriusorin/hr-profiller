@@ -33,12 +33,22 @@ export const CreateOpportunitySchema = baseInsertSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  // Override timestamp fields to accept ISO strings and convert to Date objects
+  expectedStartDate: z.string().datetime().optional().transform((val) => val ? new Date(val) : undefined),
+  expectedEndDate: z.string().datetime().optional().transform((val) => val ? new Date(val) : undefined),
+  activatedAt: z.string().datetime().optional().transform((val) => val ? new Date(val) : undefined),
 });
 
 export const UpdateOpportunitySchema = baseInsertSchema.partial().omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  // Override timestamp fields to accept ISO strings and convert to Date objects
+  expectedStartDate: z.string().datetime().optional().transform((val) => val ? new Date(val) : undefined).or(z.undefined()),
+  expectedEndDate: z.string().datetime().optional().transform((val) => val ? new Date(val) : undefined).or(z.undefined()),
+  activatedAt: z.string().datetime().optional().transform((val) => val ? new Date(val) : undefined).or(z.undefined()),
 });
 
 const baseSelectSchema = createSelectSchema(opportunities);

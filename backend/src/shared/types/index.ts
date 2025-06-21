@@ -7,6 +7,7 @@ export interface ResponseEnvelope<T> {
 export interface ErrorResponse {
   message: string;
   code: string;
+  details?: any; // For validation errors and other detailed error information
   stack?: string;
 }
 
@@ -20,16 +21,21 @@ const TYPES = {
   // Repositories
   OpportunityRepository: Symbol.for('OpportunityRepository'),
   RoleRepository: Symbol.for('RoleRepository'),
-  EmployeeRepository: Symbol.for('EmployeeRepository'),
+  PersonRepository: Symbol.for('PersonRepository'),
+  EmploymentRepository: Symbol.for('EmploymentRepository'),
 
   // Services
   OpportunityService: Symbol.for('OpportunityService'),
-  EmployeeService: Symbol.for('EmployeeService'),
+  RoleService: Symbol.for('RoleService'),
+  PersonService: Symbol.for('PersonService'),
+  EmploymentService: Symbol.for('EmploymentService'),
+  EmployeeApplicationService: Symbol.for('EmployeeApplicationService'),
 
   // Controllers
   OpportunityController: Symbol.for('OpportunityController'),
   RoleController: Symbol.for('RoleController'),
   EmployeeController: Symbol.for('EmployeeController'),
+  PersonController: Symbol.for('PersonController'),
   LookupController: Symbol.for('LookupController'),
 };
 

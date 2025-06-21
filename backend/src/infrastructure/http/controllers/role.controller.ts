@@ -1,12 +1,13 @@
 import { injectable, inject } from 'inversify';
 import { Request, Response } from 'express';
 import { RoleService } from '../../../domain/opportunity/services/role.service';
+import { TYPES } from '../../../shared/types';
 import { insertOpportunityRoleSchema } from '../../../../db/schema/opportunity-roles.schema';
 
 @injectable()
 export class RoleController {
   constructor(
-    @inject(RoleService) private readonly roleService: RoleService
+    @inject(TYPES.RoleService) private readonly roleService: RoleService
   ) { }
 
   async getAllByOpportunity(req: Request, res: Response) {

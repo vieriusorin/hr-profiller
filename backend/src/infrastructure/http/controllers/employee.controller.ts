@@ -1,90 +1,93 @@
 import { injectable, inject } from 'inversify';
 import { Request, Response } from 'express';
 import { TYPES } from '../../../shared/types';
-import { EmployeeService } from '../../../domain/employee/services/employee.service';
+import { EmployeeApplicationService } from '../../../domain/employee/services/employee-application.service';
+import { EmploymentService } from '../../../domain/employee/services/employment.service';
 import { EmployeePresenter } from '../../../interfaces/presenters/employee.presenter';
 import { QueryParser } from '../../../shared/utils/query-parser';
-import { CreateEmployeeSchema, UpdateEmployeeSchema, TypeNewEmployee, TypeUpdateEmployee } from '../../../../db/schema/employee.schema';
+import { TypeNewPerson } from '../../../../db/schema/people.schema';
+import { CreateEmploymentData } from '../../../domain/employee/repositories/employment.repository';
 import { z } from 'zod';
 
-
-
-
-// New Validation schemas for enhanced functionality
-const CreateEmployeeSkillRequestSchema = z.object({
-  skillName: z.string().min(1, 'Skill name is required'),
-  proficiencyLevel: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT']).optional(),
-  yearsOfExperience: z.string().optional(),
-  lastUsed: z.string().optional(), // ISO date string
-  isCertified: z.boolean().optional(),
-  certificationName: z.string().optional(),
-  certificationDate: z.string().optional(), // ISO date string
+// Validation schemas focused on Employment domain
+const CreatePersonSchema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  fullName: z.string().optional(),
+  email: z.string().email('Valid email is required'),
+  phone: z.string().optional(),
+  birthDate: z.string().optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  country: z.string().optional(),
   notes: z.string().optional(),
 });
 
-const CreateEmployeeTechnologyRequestSchema = z.object({
-  technologyName: z.string().min(1, 'Technology name is required'),
-  proficiencyLevel: z.string().optional(),
-  yearsOfExperience: z.string().optional(),
-  lastUsed: z.string().optional(), // ISO date string
-  context: z.string().optional(),
-  projectName: z.string().optional(),
-  description: z.string().optional(),
+const CreateEmploymentSchema = z.object({
+  position: z.string().min(1, 'Position is required'),
+  location: z.string().optional(),
+  salary: z.number().positive().optional(),
+  hourlyRate: z.number().positive().optional(),
+  employmentType: z.string().optional(),
+  hireDate: z.string().optional(),
+  workStatus: z.string().optional(),
+  employeeStatus: z.string().optional(),
+  managerId: z.string().optional(),
+  notes: z.string().optional(),
 });
 
-const CreateEmployeeEducationRequestSchema = z.object({
-  institution: z.string().min(1, 'Institution is required'),
-  degree: z.string().optional(),
-  fieldOfStudy: z.string().optional(),
-  startDate: z.string().optional(), // ISO date string
-  graduationDate: z.string().optional(), // ISO date string
-  description: z.string().optional(),
-  gpa: z.string().optional(),
-  isCurrentlyEnrolled: z.string().optional(),
+const CreateEmployeeSchema = z.object({
+  person: CreatePersonSchema,
+  employment: CreateEmploymentSchema,
 });
 
-const SearchSkillsSchema = z.object({
-  skills: z.array(z.string()).min(1, 'At least one skill is required'),
+const UpdatePersonSchema = CreatePersonSchema.partial();
+const UpdateEmploymentSchema = CreateEmploymentSchema.partial();
+
+const PromoteEmployeeSchema = z.object({
+  newPosition: z.string().min(1, 'New position is required'),
+  newSalary: z.number().positive().optional(),
 });
 
-const SearchTechnologiesSchema = z.object({
-  technologies: z.array(z.string()).min(1, 'At least one technology is required'),
+const TerminateEmployeeSchema = z.object({
+  endDate: z.string().optional(),
+  notes: z.string().optional(),
 });
 
-const SearchEducationSchema = z.object({
-  institution: z.string().optional(),
-  degree: z.string().optional(),
-  fieldOfStudy: z.string().optional(),
-}).refine(data => Object.values(data).some(val => val), {
-  message: 'At least one search criteria is required',
+const AssignManagerSchema = z.object({
+  managerId: z.string().min(1, 'Manager ID is required'),
 });
 
 // Types for the request bodies
-type CreateEmployeeSkillRequestData = z.infer<typeof CreateEmployeeSkillRequestSchema>;
-type CreateEmployeeTechnologyRequestData = z.infer<typeof CreateEmployeeTechnologyRequestSchema>;
-type CreateEmployeeEducationRequestData = z.infer<typeof CreateEmployeeEducationRequestSchema>;
+type CreateEmployeeRequestData = z.infer<typeof CreateEmployeeSchema>;
+type PromoteEmployeeRequestData = z.infer<typeof PromoteEmployeeSchema>;
+type TerminateEmployeeRequestData = z.infer<typeof TerminateEmployeeSchema>;
+type AssignManagerRequestData = z.infer<typeof AssignManagerSchema>;
 
 @injectable()
 export class EmployeeController {
   private readonly presenter = new EmployeePresenter();
 
   constructor(
-    @inject(TYPES.EmployeeService)
-    private readonly employeeService: EmployeeService
-  ) {}
+    @inject(TYPES.EmployeeApplicationService)
+    private readonly employeeApplicationService: EmployeeApplicationService,
+    @inject(TYPES.EmploymentService)
+    private readonly employmentService: EmploymentService
+  ) { }
 
+  /**
+   * Get all employees with their employment details
+   */
   async getAll(req: Request, res: Response): Promise<void> {
     try {
-      // Default to true, but allow explicit false
-      const includeRelated = req.query.includeRelated !== 'false';
-      const employees = await this.employeeService.getAllEmployees(includeRelated);
-      console.log(`Found ${employees.length} employees`);
+      const employeeProfiles = await this.employeeApplicationService.getAllEmployeeProfiles();
+      console.log(`Found ${employeeProfiles.length} active employees`);
 
       // Parse query parameters
       const queryParams = QueryParser.parseAll(req);
 
       // Process the collection using the presenter's internal methods
-      const { processedData, totalFiltered, totalOriginal } = (this.presenter as any).processCollection(employees, queryParams);
+      const { processedData, totalFiltered, totalOriginal } = (this.presenter as any).processCollection(employeeProfiles, queryParams);
       const presentedData = this.presenter.presentCollection(processedData);
 
       // Create pagination metadata
@@ -127,20 +130,21 @@ export class EmployeeController {
     }
   }
 
+  /**
+   * Get employee by ID with employment details
+   */
   async getById(req: Request<{ id: string }>, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      // Default to true, but allow explicit false
-      const includeRelated = req.query.includeRelated !== 'false';
-      const employee = await this.employeeService.getEmployeeById(id, includeRelated);
+      const employeeProfile = await this.employeeApplicationService.getEmployeeProfile(id);
 
-      if (!employee) {
+      if (!employeeProfile) {
         const errorResponse = this.presenter.error({ message: 'Employee not found', code: 'NOT_FOUND' });
         res.status(404).json(errorResponse);
         return;
       }
 
-      const response = this.presenter.success(employee);
+      const response = this.presenter.success(employeeProfile);
       res.status(200).json(response);
     } catch (error: any) {
       console.error('Error fetching employee:', error);
@@ -149,24 +153,53 @@ export class EmployeeController {
     }
   }
 
-  async create(req: Request<{}, {}, TypeNewEmployee>, res: Response): Promise<void> {
+  /**
+   * Create a new employee (Person + Employment)
+   */
+  async create(req: Request<unknown, unknown, CreateEmployeeRequestData>, res: Response): Promise<void> {
     try {
       const employeeValidation = CreateEmployeeSchema.safeParse(req.body);
-      
       if (!employeeValidation.success) {
-        const errorResponse = this.presenter.error({ 
-          message: 'Invalid request body', 
-          code: 'VALIDATION_ERROR',
-          details: employeeValidation.error.format()
+        const errorResponse = this.presenter.error({
+          message: 'Validation failed',
+          details: employeeValidation.error.errors
         });
         res.status(400).json(errorResponse);
         return;
       }
-      
-      const employeeData = employeeValidation.data;
 
-      const employee = await this.employeeService.createEmployee(employeeData);
-      const response = this.presenter.success(employee);
+      const { person, employment } = employeeValidation.data;
+
+      // Prepare person data with proper types
+      const personData: TypeNewPerson = {
+        firstName: person.firstName,
+        lastName: person.lastName,
+        fullName: person.fullName || `${person.firstName} ${person.lastName}`,
+        email: person.email,
+        phone: person.phone || null,
+        birthDate: person.birthDate || null,
+        address: person.address || null,
+        city: person.city || null,
+        country: person.country || null,
+        notes: person.notes || null,
+      };
+
+      // Prepare employment data
+      const employmentData: Omit<CreateEmploymentData, 'personId'> = {
+        position: employment.position,
+        location: employment.location || undefined,
+        salary: employment.salary || undefined,
+        hourlyRate: employment.hourlyRate || undefined,
+        employmentType: employment.employmentType || undefined,
+        hireDate: employment.hireDate ? new Date(employment.hireDate) : undefined,
+        workStatus: employment.workStatus || undefined,
+        employeeStatus: employment.employeeStatus || undefined,
+        managerId: employment.managerId || undefined,
+        notes: employment.notes || undefined,
+      };
+
+      const newEmployee = await this.employeeApplicationService.createEmployee(personData, employmentData);
+      const response = this.presenter.success(newEmployee);
       res.status(201).json(response);
     } catch (error: any) {
       console.error('Error creating employee:', error);
@@ -175,400 +208,226 @@ export class EmployeeController {
     }
   }
 
-  async update(req: Request<{ id: string }, {}, TypeUpdateEmployee>, res: Response): Promise<void> {
+  /**
+   * Update employee information (Person and/or Employment)
+   */
+  async update(req: Request<{ id: string }, unknown, { person?: any; employment?: any }>, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      const employeeValidation = UpdateEmployeeSchema.safeParse(req.body);
+      const { person, employment } = req.body;
 
-      if (!employeeValidation.success) {
-        const errorResponse = this.presenter.error({ 
-          message: 'Invalid request body', 
-          code: 'VALIDATION_ERROR',
-          details: employeeValidation.error.format()
-        });
+      if (!person && !employment) {
+        const errorResponse = this.presenter.error({ message: 'Either person or employment data must be provided' });
         res.status(400).json(errorResponse);
         return;
       }
 
-      const employee = await this.employeeService.updateEmployee(id, employeeValidation.data);
-      const response = this.presenter.success(employee);
+      // Validate person data if provided
+      if (person) {
+        const personValidation = UpdatePersonSchema.safeParse(person);
+        if (!personValidation.success) {
+          const errorResponse = this.presenter.error({
+            message: 'Person validation failed',
+            details: personValidation.error.errors
+          });
+          res.status(400).json(errorResponse);
+          return;
+        }
+      }
+
+      // Validate employment data if provided
+      if (employment) {
+        const employmentValidation = UpdateEmploymentSchema.safeParse(employment);
+        if (!employmentValidation.success) {
+          const errorResponse = this.presenter.error({
+            message: 'Employment validation failed',
+            details: employmentValidation.error.errors
+          });
+          res.status(400).json(errorResponse);
+          return;
+        }
+      }
+
+      const updatedEmployee = await this.employeeApplicationService.updateEmployeeProfile(id, person, employment);
+      const response = this.presenter.success(updatedEmployee);
       res.status(200).json(response);
     } catch (error: any) {
       console.error('Error updating employee:', error);
-      const statusCode = error.message.includes('not found') ? 404 : 500;
       const errorResponse = this.presenter.error(error);
-      res.status(statusCode).json(errorResponse);
+      res.status(500).json(errorResponse);
     }
   }
 
+  /**
+   * Promote an employee (Employment domain operation)
+   */
+  async promoteEmployee(req: Request<{ id: string }, unknown, PromoteEmployeeRequestData>, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const promotionValidation = PromoteEmployeeSchema.safeParse(req.body);
+
+      if (!promotionValidation.success) {
+        const errorResponse = this.presenter.error({
+          message: 'Validation failed',
+          details: promotionValidation.error.errors
+        });
+        res.status(400).json(errorResponse);
+        return;
+      }
+
+      const { newPosition, newSalary } = promotionValidation.data;
+      await this.employeeApplicationService.promoteEmployee(id, newPosition, newSalary);
+
+      res.status(200).json({
+        status: 'success',
+        data: { message: 'Employee promoted successfully' },
+        meta: { timestamp: new Date().toISOString() }
+      });
+    } catch (error: any) {
+      console.error('Error promoting employee:', error);
+      const errorResponse = this.presenter.error(error);
+      res.status(500).json(errorResponse);
+    }
+  }
+
+  /**
+   * Terminate an employee (Employment domain operation)
+   */
+  async terminateEmployee(req: Request<{ id: string }, unknown, TerminateEmployeeRequestData>, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const terminationValidation = TerminateEmployeeSchema.safeParse(req.body);
+
+      if (!terminationValidation.success) {
+        const errorResponse = this.presenter.error({
+          message: 'Validation failed',
+          details: terminationValidation.error.errors
+        });
+        res.status(400).json(errorResponse);
+        return;
+      }
+
+      const { endDate, notes } = terminationValidation.data;
+      const terminationDate = endDate ? new Date(endDate) : undefined;
+      await this.employeeApplicationService.terminateEmployee(id, terminationDate, notes);
+
+      res.status(200).json({
+        status: 'success',
+        data: { message: 'Employee terminated successfully' },
+        meta: { timestamp: new Date().toISOString() }
+      });
+    } catch (error: any) {
+      console.error('Error terminating employee:', error);
+      const errorResponse = this.presenter.error(error);
+      res.status(500).json(errorResponse);
+    }
+  }
+
+  /**
+   * Assign a manager to an employee (Employment domain operation)
+   */
+  async assignManager(req: Request<{ id: string }, unknown, AssignManagerRequestData>, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const managerValidation = AssignManagerSchema.safeParse(req.body);
+
+      if (!managerValidation.success) {
+        const errorResponse = this.presenter.error({
+          message: 'Validation failed',
+          details: managerValidation.error.errors
+        });
+        res.status(400).json(errorResponse);
+        return;
+      }
+
+      const { managerId } = managerValidation.data;
+      await this.employeeApplicationService.assignManager(id, managerId);
+
+      res.status(200).json({
+        status: 'success',
+        data: { message: 'Manager assigned successfully' },
+        meta: { timestamp: new Date().toISOString() }
+      });
+    } catch (error: any) {
+      console.error('Error assigning manager:', error);
+      const errorResponse = this.presenter.error(error);
+      res.status(500).json(errorResponse);
+    }
+  }
+
+  /**
+   * Remove manager from an employee (Employment domain operation)
+   */
+  async removeManager(req: Request<{ id: string }>, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      // Use the EmployeeApplicationService for manager removal
+      await this.employeeApplicationService.removeManager(id);
+
+      res.status(200).json({
+        status: 'success',
+        data: { message: 'Manager removed successfully' },
+        meta: { timestamp: new Date().toISOString() }
+      });
+    } catch (error: any) {
+      console.error('Error removing manager:', error);
+      const errorResponse = this.presenter.error(error);
+      res.status(500).json(errorResponse);
+    }
+  }
+
+  /**
+   * Get employment analytics and statistics
+   * Note: Analytics functionality to be implemented in future iterations
+   */
+  // async getEmploymentAnalytics(req: Request, res: Response): Promise<void> {
+  //   // TODO: Implement employment analytics when EmploymentService supports it
+  // }
+
+  /**
+   * Delete an employee (both Person and Employment)
+   */
   async delete(req: Request<{ id: string }>, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      await this.employeeService.deleteEmployee(id);
+      // For DDD architecture, we should terminate employment rather than delete
+      // This maintains data integrity and audit trail
+      await this.employeeApplicationService.terminateEmployee(id, new Date(), 'Employee record deleted');
 
-      res.status(204).send();
+      res.status(200).json({
+        status: 'success',
+        data: { message: 'Employee terminated successfully' },
+        meta: { timestamp: new Date().toISOString() }
+      });
     } catch (error: any) {
       console.error('Error deleting employee:', error);
-      const statusCode = error.message.includes('not found') ? 404 : 500;
-      const errorResponse = this.presenter.error(error);
-      res.status(statusCode).json(errorResponse);
-    }
-  }
-
-  // Skills management endpoints
-  async addSkill(req: Request<{ id: string }, {}, CreateEmployeeSkillRequestData>, res: Response): Promise<void> {
-    try {
-      const { id } = req.params;
-
-      const skillValidation = CreateEmployeeSkillRequestSchema.safeParse(req.body);
-
-      console.log('skillValidation', skillValidation.error);
-
-      if (!skillValidation.success) {
-        const errorResponse = this.presenter.error({
-          message: 'Invalid skill data',
-          code: 'VALIDATION_ERROR',
-          details: skillValidation.error.format()
-        });
-        res.status(400).json(errorResponse);
-        return;
-      }
-
-      const skillData = {
-        ...skillValidation.data,
-        yearsOfExperience: skillValidation.data.yearsOfExperience ? parseInt(skillValidation.data.yearsOfExperience) : undefined,
-        lastUsed: skillValidation.data.lastUsed ? new Date(skillValidation.data.lastUsed) : undefined,
-        certificationDate: skillValidation.data.certificationDate ? new Date(skillValidation.data.certificationDate) : undefined
-      };
-
-      await this.employeeService.addSkillToEmployee(id, skillData);
-      res.status(201).json({
-        status: 'success',
-        data: { message: 'Skill added successfully' },
-        meta: { timestamp: new Date().toISOString() }
-      });
-    } catch (error: any) {
-      console.error('Error adding skill to employee:', error);
-      const statusCode = error.message.includes('not found') ? 404 : 500;
-      const errorResponse = this.presenter.error(error);
-      res.status(statusCode).json(errorResponse);
-    }
-  }
-
-  async updateSkill(req: Request<{ id: string; skillId: string }, {}, Partial<CreateEmployeeSkillRequestData>>, res: Response): Promise<void> {
-    try {
-      const { id, skillId } = req.params;
-      const skillValidation = CreateEmployeeSkillRequestSchema.partial().safeParse(req.body);
-
-      if (!skillValidation.success) {
-        const errorResponse = this.presenter.error({
-          message: 'Invalid skill data',
-          code: 'VALIDATION_ERROR',
-          details: skillValidation.error.format()
-        });
-        res.status(400).json(errorResponse);
-        return;
-      }
-
-      const skillData = {
-        ...skillValidation.data,
-        yearsOfExperience: skillValidation.data.yearsOfExperience ? parseInt(skillValidation.data.yearsOfExperience) : undefined,
-        lastUsed: skillValidation.data.lastUsed ? new Date(skillValidation.data.lastUsed) : undefined,
-        certificationDate: skillValidation.data.certificationDate ? new Date(skillValidation.data.certificationDate) : undefined
-      };
-
-      console.log('skillData', skillData);
-
-      await this.employeeService.updateEmployeeSkill(id, skillId, skillData);
-      res.status(200).json({
-        status: 'success',
-        data: { message: 'Skill updated successfully' },
-        meta: { timestamp: new Date().toISOString() }
-      });
-    } catch (error: any) {
-      console.error('Error updating employee skill:', error);
-      const statusCode = error.message.includes('not found') ? 404 : 500;
-      const errorResponse = this.presenter.error(error);
-      res.status(statusCode).json(errorResponse);
-    }
-  }
-
-  async removeSkill(req: Request<{ id: string; skillId: string }>, res: Response): Promise<void> {
-    try {
-      const { id, skillId } = req.params;
-      await this.employeeService.removeSkillFromEmployee(id, skillId);
-      res.status(204).send();
-    } catch (error: any) {
-      console.error('Error removing skill from employee:', error);
-      const statusCode = error.message.includes('not found') ? 404 : 500;
-      const errorResponse = this.presenter.error(error);
-      res.status(statusCode).json(errorResponse);
-    }
-  }
-
-  // Technology management endpoints
-  async addTechnology(req: Request<{ id: string }, {}, CreateEmployeeTechnologyRequestData>, res: Response): Promise<void> {
-    try {
-      const { id } = req.params;
-      const technologyValidation = CreateEmployeeTechnologyRequestSchema.safeParse(req.body);
-
-      console.log('technologyValidation', technologyValidation.error);
-
-      if (!technologyValidation.success) {
-        const errorResponse = this.presenter.error({
-          message: 'Invalid technology data',
-          code: 'VALIDATION_ERROR',
-          details: technologyValidation.error.format()
-        });
-        res.status(400).json(errorResponse);
-        return;
-      }
-
-      const technologyData = {
-        ...technologyValidation.data,
-        lastUsed: technologyValidation.data.lastUsed ? new Date(technologyValidation.data.lastUsed) : undefined,
-      };
-
-      await this.employeeService.addTechnologyToEmployee(id, technologyData);
-      res.status(201).json({
-        status: 'success',
-        data: { message: 'Technology added successfully' },
-        meta: { timestamp: new Date().toISOString() }
-      });
-    } catch (error: any) {
-      console.error('Error adding technology to employee:', error);
-      const statusCode = error.message.includes('not found') ? 404 : 500;
-      const errorResponse = this.presenter.error(error);
-      res.status(statusCode).json(errorResponse);
-    }
-  }
-
-  async updateTechnology(req: Request<{ id: string; technologyId: string }, {}, Partial<CreateEmployeeTechnologyRequestData>>, res: Response): Promise<void> {
-    try {
-      const { id, technologyId } = req.params;
-      const technologyValidation = CreateEmployeeTechnologyRequestSchema.partial().safeParse(req.body);
-
-      if (!technologyValidation.success) {
-        const errorResponse = this.presenter.error({
-          message: 'Invalid technology data',
-          code: 'VALIDATION_ERROR',
-          details: technologyValidation.error.format()
-        });
-        res.status(400).json(errorResponse);
-        return;
-      }
-
-      const technologyData = {
-        ...technologyValidation.data,
-        lastUsed: technologyValidation.data.lastUsed ? new Date(technologyValidation.data.lastUsed) : undefined,
-      };
-
-      await this.employeeService.updateEmployeeTechnology(id, technologyId, technologyData);
-      res.status(200).json({
-        status: 'success',
-        data: { message: 'Technology updated successfully' },
-        meta: { timestamp: new Date().toISOString() }
-      });
-    } catch (error: any) {
-      console.error('Error updating employee technology:', error);
-      const statusCode = error.message.includes('not found') ? 404 : 500;
-      const errorResponse = this.presenter.error(error);
-      res.status(statusCode).json(errorResponse);
-    }
-  }
-
-  async removeTechnology(req: Request<{ id: string; technologyId: string }>, res: Response): Promise<void> {
-    try {
-      const { id, technologyId } = req.params;
-      await this.employeeService.removeTechnologyFromEmployee(id, technologyId);
-      res.status(204).send();
-    } catch (error: any) {
-      console.error('Error removing technology from employee:', error);
-      const statusCode = error.message.includes('not found') ? 404 : 500;
-      const errorResponse = this.presenter.error(error);
-      res.status(statusCode).json(errorResponse);
-    }
-  }
-
-  // Education management endpoints
-  async addEducation(req: Request<{ id: string }, {}, CreateEmployeeEducationRequestData>, res: Response): Promise<void> {
-    try {
-      const { id } = req.params;
-      const educationValidation = CreateEmployeeEducationRequestSchema.safeParse(req.body);
-
-      if (!educationValidation.success) {
-        const errorResponse = this.presenter.error({
-          message: 'Invalid education data',
-          code: 'VALIDATION_ERROR',
-          details: educationValidation.error.format()
-        });
-        res.status(400).json(errorResponse);
-        return;
-      }
-
-      const educationData = {
-        ...educationValidation.data,
-        startDate: educationValidation.data.startDate ? new Date(educationValidation.data.startDate) : undefined,
-        graduationDate: educationValidation.data.graduationDate ? new Date(educationValidation.data.graduationDate) : undefined,
-      };
-
-      const educationId = await this.employeeService.addEducationToEmployee(id, educationData);
-      res.status(201).json({
-        status: 'success',
-        data: { message: 'Education added successfully', educationId },
-        meta: { timestamp: new Date().toISOString() }
-      });
-    } catch (error: any) {
-      console.error('Error adding education to employee:', error);
-      const statusCode = error.message.includes('not found') ? 404 : 500;
-      const errorResponse = this.presenter.error(error);
-      res.status(statusCode).json(errorResponse);
-    }
-  }
-
-  async updateEducation(req: Request<{ id: string; educationId: string }, {}, Partial<CreateEmployeeEducationRequestData>>, res: Response): Promise<void> {
-    try {
-      const { id, educationId } = req.params;
-      const educationValidation = CreateEmployeeEducationRequestSchema.partial().safeParse(req.body);
-
-      if (!educationValidation.success) {
-        const errorResponse = this.presenter.error({
-          message: 'Invalid education data',
-          code: 'VALIDATION_ERROR',
-          details: educationValidation.error.format()
-        });
-        res.status(400).json(errorResponse);
-        return;
-      }
-
-      const educationData = {
-        ...educationValidation.data,
-        startDate: educationValidation.data.startDate ? new Date(educationValidation.data.startDate) : undefined,
-        graduationDate: educationValidation.data.graduationDate ? new Date(educationValidation.data.graduationDate) : undefined,
-      };
-
-      await this.employeeService.updateEmployeeEducation(id, educationId, educationData);
-      res.status(200).json({
-        status: 'success',
-        data: { message: 'Education updated successfully' },
-        meta: { timestamp: new Date().toISOString() }
-      });
-    } catch (error: any) {
-      console.error('Error updating employee education:', error);
-      const statusCode = error.message.includes('not found') ? 404 : 500;
-      const errorResponse = this.presenter.error(error);
-      res.status(statusCode).json(errorResponse);
-    }
-  }
-
-  async removeEducation(req: Request<{ id: string; educationId: string }>, res: Response): Promise<void> {
-    try {
-      const { id, educationId } = req.params;
-      await this.employeeService.removeEducationFromEmployee(id, educationId);
-      res.status(204).send();
-    } catch (error: any) {
-      console.error('Error removing education from employee:', error);
-      const statusCode = error.message.includes('not found') ? 404 : 500;
-      const errorResponse = this.presenter.error(error);
-      res.status(statusCode).json(errorResponse);
-    }
-  }
-
-  // Search endpoints for RAG functionality
-  async searchBySkills(req: Request<{}, {}, { skills: string[] }>, res: Response): Promise<void> {
-    try {
-      const searchValidation = SearchSkillsSchema.safeParse(req.body);
-
-      if (!searchValidation.success) {
-        const errorResponse = this.presenter.error({
-          message: 'Invalid search criteria',
-          code: 'VALIDATION_ERROR',
-          details: searchValidation.error.format()
-        });
-        res.status(400).json(errorResponse);
-        return;
-      }
-
-      const employees = await this.employeeService.searchEmployeesBySkills(searchValidation.data.skills);
-      const response = this.presenter.successCollection(employees, req);
-      res.status(200).json(response);
-    } catch (error: any) {
-      console.error('Error searching employees by skills:', error);
       const errorResponse = this.presenter.error(error);
       res.status(500).json(errorResponse);
     }
   }
 
-  async searchByTechnologies(req: Request<{}, {}, { technologies: string[] }>, res: Response): Promise<void> {
-    try {
-      const searchValidation = SearchTechnologiesSchema.safeParse(req.body);
-
-      if (!searchValidation.success) {
-        const errorResponse = this.presenter.error({
-          message: 'Invalid search criteria',
-          code: 'VALIDATION_ERROR',
-          details: searchValidation.error.format()
-        });
-        res.status(400).json(errorResponse);
-        return;
-      }
-
-      const employees = await this.employeeService.searchEmployeesByTechnologies(searchValidation.data.technologies);
-      const response = this.presenter.successCollection(employees, req);
-      res.status(200).json(response);
-    } catch (error: any) {
-      console.error('Error searching employees by technologies:', error);
-      const errorResponse = this.presenter.error(error);
-      res.status(500).json(errorResponse);
-    }
-  }
-
-  async searchByEducation(req: Request<{}, {}, { institution?: string; degree?: string; fieldOfStudy?: string }>, res: Response): Promise<void> {
-    try {
-      const searchValidation = SearchEducationSchema.safeParse(req.body);
-
-      if (!searchValidation.success) {
-        const errorResponse = this.presenter.error({
-          message: 'Invalid search criteria',
-          code: 'VALIDATION_ERROR',
-          details: searchValidation.error.format()
-        });
-        res.status(400).json(errorResponse);
-        return;
-      }
-
-      const { institution, degree, fieldOfStudy } = searchValidation.data;
-      const employees = await this.employeeService.searchEmployeesByEducation(institution, degree, fieldOfStudy);
-      const response = this.presenter.successCollection(employees, req);
-      res.status(200).json(response);
-    } catch (error: any) {
-      console.error('Error searching employees by education:', error);
-      const errorResponse = this.presenter.error(error);
-      res.status(500).json(errorResponse);
-    }
-  }
-
-  // RAG content endpoint
+  /**
+   * Get searchable content for RAG (includes both Person and Employment data)
+   */
   async getSearchableContent(req: Request<{ id: string }>, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      const employee = await this.employeeService.getEmployeeById(id, true);
+      const employeeProfile = await this.employeeApplicationService.getEmployeeProfile(id);
 
-      if (!employee) {
+      if (!employeeProfile) {
         const errorResponse = this.presenter.error({ message: 'Employee not found', code: 'NOT_FOUND' });
         res.status(404).json(errorResponse);
         return;
       }
 
-      const searchableContent = employee.getSearchableContent();
+      const searchableContent = this.generateSearchableContent(employeeProfile);
+
       res.status(200).json({
         status: 'success',
         data: {
           employeeId: id,
           searchableContent,
-          skillsCount: employee.skills.length,
-          technologiesCount: employee.technologies.length,
-          educationCount: employee.education.length
+          lastUpdated: new Date().toISOString()
         },
         meta: { timestamp: new Date().toISOString() }
       });
@@ -577,5 +436,52 @@ export class EmployeeController {
       const errorResponse = this.presenter.error(error);
       res.status(500).json(errorResponse);
     }
+  }
+
+  private generateSearchableContent(profile: any): string {
+    const parts = [];
+
+    // Person information
+    if (profile.person) {
+      parts.push(`Name: ${profile.person.fullName || `${profile.person.firstName} ${profile.person.lastName}`}`);
+      if (profile.person.email) parts.push(`Email: ${profile.person.email}`);
+      if (profile.person.phone) parts.push(`Phone: ${profile.person.phone}`);
+      if (profile.person.city) parts.push(`Location: ${profile.person.city}`);
+    }
+
+    // Employment information
+    if (profile.employment) {
+      parts.push(`Position: ${profile.employment.position}`);
+      if (profile.employment.location) parts.push(`Work Location: ${profile.employment.location}`);
+      if (profile.employment.employeeStatus) parts.push(`Status: ${profile.employment.employeeStatus}`);
+      if (profile.employment.workStatus) parts.push(`Work Status: ${profile.employment.workStatus}`);
+      if (profile.employment.employmentType) parts.push(`Employment Type: ${profile.employment.employmentType}`);
+    }
+
+    // Skills (from Person domain)
+    if (profile.skills && profile.skills.length > 0) {
+      const skillsText = profile.skills.map((skill: any) =>
+        `${skill.skillName} (${skill.proficiencyLevel || 'Unknown'} level${skill.yearsOfExperience ? `, ${skill.yearsOfExperience} years` : ''})`
+      ).join(', ');
+      parts.push(`Skills: ${skillsText}`);
+    }
+
+    // Technologies (from Person domain)
+    if (profile.technologies && profile.technologies.length > 0) {
+      const techText = profile.technologies.map((tech: any) =>
+        `${tech.technologyName}${tech.yearsOfExperience ? ` (${tech.yearsOfExperience} years)` : ''}`
+      ).join(', ');
+      parts.push(`Technologies: ${techText}`);
+    }
+
+    // Education (from Person domain)
+    if (profile.education && profile.education.length > 0) {
+      const eduText = profile.education.map((edu: any) =>
+        `${edu.degree || 'Degree'} in ${edu.fieldOfStudy || 'Field'} from ${edu.institution}`
+      ).join(', ');
+      parts.push(`Education: ${eduText}`);
+    }
+
+    return parts.join(' | ');
   }
 } 

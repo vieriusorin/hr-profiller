@@ -1,19 +1,19 @@
-import { Employee } from '../../../domain/employee/entities/employee.entity';
-import { 
-  FilterBuilder, 
-  SearchBuilder, 
+import { EmployeeProfile } from '../../../domain/employee/entities/employee-profile.entity';
+import {
+  FilterBuilder,
+  SearchBuilder,
   SortBuilder,
   FilterParams,
   SearchParams,
   SortParams
 } from '../../../shared/types/presenter.types';
 
-export class EmployeeFilterBuilder implements FilterBuilder<Employee> {
-  apply(employees: Employee[], filters: FilterParams): Employee[] {
+export class EmployeeFilterBuilder implements FilterBuilder<EmployeeProfile> {
+  apply(employees: EmployeeProfile[], filters: FilterParams): EmployeeProfile[] {
     return employees.filter(employee => {
       // Position filter
       if (filters.position) {
-        const position = employee.position || '';
+        const position = employee.employment.position || '';
         const positionMatch = position
           .toLowerCase()
           .includes(filters.position.toLowerCase());
@@ -22,22 +22,22 @@ export class EmployeeFilterBuilder implements FilterBuilder<Employee> {
 
       // Employee status filter
       if (filters.employeeStatus) {
-        if (employee.employeeStatus !== filters.employeeStatus) return false;
+        if (employee.employment.employeeStatus !== filters.employeeStatus) return false;
       }
 
       // Work status filter
       if (filters.workStatus) {
-        if (employee.workStatus !== filters.workStatus) return false;
+        if (employee.employment.workStatus !== filters.workStatus) return false;
       }
 
       // Job grade filter
       if (filters.jobGrade) {
-        if (employee.jobGrade !== filters.jobGrade) return false;
+        if (employee.employment.jobGrade !== filters.jobGrade) return false;
       }
 
       // Location filter
       if (filters.location) {
-        const location = employee.location || '';
+        const location = employee.employment.location || '';
         const locationMatch = location
           .toLowerCase()
           .includes(filters.location.toLowerCase());
@@ -46,19 +46,19 @@ export class EmployeeFilterBuilder implements FilterBuilder<Employee> {
 
       // Active filter (based on employee status)
       if (typeof filters.isActive === 'boolean') {
-        const isActive = employee.employeeStatus === 'Active';
+        const isActive = employee.isActive;
         if (filters.isActive !== isActive) return false;
       }
 
       // Hire date range filter
-      if (filters.dateRange && employee.hireDate) {
-        const hireDate = new Date(employee.hireDate);
-        
+      if (filters.dateRange && employee.employment.hireDate) {
+        const hireDate = new Date(employee.employment.hireDate);
+
         if (filters.dateRange.start) {
           const startDate = new Date(filters.dateRange.start);
           if (hireDate < startDate) return false;
         }
-        
+
         if (filters.dateRange.end) {
           const endDate = new Date(filters.dateRange.end);
           if (hireDate > endDate) return false;
@@ -69,19 +69,19 @@ export class EmployeeFilterBuilder implements FilterBuilder<Employee> {
     });
   }
 
-  validate(filters: FilterParams): boolean {
+  validate(filters: FilterParams): boolean { // eslint-disable-line @typescript-eslint/no-unused-vars
     // Add validation logic as needed
     return true;
   }
 
   sanitize(filters: FilterParams): FilterParams {
     const sanitized = { ...filters };
-    
+
     // Sanitize string filters
     if (typeof sanitized.position === 'string') {
       sanitized.position = sanitized.position.trim();
     }
-    
+
     if (typeof sanitized.location === 'string') {
       sanitized.location = sanitized.location.trim();
     }
@@ -93,7 +93,7 @@ export class EmployeeFilterBuilder implements FilterBuilder<Employee> {
 /**
  * Employee Search Builder - full-text search across multiple fields
  */
-export class EmployeeSearchBuilder implements SearchBuilder<Employee> {
+export class EmployeeSearchBuilder implements SearchBuilder<EmployeeProfile> {
   private readonly searchableFields = [
     'firstName',
     'lastName',
@@ -103,7 +103,7 @@ export class EmployeeSearchBuilder implements SearchBuilder<Employee> {
     'location'
   ];
 
-  apply(employees: Employee[], search: SearchParams): Employee[] {
+  apply(employees: EmployeeProfile[], search: SearchParams): EmployeeProfile[] {
     if (!search.search) return employees;
 
     const searchTerm = search.search.toLowerCase();
@@ -117,20 +117,20 @@ export class EmployeeSearchBuilder implements SearchBuilder<Employee> {
     });
   }
 
-  private getFieldValue(employee: Employee, field: string): string {
+  private getFieldValue(employee: EmployeeProfile, field: string): string {
     switch (field) {
       case 'firstName':
-        return employee.firstName || '';
+        return employee.person.firstName || '';
       case 'lastName':
-        return employee.lastName || '';
+        return employee.person.lastName || '';
       case 'fullName':
-        return employee.fullName || '';
+        return employee.person.fullName || '';
       case 'email':
-        return employee.email || '';
+        return employee.person.email || '';
       case 'position':
-        return employee.position || '';
+        return employee.employment.position || '';
       case 'location':
-        return employee.location || '';
+        return employee.employment.location || '';
       default:
         return '';
     }
@@ -144,7 +144,7 @@ export class EmployeeSearchBuilder implements SearchBuilder<Employee> {
 /**
  * Employee Sort Builder - sort by various fields
  */
-export class EmployeeSortBuilder implements SortBuilder<Employee> {
+export class EmployeeSortBuilder implements SortBuilder<EmployeeProfile> {
   private readonly sortableFields = [
     'firstName',
     'lastName',
@@ -158,13 +158,13 @@ export class EmployeeSortBuilder implements SortBuilder<Employee> {
     'location'
   ];
 
-  apply(employees: Employee[], sort: SortParams): Employee[] {
+  apply(employees: EmployeeProfile[], sort: SortParams): EmployeeProfile[] {
     if (!sort.sortBy || !this.sortableFields.includes(sort.sortBy)) {
       return employees;
     }
 
     const sortOrder = sort.sortOrder || 'asc';
-    
+
     return [...employees].sort((a, b) => {
       const aValue = this.getFieldValue(a, sort.sortBy!);
       const bValue = this.getFieldValue(b, sort.sortBy!);
@@ -187,28 +187,28 @@ export class EmployeeSortBuilder implements SortBuilder<Employee> {
     });
   }
 
-  private getFieldValue(employee: Employee, field: string): any {
+  private getFieldValue(employee: EmployeeProfile, field: string): any {
     switch (field) {
       case 'firstName':
-        return employee.firstName;
+        return employee.person.firstName;
       case 'lastName':
-        return employee.lastName;
+        return employee.person.lastName;
       case 'fullName':
-        return employee.fullName;
+        return employee.person.fullName;
       case 'email':
-        return employee.email;
+        return employee.person.email;
       case 'position':
-        return employee.position;
+        return employee.employment.position;
       case 'hireDate':
-        return employee.hireDate;
+        return employee.employment.hireDate ? new Date(employee.employment.hireDate) : null;
       case 'employeeStatus':
-        return employee.employeeStatus;
+        return employee.employment.employeeStatus;
       case 'workStatus':
-        return employee.workStatus;
+        return employee.employment.workStatus;
       case 'jobGrade':
-        return employee.jobGrade;
+        return employee.employment.jobGrade;
       case 'location':
-        return employee.location;
+        return employee.employment.location;
       default:
         return null;
     }

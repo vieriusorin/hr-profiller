@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, timestamp, text, integer, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, timestamp, text, integer } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { opportunities } from './opportunities.schema';
@@ -35,6 +35,17 @@ export const insertOpportunityRoleSchema = baseInsertSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  startDate: z.union([
+    z.string().datetime().transform(str => new Date(str)),
+    z.string().regex(/^\d{4}-\d{2}-\d{2}$/).transform(str => new Date(str + 'T00:00:00.000Z')),
+    z.date()
+  ]).optional(),
+  endDate: z.union([
+    z.string().datetime().transform(str => new Date(str)),
+    z.string().regex(/^\d{4}-\d{2}-\d{2}$/).transform(str => new Date(str + 'T00:00:00.000Z')),
+    z.date()
+  ]).optional(),
 });
 
 const baseSelectSchema = createSelectSchema(opportunityRoles);

@@ -1,8 +1,8 @@
 import { Request } from 'express';
 import { ResponseEnvelope, ErrorResponse } from '../../shared/types';
-import { 
-  PaginationParams, 
-  PaginationMeta, 
+import {
+  PaginationParams,
+  PaginationMeta,
   PaginatedResponse,
   CollectionMeta,
   FilterParams,
@@ -47,7 +47,7 @@ export abstract class EnhancedBasePresenter<TInput, TOutput> {
   ): PaginationMeta {
     const { page = 1, limit = 10 } = params;
     const totalPages = Math.ceil(totalCount / limit);
-    
+
     return {
       page,
       limit,
@@ -90,10 +90,10 @@ export abstract class EnhancedBasePresenter<TInput, TOutput> {
   protected processCollection(
     data: TInput[],
     queryParams: QueryParams
-  ): { 
-    processedData: TInput[], 
-    totalFiltered: number, 
-    totalOriginal: number 
+  ): {
+    processedData: TInput[],
+    totalFiltered: number,
+    totalOriginal: number
   } {
     let processedData = [...data];
     const totalOriginal = data.length;
@@ -129,12 +129,12 @@ export abstract class EnhancedBasePresenter<TInput, TOutput> {
   }
 
   successCollection(
-    items: TInput[], 
+    items: TInput[],
     req?: Request,
     meta?: Record<string, any>
   ): ResponseEnvelope<TOutput[]> {
     const presentedData = this.presentCollection(items);
-    
+
     const collectionMeta: CollectionMeta = {
       count: items.length,
       timestamp: new Date().toISOString(),
@@ -154,14 +154,14 @@ export abstract class EnhancedBasePresenter<TInput, TOutput> {
     const { processedData, totalFiltered, totalOriginal } = this.processCollection(items, queryParams);
     const presentedData = this.presentCollection(processedData);
     const paginationMeta = this.createPaginationMeta(queryParams, totalFiltered);
-    
-     const response: PaginatedResponse<TOutput> = {
-       data: presentedData,
-       pagination: paginationMeta,
-       filters: queryParams.filters,
-       search: queryParams.search ? { search: queryParams.search, searchFields: queryParams.searchFields } : undefined,
-       sort: queryParams.sortBy ? { sortBy: queryParams.sortBy, sortOrder: queryParams.sortOrder } : undefined,
-     };
+
+    const response: PaginatedResponse<TOutput> = {
+      data: presentedData,
+      pagination: paginationMeta,
+      filters: queryParams.filters,
+      search: queryParams.search ? { search: queryParams.search, searchFields: queryParams.searchFields } : undefined,
+      sort: queryParams.sortBy ? { sortBy: queryParams.sortBy, sortOrder: queryParams.sortOrder } : undefined,
+    };
 
     const responseMeta = {
       count: presentedData.length,
@@ -180,6 +180,11 @@ export abstract class EnhancedBasePresenter<TInput, TOutput> {
       message: error.message || 'An unexpected error occurred',
       code: error.code || 'INTERNAL_ERROR',
     };
+
+    // Include validation details if provided
+    if (error.details) {
+      errorData.details = error.details;
+    }
 
     if (process.env.NODE_ENV === 'development' && error.stack) {
       errorData.stack = error.stack;
