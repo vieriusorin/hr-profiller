@@ -11,7 +11,24 @@ import {
   createRoleSchema,
   CreateRoleFormData
 } from '../schemas';
-import { Role } from '@/shared/types';
+import { CreateRole, Role } from '@/lib/api-client';
+import { OpportunityLevel } from '@/lib/backend-types/enums';
+import { JobGrade } from '@/lib/backend-types/enums';
+
+const mapRoleToFormData = (role: Partial<Role> | undefined): Partial<CreateRoleFormData> | undefined => {
+  if (!role) return undefined;
+
+  return {
+    roleName: role.roleName || '',
+    requiredGrade: role.jobGrade as JobGrade,
+    opportunityLevel: role.level as OpportunityLevel,
+    allocation: role.allocation || 100,
+    needsHire: role.status === 'Open',
+    comments: role.notes || '',
+    assignedMemberIds: role.assignedMembers?.map(member => member.id) || [],
+    newHireName: '',
+  };
+};
 
 export const useRoleForm = ({
   mode = 'create',
@@ -22,18 +39,21 @@ export const useRoleForm = ({
 }: UseRoleFormProps): UseRoleFormReturn => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Transform the API role data to form data format
+  const formDefaultValues = mapRoleToFormData(initialData) || {
+    roleName: '',
+    requiredGrade: 'SE',
+    opportunityLevel: 'Medium',
+    allocation: 100,
+    needsHire: false,
+    comments: '',
+    assignedMemberIds: [],
+    newHireName: '',
+  };
+
   const form = useForm<CreateRoleFormData>({
     resolver: zodResolver(createRoleSchema),
-    defaultValues: initialData || {
-      roleName: '',
-      requiredGrade: 'SE',
-      opportunityLevel: 'Medium',
-      allocation: 100,
-      needsHire: false,
-      comments: '',
-      assignedMemberIds: [],
-      newHireName: '',
-    },
+    defaultValues: formDefaultValues,
   });
 
   const handleSubmit = async () => {
@@ -48,7 +68,7 @@ export const useRoleForm = ({
           newHireName: data.needsHire ? data.newHireName : '',
         };
 
-        await onSubmit(roleData as Role);
+        await onSubmit(roleData as unknown as CreateRole);
         if (mode === 'create') {
           form.reset();
         }

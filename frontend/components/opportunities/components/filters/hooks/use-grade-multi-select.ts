@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { GRADE_OPTIONS } from '@/shared/lib/constants/grades';
-import type { Grade } from '@/shared/types';
+import type { Grade } from '@/lib/types';
 
 import type { UseGradeMultiSelectParams, UseGradeMultiSelectHandlers } from '../types';
 export const useGradeMultiSelect = (

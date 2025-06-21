@@ -1,4 +1,4 @@
-import { OpportunityFilters } from '@/shared/types';
+import { OpportunityFilters } from '@/lib/types';
 
 export const queryKeys = {
   opportunities: {

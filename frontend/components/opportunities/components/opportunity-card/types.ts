@@ -1,4 +1,4 @@
-import { Opportunity } from '@/shared/types';
+import { Opportunity } from '@/lib/types';
 import type { OpportunityActionCallbacks } from '../../types';
 
 export interface UseOpportunityCardProps extends OpportunityActionCallbacks {

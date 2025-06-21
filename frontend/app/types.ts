@@ -1,4 +1,4 @@
-import { Opportunity, OpportunityFilters, CreateRoleForm } from '@/shared/types';
+import { Opportunity, OpportunityFilters, CreateRoleForm } from '@/lib/types';
 import { ReactNode } from 'react';
 
 export interface UseDashboardReturn {

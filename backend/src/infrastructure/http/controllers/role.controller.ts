@@ -3,6 +3,16 @@ import { Request, Response } from 'express';
 import { RoleService } from '../../../domain/opportunity/services/role.service';
 import { TYPES } from '../../../shared/types';
 import { insertOpportunityRoleSchema } from '../../../../db/schema/opportunity-roles.schema';
+import { z } from 'zod';
+
+// Schema for assigning/unassigning members
+const assignMemberSchema = z.object({
+  personId: z.string().uuid('Person ID must be a valid UUID')
+});
+
+const updateAssignedMembersSchema = z.object({
+  personIds: z.array(z.string().uuid('Each person ID must be a valid UUID'))
+});
 
 @injectable()
 export class RoleController {
@@ -48,5 +58,54 @@ export class RoleController {
     const { id } = req.params;
     await this.roleService.delete(id);
     res.status(204).send();
+  }
+
+  // New endpoints for managing assigned members
+  async assignMember(req: Request, res: Response) {
+    const { id: roleId } = req.params;
+    const parseResult = assignMemberSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return res.status(400).json({ status: 'error', message: 'Validation failed', errors: parseResult.error.errors });
+    }
+
+    try {
+      await this.roleService.assignMember(roleId, parseResult.data.personId);
+      res.json({ status: 'success', message: 'Member assigned successfully' });
+    } catch (error) {
+      console.error('Failed to assign member:', error);
+      res.status(500).json({ status: 'error', message: 'Failed to assign member' });
+    }
+  }
+
+  async unassignMember(req: Request, res: Response) {
+    const { id: roleId } = req.params;
+    const parseResult = assignMemberSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return res.status(400).json({ status: 'error', message: 'Validation failed', errors: parseResult.error.errors });
+    }
+
+    try {
+      await this.roleService.unassignMember(roleId, parseResult.data.personId);
+      res.json({ status: 'success', message: 'Member unassigned successfully' });
+    } catch (error) {
+      console.error('Failed to unassign member:', error);
+      res.status(500).json({ status: 'error', message: 'Failed to unassign member' });
+    }
+  }
+
+  async updateAssignedMembers(req: Request, res: Response) {
+    const { id: roleId } = req.params;
+    const parseResult = updateAssignedMembersSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return res.status(400).json({ status: 'error', message: 'Validation failed', errors: parseResult.error.errors });
+    }
+
+    try {
+      await this.roleService.updateAssignedMembers(roleId, parseResult.data.personIds);
+      res.json({ status: 'success', message: 'Assigned members updated successfully' });
+    } catch (error) {
+      console.error('Failed to update assigned members:', error);
+      res.status(500).json({ status: 'error', message: 'Failed to update assigned members' });
+    }
   }
 } 

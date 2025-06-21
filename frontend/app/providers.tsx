@@ -31,7 +31,8 @@ export function Providers({ children }: ProvidersProps) {
 	);
 
 	return (
-		<SessionProvider>
+		// @ts-expect-error - NextAuth v4 SessionProvider has React 19 compatibility issues
+		<SessionProvider session={null}>
 			<QueryClientProvider client={queryClient}>
 				<NuqsAdapter>
 					{children}

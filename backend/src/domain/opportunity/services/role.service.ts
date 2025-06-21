@@ -30,4 +30,17 @@ export class RoleService {
   async delete(id: string): Promise<void> {
     return this.roleRepository.delete(id);
   }
+
+  // New methods for managing assigned members
+  async assignMember(roleId: string, personId: string): Promise<void> {
+    return this.roleRepository.assignMember(roleId, personId);
+  }
+
+  async unassignMember(roleId: string, personId: string): Promise<void> {
+    return this.roleRepository.unassignMember(roleId, personId);
+  }
+
+  async updateAssignedMembers(roleId: string, personIds: string[]): Promise<void> {
+    return this.roleRepository.updateAssignedMembers(roleId, personIds);
+  }
 } 

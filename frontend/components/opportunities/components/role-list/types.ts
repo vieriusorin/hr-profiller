@@ -1,4 +1,4 @@
-import { Role, Opportunity } from "@/shared/types";
+import { Role, Opportunity } from '@/lib/api-client';
 
 export type RoleListProps = {
     roles: Role[];

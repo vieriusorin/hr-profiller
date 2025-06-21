@@ -7,7 +7,7 @@ import { OpportunityCard } from '../opportunity-card/opportunity-card';
 import { ValidationErrorDisplay } from './components/validation-error-display';
 import { LoadingSpinner } from './components/loading-spinner';
 import { OpportunityListSummary } from './components/opportunity-list-summary';
-import { Opportunity, OpportunityFilters } from '@/shared/types';
+import { Opportunity, OpportunityFilters } from '@/lib/types';
 import { useState } from 'react';
 import { EditOpportunityModal } from '../modals/edit-role-modal';
 import { withErrorBoundary } from '@/app/shared/components/with-error-boundary';

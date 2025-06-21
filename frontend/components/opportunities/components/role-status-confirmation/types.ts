@@ -1,10 +1,11 @@
+import { RoleStatus } from '@/lib/types';
 import React from 'react';
 
 export interface RoleStatusConfirmationDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  status: 'Won' | 'Staffed' | 'Lost';
+  status: RoleStatus;
   roleName?: string;
 }
 
@@ -15,5 +16,3 @@ export interface StatusConfig {
   description: string;
   buttonColor: string;
 }
-
-export type RoleStatusType = 'Won' | 'Staffed' | 'Lost'; 

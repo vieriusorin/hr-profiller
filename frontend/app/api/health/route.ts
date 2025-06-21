@@ -11,7 +11,7 @@ export async function GET() {
       version: process.env.npm_package_version || '1.0.0',
     };
 
-    return NextResponse.json(healthCheck, { 
+    return NextResponse.json(healthCheck, {
       status: 200,
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -21,11 +21,12 @@ export async function GET() {
     });
   } catch (error) {
     return NextResponse.json(
-      { 
-        status: 'error', 
+      {
+        status: 'error',
         timestamp: new Date().toISOString(),
-        error: 'Health check failed'
-      }, 
+        error: 'Health check failed',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 503 }
     );
   }

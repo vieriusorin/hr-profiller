@@ -1,4 +1,4 @@
-import { Opportunity } from '@/shared/types';
+import { Opportunity } from '@/lib/types';
 import { ViewMode } from '../components/view-toggle/types';
 import { OpportunityFiltersState } from '../hooks/useOpportunityFilters';
 

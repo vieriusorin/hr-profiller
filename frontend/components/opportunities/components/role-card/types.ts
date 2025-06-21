@@ -1,4 +1,5 @@
-import { Member, Role, RoleStatus, Opportunity } from '@/shared/types';
+import { EmployeeProfile, Role, Opportunity } from '@/lib/api-client';
+import { RoleStatus } from '@/lib/types';
 
 export interface RoleStatusActions {
   onUpdateStatus?: (roleId: string, status: RoleStatus) => void;
@@ -17,7 +18,7 @@ export interface UseRoleCardProps extends RoleStatusActions {
 
 export interface UseRoleCardReturn {
   handleStatusUpdate: (status: RoleStatus) => void;
-} 
+}
 
 export interface RoleStatusActionsProps {
   status: RoleStatus;
@@ -26,7 +27,7 @@ export interface RoleStatusActionsProps {
 }
 
 export interface AssignedMemberInfoProps {
-  member: Member;
+  employee: EmployeeProfile;
 }
 
 export type UseRoleStatusActionsProps = {
@@ -35,7 +36,7 @@ export type UseRoleStatusActionsProps = {
 
 export type ConfirmationDialogState = {
   isOpen: boolean;
-  status: 'Won' | 'Staffed' | 'Lost';
+  status: RoleStatus;
 }
 
 

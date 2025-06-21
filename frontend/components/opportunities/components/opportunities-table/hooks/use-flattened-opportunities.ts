@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { Opportunity } from '@/shared/types';
+import type { Opportunity } from '@/lib/types';
 import type { FlattenedRow } from '../types';
 
 export const useFlattenedOpportunities = (opportunities: Opportunity[]): FlattenedRow[] => {

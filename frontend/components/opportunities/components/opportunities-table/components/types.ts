@@ -1,6 +1,6 @@
 import { FlattenedRow } from "../types";
-import { Opportunity, RoleStatus, UrgencyConfig } from "@/shared/types";
-import { Employee } from "@/shared/types/employees";
+import { Opportunity, RoleStatus, UrgencyConfig } from '@/lib/types';
+import { Employee } from '@/lib/types';
 import { OpportunityActionCallbacks } from "../../../types";
 
 export interface OpportunitiesTableRowProps extends OpportunityActionCallbacks {

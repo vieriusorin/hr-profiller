@@ -5,7 +5,6 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CollapsibleSectionProps } from "../_types";
 
-
 export const CollapsibleSection = ({
 	title,
 	children,

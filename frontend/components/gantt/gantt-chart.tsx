@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react";
 import { Gantt, Task, ViewMode } from "gantt-task-react";
 import "gantt-task-react/dist/index.css";
-import { Opportunity } from "@/shared/schemas/api-schemas";
+import { Opportunity } from '@/lib/types';
 import { format } from "date-fns";
 import { useTheme } from "@/app/providers/theme-provider";
 import type { GanttSettings } from "@/app/types";

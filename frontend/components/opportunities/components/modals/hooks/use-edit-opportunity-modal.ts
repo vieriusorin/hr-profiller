@@ -2,7 +2,7 @@ import {
 	useUpdateOpportunityMutation,
 	useOpportunityQuery,
 } from "../../../hooks/use-opportunities-query";
-import { Opportunity } from "@/shared/types";
+import { Opportunity } from '@/lib/types';
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { UseEditOpportunityModalProps } from "../types";

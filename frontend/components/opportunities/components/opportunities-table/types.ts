@@ -2,8 +2,8 @@ import type {
   Opportunity as OpportunityType,
 } from "@/app/shared/types";
 import type { OpportunityActionCallbacks } from "../../types";
-import { Employee } from "@/shared/types/employees";
-import { Opportunity, UrgencyConfig } from "@/shared/types";
+import { Employee } from '@/lib/types';
+import { Opportunity, UrgencyConfig } from '@/lib/types';
 
 export type ListType = "in-progress" | "on-hold" | "completed";
 

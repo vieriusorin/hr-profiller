@@ -17,7 +17,18 @@ export class OpportunityService {
   ) { }
 
   async getAllOpportunities(): Promise<Opportunity[]> {
-    return this.opportunityRepository.findAll();
+    const opportunities = await this.opportunityRepository.findAll();
+
+    // Fetch roles for each opportunity and attach them
+    const opportunitiesWithRoles = await Promise.all(
+      opportunities.map(async (opportunity) => {
+        const roles = await this.roleService.findAllByOpportunity(opportunity.id);
+        (opportunity as any).roles = roles;
+        return opportunity;
+      })
+    );
+
+    return opportunitiesWithRoles;
   }
 
   async getOpportunityById(id: string): Promise<Opportunity | null> {

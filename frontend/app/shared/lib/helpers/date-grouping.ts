@@ -1,5 +1,5 @@
 import { format, parseISO, isValid } from 'date-fns';
-import { MonthGroup, Opportunity } from '@/shared/types';
+import { MonthGroup, Opportunity } from '@/lib/types';
 
 export const groupOpportunitiesByMonth = (opportunities: Opportunity[]): MonthGroup[] => {
   // Sort opportunities by createdAt date in descending order (newest first)

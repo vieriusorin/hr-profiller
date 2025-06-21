@@ -4,7 +4,7 @@ import {
   validateNeedsHire, 
   isValidGrade,
 } from './filter-validation';
-import { Grade } from '@/shared/types';
+import { Grade } from '@/lib/types';
 
 export const parseAsValidatedGrades = createParser({
   parse(query: string): Grade[] {

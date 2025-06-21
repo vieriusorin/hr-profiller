@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Role } from '@/shared/types';
+import { Role } from '@/lib/api-client';
 
 export const useRoleList = () => {
-      const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+    const [selectedRole, setSelectedRole] = useState<Role | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     const handleRoleClick = (role: Role) => {

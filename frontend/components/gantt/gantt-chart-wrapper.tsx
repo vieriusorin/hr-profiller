@@ -1,7 +1,7 @@
 'use client';
 
 import { GanttChart } from './gantt-chart';
-import { Opportunity } from '@/shared/schemas/api-schemas';
+import { Opportunity } from '@/lib/types';
 
 interface GanttChartWrapperProps {
   opportunities: Opportunity[];

@@ -1,4 +1,4 @@
-import { RoleStatus } from '@/shared/types';
+import { RoleStatus } from '@/lib/types';
 import { UseRoleCardProps, UseRoleCardReturn } from '../types';
 
 export const useRoleCard = ({

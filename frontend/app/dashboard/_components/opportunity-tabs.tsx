@@ -5,8 +5,10 @@ import { OpportunityTabsProps } from "../_types";
 import { OpportunityCardSkeleton } from "@/components/opportunities/components/opportunity-card/opportunity-card-skeleton";
 import OpportunitiesList from "@/components/opportunities/components/opportunities-list";
 import { GanttChartWrapper } from "@/components/gantt/gantt-chart-wrapper";
-import { withErrorBoundary } from '@/app/shared/components/with-error-boundary';
-import { OpportunitiesErrorFallback } from '@/app/shared/components/error-fallbacks/opportunities-error-fallback';
+import { withErrorBoundary } from "@/app/shared/components/with-error-boundary";
+import { OpportunitiesErrorFallback } from "@/app/shared/components/error-fallbacks/opportunities-error-fallback";
+import { useOpportunityFilters } from "@/components/opportunities/hooks/useOpportunityFilters";
+import { filterOpportunitiesWithMatchingRoles } from "@/components/opportunities/utils/opportunity-filtering";
 
 // Create error boundary wrapped versions of our content components
 const ErrorBoundaryWrappedContent = withErrorBoundary(
@@ -15,7 +17,7 @@ const ErrorBoundaryWrappedContent = withErrorBoundary(
 );
 
 const ErrorBoundaryWrappedGantt = withErrorBoundary(GanttChartWrapper, {
-	FallbackComponent: OpportunitiesErrorFallback
+	FallbackComponent: OpportunitiesErrorFallback,
 });
 
 export const OpportunityTabs = ({
@@ -40,6 +42,8 @@ export const OpportunityTabs = ({
 	hasNextPageCompleted,
 	isFetchingNextPageCompleted,
 }: OpportunityTabsProps) => {
+	const { filters: currentFilters } = useOpportunityFilters();
+
 	const allOpportunities = useMemo(() => {
 		return [
 			...opportunities,
@@ -48,16 +52,28 @@ export const OpportunityTabs = ({
 		];
 	}, [opportunities, onHoldOpportunities, completedOpportunities]);
 
+	// Calculate filtered counts using role-based filtering logic
+	const filteredInProgress = useMemo(() => {
+		return filterOpportunitiesWithMatchingRoles(opportunities, currentFilters);
+	}, [opportunities, currentFilters]);
+
+	const filteredOnHold = useMemo(() => {
+		return filterOpportunitiesWithMatchingRoles(
+			onHoldOpportunities,
+			currentFilters
+		);
+	}, [onHoldOpportunities, currentFilters]);
+
+	const filteredCompleted = useMemo(() => {
+		return filterOpportunitiesWithMatchingRoles(
+			completedOpportunities,
+			currentFilters
+		);
+	}, [completedOpportunities, currentFilters]);
+
 	if (currentView === "gantt") {
 		return <ErrorBoundaryWrappedGantt opportunities={allOpportunities} />;
 	}
-
-	const filteredInProgress = filterOpportunities(opportunities, filters);
-	const filteredOnHold = filterOpportunities(onHoldOpportunities, filters);
-	const filteredCompleted = filterOpportunities(
-		completedOpportunities,
-		filters
-	);
 
 	return (
 		<Tabs defaultValue='in-progress' className='w-full'>

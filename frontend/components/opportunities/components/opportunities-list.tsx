@@ -2,7 +2,6 @@
 
 import React from "react";
 import { OpportunitiesListProps } from "../types";
-import { Opportunity } from "@/shared/types";
 import OpportunitiesTable from "./opportunities-table/opportunities-table";
 import { GroupedOpportunitiesList } from "./grouped-opportunities-list";
 
@@ -24,22 +23,19 @@ const OpportunitiesList: React.FC<OpportunitiesListProps> = ({
 	hasNextPage,
 	isFetchingNextPage,
 }: OpportunitiesListProps) => {
-	let opportunitiesToShow: Opportunity[] = [];
-
-	switch (status) {
-		case "in-progress":
-			opportunitiesToShow = filterOpportunities(opportunities, filters);
-			break;
-		case "on-hold":
-			opportunitiesToShow = filterOpportunities(onHoldOpportunities, filters);
-			break;
-		case "completed":
-			opportunitiesToShow = filterOpportunities(
-				completedOpportunities,
-				filters
-			);
-			break;
-	}
+	// Use the opportunities directly since they're already filtered by the infinite query
+	const opportunitiesToShow = (() => {
+		switch (status) {
+			case "in-progress":
+				return opportunities;
+			case "on-hold":
+				return onHoldOpportunities;
+			case "completed":
+				return completedOpportunities;
+			default:
+				return [];
+		}
+	})();
 
 	return (
 		<>

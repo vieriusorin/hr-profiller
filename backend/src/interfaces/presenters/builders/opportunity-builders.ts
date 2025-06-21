@@ -1,50 +1,56 @@
 import { Opportunity } from '../../../domain/opportunity/entities/opportunity.entity';
-import { 
-  FilterBuilder, 
-  SearchBuilder, 
+import {
+  FilterBuilder,
+  SearchBuilder,
   SortBuilder,
   FilterParams,
   SearchParams,
   SortParams,
-  OpportunityFilters 
+  OpportunityFilters
 } from '../../../shared/types/presenter.types';
 
 
 export class OpportunityFilterBuilder implements FilterBuilder<Opportunity> {
   apply(opportunities: Opportunity[], filters: FilterParams | OpportunityFilters): Opportunity[] {
     return opportunities.filter(opportunity => {
-       if (filters.client) {
-         const clientName = opportunity.clientName || '';
-         const clientMatch = clientName
-           .toLowerCase()
-           .includes(filters.client.toLowerCase());
-         if (!clientMatch) return false;
-       }
+      if (filters.client) {
+        const clientName = opportunity.clientName || '';
+        const clientMatch = clientName
+          .toLowerCase()
+          .includes(filters.client.toLowerCase());
+        if (!clientMatch) return false;
+      }
 
       if (filters.grades && Array.isArray(filters.grades) && filters.grades.length > 0) {
-        // Note: Assuming opportunity has roles with grades
-        // You'll need to adapt this to your actual Opportunity entity structure
-        const hasMatchingGrade = true; // TODO: Implement based on your entity structure
+        // Check if any role in this opportunity has a matching grade
+        // Roles are attached dynamically in the service layer
+        const opportunityWithRoles = opportunity as any;
+        const hasMatchingGrade = opportunityWithRoles.roles && opportunityWithRoles.roles.some((role: any) =>
+          role.jobGrade && filters.grades!.includes(role.jobGrade)
+        );
         if (!hasMatchingGrade) return false;
       }
 
       // Needs hire filter
       if (filters.needsHire && filters.needsHire !== 'all') {
         const needsHire = filters.needsHire === 'yes';
-        // TODO: Implement based on your business logic
-        // For now, assuming all opportunities need hire
-        const opportunityNeedsHire = true;
-        if (needsHire !== opportunityNeedsHire) return false;
+        // Check if any role in this opportunity needs hire (status is "Open")
+        // Roles are attached dynamically in the service layer
+        const opportunityWithRoles = opportunity as any;
+        const opportunityNeedsHire = opportunityWithRoles.roles && opportunityWithRoles.roles.some((role: any) =>
+          role.status === 'Open'
+        );
+        if (needsHire !== !!opportunityNeedsHire) return false;
       }
 
-             // Probability range filter
-       if (filters.probability && Array.isArray(filters.probability)) {
-         const [min, max] = filters.probability;
-         const probability = opportunity.probability || 0;
-         if (probability < min || probability > max) {
-           return false;
-         }
-       }
+      // Probability range filter
+      if (filters.probability && Array.isArray(filters.probability)) {
+        const [min, max] = filters.probability;
+        const probability = opportunity.probability || 0;
+        if (probability < min || probability > max) {
+          return false;
+        }
+      }
 
       // Status filter
       if (filters.status) {
@@ -59,12 +65,12 @@ export class OpportunityFilterBuilder implements FilterBuilder<Opportunity> {
       // Date range filter
       if (filters.dateRange) {
         const oppDate = new Date(opportunity.createdAt);
-        
+
         if (filters.dateRange.start) {
           const startDate = new Date(filters.dateRange.start);
           if (oppDate < startDate) return false;
         }
-        
+
         if (filters.dateRange.end) {
           const endDate = new Date(filters.dateRange.end);
           if (oppDate > endDate) return false;
@@ -86,7 +92,7 @@ export class OpportunityFilterBuilder implements FilterBuilder<Opportunity> {
 
   sanitize(filters: FilterParams): FilterParams {
     const sanitized = { ...filters };
-    
+
     // Sanitize probability range
     if (sanitized.probability && Array.isArray(sanitized.probability)) {
       const [min, max] = sanitized.probability;
@@ -166,7 +172,7 @@ export class OpportunitySortBuilder implements SortBuilder<Opportunity> {
     }
 
     const sortOrder = sort.sortOrder || 'asc';
-    
+
     return [...opportunities].sort((a, b) => {
       const aValue = this.getFieldValue(a, sort.sortBy!);
       const bValue = this.getFieldValue(b, sort.sortBy!);

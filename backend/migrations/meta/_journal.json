@@ -57,6 +57,13 @@
       "when": 1750319683351,
       "tag": "0007_greedy_killmonger",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1750515476865,
+      "tag": "0008_sour_steve_rogers",
+      "breakpoints": true
     }
   ]
 }

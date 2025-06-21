@@ -1,7 +1,6 @@
-import { Opportunity } from "@/app/shared/types";
+import { apiClient } from "@/lib/api-client";
 import { ListType } from "../components/opportunities-table/types";
-
-const API_BASE_URL = "/api/opportunities";
+import type { Opportunity } from "@/lib/types";
 
 export const fetchOpportunities = async (
   listType: ListType,
@@ -12,17 +11,12 @@ export const fetchOpportunities = async (
     listType === "on-hold" ? "On Hold" :
       "Done";
 
-  const params = new URLSearchParams({
-    _page: page.toString(),
-    _limit: limit.toString(),
-    status: status,
-  });
+  const params = {
+    page: page,
+    limit: limit,
+    status: status as 'In Progress' | 'On Hold' | 'Done',
+  };
 
-  const response = await fetch(`${API_BASE_URL}?${params.toString()}`);
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch opportunities");
-  }
-
-  return response.json();
+  const response = await apiClient.opportunities.list(params);
+  return response.data;
 }; 

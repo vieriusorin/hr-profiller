@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { RoleStatus } from '@/shared/types';
+import { RoleStatus } from '@/lib/types';
 
 export const useRoleRow = (onUpdateRole: (opportunityId: string, roleId: string, status: RoleStatus) => void) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);

@@ -14,7 +14,11 @@
 		"db:studio": "drizzle-kit studio",
 		"db:migrate": "drizzle-kit migrate --config=drizzle.config.ts",
 		"db:seed": "tsx ./db/seed.ts",
-		"db:reset": "tsx ./db/reset.ts"
+		"db:reset": "tsx ./db/reset.ts",
+		"openapi:generate": "npm run build && node scripts/generate-openapi.js",
+		"openapi:validate": "npm run openapi:generate",
+		"types:generate": "npm run openapi:generate",
+		"generate:types": "node ../scripts/generate-all-types.js"
 	},
 	"author": "",
 	"license": "ISC",

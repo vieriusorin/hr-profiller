@@ -5,6 +5,7 @@ import { CheckCircle, UserCheck, XCircle } from "lucide-react";
 import { RoleStatusActionsProps } from "./types";
 import { RoleStatusConfirmationDialog } from "../role-status-confirmation";
 import { useRoleStatusActions } from "./hooks/use-role-status-actions";
+import { RoleStatus } from "@/lib/types";
 
 export const RoleStatusActions = ({
 	status,
@@ -67,7 +68,7 @@ export const RoleStatusActions = ({
 				isOpen={confirmationDialog.isOpen}
 				onClose={handleCloseDialog}
 				onConfirm={handleConfirm}
-				status={confirmationDialog.status}
+				status={confirmationDialog.status as RoleStatus}
 			/>
 		</>
 	);

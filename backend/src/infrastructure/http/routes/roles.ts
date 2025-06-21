@@ -246,4 +246,195 @@ router.delete('/:id', async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/v1/roles/{id}/assign-member:
+ *   post:
+ *     summary: Assign a person to a role
+ *     tags: [Roles]
+ *     description: Assign a person (employee or candidate) to a specific role
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Role UUID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               personId:
+ *                 type: string
+ *                 format: uuid
+ *                 description: UUID of the person to assign
+ *             required:
+ *               - personId
+ *     responses:
+ *       200:
+ *         description: Member assigned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Member assigned successfully
+ *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.post('/:id/assign-member', async (req, res, next) => {
+  try {
+    await roleController.assignMember(req, res);
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * @swagger
+ * /api/v1/roles/{id}/unassign-member:
+ *   post:
+ *     summary: Unassign a person from a role
+ *     tags: [Roles]
+ *     description: Remove a person assignment from a specific role
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Role UUID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               personId:
+ *                 type: string
+ *                 format: uuid
+ *                 description: UUID of the person to unassign
+ *             required:
+ *               - personId
+ *     responses:
+ *       200:
+ *         description: Member unassigned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Member unassigned successfully
+ *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.post('/:id/unassign-member', async (req, res, next) => {
+  try {
+    await roleController.unassignMember(req, res);
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * @swagger
+ * /api/v1/roles/{id}/assigned-members:
+ *   put:
+ *     summary: Update the full list of assigned members for a role
+ *     tags: [Roles]
+ *     description: Replace all current assignments with a new list of person IDs
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Role UUID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               personIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: uuid
+ *                 description: Array of person UUIDs to assign to this role
+ *             required:
+ *               - personIds
+ *     responses:
+ *       200:
+ *         description: Assigned members updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Assigned members updated successfully
+ *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.put('/:id/assigned-members', async (req, res, next) => {
+  try {
+    await roleController.updateAssignedMembers(req, res);
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router; 

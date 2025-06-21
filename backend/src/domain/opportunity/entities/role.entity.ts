@@ -3,6 +3,15 @@ import { TypeJobGrade } from '../../../../db/enums/job-grade.enum';
 import { TypeOpportunityLevel } from '../../../../db/enums/opportunity-level.enum';
 import { TypeRoleStatus } from '../../../../db/enums/role-status.enum';
 
+export interface AssignedMember {
+  id: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  email: string;
+  assignedAt?: Date | null;
+}
+
 export class Role implements TypeOpportunityRole {
   readonly id!: string;
   readonly opportunityId!: string;
@@ -17,7 +26,10 @@ export class Role implements TypeOpportunityRole {
   readonly createdAt!: Date | null;
   readonly updatedAt!: Date | null;
 
-  constructor(data: TypeOpportunityRole) {
+  // Additional property for assigned members
+  public assignedMembers?: AssignedMember[];
+
+  constructor(data: TypeOpportunityRole & { assignedMembers?: AssignedMember[] }) {
     Object.assign(this, data);
   }
 } 

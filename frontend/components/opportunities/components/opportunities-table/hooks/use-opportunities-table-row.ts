@@ -7,15 +7,12 @@ import {
   getUrgencyTooltip,
 } from '@/shared/lib/helpers/date-urgency';
 import { OpportunitiesContext } from '@/components/opportunities/components/opportunities-table/opportunities-table';
-import { Employee } from '@/shared/types/employees';
 import { FlattenedRow } from '@/components/opportunities/components/opportunities-table/types';
+import { apiClient, type Employee } from '@/lib/api-client';
 
 const fetchEmployees = async (): Promise<Employee[]> => {
-  const res = await fetch('/api/employees');
-  if (!res.ok) {
-    throw new Error('Failed to fetch employees');
-  }
-  return res.json();
+  const response = await apiClient.employees.list();
+  return response.data;
 };
 
 export const useOpportunitiesTableRow = (

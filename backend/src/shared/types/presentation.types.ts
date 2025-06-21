@@ -30,7 +30,7 @@ export interface EmployeePresentation {
   position?: string;
   employeeStatus?: string;
   workStatus?: string;
-  jobGrade?: string;
+  jobGrade?: 'JT' | 'T' | 'ST' | 'EN' | 'SE' | 'C' | 'SC' | 'SM' | null;
   location?: string;
   hireDate?: string;
   terminationDate?: string;

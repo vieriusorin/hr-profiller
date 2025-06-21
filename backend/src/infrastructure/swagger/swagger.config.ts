@@ -548,9 +548,31 @@ const options: swaggerJsdoc.Options = {
               type: 'boolean',
               description: 'Whether the opportunity is expiring within 30 days - computed from end date',
               example: false
+            },
+            // Roles attached by service layer
+            roles: {
+              type: 'array',
+              description: 'Array of roles associated with this opportunity',
+              items: {
+                $ref: '#/components/schemas/Role'
+              },
+              example: [
+                {
+                  id: '789e0123-e89b-12d3-a456-426614174003',
+                  opportunityId: '123e4567-e89b-12d3-a456-426614174000',
+                  roleName: 'Senior Frontend Developer',
+                  jobGrade: 'SE',
+                  level: 'High',
+                  allocation: 80,
+                  status: 'Open',
+                  notes: 'React experience required',
+                  createdAt: '2024-01-10T09:00:00Z',
+                  updatedAt: '2024-01-16T14:20:00Z'
+                }
+              ]
             }
           },
-          required: ['id', 'opportunityName', 'status', 'isActive', 'createdAt', 'updatedAt', 'isHighProbability', 'duration', 'isExpiringSoon']
+          required: ['id', 'opportunityName', 'status', 'isActive', 'createdAt', 'updatedAt', 'isHighProbability', 'duration', 'isExpiringSoon', 'roles']
         },
         CreateOpportunity: {
           type: 'object',
@@ -596,9 +618,9 @@ const options: swaggerJsdoc.Options = {
             },
             status: {
               type: 'string',
-              enum: ['Active', 'Won', 'Lost', 'On Hold'],
+              enum: ['In Progress', 'On Hold', 'Done'],
               description: 'Current status of the opportunity',
-              example: 'Active'
+              example: 'In Progress'
             },
             comment: {
               type: 'string',
@@ -652,9 +674,9 @@ const options: swaggerJsdoc.Options = {
             },
             status: {
               type: 'string',
-              enum: ['Active', 'Won', 'Lost', 'On Hold'],
+              enum: ['In Progress', 'On Hold', 'Done'],
               description: 'Current status of the opportunity',
-              example: 'Active'
+              example: 'In Progress'
             },
             comment: {
               type: 'string',
@@ -672,13 +694,13 @@ const options: swaggerJsdoc.Options = {
               type: 'string',
               format: 'uuid',
               description: 'Unique identifier (UUID) for the role',
-              example: '123e4567-e89b-12d3-a456-426614174000'
+              example: '789e0123-e89b-12d3-a456-426614174003'
             },
             opportunityId: {
               type: 'string',
               format: 'uuid',
-              description: 'UUID of the associated opportunity',
-              example: '456e7890-e89b-12d3-a456-426614174001'
+              description: 'Reference to the opportunity UUID',
+              example: '123e4567-e89b-12d3-a456-426614174000'
             },
             roleName: {
               type: 'string',
@@ -686,64 +708,116 @@ const options: swaggerJsdoc.Options = {
               example: 'Senior Frontend Developer'
             },
             jobGrade: {
-              type: 'string',
-              nullable: true,
-              description: 'Job grade level',
-              example: 'Senior'
+              $ref: '#/components/schemas/JobGrade',
+              description: 'Job grade for the role'
             },
             level: {
-              type: 'string',
-              nullable: true,
-              description: 'Opportunity level',
-              example: 'Expert'
+              $ref: '#/components/schemas/OpportunityLevel',
+              description: 'Priority/importance level of the role'
             },
             allocation: {
-              type: 'number',
-              nullable: true,
+              type: 'integer',
               minimum: 0,
               maximum: 100,
-              description: 'Allocation percentage',
-              example: 80
+              description: 'Allocation percentage (0-100)',
+              example: 100
             },
             startDate: {
               type: 'string',
-              format: 'date',
+              format: 'date-time',
               nullable: true,
               description: 'Role start date',
-              example: '2024-03-15'
+              example: '2024-01-15T00:00:00.000Z'
             },
             endDate: {
               type: 'string',
-              format: 'date',
+              format: 'date-time',
               nullable: true,
               description: 'Role end date',
-              example: '2024-09-15'
+              example: '2024-12-31T00:00:00.000Z'
             },
             status: {
-              type: 'string',
-              description: 'Current status of the role',
-              example: 'Open'
+              $ref: '#/components/schemas/RoleStatus',
+              description: 'Current status of the role'
             },
             notes: {
               type: 'string',
               nullable: true,
               description: 'Additional notes about the role',
-              example: 'Experience with React required'
+              example: 'Looking for someone with React and TypeScript experience'
             },
             createdAt: {
               type: 'string',
               format: 'date-time',
-              description: 'When the role was created',
-              example: '2024-01-10T09:00:00Z'
+              description: 'Creation timestamp',
+              example: '2024-01-01T12:00:00.000Z'
             },
             updatedAt: {
               type: 'string',
               format: 'date-time',
-              description: 'When the role was last updated',
-              example: '2024-01-16T14:20:00Z'
+              description: 'Last update timestamp',
+              example: '2024-01-02T14:30:00.000Z'
+            },
+            // Assigned members attached by service layer
+            assignedMembers: {
+              type: 'array',
+              description: 'Array of people assigned to this role',
+              items: {
+                $ref: '#/components/schemas/AssignedMember'
+              },
+              example: [
+                {
+                  id: '456e7890-e89b-12d3-a456-426614174001',
+                  firstName: 'John',
+                  lastName: 'Doe',
+                  fullName: 'John Doe',
+                  email: 'john.doe@company.com',
+                  assignedAt: '2024-01-15T10:00:00.000Z'
+                }
+              ]
             }
           },
-          required: ['id', 'opportunityId', 'roleName', 'status', 'createdAt', 'updatedAt']
+          required: ['id', 'opportunityId', 'roleName', 'status', 'createdAt', 'updatedAt', 'assignedMembers']
+        },
+        AssignedMember: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+              description: 'Unique identifier for the person',
+              example: '456e7890-e89b-12d3-a456-426614174001'
+            },
+            firstName: {
+              type: 'string',
+              description: 'First name of the person',
+              example: 'John'
+            },
+            lastName: {
+              type: 'string',
+              description: 'Last name of the person',
+              example: 'Doe'
+            },
+            fullName: {
+              type: 'string',
+              description: 'Full name of the person',
+              example: 'John Doe'
+            },
+            email: {
+              type: 'string',
+              format: 'email',
+              description: 'Email address of the person',
+              example: 'john.doe@company.com'
+            },
+            assignedAt: {
+              type: 'string',
+              format: 'date-time',
+              nullable: true,
+              description: 'When the person was assigned to this role',
+              example: '2024-01-15T10:00:00.000Z'
+            }
+          },
+          required: ['id', 'firstName', 'lastName', 'fullName', 'email']
         },
         CreateRole: {
           type: 'object',
@@ -3189,6 +3263,24 @@ const options: swaggerJsdoc.Options = {
             }
           },
           required: ['id', 'personId', 'firstName', 'lastName', 'fullName', 'email', 'yearsOfExperience', 'isInactive', 'isOnBench', 'isActive']
+        },
+        // Enum schemas
+        JobGrade: {
+          type: 'string',
+          enum: ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'],
+          description: 'Job grade/seniority level: JT=Junior Trainee, T=Trainee, ST=Senior Trainee, EN=Engineer, SE=Senior Engineer, C=Consultant, SC=Senior Consultant, SM=Senior Manager'
+        },
+
+        OpportunityLevel: {
+          type: 'string',
+          enum: ['Low', 'Medium', 'High'],
+          description: 'Opportunity priority/importance level'
+        },
+
+        RoleStatus: {
+          type: 'string',
+          enum: ['Open', 'Staffed', 'Won', 'Lost'],
+          description: 'Current status of the role: Open=needs to be filled, Staffed=assigned to someone, Won=successfully filled and project won, Lost=lost to competition'
         }
       }
     }

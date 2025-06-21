@@ -1,8 +1,4 @@
-import { promises as fs } from 'fs';
-import path from 'path';
 import { z } from 'zod';
-
-const dbPath = path.resolve(process.cwd(), 'db.json');
 
 const ganttSettingsSchema = z.object({
   highProbability: z.object({
@@ -53,25 +49,6 @@ export const settingsSchema = z.object({
 
 export type Settings = z.infer<typeof settingsSchema>;
 
-type DB = {
-  whitelabel: Settings;
-  [key: string]: unknown;
-};
-
-async function readDb(): Promise<DB> {
-  try {
-    const fileContent = await fs.readFile(dbPath, 'utf-8');
-    return JSON.parse(fileContent) as DB;
-  } catch (error) {
-    console.error("Failed to read or parse db.json:", error)
-    return { whitelabel: {} };
-  }
-}
-
-async function writeDb(data: DB): Promise<void> {
-  await fs.writeFile(dbPath, JSON.stringify(data, null, 2));
-}
-
 const defaultSettings: Settings = {
   logoUrl: "/default-logo.svg",
   primaryColor: "oklch(0.8780 0.1803 95.1354)",
@@ -117,30 +94,26 @@ const defaultSettings: Settings = {
   },
 };
 
+// Simple in-memory settings storage for now
+// In a real application, this could be moved to the backend API or localStorage
+let currentSettings: Settings = { ...defaultSettings };
+
 export async function getSettings(): Promise<Settings> {
-  const db = await readDb();
-  const dbSettings = db.whitelabel || {};
-
-  const ganttSettings = dbSettings.gantt
-    ? { ...defaultSettings.gantt, ...dbSettings.gantt }
-    : defaultSettings.gantt;
-
-  return {
-    ...defaultSettings,
-    ...dbSettings,
-    gantt: ganttSettings,
-  };
+  // Return default settings for now
+  // TODO: In the future, this could fetch from the backend API
+  return currentSettings;
 }
 
-export async function updateSettings(settings: Partial<Settings>) {
-  const db = await readDb();
-
-  const newSettings = {
-    ...db.whitelabel,
+export async function updateSettings(settings: Partial<Settings>): Promise<Settings> {
+  // Update in-memory settings
+  // TODO: In the future, this could save to the backend API
+  currentSettings = {
+    ...currentSettings,
     ...settings,
+    gantt: settings.gantt
+      ? { ...currentSettings.gantt, ...settings.gantt }
+      : currentSettings.gantt,
   };
 
-  db.whitelabel = newSettings;
-  await writeDb(db);
-  return newSettings;
+  return currentSettings;
 } 

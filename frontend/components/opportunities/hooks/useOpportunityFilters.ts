@@ -1,7 +1,7 @@
 import { useQueryStates } from 'nuqs';
 import { useState, useEffect, useRef } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
-import { Grade } from '@/shared/types';
+import { Grade } from '@/lib/types';
 import {
   parseAsValidatedClient,
   parseAsValidatedGrades,

@@ -9,7 +9,7 @@ import { StatusBadge } from "@/shared/components/status-badge";
 import { Users } from "lucide-react";
 import { EditRoleModal } from "../../modals/edit-role-modal";
 import { RoleStatusConfirmationDialog } from "../../role-status-confirmation";
-import { Grade, RoleStatus } from "@/shared/types";
+import { Grade, RoleStatus } from "@/lib/types";
 import { RoleRowProps } from "./types";
 import { useRoleRow } from "../hooks/use-role-row";
 import { RoleActions } from "./role-actions";
@@ -31,6 +31,11 @@ export const RoleRow = ({
 		handleConfirmStatusUpdate,
 		handleCloseDialog,
 	} = useRoleRow(onUpdateRole);
+
+	// Debug logging to identify the issue
+	console.log("RoleRow - row.roleId:", row.roleId);
+	console.log("RoleRow - row object:", row);
+	console.log("RoleRow - fullOpportunity roles:", fullOpportunity?.roles);
 
 	return (
 		<>
@@ -123,7 +128,6 @@ export const RoleRow = ({
 				<EditRoleModal
 					isOpen={isEditModalOpen}
 					onClose={handleCloseEditModal}
-					opportunityId={row.opportunityId}
 					role={{
 						id: row.roleId,
 						roleName: row.roleName ?? "",

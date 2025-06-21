@@ -1,7 +1,7 @@
 export type { OpportunityFiltersState } from '../../hooks/useOpportunityFilters';
 
 import type { ZodError } from 'zod';
-import type { Grade } from '@/shared/types';
+import type { Grade } from '@/lib/types';
 
 export interface FormattedError {
   id: string;

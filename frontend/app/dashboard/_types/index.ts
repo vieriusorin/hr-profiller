@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
-import { Opportunity, OpportunityFilters, Role } from '@/app/shared/types';
+import { Opportunity, OpportunityFilters, CreateRoleForm } from '@/lib/types';
 import { ViewMode, ViewToggleProps } from '@/components/opportunities/components/view-toggle/types';
 
 export type CreateDialogsProps = {
   showNewOpportunityDialog: boolean;
   showNewRoleDialog: boolean;
   handleCreateOpportunity: (opportunity: Opportunity) => Promise<Opportunity>;
-  handleCreateRole: (role: Role) => Promise<void>;
+  handleCreateRole: (role: CreateRoleForm) => Promise<void>;
   closeNewOpportunityDialog: () => void;
   closeNewRoleDialogAndReset: () => void;
   children?: ReactNode;
@@ -44,8 +44,8 @@ export type OpportunityTabsProps = {
 }
 
 export type CollapsibleSectionProps = {
-	title: string;
-	children: ReactNode;
-	defaultOpen?: boolean;
-	icon?: ReactNode;
+  title: string;
+  children: ReactNode;
+  defaultOpen?: boolean;
+  icon?: ReactNode;
 }

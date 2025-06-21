@@ -16,28 +16,21 @@ import { useRoleForm } from "./hooks/useRoleForm";
 import { RoleFormProps } from "./types";
 import { Controller } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
-import { Employee } from "@/shared/types/employees";
 import { Input } from "@/components/ui/input";
 import { getAvailableEmployees } from "./lib/employee-filtering";
 import { MultiSelect } from "@/components/ui/multi-select";
-import { Opportunity } from "@/shared/types";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
+import { apiClient, type Employee, type Opportunity } from "@/lib/api-client";
 
 const fetchEmployees = async (): Promise<Employee[]> => {
-	const res = await fetch("/api/employees");
-	if (!res.ok) {
-		throw new Error("Failed to fetch employees");
-	}
-	return res.json();
+	const response = await apiClient.employees.list();
+	return response.data;
 };
 
 const fetchOpportunities = async (): Promise<Opportunity[]> => {
-	const res = await fetch("/api/opportunities");
-	if (!res.ok) {
-		throw new Error("Failed to fetch opportunities");
-	}
-	return res.json();
+	const response = await apiClient.opportunities.list();
+	return response.data;
 };
 
 export const RoleForm = ({
@@ -115,7 +108,7 @@ export const RoleForm = ({
 		for (const memberId of assignedMemberIds) {
 			let allocationFromOtherRoles = 0;
 			for (const opp of opportunities) {
-				const oppStartDate = new Date(opp.expectedStartDate);
+				const oppStartDate = new Date(opp.expectedStartDate || "");
 				const oppEndDate = opp.expectedEndDate
 					? new Date(opp.expectedEndDate)
 					: null;
@@ -130,12 +123,12 @@ export const RoleForm = ({
 					continue;
 				}
 
-				for (const role of opp.roles) {
+				for (const role of opp.roles || []) {
 					if (opportunity.id === opp.id && initialData?.id === role.id) {
 						continue;
 					}
-					if (role.assignedMemberIds?.includes(memberId)) {
-						allocationFromOtherRoles += role.allocation;
+					if (role.assignedMembers?.some((m) => m.id === memberId)) {
+						allocationFromOtherRoles += role.allocation || 0;
 					}
 				}
 			}
@@ -143,7 +136,7 @@ export const RoleForm = ({
 			const currentRoleAllocation = allocation || 0;
 			const totalAllocation = allocationFromOtherRoles + currentRoleAllocation;
 			const employee = employees.find((e) => e.id === memberId);
-			const employeeName = employee?.name || "Unknown employee";
+			const employeeName = employee?.fullName || "Unknown employee";
 
 			if (totalAllocation > 100) {
 				warningMessage += `${employeeName} will be over-allocated. Total allocation during this period would be ${totalAllocation}%. `;

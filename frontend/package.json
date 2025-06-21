@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint \"app/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint \"app/**/*.{js,jsx,ts,tsx}\" --fix",
-    "serve:json": "json-server --watch db.json --port 3001"
+    "types:generate": "openapi-typescript ../backend/generated/openapi.json -o types/api.ts",
+    "types:watch": "npm run types:generate -- --watch",
+    "generate:types": "node ../scripts/generate-all-types.js"
   },
   "dependencies": {
     "@auth/core": "^0.34.2",
@@ -63,7 +65,8 @@
     "@types/uuid": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
-    "json-server": "^1.0.0-beta.3",
+    "glob": "^11.0.3",
+    "openapi-typescript": "^7.4.2",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.4",
     "typescript": "^5"

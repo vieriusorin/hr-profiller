@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Grade } from '@/shared/types';
+import { Grade } from '@/lib/types';
 
 const VALID_GRADES: readonly Grade[] = ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'] as const;
 

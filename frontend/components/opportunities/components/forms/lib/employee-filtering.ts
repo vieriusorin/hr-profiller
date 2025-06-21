@@ -1,5 +1,5 @@
 import { Employee } from '@/app/shared/types/employees';
-import { Opportunity } from '@/shared/types';
+import { Opportunity } from '@/lib/types';
 
 const KEYWORDS = {
   frontend: ['frontend', 'fe', 'ui', 'ux', 'react', 'angular', 'vue', 'javascript'],
