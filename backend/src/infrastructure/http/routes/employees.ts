@@ -398,7 +398,6 @@ try {
    */
   employeeRouter.post('/', (req, res) => employeeController.create(req, res));
 
-
   /**
    * @swagger
    * /api/v1/employees/{id}:

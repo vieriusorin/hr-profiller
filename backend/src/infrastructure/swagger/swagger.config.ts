@@ -552,6 +552,119 @@ const options: swaggerJsdoc.Options = {
           },
           required: ['id', 'opportunityName', 'status', 'isActive', 'createdAt', 'updatedAt', 'isHighProbability', 'duration', 'isExpiringSoon']
         },
+        CreateOpportunity: {
+          type: 'object',
+          required: ['opportunityName', 'clientName', 'status'],
+          additionalProperties: false,
+          description: 'Schema for creating a new opportunity',
+          properties: {
+            opportunityName: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 255,
+              description: 'Name/title of the opportunity',
+              example: 'E-commerce Platform Development'
+            },
+            clientName: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 255,
+              description: 'Name of the client company',
+              example: 'TechCorp Inc.'
+            },
+            expectedStartDate: {
+              type: 'string',
+              format: 'date-time',
+              nullable: true,
+              description: 'Expected project start date (ISO 8601 format)',
+              example: '2024-04-01T00:00:00Z'
+            },
+            expectedEndDate: {
+              type: 'string',
+              format: 'date-time',
+              nullable: true,
+              description: 'Expected project end date (ISO 8601 format)',
+              example: '2024-10-31T00:00:00Z'
+            },
+            probability: {
+              type: 'integer',
+              minimum: 0,
+              maximum: 100,
+              nullable: true,
+              description: 'Success probability percentage (0-100)',
+              example: 75
+            },
+            status: {
+              type: 'string',
+              enum: ['Active', 'Won', 'Lost', 'On Hold'],
+              description: 'Current status of the opportunity',
+              example: 'Active'
+            },
+            comment: {
+              type: 'string',
+              nullable: true,
+              maxLength: 1000,
+              description: 'Additional comments or notes about the opportunity',
+              example: 'High-priority client with potential for long-term partnership'
+            }
+          }
+        },
+        UpdateOpportunity: {
+          type: 'object',
+          additionalProperties: false,
+          description: 'Schema for updating opportunity information via PATCH request. All fields are optional.',
+          properties: {
+            opportunityName: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 255,
+              description: 'Name/title of the opportunity',
+              example: 'E-commerce Platform Development'
+            },
+            clientName: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 255,
+              description: 'Name of the client company',
+              example: 'TechCorp Inc.'
+            },
+            expectedStartDate: {
+              type: 'string',
+              format: 'date-time',
+              nullable: true,
+              description: 'Expected project start date (ISO 8601 format)',
+              example: '2024-04-01T00:00:00Z'
+            },
+            expectedEndDate: {
+              type: 'string',
+              format: 'date-time',
+              nullable: true,
+              description: 'Expected project end date (ISO 8601 format)',
+              example: '2024-10-31T00:00:00Z'
+            },
+            probability: {
+              type: 'integer',
+              minimum: 0,
+              maximum: 100,
+              nullable: true,
+              description: 'Success probability percentage (0-100)',
+              example: 75
+            },
+            status: {
+              type: 'string',
+              enum: ['Active', 'Won', 'Lost', 'On Hold'],
+              description: 'Current status of the opportunity',
+              example: 'Active'
+            },
+            comment: {
+              type: 'string',
+              nullable: true,
+              maxLength: 1000,
+              description: 'Additional comments or notes about the opportunity',
+              example: 'Updated timeline due to client requirements change'
+            }
+          }
+        },
         Role: {
           type: 'object',
           properties: {
@@ -698,6 +811,69 @@ const options: swaggerJsdoc.Options = {
               maxLength: 1000,
               description: 'Additional notes, requirements, or comments about the role',
               example: 'Requires 5+ years React experience and team leadership skills'
+            }
+          }
+        },
+        UpdateRole: {
+          type: 'object',
+          additionalProperties: false,
+          description: 'Schema for updating role information via PATCH request. All fields are optional.',
+          properties: {
+            roleName: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 255,
+              description: 'Name/title of the role',
+              example: 'Senior Frontend Developer'
+            },
+            jobGrade: {
+              type: 'string',
+              enum: ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'],
+              nullable: true,
+              description: 'Job grade/seniority level: JT=Junior Trainee, T=Trainee, ST=Senior Trainee, EN=Engineer, SE=Senior Engineer, C=Consultant, SC=Senior Consultant, SM=Senior Manager',
+              example: 'SE'
+            },
+            level: {
+              type: 'string',
+              enum: ['Low', 'Medium', 'High'],
+              nullable: true,
+              description: 'Opportunity priority/importance level',
+              example: 'High'
+            },
+            allocation: {
+              type: 'integer',
+              minimum: 0,
+              maximum: 100,
+              nullable: true,
+              description: 'Percentage of time allocated to this role (0-100%)',
+              example: 80
+            },
+            startDate: {
+              type: 'string',
+              format: 'date',
+              nullable: true,
+              description: 'Role start date (YYYY-MM-DD format)',
+              example: '2024-03-15'
+            },
+            endDate: {
+              type: 'string',
+              format: 'date',
+              nullable: true,
+              description: 'Role end date (YYYY-MM-DD format)',
+              example: '2024-09-15'
+            },
+            status: {
+              type: 'string',
+              enum: ['Open', 'Staffed', 'Won', 'Lost'],
+              description: 'Current status of the role: Open=needs to be filled, Staffed=assigned to someone, Won=successfully filled and project won, Lost=lost to competition',
+              example: 'Open'
+            },
+            notes: {
+              type: 'string',
+              nullable: true,
+              maxLength: 1000,
+              description: 'Additional notes, requirements, or comments about the role',
+              example: 'Updated requirements - now requires team leadership experience'
             }
           }
         },

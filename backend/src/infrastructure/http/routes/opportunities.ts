@@ -231,39 +231,7 @@ const opportunityController = container.get<OpportunityController>(TYPES.Opportu
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - opportunityName
- *             properties:
- *               opportunityName:
- *                 type: string
- *                 example: "E-Commerce Platform Redesign"
- *               clientName:
- *                 type: string
- *                 example: "TechCorp Inc."
- *               expectedStartDate:
- *                 type: string
- *                 format: date-time
- *                 example: "2024-03-15T09:00:00.000Z"
- *               expectedEndDate:
- *                 type: string
- *                 format: date-time
- *                 example: "2024-09-15T17:00:00.000Z"
- *               probability:
- *                 type: integer
- *                 minimum: 0
- *                 maximum: 100
- *                 example: 75
- *               status:
- *                 type: string
- *                 enum: [In Progress, On Hold, Done]
- *                 example: "In Progress"
- *               comment:
- *                 type: string
- *                 example: "High priority project"
- *               isActive:
- *                 type: boolean
- *                 example: true
+ *             $ref: '#/components/schemas/CreateOpportunity'
  *     responses:
  *       201:
  *         description: Opportunity created successfully
@@ -363,69 +331,7 @@ router.post('/', (req, res) => opportunityController.create(req, res));
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               opportunityName:
- *                 type: string
- *                 minLength: 1
- *                 maxLength: 255
- *                 description: Update the opportunity name
- *                 example: "Updated E-Commerce Platform Redesign"
- *               clientName:
- *                 type: string
- *                 minLength: 1
- *                 maxLength: 255
- *                 description: Update the client name
- *                 example: "TechCorp Inc."
- *               expectedStartDate:
- *                 type: string
- *                 format: date-time
- *                 description: Update the expected start date (ISO 8601 format)
- *                 example: "2024-03-15T09:00:00.000Z"
- *               expectedEndDate:
- *                 type: string
- *                 format: date-time
- *                 description: Update the expected end date (ISO 8601 format)
- *                 example: "2024-09-15T17:00:00.000Z"
- *               probability:
- *                 type: integer
- *                 minimum: 0
- *                 maximum: 100
- *                 description: Update the probability percentage (triggers auto-activation at ≥80%)
- *                 example: 85
- *               status:
- *                 type: string
- *                 enum: [In Progress, On Hold, Done]
- *                 description: Update the opportunity status
- *                 example: "In Progress"
- *               comment:
- *                 type: string
- *                 maxLength: 1000
- *                 description: Update the comment or notes
- *                 example: "Updated priority project with new requirements"
- *               isActive:
- *                 type: boolean
- *                 description: Update the active status (manual override of auto-activation)
- *                 example: true
- *           examples:
- *             statusUpdate:
- *               summary: Update only status
- *               value:
- *                 status: "Done"
- *             probabilityUpdate:
- *               summary: Update probability (triggers auto-activation)
- *               value:
- *                 probability: 90
- *                 comment: "Increased probability due to positive client feedback"
- *             comprehensive:
- *               summary: Update multiple fields
- *               value:
- *                 opportunityName: "Enhanced E-Commerce Platform Redesign"
- *                 probability: 95
- *                 status: "In Progress"
- *                 comment: "Project scope expanded, probability increased"
- *                 isActive: true
- *           description: Only include the fields you want to update. All fields are optional.
+ *             $ref: '#/components/schemas/UpdateOpportunity'
  *     responses:
  *       200:
  *         description: Opportunity updated successfully
