@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -15,19 +15,32 @@ import { CreateRole, Role } from '@/lib/api-client';
 import { OpportunityLevel } from '@/lib/backend-types/enums';
 import { JobGrade } from '@/lib/backend-types/enums';
 
-const mapRoleToFormData = (role: Partial<Role> | undefined): Partial<CreateRoleFormData> | undefined => {
-  if (!role) return undefined;
+const mapRoleToFormData = (role: Partial<Role> | undefined): CreateRoleFormData => {
+  if (!role) {
+    return {
+      roleName: '',
+      requiredGrade: 'SE' as JobGrade,
+      opportunityLevel: 'Medium' as OpportunityLevel,
+      allocation: 100,
+      needsHire: false,
+      comments: '',
+      assignedMemberIds: [],
+      newHireName: '',
+    };
+  }
 
-  return {
+  const formData: CreateRoleFormData = {
     roleName: role.roleName || '',
-    requiredGrade: role.jobGrade as JobGrade,
-    opportunityLevel: role.level as OpportunityLevel,
+    requiredGrade: (role.jobGrade as JobGrade) || 'SE',
+    opportunityLevel: (role.level as OpportunityLevel) || 'Medium',
     allocation: role.allocation || 100,
     needsHire: role.status === 'Open',
     comments: role.notes || '',
     assignedMemberIds: role.assignedMembers?.map(member => member.id) || [],
     newHireName: '',
   };
+
+  return formData;
 };
 
 export const useRoleForm = ({
@@ -39,11 +52,11 @@ export const useRoleForm = ({
 }: UseRoleFormProps): UseRoleFormReturn => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Transform the API role data to form data format
-  const formDefaultValues = mapRoleToFormData(initialData) || {
+  // Always start with default values for form initialization
+  const defaultFormValues: CreateRoleFormData = {
     roleName: '',
-    requiredGrade: 'SE',
-    opportunityLevel: 'Medium',
+    requiredGrade: 'SE' as JobGrade,
+    opportunityLevel: 'Medium' as OpportunityLevel,
     allocation: 100,
     needsHire: false,
     comments: '',
@@ -51,10 +64,45 @@ export const useRoleForm = ({
     newHireName: '',
   };
 
+  // If we have initialData at mount time, use it immediately
+  const initialFormValues = mode === 'edit' && initialData
+    ? mapRoleToFormData(initialData)
+    : defaultFormValues;
+
   const form = useForm<CreateRoleFormData>({
     resolver: zodResolver(createRoleSchema),
-    defaultValues: formDefaultValues,
+    defaultValues: initialFormValues,
   });
+
+  // Handle form population when initialData becomes available or changes
+  useEffect(() => {
+    if (mode === 'edit' && initialData) {
+      const formData = mapRoleToFormData(initialData);
+
+      // Use setTimeout to ensure this runs after React's render cycle
+      setTimeout(() => {
+
+        // Set each field individually to ensure proper form state updates
+        form.setValue('roleName', formData.roleName, { shouldDirty: false });
+        form.setValue('requiredGrade', formData.requiredGrade, { shouldDirty: false });
+        form.setValue('opportunityLevel', formData.opportunityLevel, { shouldDirty: false });
+        form.setValue('allocation', formData.allocation, { shouldDirty: false });
+        form.setValue('needsHire', formData.needsHire, { shouldDirty: false });
+        form.setValue('comments', formData.comments, { shouldDirty: false });
+        form.setValue('assignedMemberIds', formData.assignedMemberIds, { shouldDirty: false });
+        form.setValue('newHireName', formData.newHireName, { shouldDirty: false });
+
+        // Also reset the form to ensure all state is properly updated
+        form.reset(formData);
+
+        // Force a re-render by triggering form validation
+        form.trigger();
+      }, 1000); // Slightly longer delay to ensure DOM is ready
+    } else if (mode === 'create') {
+      // Reset to default values for create mode
+      form.reset(defaultFormValues);
+    }
+  }, [mode, initialData?.id, initialData?.roleName, initialData?.jobGrade, initialData?.level]);
 
   const handleSubmit = async () => {
     await form.handleSubmit(async (data) => {

@@ -43,6 +43,9 @@ export const EditRoleModal = ({
 					</div>
 				) : (
 					<RoleForm
+						key={`role-form-${currentRole.id}-${
+							currentRole.updatedAt || "no-timestamp"
+						}`}
 						mode='edit'
 						initialData={currentRole}
 						onSubmit={handleSubmit}

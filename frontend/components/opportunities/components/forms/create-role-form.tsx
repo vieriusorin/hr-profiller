@@ -298,6 +298,7 @@ export const RoleForm = ({
 						control={control}
 						render={({ field }) => (
 							<MultiSelect
+								key={`multiselect-${field.value?.join(",") || "empty"}`}
 								options={employeeOptions}
 								onValueChange={field.onChange}
 								defaultValue={field.value || []}
