@@ -1,17 +1,17 @@
 import { z } from 'zod';
-import { Grade } from '@/lib/types';
+import { JobGrade } from '@/lib/backend-types/enums';
 
-const VALID_GRADES: readonly Grade[] = ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'] as const;
+const VALID_GRADES: readonly JobGrade[] = ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'] as const;
 
-export const isValidGrade = (value: string): value is Grade => {
-  return VALID_GRADES.includes(value as Grade);
+export const isValidGrade = (value: string): value is JobGrade => {
+  return VALID_GRADES.includes(value as JobGrade);
 };
 
 export const isValidNeedsHire = (value: string): value is 'yes' | 'no' | 'all' => {
   return ['yes', 'no', 'all'].includes(value);
 };
 
-export const isValidGradeArray = (values: string[]): values is Grade[] => {
+export const isValidGradeArray = (values: string[]): values is JobGrade[] => {
   return values.every(isValidGrade);
 };
 
@@ -33,13 +33,13 @@ export const RawFiltersSchema = z.object({
   probability: z.string().optional(),
 });
 
-export const validateAndSanitizeGrades = (grades: string[]): Grade[] => {
+export const validateAndSanitizeGrades = (grades: string[]): JobGrade[] => {
   const validGrades = grades.filter(isValidGrade);
-  
+
   if (grades.length > 0 && validGrades.length === 0) {
     console.warn('No valid grades found in:', grades);
   }
-  
+
   return validGrades;
 };
 
@@ -47,7 +47,7 @@ export const validateNeedsHire = (value: string): 'yes' | 'no' | 'all' => {
   if (isValidNeedsHire(value)) {
     return value;
   }
-  
+
   console.warn('Invalid needsHire value:', value, 'defaulting to "all"');
   return 'all';
 };
@@ -70,7 +70,7 @@ export const validateOpportunityFilters = (rawFilters: unknown): {
         errors: error,
       };
     }
-    
+
     return {
       isValid: false,
       errors: new z.ZodError([
@@ -93,23 +93,23 @@ export const createSafeFilters = (rawFilters: {
   const client = rawFilters.client || '';
   const grades = rawFilters.grades ? validateAndSanitizeGrades(rawFilters.grades) : [];
   const needsHire = rawFilters.needsHire ? validateNeedsHire(rawFilters.needsHire) : 'all';
-  
-  const probability = Array.isArray(rawFilters.probability) && 
+
+  const probability = Array.isArray(rawFilters.probability) &&
     rawFilters.probability.length === 2 &&
     typeof rawFilters.probability[0] === 'number' &&
     typeof rawFilters.probability[1] === 'number'
-      ? rawFilters.probability 
-      : [0, 100];
-  
+    ? rawFilters.probability
+    : [0, 100];
+
   const filters = {
     client,
     grades,
     needsHire,
     probability,
   };
-  
+
   const validation = validateOpportunityFilters(filters);
-  
+
   if (!validation.isValid) {
     console.error('Filter validation failed:', validation.errors?.format());
     return {
@@ -119,6 +119,6 @@ export const createSafeFilters = (rawFilters: {
       probability: [0, 100],
     };
   }
-  
+
   return validation.filters!;
 }; 

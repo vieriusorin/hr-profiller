@@ -1,4 +1,4 @@
-import { Opportunity, Role } from "@/app/shared/types";
+import { Opportunity, Role } from "@/lib/api-client";
 import { FormActions } from "../forms/types";
 
 type ListType = 'in-progress' | 'on-hold' | 'completed';
@@ -31,6 +31,6 @@ export type UseEditRoleModalProps = {
 export type UseEditOpportunityModalProps = {
 	isOpen: boolean;
 	opportunity: Opportunity;
-	listType: ListType;
+	// listType: ListType;
 	onClose: () => void;
 }

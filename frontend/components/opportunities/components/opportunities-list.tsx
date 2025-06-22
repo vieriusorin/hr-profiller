@@ -23,7 +23,6 @@ const OpportunitiesList: React.FC<OpportunitiesListProps> = ({
 	hasNextPage,
 	isFetchingNextPage,
 }: OpportunitiesListProps) => {
-	// Use the opportunities directly since they're already filtered by the infinite query
 	const opportunitiesToShow = (() => {
 		switch (status) {
 			case "in-progress":

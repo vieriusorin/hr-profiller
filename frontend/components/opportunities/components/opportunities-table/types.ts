@@ -1,9 +1,9 @@
 import type {
   Opportunity as OpportunityType,
-} from "@/app/shared/types";
+} from "@/lib/api-client";
 import type { OpportunityActionCallbacks } from "../../types";
-import { Employee } from '@/lib/types';
-import { Opportunity, UrgencyConfig } from '@/lib/types';
+import { Employee, Opportunity } from "@/lib/api-client";
+import { RoleStatus, UrgencyConfig } from "@/lib/types";
 
 export type ListType = "in-progress" | "on-hold" | "completed";
 
@@ -69,18 +69,18 @@ export type RoleActionsProps = {
   roleId: string;
   opportunityId: string;
   roleName?: string;
-  roleStatus: "Open" | "Won" | "Staffed" | "Lost";
+  roleStatus: RoleStatus
   onStatusClick: (
     opportunityId: string,
     roleId: string,
-    status: "Won" | "Staffed" | "Lost",
+    status: RoleStatus,
     roleName?: string
   ) => void;
 };
 
 export type ConfirmationDialogState = {
   isOpen: boolean;
-  status: 'Won' | 'Staffed' | 'Lost';
+  status: RoleStatus;
   opportunityId: string;
   roleId: string;
   roleName?: string;

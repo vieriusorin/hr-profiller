@@ -3422,6 +3422,14 @@ export interface components {
              * @example Updated requirements - now requires team leadership experience
              */
             notes?: string | null;
+            /**
+             * @description Array of person IDs to assign to this role
+             * @example [
+             *       "550e8400-e29b-41d4-a716-446655440000",
+             *       "660e8400-e29b-41d4-a716-446655440001"
+             *     ]
+             */
+            assignedMembers?: string[];
         };
         PaginationMeta: {
             /**

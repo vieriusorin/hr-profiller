@@ -44,6 +44,7 @@ export const RoleForm = ({
 	const { form, isSubmitting, handleSubmit, handleCancel, isDirty } =
 		useRoleForm({
 			mode,
+			// @ts-expect-error - initialData is not defined in the type
 			initialData,
 			onSubmit,
 			onCancel,
@@ -94,7 +95,7 @@ export const RoleForm = ({
 		let warningMessage = "";
 		let shouldDisable = false;
 
-		const currentOppStartDate = new Date(opportunity.expectedStartDate);
+		const currentOppStartDate = new Date(opportunity.expectedStartDate || "");
 		const currentOppEndDate = opportunity.expectedEndDate
 			? new Date(opportunity.expectedEndDate)
 			: null;
@@ -165,7 +166,7 @@ export const RoleForm = ({
 		() =>
 			availableEmployees.map((emp) => ({
 				value: emp.id,
-				label: `${emp.name} (${emp.position})`,
+				label: `${emp.fullName} (${emp.position || ""})`,
 			})),
 		[availableEmployees]
 	);

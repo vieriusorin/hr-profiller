@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { Opportunity } from '@/lib/types';
+import type { Opportunity } from '@/lib/api-client';
 import type { FlattenedRow } from '../types';
 
 export const useFlattenedOpportunities = (opportunities: Opportunity[]): FlattenedRow[] => {
@@ -11,13 +11,13 @@ export const useFlattenedOpportunities = (opportunities: Opportunity[]): Flatten
       flattened.push({
         opportunityId: opportunity.id,
         opportunityName: opportunity.opportunityName,
-        clientName: opportunity.clientName,
-        expectedStartDate: opportunity.expectedStartDate,
-        probability: opportunity.probability,
+        clientName: opportunity.clientName ?? '',
+        expectedStartDate: opportunity.expectedStartDate ?? '',
+        probability: opportunity.probability ?? 0,
         opportunityStatus: opportunity.status,
         rolesCount: opportunity.roles.length,
-        hasHiringNeeds: opportunity.roles.some(r => r.needsHire),
-        comment: opportunity.comment,
+        hasHiringNeeds: opportunity.roles.some(r => r.assignedMembers.length === 0),
+        comment: opportunity.comment ?? '',
         isFirstRowForOpportunity: true,
         isOpportunityRow: true,
         rowSpan: opportunity.roles.length + 1, // +1 for the opportunity row itself
@@ -28,19 +28,19 @@ export const useFlattenedOpportunities = (opportunities: Opportunity[]): Flatten
         flattened.push({
           opportunityId: opportunity.id,
           opportunityName: opportunity.opportunityName,
-          clientName: opportunity.clientName,
-          expectedStartDate: opportunity.expectedStartDate,
-          probability: opportunity.probability,
+          clientName: opportunity.clientName ?? '',
+          expectedStartDate: opportunity.expectedStartDate ?? '',
+          probability: opportunity.probability ?? 0,
           opportunityStatus: opportunity.status,
           rolesCount: opportunity.roles.length,
-          hasHiringNeeds: opportunity.roles.some(r => r.needsHire),
+          hasHiringNeeds: opportunity.roles.some(r => r.assignedMembers.length === 0),
           roleId: role.id,
           roleName: role.roleName,
-          requiredGrade: role.requiredGrade,
+          requiredGrade: role.jobGrade,
           roleStatus: role.status,
-          assignedMemberIds: role.assignedMemberIds,
-          newHireName: role.newHireName,
-          needsHire: role.needsHire,
+          assignedMemberIds: role.assignedMembers.map(member => member.id),
+          newHireName: role.assignedMembers.find(member => member.fullName)?.fullName,
+          needsHire: role.assignedMembers.length === 0,
           allocation: role.allocation,
           isFirstRowForOpportunity: idx === 0, // Only first role row is true
           isOpportunityRow: false,

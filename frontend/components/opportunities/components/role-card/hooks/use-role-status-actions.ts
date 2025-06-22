@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { RoleStatus } from '@/app/shared/types';
+import { RoleStatus } from '@/lib/types';
 import { ConfirmationDialogState, UseRoleStatusActionsProps } from '../types';
 
 export const useRoleStatusActions = ({ onStatusUpdate }: UseRoleStatusActionsProps) => {
@@ -8,7 +8,7 @@ export const useRoleStatusActions = ({ onStatusUpdate }: UseRoleStatusActionsPro
     status: 'Won'
   });
 
-  const handleStatusClick = (newStatus: 'Won' | 'Staffed' | 'Lost') => {
+  const handleStatusClick = (newStatus: RoleStatus) => {
     setConfirmationDialog({
       isOpen: true,
       status: newStatus

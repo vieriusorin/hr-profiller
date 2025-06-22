@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react";
 import { Gantt, Task, ViewMode } from "gantt-task-react";
 import "gantt-task-react/dist/index.css";
-import { Opportunity } from '@/lib/types';
+import { Opportunity } from "@/lib/api-client";
 import { format } from "date-fns";
 import { useTheme } from "@/app/providers/theme-provider";
 import type { GanttSettings } from "@/app/types";
@@ -39,7 +39,7 @@ const transformDataForGantt = (
 
 	const tasks: TaskNew[] = [];
 	opportunities.forEach((opp) => {
-		const startDate = new Date(opp.expectedStartDate);
+		const startDate = new Date(opp.expectedStartDate || "");
 		const endDate = new Date(startDate);
 		endDate.setMonth(startDate.getMonth() + 2);
 
@@ -50,14 +50,14 @@ const transformDataForGantt = (
 			id: opp.id,
 			type: "project",
 			status: opp.status,
-			progress: opp.probability,
+			progress: opp.probability || 0,
 			isDisabled: false,
-			styles: getStylesForProbability(opp.probability, ganttSettings),
+			styles: getStylesForProbability(opp.probability || 0, ganttSettings),
 			hideChildren: expandedTasks[opp.id] === false,
 		});
 
 		opp.roles.forEach((role) => {
-			const roleStartDate = new Date(opp.expectedStartDate);
+			const roleStartDate = new Date(opp.expectedStartDate || "");
 			const roleEndDate = new Date(roleStartDate);
 			roleEndDate.setMonth(roleStartDate.getMonth() + 1);
 

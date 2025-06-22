@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { OpportunitiesContext } from '../opportunities-table';
-import { Opportunity } from '@/app/shared/types';
+import { Opportunity } from '@/lib/api-client';
 
 export const useOpportunityContext = (opportunityId: string) => {
   const { opportunities } = useContext(OpportunitiesContext) || {

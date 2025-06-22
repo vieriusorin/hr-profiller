@@ -1,7 +1,7 @@
 import { useQueryStates } from 'nuqs';
 import { useState, useEffect, useRef } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
-import { Grade } from '@/lib/types';
+import { JobGrade } from '@/lib/backend-types/enums';
 import {
   parseAsValidatedClient,
   parseAsValidatedGrades,
@@ -23,7 +23,7 @@ const filterParsers = {
 
 export interface OpportunityFiltersState {
   client: string;
-  grades: Grade[];
+  grades: JobGrade[];
   needsHire: 'yes' | 'no' | 'all';
   probability: [number, number];
 }
@@ -33,7 +33,7 @@ export interface UseOpportunityFiltersReturn {
   clientInput: string;
   updateFilters: (updates: Partial<OpportunityFiltersState>) => void;
   updateClientInput: (value: string) => void;
-  updateGrades: (grades: Grade[]) => void;
+  updateGrades: (grades: JobGrade[]) => void;
   clearFilters: () => void;
   hasActiveFilters: boolean;
   isFiltersValid: boolean;
@@ -69,18 +69,13 @@ export const useOpportunityFilters = (): UseOpportunityFiltersReturn => {
     }
   }, [debouncedClientFilter, setFilters]);
 
-  // Only sync clientInput with URL state on external changes (like browser back/forward)
-  // This effect should NOT trigger when we update the URL from debounced input
   useEffect(() => {
-    // Only sync if the URL client filter differs from our current input
-    // and it's not a change we just made through debouncing
     if (filters.client !== lastDebouncedValue.current && filters.client !== clientInput) {
       setClientInput(filters.client);
     }
   }, [filters.client, clientInput]);
 
   const updateFilters = (updates: Partial<OpportunityFiltersState>) => {
-    // Create safe filters with validation
     const safeUpdates = createSafeFilters({
       client: updates.client ?? filters.client,
       grades: updates.grades ?? filters.grades,
@@ -99,7 +94,7 @@ export const useOpportunityFilters = (): UseOpportunityFiltersReturn => {
     setClientInput(sanitizedValue ?? '');
   };
 
-  const updateGrades = (grades: Grade[]) => {
+  const updateGrades = (grades: JobGrade[]) => {
     const validatedGrades = parseAsValidatedGrades.parse(grades.join(','));
     setFilters(prev => ({ ...prev, grades: validatedGrades }));
   };
@@ -107,7 +102,6 @@ export const useOpportunityFilters = (): UseOpportunityFiltersReturn => {
   const clearFilters = () => {
     setClientInput('');
 
-    // Use safe defaults
     const safeDefaults = createSafeFilters({
       client: '',
       grades: [],

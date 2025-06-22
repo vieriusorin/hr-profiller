@@ -1,5 +1,5 @@
 import { differenceInWeeks, differenceInDays, isPast } from 'date-fns';
-import { UrgencyConfig, UrgencyLevel } from '../../types';
+import { UrgencyConfig, UrgencyLevel } from '@/lib/types';
 
 export const getStartDateUrgency = (startDate: string): UrgencyLevel => {
   const today = new Date();

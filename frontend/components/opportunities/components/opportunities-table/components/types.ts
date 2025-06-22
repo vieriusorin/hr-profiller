@@ -1,6 +1,6 @@
 import { FlattenedRow } from "../types";
-import { Opportunity, RoleStatus, UrgencyConfig } from '@/lib/types';
-import { Employee } from '@/lib/types';
+import { Opportunity, Employee } from "@/lib/api-client";
+import { RoleStatus, UrgencyConfig } from "@/lib/types";
 import { OpportunityActionCallbacks } from "../../../types";
 
 export interface OpportunitiesTableRowProps extends OpportunityActionCallbacks {
@@ -46,10 +46,10 @@ export type RoleStatusDropdownProps = {
   opportunityId: string;
   roleId: string;
   roleName?: string;
-  onStatusClick: (opportunityId: string, roleId: string, status: 'Won' | 'Staffed' | 'Lost', roleName?: string) => void;
+  onStatusClick: (opportunityId: string, roleId: string, status: RoleStatus, roleName?: string) => void;
 }
 
 export type OpportunitiesTableHeaderProps = {
-	showActions?: boolean;
-	className?: string;
+  showActions?: boolean;
+  className?: string;
 }

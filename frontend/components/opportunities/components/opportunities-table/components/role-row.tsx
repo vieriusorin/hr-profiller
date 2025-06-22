@@ -32,11 +32,6 @@ export const RoleRow = ({
 		handleCloseDialog,
 	} = useRoleRow(onUpdateRole);
 
-	// Debug logging to identify the issue
-	console.log("RoleRow - row.roleId:", row.roleId);
-	console.log("RoleRow - row object:", row);
-	console.log("RoleRow - fullOpportunity roles:", fullOpportunity?.roles);
-
 	return (
 		<>
 			<TableRow
@@ -81,7 +76,7 @@ export const RoleRow = ({
 								<ul>
 									{row.assignedMemberIds.map((id) => {
 										const employee = employees.find((e) => e.id === id);
-										return <li key={id}>{employee?.name || "Unknown"}</li>;
+										return <li key={id}>{employee?.fullName || "Unknown"}</li>;
 									})}
 								</ul>
 							</PopoverContent>
@@ -114,7 +109,7 @@ export const RoleRow = ({
 								opportunityId={row.opportunityId}
 								roleId={row.roleId}
 								roleName={row.roleName}
-								roleStatus={row.roleStatus}
+								roleStatus={row.roleStatus as RoleStatus}
 								onStatusClick={handleStatusClick}
 							/>
 						)}
@@ -130,13 +125,21 @@ export const RoleRow = ({
 					onClose={handleCloseEditModal}
 					role={{
 						id: row.roleId,
+						opportunityId: row.opportunityId,
 						roleName: row.roleName ?? "",
-						requiredGrade: (row.requiredGrade as Grade) ?? ("" as Grade),
+						jobGrade: (row.requiredGrade as Grade) ?? ("" as Grade),
 						allocation: row.allocation ?? 0,
-						needsHire: row.needsHire ?? false,
+						createdAt: new Date().toISOString(),
+						updatedAt: new Date().toISOString(),
 						status: (row.roleStatus as RoleStatus) ?? ("Open" as RoleStatus),
-						assignedMemberIds: row.assignedMemberIds,
-						newHireName: row.newHireName,
+						assignedMembers:
+							row.assignedMemberIds?.map((id) => ({
+								id,
+								firstName: "",
+								lastName: "",
+								fullName: "",
+								email: "",
+							})) ?? [],
 					}}
 					opportunity={fullOpportunity}
 				/>

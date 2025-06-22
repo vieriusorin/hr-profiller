@@ -12,14 +12,10 @@ export interface UseDynamicLayoutReturn {
 export const useDynamicLayout = (currentView: ViewMode): UseDynamicLayoutReturn => {
   const { open: sidebarOpen } = useSidebar();
   const isGanttView = currentView === 'gantt';
-
-  // Calculate container classes based on view
   const getContainerClassName = () => {
     if (isGanttView) {
-      // For Gantt view, use minimal padding
       return 'w-full p-2 md:p-4';
     } else {
-      // For cards/table views, use standard layout
       return 'mx-auto w-full p-6';
     }
   };

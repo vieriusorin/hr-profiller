@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { ApiValidationError } from "@/shared/lib/api/validated-api";
+import { useState } from "react";
 
 interface ValidationErrorDisplayProps {
 	error: ApiValidationError | Error;

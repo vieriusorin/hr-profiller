@@ -11,12 +11,11 @@ import {
   createRoleSchema,
   CreateRoleFormData
 } from '../schemas';
-import { CreateRole, Role } from '@/lib/api-client';
+import { Role, UpdateRole } from '@/lib/api-client';
 import { OpportunityLevel } from '@/lib/backend-types/enums';
 import { JobGrade } from '@/lib/backend-types/enums';
 
-const mapRoleToFormData = (role: Partial<{ data: Role }> | undefined): CreateRoleFormData => {
-
+const mapRoleToFormData = (role: Partial<Role> | undefined): CreateRoleFormData => {
   if (!role) {
     return {
       roleName: '',
@@ -31,20 +30,18 @@ const mapRoleToFormData = (role: Partial<{ data: Role }> | undefined): CreateRol
   }
 
   const formData: CreateRoleFormData = {
-    roleName: role.data?.roleName || '',
-    requiredGrade: (role.data?.jobGrade as JobGrade) || 'SE',
-    opportunityLevel: (role.data?.level as OpportunityLevel) || 'Medium',
-    allocation: role.data?.allocation || 100,
-    needsHire: role.data?.status === 'Open',
-    comments: role.data?.notes || '',
-    assignedMemberIds: role.data?.assignedMembers?.map(member => member.id) || [],
+    roleName: role.roleName || '',
+    requiredGrade: (role.jobGrade as JobGrade) || 'SE',
+    opportunityLevel: (role.level as OpportunityLevel) || 'Medium',
+    allocation: role.allocation || 100,
+    needsHire: role.status === 'Open',
+    comments: role.notes || '',
+    assignedMemberIds: role.assignedMembers?.map(member => member.id) || [],
     newHireName: '',
   };
 
   return formData;
 };
-
-
 
 export const useRoleForm = ({
   mode = 'create',
@@ -54,7 +51,6 @@ export const useRoleForm = ({
   isSubmitting: externalIsSubmitting,
 }: UseRoleFormProps): UseRoleFormReturn => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-
 
   // Always start with default values for form initialization
   const defaultFormValues: CreateRoleFormData = {
@@ -70,7 +66,7 @@ export const useRoleForm = ({
 
   // If we have initialData at mount time, use it immediately
   const initialFormValues = mode === 'edit' && initialData
-    ? mapRoleToFormData(initialData)
+    ? mapRoleToFormData(initialData.data)
     : defaultFormValues;
 
   const form = useForm<CreateRoleFormData>({
@@ -81,46 +77,31 @@ export const useRoleForm = ({
   // Handle form population when initialData becomes available or changes
   useEffect(() => {
     if (mode === 'edit' && initialData) {
-      const formData = mapRoleToFormData(initialData);
-
-      // Use setTimeout to ensure this runs after React's render cycle
-      setTimeout(() => {
-
-        // Set each field individually to ensure proper form state updates
-        form.setValue('roleName', formData.roleName, { shouldDirty: false });
-        form.setValue('requiredGrade', formData.requiredGrade, { shouldDirty: false });
-        form.setValue('opportunityLevel', formData.opportunityLevel, { shouldDirty: false });
-        form.setValue('allocation', formData.allocation, { shouldDirty: false });
-        form.setValue('needsHire', formData.needsHire, { shouldDirty: false });
-        form.setValue('comments', formData.comments, { shouldDirty: false });
-        form.setValue('assignedMemberIds', formData.assignedMemberIds, { shouldDirty: false });
-        form.setValue('newHireName', formData.newHireName, { shouldDirty: false });
-
-        // Also reset the form to ensure all state is properly updated
-        form.reset(formData);
-
-        // Force a re-render by triggering form validation
-        form.trigger();
-      }, 1000); // Slightly longer delay to ensure DOM is ready
+      const formData = mapRoleToFormData(initialData.data);
+      form.reset(formData);
+      // Force a re-render by triggering form validation
+      form.trigger();
     } else if (mode === 'create') {
-      // Reset to default values for create mode
       form.reset(defaultFormValues);
     }
-  }, [mode, initialData?.id, initialData?.roleName, initialData?.jobGrade, initialData?.level]);
+  }, [mode, initialData]);
 
   const handleSubmit = async () => {
     await form.handleSubmit(async (data) => {
       setIsSubmitting(true);
 
       try {
-        const roleData = {
-          ...data,
-          status: mode === 'create' ? 'Open' as const : initialData?.status,
-          assignedMemberIds: data.needsHire ? [] : data.assignedMemberIds,
-          newHireName: data.needsHire ? data.newHireName : '',
+        const roleData: UpdateRole = {
+          roleName: data.roleName,
+          jobGrade: data.requiredGrade,
+          level: data.opportunityLevel,
+          allocation: data.allocation,
+          status: mode === 'create' ? 'Open' as const : initialData?.data?.status,
+          notes: data.comments,
+          assignedMembers: data.needsHire ? [] : data.assignedMemberIds,
         };
 
-        await onSubmit(roleData as unknown as CreateRole);
+        await onSubmit(roleData);
         if (mode === 'create') {
           form.reset();
         }

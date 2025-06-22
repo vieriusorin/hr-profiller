@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { ConfirmationDialogState } from '../types';
+import { RoleStatus } from '@/lib/types';
 
 export const useOpportunityModals = () => {
   const [confirmationDialog, setConfirmationDialog] = useState<ConfirmationDialogState>({
@@ -16,7 +17,7 @@ export const useOpportunityModals = () => {
   const handleStatusClick = useCallback((
     opportunityId: string,
     roleId: string,
-    status: 'Won' | 'Staffed' | 'Lost',
+    status: RoleStatus,
     roleName?: string
   ) => {
     setConfirmationDialog({
@@ -33,7 +34,7 @@ export const useOpportunityModals = () => {
   }, []);
 
   const handleConfirmStatusUpdate = useCallback((
-    onUpdateRole: (opportunityId: string, roleId: string, status: 'Won' | 'Staffed' | 'Lost') => void
+    onUpdateRole: (opportunityId: string, roleId: string, status: RoleStatus) => void
   ) => {
     if (onUpdateRole) {
       onUpdateRole(

@@ -1,9 +1,9 @@
-import { Grade, GradeOption } from "../../types";
+import { Grade, GradeOption } from "@/lib/types";
 
 export const GRADE_OPTIONS: GradeOption[] = [
-  { value: 'JT', label: 'JT - Junior Trainee' },
-  { value: 'T', label: 'T - Trainee' },
-  { value: 'ST', label: 'ST - Senior Trainee' },
+  { value: 'JT', label: 'JT - Junior Technician' },
+  { value: 'T', label: 'T - Technician' },
+  { value: 'ST', label: 'ST - Senior Technician' },
   { value: 'EN', label: 'EN - Engineer' },
   { value: 'SE', label: 'SE - Senior Engineer' },
   { value: 'C', label: 'C - Consultant' },
@@ -12,9 +12,9 @@ export const GRADE_OPTIONS: GradeOption[] = [
 ];
 
 export const GRADE_LABELS: Record<Grade, string> = {
-  JT: 'Junior Trainee',
-  T: 'Trainee',
-  ST: 'Senior Trainee',
+  JT: 'Junior Technician',
+  T: 'Technician',
+  ST: 'Senior Technician',
   EN: 'Engineer',
   SE: 'Senior Engineer',
   C: 'Consultant',

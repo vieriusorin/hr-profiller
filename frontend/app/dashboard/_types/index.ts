@@ -1,12 +1,13 @@
 import type { ReactNode } from 'react';
-import { Opportunity, OpportunityFilters, CreateRoleForm } from '@/lib/types';
-import { ViewMode, ViewToggleProps } from '@/components/opportunities/components/view-toggle/types';
+import { Opportunity, OpportunityFilters, CreateOpportunityForm } from '../../../lib/types';
+import { UpdateRole } from '../../../lib/api-client';
+import { ViewMode, ViewToggleProps } from '../../../components/opportunities/components/view-toggle/types';
 
 export type CreateDialogsProps = {
   showNewOpportunityDialog: boolean;
   showNewRoleDialog: boolean;
-  handleCreateOpportunity: (opportunity: Opportunity) => Promise<Opportunity>;
-  handleCreateRole: (role: CreateRoleForm) => Promise<void>;
+  handleCreateOpportunity: (opportunity: CreateOpportunityForm) => Promise<Opportunity>;
+  handleCreateRole: (role: UpdateRole) => Promise<void>;
   closeNewOpportunityDialog: () => void;
   closeNewRoleDialogAndReset: () => void;
   children?: ReactNode;

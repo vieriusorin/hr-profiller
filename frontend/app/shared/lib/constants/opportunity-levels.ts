@@ -1,4 +1,4 @@
-import { OpportunityLevel } from "../../types";
+import { OpportunityLevel } from "@/lib/types";
 
 export type OpportunityLevelOption = {
   value: OpportunityLevel;

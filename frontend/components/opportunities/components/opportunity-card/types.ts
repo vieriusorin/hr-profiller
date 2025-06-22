@@ -1,4 +1,4 @@
-import { Opportunity } from '@/lib/types';
+import { Opportunity } from '@/lib/api-client';
 import type { OpportunityActionCallbacks } from '../../types';
 
 export interface UseOpportunityCardProps extends OpportunityActionCallbacks {
@@ -56,11 +56,11 @@ export type OpportunityCardHeaderProps = {
 }
 
 export type OpportunityCardRolesProps = {
-	opportunity: Opportunity;
-	showActions: boolean;
-	onUpdateRole?: (
-		opportunityId: string,
-		roleId: string,
-		status: string
-	) => void;
+  opportunity: Opportunity;
+  showActions: boolean;
+  onUpdateRole?: (
+    opportunityId: string,
+    roleId: string,
+    status: string
+  ) => void;
 }

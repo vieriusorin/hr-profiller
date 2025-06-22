@@ -199,7 +199,7 @@ export function EmployeeListExample() {
 							</span>
 							<span>
 								Page {employeesResponse.pagination.page} of{" "}
-								{employeesResponse.pagination.pages}
+								{employeesResponse.pagination.totalPages}
 							</span>
 						</div>
 					</CardContent>

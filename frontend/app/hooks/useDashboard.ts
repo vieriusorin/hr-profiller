@@ -9,17 +9,15 @@ import {
 } from '@/lib/types';
 import { type UseDashboardReturn } from '../types';
 import { toast } from 'react-hot-toast';
-import type { CreateRole } from '@/lib/api-client';
+import type { CreateRole, UpdateRole } from '@/lib/api-client';
+import type { CreateOpportunityForm } from '@/lib/types';
 
 export const useDashboard = (): UseDashboardReturn => {
-  // Local state for dialogs
   const [showNewOpportunityDialog, setShowNewOpportunityDialog] = useState(false);
   const [showNewRoleDialog, setShowNewRoleDialog] = useState(false);
   const [selectedOpportunityId, setSelectedOpportunityId] = useState<string | null>(null);
 
   const { filters } = useOpportunityFilters();
-
-  // Convert filters to API parameters
   const apiFilters = {
     client: filters.client || undefined,
     grades: filters.grades.length > 0 ? filters.grades.join(',') : undefined,
@@ -30,8 +28,6 @@ export const useDashboard = (): UseDashboardReturn => {
         : undefined,
   };
 
-  console.log('useDashboard - filters:', filters);
-  console.log('useDashboard - apiFilters:', apiFilters);
 
   // TEMPORARY: Use regular queries instead of infinite queries to test
   const inProgressQuery = useOpportunities({
@@ -52,8 +48,9 @@ export const useDashboard = (): UseDashboardReturn => {
     ...apiFilters,
   });
 
-  // Extract opportunities from regular query responses
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const inProgressOpportunities = inProgressQuery.data?.data ?? [];
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const onHoldOpportunities = onHoldQuery.data?.data ?? [];
   const completedOpportunities = completedQuery.data?.data ?? [];
 
@@ -61,44 +58,44 @@ export const useDashboard = (): UseDashboardReturn => {
   console.log('useDashboard - onHoldOpportunities:', onHoldOpportunities);
   console.log('useDashboard - completedOpportunities:', completedOpportunities);
 
-  // Mutations
+
   const createOpportunityMutation = useCreateOpportunity();
   const updateOpportunityMutation = useUpdateOpportunity();
   const createRoleMutation = useCreateRole();
   const updateRoleMutation = useUpdateRole();
 
-  // Loading and error states
   const isLoading = inProgressQuery.isLoading || onHoldQuery.isLoading || completedQuery.isLoading;
   const isRefetching = inProgressQuery.isFetching || onHoldQuery.isFetching || completedQuery.isFetching;
   const error = inProgressQuery.error || onHoldQuery.error || completedQuery.error;
 
-  // Handle adding a role to an opportunity
   const handleAddRole = useCallback((opportunityId: string) => {
     setSelectedOpportunityId(opportunityId);
     setShowNewRoleDialog(true);
   }, []);
 
-  // Handle creating a new role
-  const handleCreateRole = useCallback(async (roleData: CreateRole) => {
+  const handleCreateRole = useCallback(async (roleData: UpdateRole) => {
     if (!roleData || !selectedOpportunityId) return;
 
     try {
       const loadingToast = toast.loading('Creating role...');
 
-      // Ensure the opportunity exists
       const opportunity = inProgressOpportunities.find((opp: Opportunity) => opp.id === selectedOpportunityId);
       if (!opportunity) {
         toast.error('Opportunity not found');
         return;
       }
 
-      await createRoleMutation.mutateAsync({
+      const createRoleData: CreateRole = {
         ...roleData,
-        opportunityId: selectedOpportunityId
-      });
+        opportunityId: selectedOpportunityId,
+        roleName: roleData.roleName || 'Untitled Role',
+        status: roleData.status || 'Open'
+      };
+
+      await createRoleMutation.mutateAsync(createRoleData);
 
       toast.dismiss(loadingToast);
-      toast.success(`Role "${roleData.roleName}" created successfully!`);
+      toast.success(`Role "${createRoleData.roleName}" created successfully!`);
       setShowNewRoleDialog(false);
       setSelectedOpportunityId(null);
     } catch (error) {
@@ -108,7 +105,6 @@ export const useDashboard = (): UseDashboardReturn => {
     }
   }, [inProgressOpportunities, selectedOpportunityId, createRoleMutation]);
 
-  // Handle updating a role status
   const handleUpdateRole = useCallback(async (opportunityId: string, roleId: string, status: string) => {
     try {
       const opportunity = inProgressOpportunities.find((opp: Opportunity) => opp.id === opportunityId);
@@ -117,7 +113,6 @@ export const useDashboard = (): UseDashboardReturn => {
         return;
       }
 
-      // We don't have role details in the opportunity object, so we'll use a generic name
       const roleName = 'Role';
 
       await updateRoleMutation.mutateAsync({
@@ -137,13 +132,12 @@ export const useDashboard = (): UseDashboardReturn => {
     }
   }, [inProgressOpportunities, updateRoleMutation]);
 
-  // Handle creating a new opportunity
-  const handleCreateOpportunity = useCallback(async (opportunityData: Opportunity): Promise<Opportunity> => {
+
+  const handleCreateOpportunity = useCallback(async (opportunityData: CreateOpportunityForm): Promise<Opportunity> => {
     const loadingToast = toast.loading('Creating opportunity...');
 
     try {
-      // Transform the data to match CreateOpportunity schema
-      const createData: any = { // Changed from CreateOpportunity to any as CreateOpportunity is removed
+      const createData: any = {
         opportunityName: opportunityData.opportunityName,
         clientName: opportunityData.clientName || '',
         expectedStartDate: opportunityData.expectedStartDate || null,
@@ -168,7 +162,6 @@ export const useDashboard = (): UseDashboardReturn => {
     }
   }, [createOpportunityMutation]);
 
-  // Handle moving opportunity to hold
   const handleMoveToHold = useCallback(async (opportunityId: string) => {
     const opportunity = inProgressOpportunities.find((opp: Opportunity) => opp.id === opportunityId);
     if (!opportunity) return;
@@ -176,7 +169,7 @@ export const useDashboard = (): UseDashboardReturn => {
     const loadingToast = toast.loading('Moving to hold...');
 
     try {
-      const updateData: any = { // Changed from UpdateOpportunity to any as UpdateOpportunity is removed
+      const updateData: any = {
         status: 'On Hold'
       };
 
@@ -202,7 +195,7 @@ export const useDashboard = (): UseDashboardReturn => {
     const loadingToast = toast.loading('Moving to in progress...');
 
     try {
-      const updateData: any = { // Changed from UpdateOpportunity to any as UpdateOpportunity is removed
+      const updateData: any = {
         status: 'In Progress'
       };
 
@@ -220,7 +213,6 @@ export const useDashboard = (): UseDashboardReturn => {
     }
   }, [onHoldOpportunities, updateOpportunityMutation]);
 
-  // Handle moving opportunity to completed
   const handleMoveToCompleted = useCallback(async (opportunityId: string) => {
     const opportunity = inProgressOpportunities.find((opp: Opportunity) => opp.id === opportunityId) ||
       onHoldOpportunities.find((opp: Opportunity) => opp.id === opportunityId);
@@ -229,7 +221,7 @@ export const useDashboard = (): UseDashboardReturn => {
     const loadingToast = toast.loading('Moving to completed...');
 
     try {
-      const updateData: any = { // Changed from UpdateOpportunity to any as UpdateOpportunity is removed
+      const updateData: any = {
         status: 'Done'
       };
 
@@ -247,7 +239,6 @@ export const useDashboard = (): UseDashboardReturn => {
     }
   }, [inProgressOpportunities, onHoldOpportunities, updateOpportunityMutation]);
 
-  // Dialog handlers
   const openNewOpportunityDialog = useCallback(() => setShowNewOpportunityDialog(true), []);
   const closeNewOpportunityDialog = useCallback(() => setShowNewOpportunityDialog(false), []);
   const closeNewRoleDialogAndReset = useCallback(() => {
@@ -263,25 +254,18 @@ export const useDashboard = (): UseDashboardReturn => {
   }, []);
 
   return {
-    // Data
     opportunities: inProgressOpportunities,
     onHoldOpportunities,
     completedOpportunities,
     filterOpportunities,
     filters,
-
-    // Loading states
     loading: isLoading,
     isRefetching,
     error,
-
-    // Dialog states
     showNewOpportunityDialog,
     showNewRoleDialog,
     selectedOpportunityId,
     isAddingRole: createRoleMutation.isPending,
-
-    // Handlers
     handleCreateRole,
     handleCreateOpportunity,
     openNewOpportunityDialog,

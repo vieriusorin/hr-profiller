@@ -1,5 +1,5 @@
-import { Employee } from '@/app/shared/types/employees';
-import { Opportunity } from '@/lib/types';
+import { Employee } from '@/lib/api-client';
+import { Opportunity } from '@/lib/api-client';
 
 const KEYWORDS = {
   frontend: ['frontend', 'fe', 'ui', 'ux', 'react', 'angular', 'vue', 'javascript'],
@@ -19,6 +19,8 @@ const getRoleDiscipline = (roleName: string): keyof typeof KEYWORDS | null => {
 };
 
 const isAvailable = (employee: Employee, opportunity: Opportunity): boolean => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error - need to have this field in BE and sync with FE
   if (!employee.unavailableDates || employee.unavailableDates.length === 0) {
     return true;
   }
@@ -27,9 +29,11 @@ const isAvailable = (employee: Employee, opportunity: Opportunity): boolean => {
     return true; // Cannot check availability without an end date
   }
 
-  const opportunityStartDate = new Date(opportunity.expectedStartDate);
-  const opportunityEndDate = new Date(opportunity.expectedEndDate);
+  const opportunityStartDate = new Date(opportunity.expectedStartDate || "");
+  const opportunityEndDate = new Date(opportunity.expectedEndDate || "");
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error - need to have this field in BE and sync with FE
   for (const unavailability of employee.unavailableDates) {
     const unavailableStartDate = new Date(unavailability.startDate);
     const unavailableEndDate = new Date(unavailability.endDate);
@@ -66,7 +70,7 @@ export const getAvailableEmployees = (
   if (discipline) {
     const disciplineKeywords = KEYWORDS[discipline];
     return availableEmployees.filter(emp =>
-      disciplineKeywords.some(keyword => emp.position.toLowerCase().includes(keyword))
+      disciplineKeywords.some(keyword => emp.position?.toLowerCase().includes(keyword) || false)
     );
   }
 

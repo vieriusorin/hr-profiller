@@ -1,6 +1,6 @@
 import { apiClient } from "@/lib/api-client";
 import { ListType } from "../components/opportunities-table/types";
-import type { Opportunity } from "@/lib/types";
+import type { Opportunity, OpportunityStatus } from "@/lib/types";
 
 export const fetchOpportunities = async (
   listType: ListType,
@@ -14,7 +14,7 @@ export const fetchOpportunities = async (
   const params = {
     page: page,
     limit: limit,
-    status: status as 'In Progress' | 'On Hold' | 'Done',
+    status: status as OpportunityStatus
   };
 
   const response = await apiClient.opportunities.list(params);

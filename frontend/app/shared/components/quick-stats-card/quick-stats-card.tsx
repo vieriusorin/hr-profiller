@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Building2, Users, UserPlus, Check } from "lucide-react";
-import { Role } from "../../types";
+import { Role } from "@/lib/types";
 import { QuickStatsCardProps, StatCardProps } from "./types";
 
 const getVariantClasses = (variant: string) => {
@@ -58,7 +58,14 @@ export const QuickStatsCard = ({
 	);
 
 	const hiringNeededCount = activeOpportunitiesList.reduce((sum, opp) => {
-		return sum + opp.roles.filter((role: Role) => role.needsHire).length;
+		return (
+			sum +
+			opp.roles.filter(
+				(role: Role) =>
+					role.status === "Open" &&
+					(!role.assignedMembers || role.assignedMembers.length === 0)
+			).length
+		);
 	}, 0);
 
 	const activeOpportunities = opportunities.length;

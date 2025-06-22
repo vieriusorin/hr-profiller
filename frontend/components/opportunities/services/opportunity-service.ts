@@ -1,4 +1,5 @@
-import { Opportunity, Role, OpportunityStatus, RoleStatus, CreateOpportunityForm, CreateRoleForm } from '@/app/shared/types';
+import { Opportunity, Role } from '@/lib/api-client';
+import { CreateOpportunityForm, CreateRoleForm, OpportunityStatus, RoleStatus } from '@/lib/types';
 
 export class OpportunityService {
   static checkOpportunityCompletion(opportunity: Opportunity): boolean {
@@ -13,27 +14,39 @@ export class OpportunityService {
       id: String(Date.now()),
       ...form,
       createdAt: new Date().toISOString().split('T')[0],
+      opportunityName: '',
       status: 'In Progress',
-      isActive: true,
+      isActive: false,
+      updatedAt: '',
+      isHighProbability: false,
+      duration: null,
+      isExpiringSoon: false,
       roles: []
     };
   }
 
   static createRole(form: CreateRoleForm): Omit<Role, 'id'> {
+    const now = new Date().toISOString();
     return {
-      ...form,
-      status: 'Open',
-      assignedMemberIds: [],
-      needsHire: true,
-      allocation: 100
+      opportunityId: form.opportunityId,
+      roleName: form.roleName,
+      jobGrade: form.jobGrade || undefined,
+      level: form.level || undefined,
+      allocation: form.allocation || undefined,
+      startDate: form.startDate,
+      endDate: form.endDate,
+      status: form.status,
+      notes: form.notes,
+      assignedMembers: [],
+      createdAt: now,
+      updatedAt: now
     };
   }
 
   static updateRoleStatus(role: Role, newStatus: RoleStatus): Role {
     return {
       ...role,
-      status: newStatus,
-      needsHire: newStatus !== 'Staffed' && newStatus !== 'Won'
+      status: newStatus
     };
   }
 
@@ -54,19 +67,19 @@ export class OpportunityService {
   static updateRoleInOpportunity(opportunity: Opportunity, roleId: string, updatedRole: Role): Opportunity {
     return {
       ...opportunity,
-      roles: opportunity.roles.map(role =>
+      roles: opportunity.roles.map((role: Role) =>
         role.id === roleId ? updatedRole : role
       )
     };
   }
 
   static hasHiringNeeds(opportunity: Opportunity): boolean {
-    return opportunity.roles.some(role => role.needsHire);
+    return opportunity.roles.some(role => role.status === 'Open');
   }
 
   static getRolesByGrade(opportunity: Opportunity, grade: string): Role[] {
     if (grade === 'all') return opportunity.roles;
-    return opportunity.roles.filter(role => role.requiredGrade === grade);
+    return opportunity.roles.filter((role: Role) => role.jobGrade === grade);
   }
 
   static filterByHiringNeeds(opportunity: Opportunity, needsHire: string): boolean {
@@ -77,6 +90,14 @@ export class OpportunityService {
 
   static filterByClient(opportunity: Opportunity, clientFilter: string): boolean {
     if (!clientFilter) return true;
-    return opportunity.clientName.toLowerCase().includes(clientFilter.toLowerCase());
+    return opportunity.clientName?.toLowerCase().includes(clientFilter.toLowerCase()) ?? false;
+  }
+
+  static roleNeedsHiring(role: Role): boolean {
+    return role.status === 'Open';
+  }
+
+  static getRolesThatNeedHiring(opportunity: Opportunity): Role[] {
+    return opportunity.roles.filter(role => this.roleNeedsHiring(role));
   }
 } 

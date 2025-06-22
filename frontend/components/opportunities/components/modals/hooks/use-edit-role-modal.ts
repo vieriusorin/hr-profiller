@@ -7,12 +7,7 @@ import type { CreateRoleFormData } from "../../forms/schemas";
 
 export const useEditRoleModal = ({ role, onClose }: Omit<UseEditRoleModalProps, 'opportunityId'>) => {
     const updateRoleMutation = useUpdateRole();
-
-    // Map form data to backend API schema
     const mapFormDataToAPI = (formData: CreateRoleFormData): UpdateRole => {
-        // Map needsHire boolean to role status:
-        // true -> 'Open' (needs to be filled)
-        // false -> 'Staffed' (assigned to someone)
         const status: UpdateRole['status'] = formData.needsHire ? 'Open' : 'Staffed';
 
         return {
@@ -29,7 +24,6 @@ export const useEditRoleModal = ({ role, onClose }: Omit<UseEditRoleModalProps, 
         const loadingToast = toast.loading("Updating role...");
 
         try {
-            // Transform the form data to match the UpdateRole API schema
             const updateData = mapFormDataToAPI(formData);
 
             await updateRoleMutation.mutateAsync({

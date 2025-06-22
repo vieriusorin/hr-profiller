@@ -1,27 +1,30 @@
 'use client';
 
 import { useState } from 'react';
-import { Role, RoleStatus, CreateRoleForm, ValidationErrors } from '../../../app/shared/types';
+import { Role } from '@/lib/api-client';
 import { OpportunityService } from '../services/opportunity-service';
-import { validateRole, hasValidationErrors } from '../../../app/shared/lib/helpers/validation';
+import { validateRole, hasValidationErrors } from '@/shared/lib/helpers/validation';
+import { CreateRoleForm, RoleStatus, ValidationErrors } from '@/lib/types';
 
 export const useRoleActions = () => {
   const [newRole, setNewRole] = useState<CreateRoleForm>({
     roleName: '',
-    requiredGrade: 'SE',
+    jobGrade: 'SE',
     allocation: 100,
-    needsHire: false,
-    comments: ''
+    notes: '',
+    opportunityId: '',
+    status: 'Open'
   });
   const [roleErrors, setRoleErrors] = useState<ValidationErrors>({});
 
   const resetRoleForm = () => {
     setNewRole({
       roleName: '',
-      requiredGrade: 'SE',
+      jobGrade: 'SE',
       allocation: 100,
-      needsHire: false,
-      comments: ''
+      notes: '',
+      opportunityId: '',
+      status: 'Open'
     });
     setRoleErrors({});
   };
@@ -38,11 +41,11 @@ export const useRoleActions = () => {
   const validateAndCreateRole = (): Omit<Role, 'id'> | null => {
     const errors = validateRole(newRole);
     setRoleErrors(errors);
-    
+
     if (hasValidationErrors(errors)) {
       return null;
     }
-    
+
     return OpportunityService.createRole(newRole);
   };
 

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient, type CreateEmployee, type UpdateEmployee } from '@/lib/api-client';
+import { EmployeeStatus, WorkStatus } from '../types';
 
 // Query Keys
 export const employeeKeys = {
@@ -16,8 +17,8 @@ export function useEmployees(params?: {
   limit?: number;
   search?: string;
   position?: string;
-  employeeStatus?: 'Active' | 'On Leave' | 'Inactive';
-  workStatus?: 'On Project' | 'On Bench' | 'Available';
+  employeeStatus?: EmployeeStatus;
+  workStatus?: WorkStatus;
   location?: string;
 }) {
   return useQuery({
@@ -27,7 +28,6 @@ export function useEmployees(params?: {
   });
 }
 
-// Employee Detail Hook
 export function useEmployee(id: string) {
   return useQuery({
     queryKey: employeeKeys.detail(id),
@@ -37,20 +37,17 @@ export function useEmployee(id: string) {
   });
 }
 
-// Create Employee Hook
 export function useCreateEmployee() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (data: CreateEmployee) => apiClient.employees.create(data),
     onSuccess: () => {
-      // Invalidate and refetch employee lists
       queryClient.invalidateQueries({ queryKey: employeeKeys.lists() });
     },
   });
 }
 
-// Update Employee Hook
 export function useUpdateEmployee() {
   const queryClient = useQueryClient();
 
@@ -58,27 +55,23 @@ export function useUpdateEmployee() {
     mutationFn: ({ id, data }: { id: string; data: UpdateEmployee }) =>
       apiClient.employees.update(id, data),
     onSuccess: (_, { id }) => {
-      // Invalidate and refetch employee lists and detail
       queryClient.invalidateQueries({ queryKey: employeeKeys.lists() });
       queryClient.invalidateQueries({ queryKey: employeeKeys.detail(id) });
     },
   });
 }
 
-// Delete Employee Hook
 export function useDeleteEmployee() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (id: string) => apiClient.employees.delete(id),
     onSuccess: () => {
-      // Invalidate and refetch employee lists
       queryClient.invalidateQueries({ queryKey: employeeKeys.lists() });
     },
   });
 }
 
-// Promote Employee Hook
 export function usePromoteEmployee() {
   const queryClient = useQueryClient();
 
@@ -86,14 +79,12 @@ export function usePromoteEmployee() {
     mutationFn: ({ id, data }: { id: string; data: { newPosition: string; newSalary?: number } }) =>
       apiClient.employees.promote(id, data),
     onSuccess: (_, { id }) => {
-      // Invalidate and refetch employee lists and detail
       queryClient.invalidateQueries({ queryKey: employeeKeys.lists() });
       queryClient.invalidateQueries({ queryKey: employeeKeys.detail(id) });
     },
   });
 }
 
-// Terminate Employee Hook
 export function useTerminateEmployee() {
   const queryClient = useQueryClient();
 
@@ -101,14 +92,12 @@ export function useTerminateEmployee() {
     mutationFn: ({ id, data }: { id: string; data?: { endDate?: string; notes?: string } }) =>
       apiClient.employees.terminate(id, data),
     onSuccess: (_, { id }) => {
-      // Invalidate and refetch employee lists and detail
       queryClient.invalidateQueries({ queryKey: employeeKeys.lists() });
       queryClient.invalidateQueries({ queryKey: employeeKeys.detail(id) });
     },
   });
 }
 
-// Assign Manager Hook
 export function useAssignManager() {
   const queryClient = useQueryClient();
 
@@ -116,21 +105,18 @@ export function useAssignManager() {
     mutationFn: ({ id, managerId }: { id: string; managerId: string }) =>
       apiClient.employees.assignManager(id, managerId),
     onSuccess: (_, { id }) => {
-      // Invalidate and refetch employee lists and detail
       queryClient.invalidateQueries({ queryKey: employeeKeys.lists() });
       queryClient.invalidateQueries({ queryKey: employeeKeys.detail(id) });
     },
   });
 }
 
-// Remove Manager Hook
 export function useRemoveManager() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (id: string) => apiClient.employees.removeManager(id),
     onSuccess: (_, id) => {
-      // Invalidate and refetch employee lists and detail
       queryClient.invalidateQueries({ queryKey: employeeKeys.lists() });
       queryClient.invalidateQueries({ queryKey: employeeKeys.detail(id) });
     },

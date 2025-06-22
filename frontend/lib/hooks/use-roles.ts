@@ -1,32 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient, type CreateRole, type UpdateRole } from '@/lib/api-client';
+import { apiClient, Opportunity, type CreateRole, type UpdateRole } from '@/lib/api-client';
 import { opportunityKeys } from './use-opportunities';
 import { JobGrade, RoleStatus } from '../backend-types/enums';
 
-/**
- * Role Hooks with Optimistic Updates and Cache Invalidation
- * 
- * This module provides TanStack Query hooks for role operations with comprehensive
- * optimistic updates and cache invalidation strategies:
- * 
- * 1. CREATE ROLE:
- *    - Optimistically adds role to role lists
- *    - Optimistically adds role to opportunity's roles array
- *    - Invalidates both role and opportunity caches on success
- * 
- * 2. UPDATE ROLE:
- *    - Optimistically updates role in role lists and detail
- *    - Optimistically updates role within opportunity's roles array
- *    - Invalidates both role and opportunity caches on success
- * 
- * 3. DELETE ROLE:
- *    - Optimistically removes role from role lists
- *    - Invalidates both role and opportunity caches on success
- * 
- * All mutations include proper rollback mechanisms in case of errors.
- */
-
-// Query Keys
 export const roleKeys = {
   all: ['roles'] as const,
   lists: () => [...roleKeys.all, 'list'] as const,
@@ -35,7 +11,6 @@ export const roleKeys = {
   detail: (id: string) => [...roleKeys.details(), id] as const,
 };
 
-// Role List Hook
 export function useRoles(params?: {
   page?: number;
   limit?: number;
@@ -51,7 +26,6 @@ export function useRoles(params?: {
   });
 }
 
-// Role Detail Hook
 export function useRole(id: string) {
   return useQuery({
     queryKey: roleKeys.detail(id),
@@ -67,17 +41,11 @@ export function useCreateRole() {
 
   return useMutation({
     mutationFn: (data: CreateRole) => apiClient.roles.create(data),
-    // Optimistic update - immediately show the new role
     onMutate: async (newRole) => {
-      // Cancel any outgoing refetches so they don't overwrite our optimistic update
       await queryClient.cancelQueries({ queryKey: roleKeys.lists() });
       await queryClient.cancelQueries({ queryKey: opportunityKeys.lists() });
-
-      // Snapshot the previous values
       const previousRoles = queryClient.getQueriesData({ queryKey: roleKeys.lists() });
       const previousOpportunities = queryClient.getQueriesData({ queryKey: opportunityKeys.lists() });
-
-      // Create optimistic role with temporary ID
       const optimisticRole = {
         id: `temp-${Date.now()}`,
         ...newRole,
@@ -85,8 +53,6 @@ export function useCreateRole() {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-
-      // Optimistically update role lists
       queryClient.setQueriesData({ queryKey: roleKeys.lists() }, (old: any) => {
         if (!old?.data) return old;
 
@@ -95,15 +61,13 @@ export function useCreateRole() {
           data: [optimisticRole, ...old.data],
         };
       });
-
-      // Optimistically add role to the opportunity's roles array
       if (newRole.opportunityId) {
-        queryClient.setQueriesData({ queryKey: opportunityKeys.lists() }, (old: any) => {
+        queryClient.setQueriesData({ queryKey: opportunityKeys.lists() }, (old: { data: Opportunity[] }) => {
           if (!old?.data) return old;
 
           return {
             ...old,
-            data: old.data.map((opportunity: any) => {
+            data: old.data.map((opportunity) => {
               if (opportunity.id === newRole.opportunityId) {
                 const existingRoles = opportunity.roles || [];
                 return {
@@ -117,11 +81,9 @@ export function useCreateRole() {
         });
       }
 
-      // Return context for potential rollback
       return { previousRoles, previousOpportunities };
     },
     onError: (err, newRole, context) => {
-      // If mutation fails, rollback optimistic updates
       if (context?.previousRoles) {
         context.previousRoles.forEach(([queryKey, data]) => {
           queryClient.setQueryData(queryKey, data);
@@ -134,34 +96,25 @@ export function useCreateRole() {
       }
     },
     onSuccess: () => {
-      // Invalidate and refetch to get real data from server
       queryClient.invalidateQueries({ queryKey: roleKeys.lists() });
-      // IMPORTANT: Also invalidate opportunities cache since roles are dynamically attached
       queryClient.invalidateQueries({ queryKey: opportunityKeys.lists() });
     },
   });
 }
 
-// Update Role Hook
 export function useUpdateRole() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateRole }) =>
       apiClient.roles.update(id, data),
-    // Optimistic update - immediately show the updated role
     onMutate: async ({ id, data: updateData }) => {
-      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: roleKeys.lists() });
       await queryClient.cancelQueries({ queryKey: roleKeys.detail(id) });
       await queryClient.cancelQueries({ queryKey: opportunityKeys.lists() });
-
-      // Snapshot the previous values
       const previousRoles = queryClient.getQueriesData({ queryKey: roleKeys.lists() });
       const previousRole = queryClient.getQueryData(roleKeys.detail(id));
       const previousOpportunities = queryClient.getQueriesData({ queryKey: opportunityKeys.lists() });
-
-      // Optimistically update role lists
       queryClient.setQueriesData({ queryKey: roleKeys.lists() }, (old: any) => {
         if (!old?.data) return old;
 
@@ -175,7 +128,6 @@ export function useUpdateRole() {
         };
       });
 
-      // Optimistically update role detail
       queryClient.setQueryData(roleKeys.detail(id), (old: any) => {
         if (!old) return old;
         return {
@@ -185,7 +137,6 @@ export function useUpdateRole() {
         };
       });
 
-      // Optimistically update roles within opportunities
       queryClient.setQueriesData({ queryKey: opportunityKeys.lists() }, (old: any) => {
         if (!old?.data) return old;
 
@@ -205,11 +156,9 @@ export function useUpdateRole() {
         };
       });
 
-      // Return context for potential rollback
       return { previousRoles, previousRole, previousOpportunities };
     },
     onError: (err, { id }, context) => {
-      // If mutation fails, rollback optimistic updates
       if (context?.previousRoles) {
         context.previousRoles.forEach(([queryKey, data]) => {
           queryClient.setQueryData(queryKey, data);
@@ -225,25 +174,20 @@ export function useUpdateRole() {
       }
     },
     onSuccess: (_, { id }) => {
-      // Invalidate and refetch to get real data from server
       queryClient.invalidateQueries({ queryKey: roleKeys.lists() });
       queryClient.invalidateQueries({ queryKey: roleKeys.detail(id) });
-      // IMPORTANT: Also invalidate opportunities cache since roles are dynamically attached
       queryClient.invalidateQueries({ queryKey: opportunityKeys.lists() });
     },
   });
 }
 
-// Delete Role Hook
 export function useDeleteRole() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (id: string) => apiClient.roles.delete(id),
     onSuccess: () => {
-      // Invalidate and refetch role lists
       queryClient.invalidateQueries({ queryKey: roleKeys.lists() });
-      // IMPORTANT: Also invalidate opportunities cache since roles are dynamically attached
       queryClient.invalidateQueries({ queryKey: opportunityKeys.lists() });
     },
   });

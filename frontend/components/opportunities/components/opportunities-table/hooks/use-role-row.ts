@@ -5,7 +5,7 @@ export const useRoleRow = (onUpdateRole: (opportunityId: string, roleId: string,
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [confirmationDialog, setConfirmationDialog] = useState<{
     isOpen: boolean;
-    status: 'Won' | 'Staffed' | 'Lost';
+    status: RoleStatus;
     opportunityId: string;
     roleId: string;
     roleName?: string;
@@ -28,7 +28,7 @@ export const useRoleRow = (onUpdateRole: (opportunityId: string, roleId: string,
   const handleStatusClick = useCallback((
     opportunityId: string,
     roleId: string,
-    status: 'Won' | 'Staffed' | 'Lost',
+    status: RoleStatus,
     roleName?: string
   ) => {
     setConfirmationDialog({

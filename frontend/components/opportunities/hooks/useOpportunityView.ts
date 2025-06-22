@@ -1,16 +1,14 @@
 'use client';
 
-import { useQueryState } from 'nuqs';
-import { createParser } from 'nuqs';
+import { useQueryState, createParser } from 'nuqs';
 import { ViewMode } from '@/components/opportunities/components/view-toggle/types';
 
-// Create a parser for ViewMode with validation
 export const parseAsViewMode = createParser({
   parse: (value: string): ViewMode => {
     if (value === 'cards' || value === 'table' || value === 'gantt') {
       return value as ViewMode;
     }
-    return 'cards'; // default fallback
+    return 'cards';
   },
   serialize: (value: ViewMode) => value,
 });

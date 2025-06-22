@@ -1,5 +1,5 @@
 import React, { createContext, useEffect } from "react";
-import { Opportunity } from "@/app/shared/types";
+import { Opportunity } from "@/lib/api-client";
 import { Loader2 } from "lucide-react";
 import {
 	Table,
@@ -13,8 +13,8 @@ import { OpportunitiesTableProps, FlattenedRow } from "./types";
 import OpportunitiesTableRow from "./components/opportunities-table-row";
 import { OpportunitiesTableHeader } from "./components/opportunities-table-header";
 import { useInView } from "react-intersection-observer";
-import { withErrorBoundary } from '@/app/shared/components/with-error-boundary';
-import { OpportunitiesErrorFallback } from '@/app/shared/components/error-fallbacks/opportunities-error-fallback';
+import { withErrorBoundary } from "@/app/shared/components/with-error-boundary";
+import { OpportunitiesErrorFallback } from "@/app/shared/components/error-fallbacks/opportunities-error-fallback";
 
 export const OpportunitiesContext = createContext<{
 	opportunities: Opportunity[];
@@ -56,7 +56,7 @@ const OpportunitiesTable = ({
 					<TableBody>
 						{flattenedData.map((row: FlattenedRow) => (
 							<OpportunitiesTableRow
-								key={`${row.opportunityId}-${row.roleId || 'opportunity'}`}
+								key={`${row.opportunityId}-${row.roleId || "opportunity"}`}
 								row={row}
 								showActions={showActions}
 								onAddRole={onAddRole}
@@ -111,5 +111,5 @@ const OpportunitiesTable = ({
 };
 
 export default withErrorBoundary(OpportunitiesTable, {
-	FallbackComponent: OpportunitiesErrorFallback
+	FallbackComponent: OpportunitiesErrorFallback,
 });

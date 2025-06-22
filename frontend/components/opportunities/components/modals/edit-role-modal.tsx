@@ -13,6 +13,7 @@ import { EditOpportunityModalProps, EditRoleModalProps } from "./types";
 import { useEditRoleModal } from "./hooks/use-edit-role-modal";
 import { useEditOpportunityModal } from "./hooks/use-edit-opportunity-modal";
 import { useRole } from "@/lib/hooks/use-roles";
+import { Role, UpdateRole } from "@/lib/api-client";
 
 export const EditRoleModal = ({
 	isOpen,
@@ -20,14 +21,11 @@ export const EditRoleModal = ({
 	role,
 	opportunity,
 }: Omit<EditRoleModalProps, "opportunityId">) => {
-	// Fetch the latest role data from cache/server
 	const { data: latestRole, isLoading: isRoleLoading } = useRole(role.id);
-
-	// Use the latest role data if available, otherwise fall back to the prop
 	const currentRole = latestRole || role;
 
 	const { handleSubmit, isPending } = useEditRoleModal({
-		role: currentRole,
+		role: currentRole as Role,
 		onClose,
 	});
 
@@ -43,12 +41,9 @@ export const EditRoleModal = ({
 					</div>
 				) : (
 					<RoleForm
-						key={`role-form-${currentRole.id}-${
-							currentRole.updatedAt || "no-timestamp"
-						}`}
 						mode='edit'
-						initialData={currentRole}
-						onSubmit={handleSubmit}
+						initialData={currentRole as Role}
+						onSubmit={handleSubmit as (role: UpdateRole) => Promise<void>}
 						onCancel={onClose}
 						isSubmitting={isPending}
 						opportunity={opportunity}
@@ -63,10 +58,9 @@ export const EditOpportunityModal = ({
 	isOpen,
 	onClose,
 	opportunity,
-	listType,
 }: EditOpportunityModalProps) => {
 	const { handleSubmit, isPending, isLoading, latestOpportunity } =
-		useEditOpportunityModal({ isOpen, opportunity, listType, onClose });
+		useEditOpportunityModal({ isOpen, opportunity, onClose });
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
@@ -82,7 +76,7 @@ export const EditOpportunityModal = ({
 					<CreateOpportunityForm
 						onSubmit={handleSubmit}
 						onCancel={onClose}
-						initialData={latestOpportunity || opportunity}
+						initialData={latestOpportunity?.data || opportunity}
 						mode='edit'
 						isSubmitting={isPending}
 						disabled={isLoading}

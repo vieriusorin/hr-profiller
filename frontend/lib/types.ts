@@ -116,11 +116,11 @@ export interface BaseOpportunity {
 }
 
 export interface OpportunityFilters {
-  client?: string;         // Changed from client: string to optional client?: string to match backend
-  grades?: Grade[];
-  needsHire?: 'yes' | 'no' | 'all';
-  probability?: [number, number];
-  // Add additional backend-supported filters
+  client: string;          // Required to match OpportunityFiltersState
+  grades: Grade[];         // Required to match OpportunityFiltersState
+  needsHire: 'yes' | 'no' | 'all';  // Required to match OpportunityFiltersState
+  probability: [number, number];    // Required to match OpportunityFiltersState
+  // Add additional backend-supported filters (optional)
   status?: OpportunityStatus;
   isActive?: boolean;
   startDate?: string;
