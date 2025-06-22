@@ -15,7 +15,8 @@ import { CreateRole, Role } from '@/lib/api-client';
 import { OpportunityLevel } from '@/lib/backend-types/enums';
 import { JobGrade } from '@/lib/backend-types/enums';
 
-const mapRoleToFormData = (role: Partial<Role> | undefined): CreateRoleFormData => {
+const mapRoleToFormData = (role: Partial<{ data: Role }> | undefined): CreateRoleFormData => {
+
   if (!role) {
     return {
       roleName: '',
@@ -30,18 +31,20 @@ const mapRoleToFormData = (role: Partial<Role> | undefined): CreateRoleFormData 
   }
 
   const formData: CreateRoleFormData = {
-    roleName: role.roleName || '',
-    requiredGrade: (role.jobGrade as JobGrade) || 'SE',
-    opportunityLevel: (role.level as OpportunityLevel) || 'Medium',
-    allocation: role.allocation || 100,
-    needsHire: role.status === 'Open',
-    comments: role.notes || '',
-    assignedMemberIds: role.assignedMembers?.map(member => member.id) || [],
+    roleName: role.data?.roleName || '',
+    requiredGrade: (role.data?.jobGrade as JobGrade) || 'SE',
+    opportunityLevel: (role.data?.level as OpportunityLevel) || 'Medium',
+    allocation: role.data?.allocation || 100,
+    needsHire: role.data?.status === 'Open',
+    comments: role.data?.notes || '',
+    assignedMemberIds: role.data?.assignedMembers?.map(member => member.id) || [],
     newHireName: '',
   };
 
   return formData;
 };
+
+
 
 export const useRoleForm = ({
   mode = 'create',
@@ -51,6 +54,7 @@ export const useRoleForm = ({
   isSubmitting: externalIsSubmitting,
 }: UseRoleFormProps): UseRoleFormReturn => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   // Always start with default values for form initialization
   const defaultFormValues: CreateRoleFormData = {
