@@ -1,8 +1,7 @@
 import { injectable, inject } from 'inversify';
-import { eq, and, sql } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { opportunityRoles } from '../../../../db/schema/opportunity-roles.schema';
 import { opportunityRoleAssignments } from '../../../../db/schema/opportunity-role-assignments.schema';
-import { people } from '../../../../db/schema/people.schema';
 import { Role, AssignedMember } from '../../../domain/opportunity/entities/role.entity';
 import { RoleRepository } from '../../../domain/opportunity/repositories/role.repository';
 import { TypeNewOpportunityRole } from '../../../../db/schema/opportunity-roles.schema';
@@ -125,7 +124,6 @@ export class DrizzleRoleRepository implements RoleRepository {
   private async getAssignedMembers(roleId: string): Promise<AssignedMember[]> {
     // TODO: Implement proper query for assigned members
     // Temporarily returning empty array to fix TypeScript issues
-    console.log('Getting assigned members for role:', roleId);
     return [];
   }
 

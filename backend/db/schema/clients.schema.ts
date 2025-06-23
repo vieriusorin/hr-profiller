@@ -21,20 +21,16 @@ export const clients = pgTable('clients', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-// Create the base insert schema
 const baseInsertSchema = createInsertSchema(clients);
 
-// Create a modified insert schema that excludes auto-generated fields
 export const insertClientSchema = baseInsertSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-// Create the base select schema
 const baseSelectSchema = createSelectSchema(clients);
 
-// Create a modified select schema
 export const selectClientSchema = baseSelectSchema;
 
 export type TypeClient = z.infer<typeof selectClientSchema>;

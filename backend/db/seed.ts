@@ -54,6 +54,16 @@ function getRandomArrayElement<T>(array: T[]): T {
   return array[Math.floor(Math.random() * array.length)];
 }
 
+// Helper function to convert date to string format
+function dateToString(date: Date): string {
+  return date.toISOString().split('T')[0];
+}
+
+// Helper function to safely convert date or return undefined for optional dates
+function dateToStringOptional(date: Date | undefined): string | undefined {
+  return date ? dateToString(date) : undefined;
+}
+
 // Seed clients
 async function seedClients() {
   console.log('Seeding clients...');
@@ -99,7 +109,7 @@ async function seedPeople() {
       fullName,
       email: faker.internet.email({ firstName, lastName }),
       phone: generatePhoneNumber(),
-      birthDate: getRandomDate(new Date(2020, 0, 1), new Date()).toISOString().split('T')[0],
+      birthDate: getRandomDate(new Date(1980, 0, 1), new Date(2005, 0, 1)).toISOString().split('T')[0],
       address: faker.location.streetAddress({ useFullAddress: true }),
       city: faker.location.city(),
       country: faker.location.country(),
@@ -125,12 +135,10 @@ async function seedPeople() {
         const position = faker.person.jobTitle();
         const isManager = position.toLowerCase().includes('manager');
 
-        const employmentDetailsId = randomUUID();
         await db.insert(employmentDetails).values({
-          id: employmentDetailsId,
           personId: personId,
           employeeId: `EMP${String(i + 1).padStart(4, '0')}`,
-          hireDate: getRandomDate(new Date(2020, 0, 1), new Date()).toISOString().split('T')[0],
+          hireDate: getRandomDate(new Date(2020, 0, 1), new Date()),
           position,
           employmentType: faker.helpers.arrayElement(['full_time', 'part_time']),
           salary: faker.number.int({ min: 50000, max: isManager ? 200000 : 150000 }).toString(),
@@ -183,7 +191,7 @@ async function seedOpportunities(): Promise<{ id: string, expectedStartDate: Dat
   return insertedOpportunities;
 }
 
-async function seedOpportunityRoles(insertedOpportunities: { id: string, expectedStartDate: Date | null, expectedEndDate: Date | null }[]): Promise<TypeNewOpportunityRole[]> {
+async function seedOpportunityRoles(insertedOpportunities: { id: string, expectedStartDate: Date | null, expectedEndDate: Date | null }[]): Promise<any[]> {
   console.log('Seeding opportunity roles...');
   const rolesData: TypeNewOpportunityRole[] = [];
   const roleNames = [
@@ -288,8 +296,8 @@ async function seedPersonUnavailableDates(peopleData: any[]) {
         const unavailableData = {
           id: unavailableId,
           personId: person.id,
-          startDate: startDate.toISOString().split('T')[0],
-          endDate: endDate.toISOString().split('T')[0],
+          startDate: dateToString(startDate),
+          endDate: dateToString(endDate),
           reason: faker.helpers.arrayElement(['Vacation', 'Sick Leave', 'Personal', 'Training', 'Conference']),
         };
 
@@ -398,8 +406,8 @@ async function seedEducation(peopleData: any[]) {
         institution: getRandomArrayElement(institutions),
         degree: getRandomArrayElement(degrees),
         fieldOfStudy: getRandomArrayElement(fields),
-        startDate: startDate.toISOString().split('T')[0],
-        graduationDate: endDate.toISOString().split('T')[0],
+        startDate: dateToString(startDate),
+        graduationDate: dateToString(endDate),
         description: faker.helpers.maybe(() => faker.lorem.sentence(), { probability: 0.6 }),
         gpa: faker.helpers.maybe(() => faker.number.float({ min: 2.5, max: 4.0, fractionDigits: 1 }).toString(), { probability: 0.7 }),
         isCurrentlyEnrolled: faker.datatype.boolean({ probability: 0.1 }) ? 'true' : 'false',
@@ -423,15 +431,18 @@ async function seedPersonSkills(peopleData: any[], skillsData: any[]) {
     const selectedSkills = faker.helpers.arrayElements(skillsData, numSkills);
 
     for (const skill of selectedSkills) {
+      const lastUsedDate = getRandomDate(new Date(2023, 0, 1), new Date());
+      const certificationDate = faker.helpers.maybe(() => getRandomDate(new Date(2020, 0, 1), new Date()), { probability: 0.3 });
+      
       const personSkillData = {
         personId: person.id,
         skillId: skill.id,
         proficiencyLevel: getRandomArrayElement(proficiencyLevels),
         yearsOfExperience: faker.number.int({ min: 1, max: 15 }).toString(),
-        lastUsed: getRandomDate(new Date(2023, 0, 1), new Date()).toISOString().split('T')[0],
+        lastUsed: dateToString(lastUsedDate),
         isCertified: faker.datatype.boolean({ probability: 0.3 }),
         certificationName: faker.helpers.maybe(() => `${skill.name} Certification`, { probability: 0.3 }),
-        certificationDate: faker.helpers.maybe(() => getRandomDate(new Date(2020, 0, 1), new Date()).toISOString().split('T')[0], { probability: 0.3 }),
+        certificationDate: dateToStringOptional(certificationDate),
         notes: faker.helpers.maybe(() => faker.lorem.sentence(), { probability: 0.4 }),
       };
 
@@ -460,12 +471,14 @@ async function seedPersonTechnologies(peopleData: any[], technologiesData: any[]
     const selectedTechnologies = faker.helpers.arrayElements(technologiesData, numTechnologies);
 
     for (const technology of selectedTechnologies) {
+      const lastUsedDate = getRandomDate(new Date(2023, 0, 1), new Date());
+      
       const personTechData = {
         personId: person.id,
         technologyId: technology.id,
         proficiencyLevel: getRandomArrayElement(proficiencyLevels),
         yearsOfExperience: faker.number.int({ min: 1, max: 12 }).toString(),
-        lastUsed: getRandomDate(new Date(2023, 0, 1), new Date()).toISOString().split('T')[0],
+        lastUsed: dateToString(lastUsedDate),
         context: getRandomArrayElement(contexts),
         projectName: faker.helpers.maybe(() => faker.company.buzzPhrase(), { probability: 0.6 }),
         description: faker.helpers.maybe(() => faker.lorem.paragraph(), { probability: 0.5 }),
