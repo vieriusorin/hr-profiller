@@ -45,8 +45,8 @@ export const UpdateOpportunitySchema = baseInsertSchema.partial().omit({
   updatedAt: true,
 }).extend({
   // Use date format for expected dates (YYYY-MM-DD)
-  expectedStartDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional().or(z.literal('')).transform(val => val === '' ? null : val),
-  expectedEndDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional().or(z.literal('')).transform(val => val === '' ? null : val),
+  expectedStartDate: z.string().datetime().nullable().optional().or(z.literal('')).transform(val => val === '' ? null : val),
+  expectedEndDate: z.string().datetime().nullable().optional().or(z.literal('')).transform(val => val === '' ? null : val),
   // Keep timestamp format for activated_at
   activatedAt: z.string().datetime().nullable().optional().or(z.literal('')).transform(val => val === '' ? null : val),
 });
