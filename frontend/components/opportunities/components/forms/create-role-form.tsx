@@ -41,6 +41,7 @@ export const RoleForm = ({
 	isSubmitting: externalIsSubmitting,
 	opportunity,
 }: RoleFormProps) => {
+	console.log("initialData", initialData);
 	const { form, isSubmitting, handleSubmit, handleCancel, isDirty } =
 		useRoleForm({
 			mode,
