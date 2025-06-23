@@ -15,9 +15,6 @@ export const useEditRoleModal = ({ role, opportunityId, onClose }: UseEditRoleMo
         // const status: UpdateRole['status'] = formData.needsHire ? 'Open' : 'Staffed';
         // TODO: Hardcoded value
         const status: UpdateRole['status'] = 'Open';
-
-        console.log(formData, 'formData')
-
         return {
             roleName: formData.roleName,
             jobGrade: formData.jobGrade as UpdateRole['jobGrade'],

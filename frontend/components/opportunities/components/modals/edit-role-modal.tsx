@@ -25,6 +25,7 @@ export const EditRoleModal = ({
 	const currentRole = latestRole || role;
 
 	const { handleSubmit, isPending } = useEditRoleModal({
+		opportunityId: opportunity.id,
 		role: currentRole as Role,
 		onClose,
 	});

@@ -4,7 +4,6 @@ import { TYPES } from '../../../shared/types';
 import { EmployeeApplicationService } from '../../../domain/employee/services/employee-application.service';
 import { EmploymentService } from '../../../domain/employee/services/employment.service';
 import { EmployeePresenter } from '../../../interfaces/presenters/employee.presenter';
-import { QueryParser } from '../../../shared/utils/query-parser';
 import { TypeNewPerson } from '../../../../db/schema/people.schema';
 import { CreateEmploymentData } from '../../../domain/employee/repositories/employment.repository';
 import { z } from 'zod';
@@ -81,46 +80,10 @@ export class EmployeeController {
   async getAll(req: Request, res: Response): Promise<void> {
     try {
       const employeeProfiles = await this.employeeApplicationService.getAllEmployeeProfiles();
-      console.log(`Found ${employeeProfiles.length} active employees`);
-
-      // Parse query parameters
-      const queryParams = QueryParser.parseAll(req);
-
-      // Process the collection using the presenter's internal methods
-      const { processedData, totalFiltered, totalOriginal } = (this.presenter as any).processCollection(employeeProfiles, queryParams);
-      const presentedData = this.presenter.presentCollection(processedData);
-
-      // Create pagination metadata
-      const { page = 1, limit = 10 } = queryParams;
-      const totalPages = Math.ceil(totalFiltered / limit);
-      const pagination = {
-        page,
-        limit,
-        total: totalFiltered,
-        totalPages,
-        hasNextPage: page < totalPages,
-        hasPreviousPage: page > 1,
-        nextPage: page < totalPages ? page + 1 : null,
-        previousPage: page > 1 ? page - 1 : null,
-      };
-
-      // Create the response with flatter structure
-      const response = {
-        status: 'success' as const,
-        data: presentedData,
-        pagination,
-        filters: queryParams.filters,
-        search: queryParams.search ? { search: queryParams.search, searchFields: queryParams.searchFields } : undefined,
-        sort: queryParams.sortBy ? { sortBy: queryParams.sortBy, sortOrder: queryParams.sortOrder } : undefined,
-        meta: {
-          count: presentedData.length,
-          filtered: totalFiltered,
-          total: totalOriginal,
-          timestamp: new Date().toISOString(),
-          endpoint: req.originalUrl,
-        }
-      };
-
+      
+      // Use the presenter's flat pagination method that maintains frontend compatibility
+      const response = this.presenter.successPaginatedFlat(employeeProfiles, req);
+      
       res.status(200).json(response);
     } catch (error: any) {
       console.error('Error in EmployeeController.getAll:', error);

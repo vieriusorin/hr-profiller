@@ -81,13 +81,31 @@ export const CreateOpportunityForm = ({
 							type='date'
 							value={field.value ? new Date(field.value) : undefined}
 							onChange={(date) => {
-								const isoString =
-									date instanceof Date ? date.toISOString().split("T")[0] : "";
+								const isoString = date instanceof Date ? date.toISOString() : undefined;
 								field.onChange(isoString);
 							}}
 							error={errors.expectedStartDate?.message}
 							placeholder='Select start date'
 							required
+							disabled={disabled || (isEdit && !canEditOpportunity)}
+						/>
+					)}
+				/>
+
+				<Controller
+					name='expectedEndDate'
+					control={control}
+					render={({ field }) => (
+						<FormField
+							label='Expected End Date'
+							type='date'
+							value={field.value ? new Date(field.value) : undefined}
+							onChange={(date) => {
+								const isoString = date instanceof Date ? date.toISOString() : undefined;
+								field.onChange(isoString);
+							}}
+							error={errors.expectedEndDate?.message}
+							placeholder='Select end date'
 							disabled={disabled || (isEdit && !canEditOpportunity)}
 						/>
 					)}

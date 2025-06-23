@@ -6,6 +6,7 @@ import { validatedOpportunityApi } from '@/shared/lib/api/validated-api';
 import { ValidationErrorDisplay } from './validation-error-display';
 
 interface CreateOpportunityFormData {
+  expectedEndDate: string;
   clientName: string;
   opportunityName: string;
   expectedStartDate: string;
@@ -17,6 +18,7 @@ export const CreateOpportunityForm = () => {
     clientName: '',
     opportunityName: '',
     expectedStartDate: '',
+    expectedEndDate: '',
     probability: 50,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,16 +32,17 @@ export const CreateOpportunityForm = () => {
     try {
       const result = await validatedOpportunityApi.createOpportunity({
         ...formData,
+        expectedEndDate: formData.expectedEndDate || undefined,
         createdAt: new Date().toISOString(),
       });
       
       if (result.success) {
-        console.log('✅ Opportunity created successfully:', result.data);
         // Reset form
         setFormData({
           clientName: '',
           opportunityName: '',
           expectedStartDate: '',
+          expectedEndDate: '',
           probability: 50,
         });
       } else {

@@ -1,7 +1,7 @@
 import { UseFormReturn } from 'react-hook-form';
 import { Opportunity, Role, UpdateRole } from '@/lib/api-client';
 import { CreateOpportunityForm } from '@/lib/types';
-import { CreateOpportunityFormData, CreateRoleFormData } from './schemas';
+import { CreateRoleFormData } from './schemas';
 
 export interface FormActions {
   onCancel: () => void;
@@ -57,3 +57,13 @@ export interface UseRoleFormReturn extends UseFormBaseReturn {
   form: UseFormReturn<CreateRoleFormData>;
   handleSubmit: () => Promise<void>;
 } 
+
+
+export type CreateOpportunityFormData = {
+  clientName: string;
+  opportunityName: string;
+  expectedStartDate: string;
+  expectedEndDate?: string | undefined;
+  probability: number;
+  comment?: string;
+};

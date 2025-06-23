@@ -24,11 +24,7 @@ const ValidatedOpportunitiesList = () => {
   const [editOpportunity, setEditOpportunity] = useState<Opportunity | null>(null);
 
   const handleEditOpportunity = (opportunity: Opportunity) => {
-    console.log('Edit clicked', opportunity);
     setEditOpportunity(opportunity);
-    setTimeout(() => {
-      console.log('editOpportunity state after set:', opportunity);
-    }, 0);
   };
 
   const {

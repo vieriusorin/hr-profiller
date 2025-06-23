@@ -442,6 +442,7 @@ export const validatedOpportunityApi = {
       opportunityName: string;
       clientName: string;
       expectedStartDate: string;
+      expectedEndDate?: string;
       probability: number;
       createdAt: string;
     }
@@ -452,7 +453,8 @@ export const validatedOpportunityApi = {
       const response = await apiClient.opportunities.create({
         opportunityName: opportunityData.opportunityName,
         clientName: opportunityData.clientName,
-        expectedStartDate: opportunityData.expectedStartDate,
+        expectedStartDate: opportunityData.expectedStartDate || null,
+        expectedEndDate: opportunityData.expectedEndDate || null,
         probability: opportunityData.probability,
         status: 'In Progress', // Add required status field with default value
       });

@@ -26,6 +26,16 @@ export const createOpportunitySchema = z.object({
       return selectedDate >= today;
     }, 'Expected start date cannot be in the past'),
 
+  expectedEndDate: z
+    .string()
+    .optional()
+    .transform((val) => val === '' ? undefined : val)
+    .refine((date) => {
+      if (!date) return true; // Optional field
+      const selectedDate = new Date(date);
+      return !isNaN(selectedDate.getTime()); // Valid date
+    }, 'Expected end date must be a valid date'),
+
   probability: z
     .number({
       required_error: 'Probability is required',
@@ -40,6 +50,14 @@ export const createOpportunitySchema = z.object({
     .max(500, 'Comment must be less than 500 characters')
     .optional()
     .or(z.literal('')),
+}).refine((data) => {
+  if (!data.expectedEndDate || !data.expectedStartDate) return true;
+  const startDate = new Date(data.expectedStartDate);
+  const endDate = new Date(data.expectedEndDate);
+  return endDate >= startDate;
+}, {
+  message: 'Expected end date must be after the start date',
+  path: ['expectedEndDate'],
 });
 
 export const createRoleSchema = z.object({

@@ -9,7 +9,7 @@ import {
 } from '@/lib/types';
 import { type UseDashboardReturn } from '../types';
 import { toast } from 'react-hot-toast';
-import type { CreateRole, UpdateRole } from '@/lib/api-client';
+import type { CreateRole, UpdateRole, CreateOpportunity } from '@/lib/api-client';
 import type { CreateOpportunityForm } from '@/lib/types';
 
 export const useDashboard = (): UseDashboardReturn => {
@@ -136,14 +136,16 @@ export const useDashboard = (): UseDashboardReturn => {
   const handleCreateOpportunity = useCallback(async (opportunityData: CreateOpportunityForm): Promise<Opportunity> => {
     const loadingToast = toast.loading('Creating opportunity...');
 
+    console.log('handleCreateOpportunity - opportunityData:', opportunityData);
+
     try {
-      const createData: any = {
+      const createData: CreateOpportunity = {
         opportunityName: opportunityData.opportunityName,
-        clientName: opportunityData.clientName || '',
+        clientName: opportunityData.clientName,
         expectedStartDate: opportunityData.expectedStartDate || null,
         expectedEndDate: opportunityData.expectedEndDate || null,
         probability: opportunityData.probability || null,
-        status: opportunityData.status,
+        status: opportunityData.status || 'In Progress',
         comment: opportunityData.comment || null
       };
 

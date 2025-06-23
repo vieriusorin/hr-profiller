@@ -11,27 +11,36 @@ export class OpportunityPresenter extends EnhancedBasePresenter<Opportunity, Opp
 
   constructor() {
     super();
-
-    // Set up the builders for filtering, searching, and sorting
     this.setFilterBuilder(new OpportunityFilterBuilder())
       .setSearchBuilder(new OpportunitySearchBuilder())
       .setSortBuilder(new OpportunitySortBuilder());
   }
 
   present(opportunity: Opportunity): OpportunityPresentation {
-    const formattedOpportunity = {
+    console.log('🔍 [OpportunityPresenter] Input opportunity:', JSON.stringify(opportunity, null, 2));
+    console.log('🔍 [OpportunityPresenter] expectedStartDate:', opportunity.expectedStartDate);
+    console.log('🔍 [OpportunityPresenter] expectedEndDate:', opportunity.expectedEndDate);
+    
+    const result = {
       ...opportunity,
-      expectedStartDate: opportunity.expectedStartDate ? new Date(opportunity.expectedStartDate) : null,
-      expectedEndDate: opportunity.expectedEndDate ? new Date(opportunity.expectedEndDate) : null,
-    };
-
-    return {
-      ...formattedOpportunity,
-      roles: (opportunity as any).roles || [], // Use the roles fetched by OpportunityService
-      // Add computed fields from business logic
+      expectedStartDate: opportunity.expectedStartDate ? opportunity.expectedStartDate.toISOString() : null,
+      expectedEndDate: opportunity.expectedEndDate ? opportunity.expectedEndDate.toISOString() : null,
+      activatedAt: opportunity.activatedAt ? opportunity.activatedAt.toISOString() : null,
+      createdAt: opportunity.createdAt.toISOString(),
+      updatedAt: opportunity.updatedAt.toISOString(),
+      roles: (opportunity as any).roles || [],
       isHighProbability: opportunity.isHighProbability(),
       duration: opportunity.getDuration(),
       isExpiringSoon: opportunity.isExpiringSoon(),
     };
+
+    return {
+      ...result,
+      createdAt: new Date(result.createdAt),
+      updatedAt: new Date(result.updatedAt), 
+      activatedAt: result.activatedAt ? new Date(result.activatedAt) : null,
+      expectedStartDate: result.expectedStartDate,
+      expectedEndDate: result.expectedEndDate
+    };
   }
-} 
+}

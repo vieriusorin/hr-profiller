@@ -18,19 +18,13 @@ export const useProbabilitySlider = (
 
   // Sync external value to local if it changes elsewhere
   useEffect(() => {
-    console.log('External value changed to:', value, 'current local:', localValue);
 
     // If we just initiated a reset, don't sync external changes yet
     if (resetInitiatedRef.current) {
-      console.log('Reset was initiated, checking if external value matches reset...');
       if (value[0] === 0 && value[1] === 100) {
-        console.log('External value matches reset, clearing reset flag');
         resetInitiatedRef.current = false;
-        // Don't call setLocalValue here since we already set it in resetValue
         return;
       } else {
-        console.log('External value does not match reset, will sync after reset completes');
-        // Don't sync yet, let the reset complete first
         return;
       }
     }
@@ -42,12 +36,10 @@ export const useProbabilitySlider = (
   useEffect(() => {
     // Don't trigger debounced updates if we just reset
     if (resetInitiatedRef.current) {
-      console.log('Ignoring debounced update because reset is in progress');
       return;
     }
 
     if (debouncedLocalValue[0] !== value[0] || debouncedLocalValue[1] !== value[1]) {
-      console.log('Debounced value changed, calling onChange:', debouncedLocalValue);
       onChangeRef.current(debouncedLocalValue);
     }
   }, [debouncedLocalValue, value]);
@@ -81,9 +73,7 @@ export const useProbabilitySlider = (
 
   const resetValue = () => {
     const resetRange: [number, number] = [0, 100];
-    console.log('Resetting probability range to:', resetRange);
-    console.log('Current localValue before reset:', localValue);
-    console.log('Current external value:', value);
+
 
     // Set flag to prevent external sync from overriding our reset
     resetInitiatedRef.current = true;
@@ -93,7 +83,6 @@ export const useProbabilitySlider = (
 
     // Update URL state
     onChangeRef.current(resetRange);
-    console.log('Reset complete, called onChange with:', resetRange);
 
     setTimeout(() => {
       resetInitiatedRef.current = false;

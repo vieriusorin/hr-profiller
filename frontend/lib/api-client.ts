@@ -267,10 +267,15 @@ export const apiClient = {
         });
       }
       const query = searchParams.toString();
-      console.log('🔍 API Request URL:', `opportunities${query ? `?${query}` : ''}`, 'Params:', params);
-      return apiRequest<OpportunityListResponse>(
+      const result = apiRequest<OpportunityListResponse>(
         `opportunities${query ? `?${query}` : ''}`
       );
+      
+      result.then(response => {
+        console.log('🔍 [Frontend API] Received opportunities response:', JSON.stringify(response.data[0], null, 2));
+      });
+      
+      return result;
     },
 
     // GET /api/v1/opportunities/{id}

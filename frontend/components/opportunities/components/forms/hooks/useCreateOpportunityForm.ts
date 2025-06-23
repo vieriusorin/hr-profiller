@@ -4,17 +4,10 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  CreateOpportunityFormData,
   UseCreateOpportunityFormReturn
 } from '../types';
 import { createOpportunitySchema } from '../schemas';
-
-export type CreateOpportunityFormData = {
-  clientName: string;
-  opportunityName: string;
-  expectedStartDate: string;
-  probability: number;
-  comment?: string;
-};
 
 export const useCreateOpportunityForm = ({
   onSubmit,
@@ -25,16 +18,17 @@ export const useCreateOpportunityForm = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }: any): UseCreateOpportunityFormReturn => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  console.log(initialData, 'initialData in useCreateOpportunityForm')
   const form = useForm<CreateOpportunityFormData>({
     resolver: zodResolver(createOpportunitySchema),
     defaultValues: initialData
       ? {
-        clientName: initialData.clientName || '',
-        opportunityName: initialData.opportunityName || '',
-        expectedStartDate: initialData.expectedStartDate || '',
-        probability: initialData.probability ?? 0,
-        comment: initialData.comment || '',
+          clientName: initialData.clientName ?? '',
+          opportunityName: initialData.opportunityName ?? '',
+          expectedStartDate: initialData.expectedStartDate || '',
+          expectedEndDate: initialData.expectedEndDate || '',
+          probability: initialData.probability ?? 0,
+          comment: initialData.comment || '',
       }
       : undefined,
   });
@@ -46,17 +40,19 @@ export const useCreateOpportunityForm = ({
     const formData = form.getValues();
     setIsSubmitting(true);
 
+    console.log(formData, 'formData in useCreateOpportunityForm');
+
     try {
       if (mode === 'edit') {
         await onSubmit(formData);
       } else {
         const newOpportunity = {
-          id: crypto.randomUUID(),
           ...formData,
-          createdAt: new Date().toISOString().split('T')[0],
           status: 'In Progress' as const,
-          roles: [],
+          expectedStartDate: formData.expectedStartDate || null,
+          expectedEndDate: formData.expectedEndDate || null,
         };
+        
         await onSubmit(newOpportunity);
         form.reset();
       }

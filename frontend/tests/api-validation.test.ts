@@ -1,9 +1,5 @@
-// API Validation Tests
-// This file demonstrates the comprehensive testing of Zod validation schemas
 
-// Example test structure (would normally use Jest or Vitest)
 const testApiValidation = () => {
-  console.log('🧪 Testing API Validation Schemas');
 
   // Test 1: Valid opportunity data
   const validOpportunity = {
@@ -17,8 +13,6 @@ const testApiValidation = () => {
     roles: []
   };
 
-  console.log('✅ Valid opportunity should pass validation');
-
   // Test 2: Invalid opportunity data
   const invalidOpportunity = {
     id: -1, // Invalid: must be positive
@@ -30,8 +24,6 @@ const testApiValidation = () => {
     roles: []
   };
 
-  console.log('❌ Invalid opportunity should fail validation');
-
   // Test 3: Partial validation with fallback
   const mixedData = [
     validOpportunity,
@@ -40,13 +32,9 @@ const testApiValidation = () => {
     { ...validOpportunity, id: 'string' }, // Invalid
   ];
 
-  console.log('🔄 Mixed data should filter out invalid items');
-
   // Test 4: Grade validation
   const validGrades = ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'];
   const invalidGrades = ['INVALID', 'junior', '', null, 123];
-
-  console.log('🎓 Grade validation tests');
 
   // Test 5: Form input validation
   const validCreateInput = {
@@ -62,8 +50,6 @@ const testApiValidation = () => {
     expectedStartDate: 'not-a-date', // Invalid
     probability: -10 // Invalid
   };
-
-  console.log('📝 Form input validation tests');
 
   return {
     validOpportunity,

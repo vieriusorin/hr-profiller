@@ -76,10 +76,6 @@ export function useInfiniteOpportunities(params?: {
     .filter(([, value]) => value !== '' && value !== undefined && value !== null)
     .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
 
-  console.log('🚀 useInfiniteOpportunities called with params:', params);
-  console.log('🔧 baseParams:', baseParams);
-  console.log('✨ cleanParams:', cleanParams);
-
   const query = useInfiniteQuery({
     queryKey: [...opportunityKeys.lists(), 'infinite', cleanParams],
     queryFn: ({ pageParam = 1 }) => {
@@ -98,7 +94,6 @@ export function useInfiniteOpportunities(params?: {
       }
     },
     getNextPageParam: (lastPage) => {
-      console.log('📄 getNextPageParam - lastPage:', lastPage);
       if (lastPage.pagination?.hasNextPage) {
         return lastPage.pagination.nextPage;
       }
@@ -115,15 +110,6 @@ export function useInfiniteOpportunities(params?: {
     enabled: true, // Force the query to be enabled
     retry: 3, // Add retry attempts
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
-  });
-
-  console.log('🔍 Query State:', {
-    status: query.status,
-    isLoading: query.isLoading,
-    isFetching: query.isFetching,
-    isError: query.isError,
-    error: query.error,
-    data: query.data,
   });
 
   return query;

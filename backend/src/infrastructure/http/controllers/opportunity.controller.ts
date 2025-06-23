@@ -4,7 +4,6 @@ import { TYPES, QueryParams } from '../../../shared/types';
 import { OpportunityService } from '../../../domain/opportunity/services/opportunity.service';
 import { OpportunityPresenter } from '../../../interfaces/presenters/opportunity.presenter';
 import { CreateOpportunitySchema, TypeNewOpportunity, TypeOpportunity, TypeUpdateOpportunity, UpdateOpportunitySchema } from '../../../../db/schema';
-import { QueryParser } from '../../../shared/utils/query-parser';
 
 type CreateOpportunityRequest = Request<{}, QueryParams, TypeOpportunity>;
 
@@ -20,44 +19,11 @@ export class OpportunityController {
   async getAll(req: CreateOpportunityRequest, res: Response): Promise<void> {
     try {
       const opportunities = await this.opportunityService.getAllOpportunities();
+      console.log('🔍 [OpportunityController] Raw opportunities from service:', JSON.stringify(opportunities[0], null, 2));
     
-      // Parse query parameters
-      const queryParams = QueryParser.parseAll(req);
-      
-      // Process the collection using the presenter's internal methods
-      const { processedData, totalFiltered, totalOriginal } = (this.presenter as any).processCollection(opportunities, queryParams);
-      const presentedData = this.presenter.presentCollection(processedData);
-      
-      // Create pagination metadata
-      const { page = 1, limit = 10 } = queryParams;
-      const totalPages = Math.ceil(totalFiltered / limit);
-      const pagination = {
-        page,
-        limit,
-        total: totalFiltered,
-        totalPages,
-        hasNextPage: page < totalPages,
-        hasPreviousPage: page > 1,
-        nextPage: page < totalPages ? page + 1 : null,
-        previousPage: page > 1 ? page - 1 : null,
-      };
-
-      // Create the response with flatter structure
-      const response = {
-        status: 'success' as const,
-        data: presentedData,
-        pagination,
-        filters: queryParams.filters,
-        search: queryParams.search ? { search: queryParams.search, searchFields: queryParams.searchFields } : undefined,
-        sort: queryParams.sortBy ? { sortBy: queryParams.sortBy, sortOrder: queryParams.sortOrder } : undefined,
-        meta: {
-          count: presentedData.length,
-          filtered: totalFiltered,
-          total: totalOriginal,
-          timestamp: new Date().toISOString(),
-          endpoint: req.originalUrl,
-        }
-      };
+      // Use the presenter's flat pagination method that maintains frontend compatibility
+      const response = this.presenter.successPaginatedFlat(opportunities, req);
+      console.log('🔍 [OpportunityController] Final presented data:', JSON.stringify(response.data[0], null, 2));
       
       res.status(200).json(response);
     } catch (error: any) {
@@ -103,9 +69,9 @@ export class OpportunityController {
       }
       
       const opportunityData = opportunityValidation.data;
-
       const opportunity = await this.opportunityService.createOpportunity(opportunityData);
       const response = this.presenter.success(opportunity);
+      
       res.status(201).json(response);
     } catch (error: any) {
       console.error('Error creating opportunity:', error);

@@ -1,7 +1,23 @@
 import { TypeOpportunityStatus } from '@db/enums/opportunity-status.enum';
-import { TypeOpportunity } from '../../../shared/types/schema.types';
 
-export class Opportunity implements TypeOpportunity {
+// Define proper entity interface with Date objects
+export interface OpportunityData {
+  id: string;
+  opportunityName: string;
+  clientId: string | null;
+  clientName: string | null;
+  expectedStartDate: Date | null;
+  expectedEndDate: Date | null;
+  probability: number | null;
+  status: TypeOpportunityStatus;
+  comment: string | null;
+  isActive: boolean | null;
+  activatedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export class Opportunity implements OpportunityData {
   readonly id!: string;
   readonly opportunityName!: string;
   readonly clientId!: string | null;
@@ -16,8 +32,29 @@ export class Opportunity implements TypeOpportunity {
   readonly createdAt!: Date;
   readonly updatedAt!: Date;
 
-  constructor(data: TypeOpportunity) {
-    Object.assign(this, data);
+  constructor(data: any) {
+    // Handle date conversion for expected dates
+    const parseDate = (dateValue: any): Date | null => {
+      if (!dateValue) return null;
+      if (dateValue instanceof Date) return dateValue;
+      if (typeof dateValue === 'string') {
+        // Handle date-only format (YYYY-MM-DD)
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
+          return new Date(dateValue + 'T00:00:00.000Z');
+        }
+        return new Date(dateValue);
+      }
+      return null;
+    };
+
+    Object.assign(this, {
+      ...data,
+      expectedStartDate: parseDate(data.expectedStartDate),
+      expectedEndDate: parseDate(data.expectedEndDate),
+      activatedAt: parseDate(data.activatedAt),
+      createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+      updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
+    });
   }
 
   isHighProbability(): boolean {

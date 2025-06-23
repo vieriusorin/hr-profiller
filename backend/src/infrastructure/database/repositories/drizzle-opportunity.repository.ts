@@ -1,5 +1,5 @@
 import { injectable, inject } from 'inversify';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { TYPES, DatabaseType } from '../../../shared/types';
 import { Opportunity } from '../../../domain/opportunity/entities/opportunity.entity';
 import { OpportunityRepository } from '../../../domain/opportunity/repositories/opportunity.repository';
@@ -14,7 +14,9 @@ export class DrizzleOpportunityRepository implements OpportunityRepository {
   ) {}
 
   async findAll(): Promise<Opportunity[]> {
-    const result = await this.db.select().from(opportunities);
+    const result = await this.db.select().from(opportunities).orderBy(opportunities.expectedStartDate);
+    console.log('🔍 [DrizzleOpportunityRepository] Total opportunities found:', result.length);
+    console.log('🔍 [DrizzleOpportunityRepository] All opportunities:', JSON.stringify(result, null, 2));
     return result.map(this.mapToEntity);
   }
 
@@ -28,22 +30,28 @@ export class DrizzleOpportunityRepository implements OpportunityRepository {
   }
 
   async create(data: CreateOpportunityData): Promise<Opportunity> {
-    const [inserted] = await this.db
-      .insert(opportunities)
-      .values({
-        opportunityName: data.opportunityName,
-        clientId: data.clientId || null,
-        clientName: data.clientName || null,
-        expectedStartDate: data.expectedStartDate || null,
-        expectedEndDate: data.expectedEndDate || null,
-        probability: data.probability || null,
-        status: (data.status as any) || 'In Progress',
-        comment: data.comment || null,
-        isActive: data.isActive ?? false,
-        activatedAt: data.activatedAt || null,
-      })
-      .returning();
+    // Use raw SQL like the employment repository to ensure proper date handling
+    const result = await this.db.execute(sql`
+      INSERT INTO opportunities (
+        opportunity_name, client_id, client_name, expected_start_date, expected_end_date,
+        probability, status, comment, is_active, activated_at
+      )
+      VALUES (
+        ${data.opportunityName},
+        ${data.clientId || null},
+        ${data.clientName || null},
+        ${data.expectedStartDate || null},
+        ${data.expectedEndDate || null},
+        ${data.probability || null},
+        ${data.status || 'In Progress'},
+        ${data.comment || null},
+        ${data.isActive ?? false},
+        ${data.activatedAt || null}
+      )
+      RETURNING *
+    `);
 
+    const inserted = result.rows[0] as any;
     return this.mapToEntity(inserted);
   }
 
@@ -54,16 +62,18 @@ export class DrizzleOpportunityRepository implements OpportunityRepository {
     if (data.clientId !== undefined) updateData.clientId = data.clientId;
     if (data.clientName !== undefined) updateData.clientName = data.clientName;
     if (data.expectedStartDate !== undefined) {
-      updateData.expectedStartDate = data.expectedStartDate;
+      updateData.expectedStartDate = data.expectedStartDate ? new Date(data.expectedStartDate) : null;
     }
     if (data.expectedEndDate !== undefined) {
-      updateData.expectedEndDate = data.expectedEndDate;
+      updateData.expectedEndDate = data.expectedEndDate ? new Date(data.expectedEndDate) : null;
     }
     if (data.probability !== undefined) updateData.probability = data.probability;
     if (data.status !== undefined) updateData.status = data.status;
     if (data.comment !== undefined) updateData.comment = data.comment;
     if (data.isActive !== undefined) updateData.isActive = data.isActive;
-    if (data.activatedAt !== undefined) updateData.activatedAt = data.activatedAt;
+    if (data.activatedAt !== undefined) {
+      updateData.activatedAt = data.activatedAt ? new Date(data.activatedAt) : null;
+    }
 
     // Always update the updatedAt timestamp
     updateData.updatedAt = new Date();
@@ -93,20 +103,36 @@ export class DrizzleOpportunityRepository implements OpportunityRepository {
   }
 
   private mapToEntity(data: any): Opportunity {
+    console.log('🔍 [DrizzleOpportunityRepository] Raw data from DB:', JSON.stringify(data, null, 2));
+    console.log('🔍 [DrizzleOpportunityRepository] Object keys:', Object.keys(data));
+    
+    // Check all possible field name variations
+    console.log('🔍 [DrizzleOpportunityRepository] Date field analysis:');
+    console.log('  data.expectedStartDate:', data.expectedStartDate);
+    console.log('  data.expected_start_date:', data.expected_start_date);
+    
+    // Try to find the correct field names by looking at all fields that contain "start" or "end"
+    Object.keys(data).forEach(key => {
+      if (key.toLowerCase().includes('start') || key.toLowerCase().includes('end')) {
+        console.log(`  Found date-related field: ${key} = ${data[key]}`);
+      }
+    });
+
+    // Pass raw data to entity constructor and let it handle the conversion
     return new Opportunity({
       id: data.id,
-      opportunityName: data.opportunityName,
-      clientId: data.clientId,
-      clientName: data.clientName,
-      expectedStartDate: data.expectedStartDate,
-      expectedEndDate: data.expectedEndDate,
+      opportunityName: data.opportunityName || data.opportunity_name,
+      clientId: data.clientId || data.client_id,
+      clientName: data.clientName || data.client_name,
+      expectedStartDate: data.expectedStartDate || data.expected_start_date,
+      expectedEndDate: data.expectedEndDate || data.expected_end_date,
       probability: data.probability,
       status: data.status,
       comment: data.comment,
-      isActive: data.isActive,
-      activatedAt: data.activatedAt,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-    });
+      isActive: data.isActive !== undefined ? data.isActive : data.is_active,
+      activatedAt: data.activatedAt || data.activated_at,
+      createdAt: data.createdAt || data.created_at,
+      updatedAt: data.updatedAt || data.updated_at,
+    } as any);
   }
 } 

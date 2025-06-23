@@ -175,6 +175,39 @@ export abstract class EnhancedBasePresenter<TInput, TOutput> {
     return this.createEnvelope('success', response, responseMeta);
   }
 
+  /**
+   * Create a paginated response with flat structure (data array directly in data field)
+   * This maintains compatibility with existing frontend code that expects the flat structure
+   */
+  successPaginatedFlat(
+    items: TInput[],
+    req: Request,
+    meta?: Record<string, any>
+  ): any {
+    const queryParams = QueryParser.parseAll(req);
+    const { processedData, totalFiltered, totalOriginal } = this.processCollection(items, queryParams);
+    const presentedData = this.presentCollection(processedData);
+    const paginationMeta = this.createPaginationMeta(queryParams, totalFiltered);
+
+    // Return flat structure expected by frontend
+    return {
+      status: 'success' as const,
+      data: presentedData, // Array directly in data field
+      pagination: paginationMeta,
+      filters: queryParams.filters,
+      search: queryParams.search ? { search: queryParams.search, searchFields: queryParams.searchFields } : undefined,
+      sort: queryParams.sortBy ? { sortBy: queryParams.sortBy, sortOrder: queryParams.sortOrder } : undefined,
+      meta: {
+        count: presentedData.length,
+        filtered: totalFiltered,
+        total: totalOriginal,
+        timestamp: new Date().toISOString(),
+        endpoint: req.originalUrl,
+        ...meta,
+      }
+    };
+  }
+
   error(error: any): ResponseEnvelope<ErrorResponse> {
     const errorData: ErrorResponse = {
       message: error.message || 'An unexpected error occurred',

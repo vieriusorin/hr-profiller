@@ -15,6 +15,14 @@ export const validateOpportunity = (opportunity: CreateOpportunityForm): Validat
     errors.expectedStartDate = 'Expected start date is required';
   }
 
+  if (opportunity.expectedEndDate && opportunity.expectedStartDate) {
+    const startDate = new Date(opportunity.expectedStartDate);
+    const endDate = new Date(opportunity.expectedEndDate);
+    if (endDate <= startDate) {
+      errors.expectedEndDate = 'Expected end date must be after start date';
+    }
+  }
+
   if (opportunity.probability && (opportunity.probability < 1 || opportunity.probability > 100)) {
     errors.probability = 'Probability must be between 1-100%';
   }

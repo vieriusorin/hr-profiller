@@ -18,8 +18,7 @@ export class OpportunityService {
 
   async getAllOpportunities(): Promise<Opportunity[]> {
     const opportunities = await this.opportunityRepository.findAll();
-
-    // Fetch roles for each opportunity and attach them
+    
     const opportunitiesWithRoles = await Promise.all(
       opportunities.map(async (opportunity) => {
         const roles = await this.roleService.findAllByOpportunity(opportunity.id);
@@ -37,7 +36,6 @@ export class OpportunityService {
       return null;
     }
 
-    // Fetch associated roles and attach them to the opportunity
     const roles = await this.roleService.findAllByOpportunity(id);
     (opportunity as any).roles = roles;
 
@@ -45,12 +43,10 @@ export class OpportunityService {
   }
 
   async createOpportunity(data: CreateOpportunityData): Promise<Opportunity> {
-    // Apply business logic here if needed
-    // For example, auto-activate if probability >= 80%
     const processedData = {
       ...data,
       isActive: data.isActive ?? (data.probability != null ? data.probability >= 80 : false),
-      activatedAt: data.isActive ?? (data.probability != null ? data.probability >= 80 : false) ? new Date() : undefined,
+      activatedAt: data.isActive ?? (data.probability != null ? data.probability >= 80 : false) ? new Date().toISOString() : null,
     };
 
     return this.opportunityRepository.create(processedData);
@@ -69,7 +65,7 @@ export class OpportunityService {
       if (data.probability >= 80 && !current.isActive) {
         // Auto-activate if probability increased to >= 80%
         processedData.isActive = true;
-        processedData.activatedAt = new Date();
+        processedData.activatedAt = new Date().toISOString();
       } else if (data.probability < 80 && current.isActive && current.activatedAt) {
         // Only auto-deactivate if it was auto-activated
         const wasAutoActivated = current.activatedAt.getTime() === current.createdAt.getTime();

@@ -30,6 +30,8 @@ export const OpportunityCard = ({
 		setCurrentOpportunity(opportunity);
 	}, [opportunity]);
 
+	console.log(currentOpportunity, 'currentOpportunity in OpportunityCard');
+
 	const urgency = getStartDateUrgency(
 		currentOpportunity.expectedStartDate || ""
 	);
