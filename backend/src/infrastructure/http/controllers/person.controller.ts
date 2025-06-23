@@ -708,23 +708,98 @@ export class PersonController {
   async getCapabilities(req: Request<{ id: string }>, res: Response): Promise<void> {
     try {
       const { id } = req.params;
+
       const capabilities = await this.personService.getPersonCapabilitiesSummary(id);
 
       res.status(200).json({
         status: 'success',
-        data: {
-          personId: id,
-          capabilities,
-        },
+        data: capabilities,
         meta: { timestamp: new Date().toISOString() }
       });
     } catch (error: any) {
-      console.error('Error getting person capabilities:', error);
-      const statusCode = error.message.includes('not found') ? 404 : 500;
-      res.status(statusCode).json({
+      console.error('Error fetching person capabilities:', error);
+      res.status(500).json({
         status: 'error',
         data: { message: error.message || 'Internal server error', code: 'INTERNAL_ERROR' },
         meta: { timestamp: new Date().toISOString() }
+      });
+    }
+  }
+
+  /**
+   * POST /api/v1/persons/:id/analyze-ai
+   * Analyze person capabilities using AI
+   */
+  async analyzeWithAI(req: Request<{ id: string }, unknown, { analysisType?: string }>, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { analysisType } = req.body;
+
+      const analysisResult = await this.personService.analyzePersonCapabilitiesWithAI(id, analysisType);
+
+      res.status(200).json({
+        status: 'success',
+        data: { 
+          analysis: analysisResult,
+          personId: id,
+          analysisType: analysisType || 'capability_analysis'
+        },
+        meta: { 
+          timestamp: new Date().toISOString(),
+          requestId: req.headers['x-request-id'] || 'unknown'
+        }
+      });
+    } catch (error: any) {
+      console.error('Error in AI analysis:', error);
+      res.status(500).json({
+        status: 'error',
+        data: { 
+          message: error.message || 'AI analysis failed', 
+          code: 'AI_ANALYSIS_ERROR' 
+        },
+        meta: { 
+          timestamp: new Date().toISOString(),
+          requestId: req.headers['x-request-id'] || 'unknown'
+        }
+      });
+    }
+  }
+
+  /**
+   * POST /api/v1/persons/:id/generate-report
+   * Generate AI-powered report for person
+   */
+  async generateReport(req: Request<{ id: string }, unknown, { reportType?: string }>, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { reportType = 'comprehensive' } = req.body;
+
+      const reportResult = await this.personService.generatePersonReport(id, reportType);
+
+      res.status(200).json({
+        status: 'success',
+        data: { 
+          report: reportResult,
+          personId: id,
+          reportType
+        },
+        meta: { 
+          timestamp: new Date().toISOString(),
+          requestId: req.headers['x-request-id'] || 'unknown'
+        }
+      });
+    } catch (error: any) {
+      console.error('Error generating report:', error);
+      res.status(500).json({
+        status: 'error',
+        data: { 
+          message: error.message || 'Report generation failed', 
+          code: 'REPORT_GENERATION_ERROR' 
+        },
+        meta: { 
+          timestamp: new Date().toISOString(),
+          requestId: req.headers['x-request-id'] || 'unknown'
+        }
       });
     }
   }

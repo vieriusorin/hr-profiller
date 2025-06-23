@@ -18,7 +18,6 @@ export const useCreateOpportunityForm = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }: any): UseCreateOpportunityFormReturn => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  console.log(initialData, 'initialData in useCreateOpportunityForm')
   const form = useForm<CreateOpportunityFormData>({
     resolver: zodResolver(createOpportunitySchema),
     defaultValues: initialData
@@ -39,8 +38,6 @@ export const useCreateOpportunityForm = ({
 
     const formData = form.getValues();
     setIsSubmitting(true);
-
-    console.log(formData, 'formData in useCreateOpportunityForm');
 
     try {
       if (mode === 'edit') {

@@ -30,6 +30,10 @@ const TYPES = {
   PersonService: Symbol.for('PersonService'),
   EmploymentService: Symbol.for('EmploymentService'),
   EmployeeApplicationService: Symbol.for('EmployeeApplicationService'),
+  McpClientService: Symbol.for('McpClientService'),
+  OpenAIService: Symbol.for('OpenAIService'),
+  VectorDatabaseService: Symbol.for('VectorDatabaseService'),
+  RAGService: Symbol.for('RAGService'),
 
   // Controllers
   OpportunityController: Symbol.for('OpportunityController'),
@@ -37,6 +41,8 @@ const TYPES = {
   EmployeeController: Symbol.for('EmployeeController'),
   PersonController: Symbol.for('PersonController'),
   LookupController: Symbol.for('LookupController'),
+  McpController: Symbol.for('McpController'),
+  AIController: Symbol.for('AIController'),
 };
 
 // Type alias for the database with proper schema

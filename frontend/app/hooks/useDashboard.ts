@@ -54,11 +54,6 @@ export const useDashboard = (): UseDashboardReturn => {
   const onHoldOpportunities = onHoldQuery.data?.data ?? [];
   const completedOpportunities = completedQuery.data?.data ?? [];
 
-  console.log('useDashboard - inProgressOpportunities:', inProgressOpportunities);
-  console.log('useDashboard - onHoldOpportunities:', onHoldOpportunities);
-  console.log('useDashboard - completedOpportunities:', completedOpportunities);
-
-
   const createOpportunityMutation = useCreateOpportunity();
   const updateOpportunityMutation = useUpdateOpportunity();
   const createRoleMutation = useCreateRole();

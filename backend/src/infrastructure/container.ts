@@ -20,6 +20,14 @@ import { DrizzleEmploymentRepository } from './database/repositories/drizzle-emp
 import { EmploymentService } from '../domain/employee/services/employment.service';
 import { EmployeeApplicationService } from '../domain/employee/services/employee-application.service';
 import { PersonController } from './http/controllers/person.controller';
+// MCP imports
+import { McpClientService } from '../domain/mcp/services/mcp-client.service';
+import { McpController } from './http/controllers/mcp.controller';
+// AI imports
+import { OpenAIService } from '../domain/ai/services/openai.service';
+import { VectorDatabaseService } from '../domain/ai/services/vector-database.service';
+import { RAGService } from '../domain/ai/services/rag.service';
+import { AIController } from './http/controllers/ai.controller';
 
 const container = new Container();
 
@@ -40,6 +48,12 @@ container.bind<RoleService>(TYPES.RoleService).to(RoleService);
 container.bind<PersonService>(TYPES.PersonService).to(PersonService);
 container.bind<EmploymentService>(TYPES.EmploymentService).to(EmploymentService);
 container.bind<EmployeeApplicationService>(TYPES.EmployeeApplicationService).to(EmployeeApplicationService);
+// MCP service bindings
+container.bind<McpClientService>(TYPES.McpClientService).to(McpClientService);
+// AI service bindings
+container.bind<OpenAIService>(TYPES.OpenAIService).to(OpenAIService);
+container.bind<VectorDatabaseService>(TYPES.VectorDatabaseService).to(VectorDatabaseService);
+container.bind<RAGService>(TYPES.RAGService).to(RAGService);
 
 // Controller bindings
 container.bind<OpportunityController>(TYPES.OpportunityController).to(OpportunityController);
@@ -47,5 +61,9 @@ container.bind<RoleController>(TYPES.RoleController).to(RoleController);
 container.bind<EmployeeController>(TYPES.EmployeeController).to(EmployeeController);
 container.bind<PersonController>(TYPES.PersonController).to(PersonController);
 container.bind<LookupController>(TYPES.LookupController).to(LookupController);
+// MCP controller bindings
+container.bind<McpController>(TYPES.McpController).to(McpController);
+// AI controller bindings
+container.bind<AIController>(TYPES.AIController).to(AIController);
 
 export { container };

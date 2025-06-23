@@ -71,6 +71,13 @@
       "when": 1750674524287,
       "tag": "0009_giant_lilith",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1750678252454,
+      "tag": "0010_little_vapor",
+      "breakpoints": true
     }
   ]
 }

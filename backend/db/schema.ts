@@ -14,6 +14,9 @@ export * from './schema/opportunities.schema';
 export * from './schema/opportunity-roles.schema';
 export * from './schema/opportunity-role-assignments.schema';
 
+// AI and Vector Database schemas
+export * from './schema/embeddings.schema';
+
 export * from './schema/relations';
 
 export * from './enums/opportunity-status.enum';

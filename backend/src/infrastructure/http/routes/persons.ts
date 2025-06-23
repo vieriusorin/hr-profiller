@@ -776,6 +776,116 @@ try {
    */
   personRouter.get('/:id/capabilities', (req, res) => personController.getCapabilities(req, res));
 
+  /**
+   * @swagger
+   * /api/v1/persons/{id}/analyze-ai:
+   *   post:
+   *     summary: Analyze person capabilities using AI
+   *     tags: [Person AI]
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *           format: uuid
+   *         description: The person ID
+   *     requestBody:
+   *       required: false
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               analysisType:
+   *                 type: string
+   *                 description: Type of analysis to perform
+   *                 example: "capability_analysis"
+   *                 default: "capability_analysis"
+   *     responses:
+   *       200:
+   *         description: AI analysis result
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   enum: [success]
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     analysis:
+   *                       type: string
+   *                       description: AI-generated analysis text
+   *                     personId:
+   *                       type: string
+   *                       format: uuid
+   *                     analysisType:
+   *                       type: string
+   *       404:
+   *         $ref: '#/components/responses/NotFound'
+   *       500:
+   *         $ref: '#/components/responses/InternalServerError'
+   */
+  personRouter.post('/:id/analyze-ai', (req, res) => personController.analyzeWithAI(req, res));
+
+  /**
+   * @swagger
+   * /api/v1/persons/{id}/generate-report:
+   *   post:
+   *     summary: Generate AI-powered report for person
+   *     tags: [Person AI]
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *           format: uuid
+   *         description: The person ID
+   *     requestBody:
+   *       required: false
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               reportType:
+   *                 type: string
+   *                 description: Type of report to generate
+   *                 example: "comprehensive"
+   *                 default: "comprehensive"
+   *     responses:
+   *       200:
+   *         description: AI-generated report
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   enum: [success]
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     report:
+   *                       type: string
+   *                       description: AI-generated report text
+   *                     personId:
+   *                       type: string
+   *                       format: uuid
+   *                     reportType:
+   *                       type: string
+   *       404:
+   *         $ref: '#/components/responses/NotFound'
+   *       500:
+   *         $ref: '#/components/responses/InternalServerError'
+   */
+  personRouter.post('/:id/generate-report', (req, res) => personController.generateReport(req, res));
+
 } catch (error) {
   console.error('Failed to initialize PersonController:', error);
 }

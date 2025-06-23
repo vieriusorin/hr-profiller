@@ -17,10 +17,12 @@ import { skills } from './schema/skills.schema';
 import { personSkills } from './schema/person-skills.schema';
 import { technologies } from './schema/technologies.schema';
 import { personTechnologies } from './schema/person-technologies.schema';
+import { personEmbeddings } from './schema/embeddings.schema';
 
 import { jobGradeEnum, TypeJobGrade } from './enums/job-grade.enum';
 import { opportunityLevelEnum, TypeOpportunityLevel } from './enums/opportunity-level.enum';
 import { roleStatusEnum, TypeRoleStatus } from './enums/role-status.enum';
+import { opportunityStatusEnum, TypeOpportunityStatus } from './enums/opportunity-status.enum';
 
 const SEED_COUNT = {
   CLIENTS: 10,
@@ -163,32 +165,43 @@ async function seedPeople() {
   return peopleData;
 }
 
-async function seedOpportunities(): Promise<{ id: string, expectedStartDate: Date | null, expectedEndDate: Date | null }[]> {
+async function seedOpportunities(clientsData: any[]): Promise<{ id: string, expectedStartDate: Date | null, expectedEndDate: Date | null }[]> {
   console.log('Seeding opportunities...');
-  const opportunitiesData: TypeNewOpportunity[] = [];
+  const opportunitiesData: any[] = [];
 
-  for (let i = 0; i < 10; i++) {
-    const now = new Date();
-    const startDate = getRandomDate(now, new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000)); // Up to 90 days in future
-    const endDate = getRandomDate(startDate, new Date(startDate.getTime() + 180 * 24 * 60 * 60 * 1000)); // Up to 180 days after start
+  for (let i = 0; i < SEED_COUNT.OPPORTUNITIES; i++) {
+    const startDate = getRandomDate(new Date(2024, 0, 1), new Date(2025, 11, 31));
+    const endDate = new Date(startDate.getTime() + (faker.number.int({ min: 3, max: 24 }) * 30 * 24 * 60 * 60 * 1000));
 
-    const opportunityData: TypeNewOpportunity = {
-      opportunityName: faker.company.name(),
-      clientId: null, // We'll update this after creating clients
-      clientName: faker.company.name(),
-      expectedStartDate: startDate,
-      expectedEndDate: endDate,
-      probability: faker.number.int({ min: 0, max: 100 }),
-      status: 'In Progress',
+    const opportunityData: any = {
+      opportunityName: faker.company.buzzPhrase(),
+      status: getRandomArrayElement(['In Progress', 'On Hold', 'Done'] as TypeOpportunityStatus[]),
+      clientId: faker.helpers.maybe(() => getRandomArrayElement(clientsData).id, { probability: 0.7 }),
+      clientName: faker.helpers.maybe(() => faker.company.name(), { probability: 0.6 }),
+      expectedStartDate: dateToString(startDate),
+      expectedEndDate: dateToString(endDate),
+      probability: faker.number.int({ min: 10, max: 95 }),
+      comment: faker.helpers.maybe(() => faker.lorem.paragraph(), { probability: 0.5 }),
+      isActive: faker.datatype.boolean({ probability: 0.3 }),
     };
 
-    opportunitiesData.push(opportunityData);
+    // Only add activatedAt if the opportunity is active
+    if (opportunityData.isActive) {
+      opportunityData.activatedAt = getRandomDate(new Date(2024, 0, 1), new Date());
+    }
+
+    const insertedOpportunity = await db.insert(opportunities).values(opportunityData).returning();
+    opportunitiesData.push(insertedOpportunity[0]);
   }
 
-  // Insert opportunities into database
-  const insertedOpportunities = await db.insert(opportunities).values(opportunitiesData).returning();
-  console.log('Created', insertedOpportunities.length, 'opportunities');
-  return insertedOpportunities;
+  console.log(`Seeded ${opportunitiesData.length} opportunities`);
+  
+  // Convert string dates back to Date objects for return type
+  return opportunitiesData.map(opp => ({
+    id: opp.id,
+    expectedStartDate: opp.expectedStartDate ? new Date(opp.expectedStartDate) : null,
+    expectedEndDate: opp.expectedEndDate ? new Date(opp.expectedEndDate) : null,
+  }));
 }
 
 async function seedOpportunityRoles(insertedOpportunities: { id: string, expectedStartDate: Date | null, expectedEndDate: Date | null }[]): Promise<any[]> {
@@ -497,6 +510,55 @@ async function seedPersonTechnologies(peopleData: any[], technologiesData: any[]
   console.log('Seeded person technologies');
 }
 
+// Seed sample embeddings for demonstration
+async function seedSampleEmbeddings(peopleData: any[]) {
+  console.log('Seeding sample embeddings...');
+
+  // Only seed embeddings for a subset of people to avoid excessive API calls
+  const peopleToEmbed = peopleData.slice(0, Math.min(5, peopleData.length));
+
+  for (const person of peopleToEmbed) {
+    try {
+      // Generate a sample embedding (1536 dimensions for text-embedding-3-small)
+      const sampleEmbedding = Array.from({ length: 1536 }, () => faker.number.float({ min: -1, max: 1 }));
+      
+      // Generate sample searchable text
+      const searchableText = `${person.firstName} ${person.lastName} ${person.email} software engineer developer`;
+      
+      // Generate sample metadata
+      const metadata = {
+        personName: `${person.firstName} ${person.lastName}`,
+        email: person.email,
+        skillsCount: faker.number.int({ min: 3, max: 8 }),
+        technologiesCount: faker.number.int({ min: 2, max: 6 }),
+        educationCount: faker.number.int({ min: 1, max: 3 }),
+        lastUpdated: new Date().toISOString(),
+      };
+
+      const embeddingData = {
+        personId: person.id,
+        embeddingType: 'profile',
+        model: 'text-embedding-3-small',
+        dimension: 1536,
+        embedding: JSON.stringify(sampleEmbedding),
+        searchableText,
+        tokensUsed: Math.ceil(searchableText.length / 4), // Rough estimate
+        cost: '0.000001', // Sample cost
+        metadata: JSON.stringify(metadata),
+      };
+
+      await db.insert(personEmbeddings).values(embeddingData);
+      console.log(`Generated sample embedding for ${person.firstName} ${person.lastName}`);
+    } catch (error: any) {
+      if (error.code !== '23505') { // Ignore duplicate key errors
+        console.error(`Error inserting embedding for person ${person.id}:`, error);
+      }
+    }
+  }
+
+  console.log(`Seeded ${peopleToEmbed.length} sample embeddings`);
+}
+
 // Main seeding function
 async function main() {
   console.log('🌱 Starting database seed process...');
@@ -514,17 +576,21 @@ async function main() {
     await seedPersonSkills(peopleData, skillsData);
     await seedPersonTechnologies(peopleData, technologiesData);
 
-    const insertedOpportunities = await seedOpportunities();
+    const insertedOpportunities = await seedOpportunities(clientsData);
     const rolesData = await seedOpportunityRoles(insertedOpportunities);
     await seedOpportunityRoleAssignments(rolesData, peopleData);
 
     await seedPersonUnavailableDates(peopleData);
+
+    // Seed sample embeddings for AI/RAG testing
+    await seedSampleEmbeddings(peopleData);
 
     console.log('✅ Database seed process completed successfully!');
     console.log('📊 Database now contains rich person data for RAG-based matching:');
     console.log(`   - ${peopleData.length} people with education, skills, and technology experience`);
     console.log(`   - ${skillsData.length} skills across multiple categories`);
     console.log(`   - ${technologiesData.length} technologies with version info`);
+    console.log('🤖 Sample embeddings generated for AI/RAG testing');
   } catch (error) {
     console.error('❌ Error during database seed:', error);
     throw error;

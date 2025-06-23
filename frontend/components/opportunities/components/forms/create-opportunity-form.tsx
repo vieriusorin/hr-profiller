@@ -21,8 +21,6 @@ export const CreateOpportunityForm = ({
 	const { data: session } = useSession();
 	const userRole = (session?.user as User)?.role as UserRole;
 
-	const canEditOpportunity = requirePermission(userRole, "edit_opportunity");
-
 	const { form, handleSubmit, handleCancel, isSubmitting, isDirty } =
 		useCreateOpportunityForm({
 			onSubmit,
@@ -52,7 +50,7 @@ export const CreateOpportunityForm = ({
 							onChange={field.onChange}
 							error={errors.clientName?.message}
 							required
-							disabled={disabled || (isEdit && !canEditOpportunity)}
+							disabled={disabled}
 						/>
 					)}
 				/>
@@ -67,7 +65,7 @@ export const CreateOpportunityForm = ({
 							onChange={field.onChange}
 							error={errors.opportunityName?.message}
 							required
-							disabled={disabled || (isEdit && !canEditOpportunity)}
+							disabled={disabled}
 						/>
 					)}
 				/>
@@ -87,7 +85,7 @@ export const CreateOpportunityForm = ({
 							error={errors.expectedStartDate?.message}
 							placeholder='Select start date'
 							required
-							disabled={disabled || (isEdit && !canEditOpportunity)}
+							disabled={disabled}
 						/>
 					)}
 				/>
@@ -106,7 +104,7 @@ export const CreateOpportunityForm = ({
 							}}
 							error={errors.expectedEndDate?.message}
 							placeholder='Select end date'
-							disabled={disabled || (isEdit && !canEditOpportunity)}
+							disabled={disabled}
 						/>
 					)}
 				/>
@@ -129,7 +127,7 @@ export const CreateOpportunityForm = ({
 								showLabels={true}
 								showValue={true}
 								className='mt-2'
-								disabled={disabled || (isEdit && !canEditOpportunity)}
+								disabled={disabled}
 							/>
 							{errors.probability && (
 								<div className='flex items-center gap-1 text-red-600 text-sm'>
@@ -172,7 +170,7 @@ export const CreateOpportunityForm = ({
 					onClick={handleSubmit}
 					disabled={
 						(disabled || externalIsSubmitting) ??
-						(isSubmitting || (isEdit && (!isDirty || !canEditOpportunity)))
+						(isSubmitting || (isEdit && !isDirty))
 					}
 				>
 					{externalIsSubmitting || isSubmitting

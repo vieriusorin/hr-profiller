@@ -3,12 +3,15 @@ import { TYPES } from '../../../shared/types';
 import { PersonRepository, CreatePersonSkillData, CreatePersonTechnologyData, CreatePersonEducationData } from '../repositories/person.repository';
 import { Person } from '../entities/person.entity';
 import { TypeNewPerson, TypePerson } from '../../../../db/schema/people.schema';
+import { McpClientService } from '../../mcp/services/mcp-client.service';
 
 @injectable()
 export class PersonService {
   constructor(
     @inject(TYPES.PersonRepository)
-    private readonly personRepository: PersonRepository
+    private readonly personRepository: PersonRepository,
+    @inject(TYPES.McpClientService)
+    private readonly mcpClientService: McpClientService
   ) { }
 
   // Core person operations
@@ -208,32 +211,108 @@ export class PersonService {
       throw new Error('Person not found');
     }
 
-    const skillCategories = person.skills
-      .map(s => s.skillCategory)
-      .filter(c => c)
-      .reduce((acc, category) => {
-        acc[category!] = (acc[category!] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
+    const skillsCount = person.skills.length;
+    const technologiesCount = person.technologies.length;
+    const educationCount = person.education.length;
 
-    const technologyCategories = person.technologies
-      .map(t => t.technologyCategory)
-      .filter(c => c)
-      .reduce((acc, category) => {
-        acc[category!] = (acc[category!] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
+    // Extract unique categories and filter out null/undefined values
+    const skillCategories = [...new Set(person.skills.map(s => s.skillCategory).filter(Boolean))] as string[];
+    const technologyCategories = [...new Set(person.technologies.map(t => t.technologyCategory).filter(Boolean))] as string[];
 
     return {
-      skillsCount: person.skills.length,
-      technologiesCount: person.technologies.length,
-      educationCount: person.education.length,
-      topSkillCategories: Object.keys(skillCategories)
-        .sort((a, b) => skillCategories[b] - skillCategories[a])
-        .slice(0, 5),
-      topTechnologyCategories: Object.keys(technologyCategories)
-        .sort((a, b) => technologyCategories[b] - technologyCategories[a])
-        .slice(0, 5),
+      skillsCount,
+      technologiesCount,
+      educationCount,
+      topSkillCategories: skillCategories,
+      topTechnologyCategories: technologyCategories
     };
+  }
+
+  /**
+   * Analyze person capabilities using MCP AI tools
+   * Provides AI-powered insights about skills, potential growth areas, and career development opportunities
+   */
+  async analyzePersonCapabilitiesWithAI(personId: string, analysisType?: string): Promise<string> {
+    try {
+      const person = await this.personRepository.findById(personId, true);
+      if (!person) {
+        throw new Error('Person not found');
+      }
+
+      // Prepare data focusing on professional capabilities
+      const personData = {
+        skills: person.skills || [],
+        technologies: person.technologies || [],
+        education: person.education || [],
+        capabilitiesSummary: await this.getPersonCapabilitiesSummary(personId),
+        // Include minimal personal info needed for analysis
+        firstName: person.firstName,
+        lastName: person.lastName
+      };
+
+      // Use MCP service to analyze capabilities and provide insights
+      const analysisResult = await this.mcpClientService.analyzeData(
+        JSON.stringify(personData),
+        analysisType || 'capability_analysis'
+      );
+
+      return analysisResult;
+    } catch (error: any) {
+      console.error('AI analysis failed:', error);
+      throw new Error(`AI analysis failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Generate a comprehensive report for a person
+   * Creates a formatted document suitable for sharing, including personal details, 
+   * professional background, and achievements
+   */
+  async generatePersonReport(personId: string, reportType: string = 'comprehensive'): Promise<string> {
+    try {
+      const person = await this.personRepository.findById(personId, true);
+      if (!person) {
+        throw new Error('Person not found');
+      }
+
+      // Get capabilities summary for the report
+      const capabilitiesSummary = await this.getPersonCapabilitiesSummary(personId);
+
+      // Format the data for a comprehensive report
+      const reportData = {
+        personalInfo: {
+          firstName: person.firstName,
+          lastName: person.lastName,
+          email: person.email,
+          phone: person.phone,
+          birthDate: person.birthDate,
+          address: person.address,
+          city: person.city,
+          country: person.country
+        },
+        professionalSummary: {
+          skills: person.skills || [],
+          technologies: person.technologies || [],
+          education: person.education || [],
+          capabilitiesSummary
+        },
+        reportMetadata: {
+          generatedAt: new Date().toISOString(),
+          reportType,
+          version: '1.0'
+        }
+      };
+
+      // Use MCP service to generate a formatted report
+      const reportResult = await this.mcpClientService.generateReport(
+        reportType,
+        reportData
+      );
+
+      return reportResult;
+    } catch (error: any) {
+      console.error('Report generation failed:', error);
+      throw new Error(`Report generation failed: ${error.message}`);
+    }
   }
 } 
