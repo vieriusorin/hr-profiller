@@ -42,8 +42,6 @@ export const protectPageWithSession = async (req: AuthenticatedRequest, res: Res
     if (!decoded) {
       throw new Error('Token decode returned null');
     }
-
-    console.log('✅ Token decoded successfully:', Object.keys(decoded));
     
     // Attach user to request for downstream middlewares (like authorize)
     req.user = decoded as DecodedToken;

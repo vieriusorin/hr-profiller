@@ -164,6 +164,51 @@ const options: swaggerJsdoc.Options = {
         }
       },
       schemas: {
+        User: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+              description: 'Unique identifier for the user',
+              example: '123e4567-e89b-12d3-a456-426614174000'
+            },
+            email: {
+              type: 'string',
+              format: 'email',
+              description: 'Email address of the user',
+              example: 'admin@ddroidd.com'
+            },
+            name: {
+              type: 'string',
+              description: 'Full name of the user',
+              example: 'John Doe'
+            },
+            role: {
+              type: 'string',
+              description: 'User role in the system',
+              example: 'admin'
+            },
+            isActive: {
+              type: 'boolean',
+              description: 'Whether the user account is active',
+              example: true
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'When the user was created',
+              example: '2024-01-10T09:00:00Z'
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'When the user was last updated',
+              example: '2024-01-10T09:00:00Z'
+            }
+          },
+          required: ['id', 'email', 'name', 'role', 'isActive']
+        },
         Employee: {
           type: 'object',
           properties: {
@@ -3292,6 +3337,63 @@ const options: swaggerJsdoc.Options = {
         UserRole: {
           type: 'string',
           enum: ['hr_manager', 'employee', 'executive', 'recruiter', 'team_lead'],
+        },
+
+        // MCP Schemas
+        McpTool: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              description: 'Name of the MCP tool',
+              example: 'analyze-data'
+            },
+            description: {
+              type: 'string',
+              description: 'Description of what the tool does',
+              example: 'Analyzes employee data for insights and recommendations'
+            },
+            inputSchema: {
+              type: 'object',
+              description: 'Schema defining the input parameters for the tool',
+              additionalProperties: true
+            }
+          },
+          required: ['name', 'description', 'inputSchema']
+        },
+
+        McpAnalysisConfidence: {
+          type: 'object',
+          properties: {
+            confidence: {
+              type: 'number',
+              minimum: 0,
+              maximum: 1,
+              description: 'Confidence score between 0 and 1',
+              example: 0.85
+            },
+            level: {
+              type: 'string',
+              enum: ['low', 'medium', 'high'],
+              description: 'Confidence level category',
+              example: 'high'
+            },
+            recommendations: {
+              type: 'array',
+              items: {
+                type: 'string'
+              },
+              description: 'List of recommendations to improve confidence',
+              example: ['Provide more specific data points', 'Include historical context']
+            },
+            timestamp: {
+              type: 'string',
+              format: 'date-time',
+              description: 'When the confidence analysis was performed',
+              example: '2024-01-10T09:00:00Z'
+            }
+          },
+          required: ['confidence', 'level', 'recommendations', 'timestamp']
         }
       }
     }
