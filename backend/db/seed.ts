@@ -216,7 +216,7 @@ async function seedOpportunities(clientsData: any[]): Promise<{ id: string, expe
   const opportunitiesData: any[] = [];
 
   for (let i = 0; i < SEED_COUNT.OPPORTUNITIES; i++) {
-    const startDate = getRandomDate(new Date(2024, 0, 1), new Date(2025, 11, 31));
+    const startDate = getRandomDate(new Date(2025, 7, 1), new Date(2026, 11, 31));
     const endDate = new Date(startDate.getTime() + (faker.number.int({ min: 3, max: 24 }) * 30 * 24 * 60 * 60 * 1000));
 
     const opportunityData: any = {
@@ -233,7 +233,7 @@ async function seedOpportunities(clientsData: any[]): Promise<{ id: string, expe
 
     // Only add activatedAt if the opportunity is active
     if (opportunityData.isActive) {
-      opportunityData.activatedAt = getRandomDate(new Date(2024, 0, 1), new Date());
+      opportunityData.activatedAt = getRandomDate(new Date(), startDate);
     }
 
     const insertedOpportunity = await db.insert(opportunities).values(opportunityData).returning();
@@ -348,7 +348,7 @@ async function seedPersonUnavailableDates(peopleData: any[]) {
       const numPeriods = faker.number.int({ min: 1, max: SEED_COUNT.UNAVAILABLE_DATES_PER_PERSON });
 
       for (let i = 0; i < numPeriods; i++) {
-        const startDate = getRandomDate(new Date(2023, 0, 1), new Date(2024, 0, 1));
+        const startDate = getRandomDate(new Date(2023, 0, 1), new Date(2025, 0, 1));
         const endDate = new Date(startDate.getTime() + faker.number.int({ min: 1, max: 14 }) * 24 * 60 * 60 * 1000);
 
         const unavailableId = randomUUID();
