@@ -3,7 +3,9 @@ import { faker } from '@faker-js/faker';
 import { randomUUID } from 'crypto';
 import db from './index';
 import { eq } from 'drizzle-orm';
+import bcrypt from 'bcrypt';
 
+import { users, roles, userRoles } from './schema/auth.schema';
 import { clients } from './schema/clients.schema';
 import { opportunities, TypeNewOpportunity } from './schema/opportunities.schema';
 import { opportunityRoles, TypeNewOpportunityRole } from './schema/opportunity-roles.schema';
@@ -64,6 +66,50 @@ function dateToString(date: Date): string {
 // Helper function to safely convert date or return undefined for optional dates
 function dateToStringOptional(date: Date | undefined): string | undefined {
   return date ? dateToString(date) : undefined;
+}
+
+// Seed Auth Roles and Admin User
+async function seedAuth() {
+  console.log('Seeding auth roles and admin user...');
+
+  // 1. Seed Roles
+  const roleData = [
+    { name: 'admin', description: 'Administrator with all permissions' },
+    { name: 'hr_manager', description: 'Human Resources Manager' },
+    { name: 'recruiter', description: 'Recruiter for new opportunities' },
+    { name: 'employee', description: 'Standard employee user' },
+  ];
+
+  const insertedRoles = await db.insert(roles).values(roleData).returning();
+  console.log(`Seeded ${insertedRoles.length} roles`);
+
+  // 2. Seed Admin User
+  const adminRole = insertedRoles.find(r => r.name === 'admin');
+  if (!adminRole) {
+    console.error('Admin role not found after seeding. Aborting admin user creation.');
+    return;
+  }
+
+  const saltRounds = 10;
+  const passwordHash = await bcrypt.hash('password123', saltRounds);
+
+  const adminData = {
+    name: 'Admin User',
+    email: 'admin@ddroidd.com',
+    passwordHash,
+    isActive: true,
+  };
+
+  const insertedUsers = await db.insert(users).values(adminData).returning();
+  const adminUser = insertedUsers[0];
+  console.log('Seeded admin user');
+
+  // 3. Assign Admin Role to Admin User
+  await db.insert(userRoles).values({
+    userId: adminUser.id,
+    roleId: adminRole.id,
+  });
+  console.log('Assigned admin role to admin user');
 }
 
 // Seed clients
@@ -561,9 +607,13 @@ async function seedSampleEmbeddings(peopleData: any[]) {
 
 // Main seeding function
 async function main() {
-  console.log('🌱 Starting database seed process...');
+  console.log('Starting database seed process...');
+  const startTime = Date.now();
 
   try {
+    // It's crucial to seed auth data first
+    await seedAuth();
+    
     const clientsData = await seedClients();
     const peopleData = await seedPeople();
 

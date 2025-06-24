@@ -1,4 +1,9 @@
 -- Drop tables (in reverse dependency order to avoid foreign key issues)
+DROP TABLE IF EXISTS "user_roles" CASCADE;
+DROP TABLE IF EXISTS "roles" CASCADE;
+DROP TABLE IF EXISTS "users" CASCADE;
+DROP TABLE IF EXISTS "person_embeddings" CASCADE;
+DROP TABLE IF EXISTS "similarity_searches" CASCADE;
 DROP TABLE IF EXISTS opportunity_role_assignments CASCADE;
 DROP TABLE IF EXISTS opportunity_roles CASCADE;
 DROP TABLE IF EXISTS opportunities CASCADE;
@@ -21,7 +26,6 @@ DROP TYPE IF EXISTS work_status;
 DROP TYPE IF EXISTS opportunity_status;
 DROP TYPE IF EXISTS opportunity_level;
 DROP TYPE IF EXISTS role_status;
-
 -- Create enums (only the ones actually used)
 CREATE TYPE person_status_enum AS ENUM ('candidate', 'employee', 'former_employee', 'inactive');
 CREATE TYPE job_grade AS ENUM ('JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM');

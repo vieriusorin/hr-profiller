@@ -1,3 +1,4 @@
+export * from './schema/auth.schema';
 // CORE TABLES - Actually used in frontend
 export * from './schema/people.schema';
 export * from './schema/person-status.schema';

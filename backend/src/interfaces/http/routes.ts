@@ -7,10 +7,10 @@ import { lookupRoutes } from '../../infrastructure/http/routes/lookup';
 import mcpRoutes from '../../infrastructure/http/routes/mcp';
 import aiRoutes from '../../infrastructure/http/routes/ai';
 import { metricsHandler } from './middlewares/loggs.middleware';
+import authRoutes from '../../infrastructure/http/routes/auth';
 
 const router = Router();
 
-// API discovery endpoint
 router.get('/', (req, res) => {
   res.json({
     status: 'success',
@@ -23,6 +23,14 @@ router.get('/', (req, res) => {
       endpoints: {
         documentation: '/api-docs',
         metrics: '/api/v1/metrics',
+        auth: {
+          base: '/api/v1/auth',
+          methods: {
+            'POST /api/v1/auth/login': 'Login with email and password',
+            'GET /api/v1/auth/profile': 'Get user profile',
+            'POST /api/v1/auth/logout': 'Logout user'
+          }
+        },
         opportunities: {
           base: '/api/v1/opportunities',
           methods: {
@@ -160,5 +168,6 @@ router.use('/persons', personRoutes);
 router.use('/lookup', lookupRoutes);
 router.use('/mcp', mcpRoutes);
 router.use('/ai', aiRoutes);
+router.use('/auth', authRoutes);
 
 export default router;

@@ -28,6 +28,7 @@ import { OpenAIService } from '../domain/ai/services/openai.service';
 import { VectorDatabaseService } from '../domain/ai/services/vector-database.service';
 import { RAGService } from '../domain/ai/services/rag.service';
 import { AIController } from './http/controllers/ai.controller';
+import { AuthController } from './http/controllers/auth.controller';
 
 const container = new Container();
 
@@ -65,5 +66,7 @@ container.bind<LookupController>(TYPES.LookupController).to(LookupController);
 container.bind<McpController>(TYPES.McpController).to(McpController);
 // AI controller bindings
 container.bind<AIController>(TYPES.AIController).to(AIController);
+// Auth controller binding
+container.bind<AuthController>(TYPES.AuthController).to(AuthController);
 
 export { container };

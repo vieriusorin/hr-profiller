@@ -43,6 +43,7 @@ const TYPES = {
   LookupController: Symbol.for('LookupController'),
   McpController: Symbol.for('McpController'),
   AIController: Symbol.for('AIController'),
+  AuthController: Symbol.for('AuthController'),
 };
 
 // Type alias for the database with proper schema
