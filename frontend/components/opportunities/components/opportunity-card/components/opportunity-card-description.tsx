@@ -9,7 +9,6 @@ const formatExpectedDate = (dateString?: string | null) => {
   if (!dateString) return 'TBD';
   
   try {
-    // Handle both ISO datetime strings and YYYY-MM-DD date strings
     const date = parseISO(dateString);
     if (!isValid(date)) return 'TBD';
     return format(date, 'MMM dd, yyyy');
@@ -24,8 +23,6 @@ export const OpportunityCardDescription = ({
   probability,
   createdAt,
 }: OpportunityCardDescriptionProps) => {
-  console.log('🔍 [OpportunityCardDescription] expectedStartDate:', expectedStartDate, typeof expectedStartDate);
-  
   return (
     <CardDescription className='flex items-center gap-4 text-sm px-6 flex-wrap'>
       <span className='flex items-center gap-1'>

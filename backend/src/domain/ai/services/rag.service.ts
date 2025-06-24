@@ -55,8 +55,6 @@ export class RAGService {
    */
   async analyzePersonWithRAG(request: AnalysisRequest): Promise<string> {
     try {
-      console.log(`Starting RAG analysis for person ${request.personId} with type: ${request.analysisType}`);
-
       // Step 1: Get person data with all related information
       const person = await this.getPersonWithContext(request.personId);
       if (!person) {
@@ -88,11 +86,15 @@ export class RAGService {
       // Step 6: Call MCP server for AI analysis
       const analysisResult = await this.mcpService.analyzeData(
         JSON.stringify(context),
-        request.analysisType
+        request.analysisType,
+        'hr_manager', // userRole
+        'standard',   // urgency
+        'internal'    // confidentialityLevel
       );
-
-      console.log(`RAG analysis completed for person ${request.personId}`);
-      return analysisResult;
+      if (!analysisResult || !analysisResult.content || analysisResult.content.length === 0) {
+        throw new Error('Analysis returned no content');
+      }
+      return analysisResult.content?.[0]?.text || 'Analysis completed but no content returned';
 
     } catch (error) {
       console.error('RAG analysis failed:', error);
@@ -112,20 +114,19 @@ export class RAGService {
    */
   private async ensurePersonEmbedding(person: any): Promise<number[]> {
     try {
-      // Check if embedding already exists
       const existingEmbedding = await this.vectorDb.getPersonEmbedding(person.id, 'profile');
       
       if (existingEmbedding) {
-        console.log(`Using existing embedding for person ${person.id}`);
         return JSON.parse(existingEmbedding.embedding);
       }
 
-      // Generate new embedding
-      console.log(`Generating new embedding for person ${person.id}`);
       const personText = this.createPersonText(person);
       const embeddingResult = await this.openaiService.generateEmbeddings(personText);
-      
-      // Store the embedding
+
+      if (!embeddingResult || !embeddingResult.embedding || embeddingResult.embedding.length === 0) {
+        throw new Error('Failed to generate embedding');
+      }
+
       await this.vectorDb.storePersonEmbedding(
         person.id,
         embeddingResult.embedding,
@@ -225,20 +226,16 @@ export class RAGService {
    */
   async generateAllPersonEmbeddings(): Promise<void> {
     try {
-      console.log('Starting batch embedding generation for all persons...');
-      
       const persons = await this.personRepository.findAll(true);
       
       for (const person of persons) {
         try {
           await this.ensurePersonEmbedding(person);
-          console.log(`Generated embedding for ${person.firstName} ${person.lastName}`);
         } catch (error) {
           console.error(`Failed to generate embedding for person ${person.id}:`, error);
         }
       }
       
-      console.log('Batch embedding generation completed');
     } catch (error) {
       console.error('Batch embedding generation failed:', error);
       throw error;
@@ -298,7 +295,6 @@ export class RAGService {
       }
 
       await this.ensurePersonEmbedding(person);
-      console.log(`Generated ${embeddingType} embedding for person ${personId}`);
 
     } catch (error) {
       console.error('Error generating person embedding:', error);

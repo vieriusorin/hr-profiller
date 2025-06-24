@@ -131,8 +131,6 @@ export const useDashboard = (): UseDashboardReturn => {
   const handleCreateOpportunity = useCallback(async (opportunityData: CreateOpportunityForm): Promise<Opportunity> => {
     const loadingToast = toast.loading('Creating opportunity...');
 
-    console.log('handleCreateOpportunity - opportunityData:', opportunityData);
-
     try {
       const createData: CreateOpportunity = {
         opportunityName: opportunityData.opportunityName,

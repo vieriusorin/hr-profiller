@@ -45,7 +45,13 @@ export class McpController {
    */
   async analyzeData(req: Request, res: Response) {
     try {
-      const { data, analysisType } = req.body;
+      const { 
+        data, 
+        analysisType = 'capability_analysis',
+        userRole = 'hr_manager',
+        urgency = 'standard',
+        confidentialityLevel = 'internal'
+      } = req.body;
       
       if (!data) {
         return res.status(400).json({ 
@@ -58,7 +64,13 @@ export class McpController {
         });
       }
 
-      const result = await this.mcpClientService.analyzeData(data, analysisType);
+      const result = await this.mcpClientService.analyzeData(
+        data, 
+        analysisType, 
+        userRole, 
+        urgency, 
+        confidentialityLevel
+      );
       res.json({ 
         status: 'success',
         data: { result },
@@ -88,12 +100,18 @@ export class McpController {
    */
   async generateReport(req: Request, res: Response) {
     try {
-      const { reportType, parameters } = req.body;
+      const { 
+        data,
+        reportType = 'comprehensive',
+        userRole = 'hr_manager',
+        includeMetrics = true,
+        confidentialityLevel = 'internal'
+      } = req.body;
       
-      if (!reportType) {
+      if (!data) {
         return res.status(400).json({ 
           status: 'error',
-          data: { message: 'Report type is required' },
+          data: { message: 'Data is required' },
           meta: {
             timestamp: new Date().toISOString(),
             requestId: req.headers['x-request-id'] || 'unknown'
@@ -101,7 +119,13 @@ export class McpController {
         });
       }
 
-      const result = await this.mcpClientService.generateReport(reportType, parameters);
+      const result = await this.mcpClientService.generateReport(
+        data,
+        reportType,
+        userRole,
+        includeMetrics,
+        confidentialityLevel
+      );
       res.json({ 
         status: 'success',
         data: { result },
@@ -192,6 +216,153 @@ export class McpController {
         data: {
           healthy: false,
           message: error.message 
+        },
+        meta: {
+          timestamp: new Date().toISOString(),
+          requestId: req.headers['x-request-id'] || 'unknown'
+        }
+      });
+    }
+  }
+
+  /**
+   * POST /api/v1/mcp/skill-benchmarking
+   * Perform skill benchmarking analysis via MCP
+   */
+  async skillBenchmarking(req: Request, res: Response) {
+    try {
+      const { 
+        data,
+        industry,
+        region,
+        includeProjections = true
+      } = req.body;
+      
+      if (!data) {
+        return res.status(400).json({ 
+          status: 'error',
+          data: { message: 'Data is required' },
+          meta: {
+            timestamp: new Date().toISOString(),
+            requestId: req.headers['x-request-id'] || 'unknown'
+          }
+        });
+      }
+
+      const result = await this.mcpClientService.skillBenchmarking(
+        data,
+        industry,
+        region,
+        includeProjections
+      );
+      res.json({ 
+        status: 'success',
+        data: { result },
+        meta: {
+          timestamp: new Date().toISOString(),
+          requestId: req.headers['x-request-id'] || 'unknown'
+        }
+      });
+    } catch (error: any) {
+      res.status(500).json({ 
+        status: 'error',
+        data: {
+          message: 'Skill benchmarking failed',
+          details: error.message 
+        },
+        meta: {
+          timestamp: new Date().toISOString(),
+          requestId: req.headers['x-request-id'] || 'unknown'
+        }
+      });
+    }
+  }
+
+  /**
+   * POST /api/v1/mcp/compensation-analysis
+   * Perform compensation analysis via MCP
+   */
+  async compensationAnalysis(req: Request, res: Response) {
+    try {
+      const { 
+        data,
+        marketScope = 'national',
+        includeEquityAnalysis = true
+      } = req.body;
+      
+      if (!data) {
+        return res.status(400).json({ 
+          status: 'error',
+          data: { message: 'Data is required' },
+          meta: {
+            timestamp: new Date().toISOString(),
+            requestId: req.headers['x-request-id'] || 'unknown'
+          }
+        });
+      }
+
+      const result = await this.mcpClientService.compensationAnalysis(
+        data,
+        marketScope,
+        includeEquityAnalysis
+      );
+      res.json({ 
+        status: 'success',
+        data: { result },
+        meta: {
+          timestamp: new Date().toISOString(),
+          requestId: req.headers['x-request-id'] || 'unknown'
+        }
+      });
+    } catch (error: any) {
+      res.status(500).json({ 
+        status: 'error',
+        data: {
+          message: 'Compensation analysis failed',
+          details: error.message 
+        },
+        meta: {
+          timestamp: new Date().toISOString(),
+          requestId: req.headers['x-request-id'] || 'unknown'
+        }
+      });
+    }
+  }
+
+  /**
+   * POST /api/v1/mcp/confidence
+   * Get analysis confidence score via MCP
+   */
+  async getAnalysisConfidence(req: Request, res: Response) {
+    try {
+      const { data } = req.body;
+      
+      if (!data) {
+        return res.status(400).json({ 
+          status: 'error',
+          data: { message: 'Data is required' },
+          meta: {
+            timestamp: new Date().toISOString(),
+            requestId: req.headers['x-request-id'] || 'unknown'
+          }
+        });
+      }
+
+      const result = await this.mcpClientService.getAnalysisConfidence(data);
+      res.json({ 
+        status: 'success',
+        data: { result },
+        meta: {
+          timestamp: new Date().toISOString(),
+          requestId: req.headers['x-request-id'] || 'unknown'
+        }
+      });
+    } catch (error: any) {
+      res.status(500).json({ 
+        status: 'error',
+        data: {
+          message: 'Confidence analysis failed',
+          details: error.message 
         },
         meta: {
           timestamp: new Date().toISOString(),

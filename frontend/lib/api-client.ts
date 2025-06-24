@@ -271,10 +271,6 @@ export const apiClient = {
         `opportunities${query ? `?${query}` : ''}`
       );
       
-      result.then(response => {
-        console.log('🔍 [Frontend API] Received opportunities response:', JSON.stringify(response.data[0], null, 2));
-      });
-      
       return result;
     },
 

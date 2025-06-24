@@ -17,10 +17,6 @@ export class OpportunityPresenter extends EnhancedBasePresenter<Opportunity, Opp
   }
 
   present(opportunity: Opportunity): OpportunityPresentation {
-    console.log('🔍 [OpportunityPresenter] Input opportunity:', JSON.stringify(opportunity, null, 2));
-    console.log('🔍 [OpportunityPresenter] expectedStartDate:', opportunity.expectedStartDate);
-    console.log('🔍 [OpportunityPresenter] expectedEndDate:', opportunity.expectedEndDate);
-    
     const result = {
       ...opportunity,
       expectedStartDate: opportunity.expectedStartDate ? opportunity.expectedStartDate.toISOString() : null,

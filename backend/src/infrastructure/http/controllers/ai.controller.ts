@@ -33,8 +33,6 @@ export class AIController {
         includeSkillsContext: includeSkillsContext || false
       };
 
-      console.log(`AI Analysis requested for person ${personId} with type: ${request.analysisType}`);
-
       const analysisResult = await this.ragService.analyzePersonWithRAG(request);
 
       res.json({
@@ -126,8 +124,6 @@ export class AIController {
    */
   async generateAllEmbeddings(req: Request, res: Response): Promise<void> {
     try {
-      console.log('Starting batch embedding generation...');
-
       await this.ragService.generateAllPersonEmbeddings();
 
       res.json({

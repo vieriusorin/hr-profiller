@@ -19,11 +19,8 @@ export class OpportunityController {
   async getAll(req: CreateOpportunityRequest, res: Response): Promise<void> {
     try {
       const opportunities = await this.opportunityService.getAllOpportunities();
-      console.log('🔍 [OpportunityController] Raw opportunities from service:', JSON.stringify(opportunities[0], null, 2));
-    
-      // Use the presenter's flat pagination method that maintains frontend compatibility
+  
       const response = this.presenter.successPaginatedFlat(opportunities, req);
-      console.log('🔍 [OpportunityController] Final presented data:', JSON.stringify(response.data[0], null, 2));
       
       res.status(200).json(response);
     } catch (error: any) {

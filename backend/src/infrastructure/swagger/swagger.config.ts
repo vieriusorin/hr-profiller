@@ -3281,6 +3281,17 @@ const options: swaggerJsdoc.Options = {
           type: 'string',
           enum: ['Open', 'Staffed', 'Won', 'Lost'],
           description: 'Current status of the role: Open=needs to be filled, Staffed=assigned to someone, Won=successfully filled and project won, Lost=lost to competition'
+        },
+        // AI Analysis Schemas
+        AIAnalysisType: {
+          type: 'string',
+          enum: ['capability_analysis', 'skill_gap', 'career_recommendation', 'performance_analysis', 'general'],
+          description: 'Type of AI analysis to perform:\n- capability_analysis: Comprehensive professional capability assessment\n- skill_gap: Identify skills gaps and development opportunities\n- career_recommendation: Personalized career development guidance\n- performance_analysis: Performance metrics and improvement insights\n- general: Basic AI analysis with general insights'
+        },
+
+        UserRole: {
+          type: 'string',
+          enum: ['hr_manager', 'employee', 'executive', 'recruiter', 'team_lead'],
         }
       }
     }

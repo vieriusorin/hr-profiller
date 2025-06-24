@@ -232,31 +232,109 @@ export class PersonService {
    * Analyze person capabilities using MCP AI tools
    * Provides AI-powered insights about skills, potential growth areas, and career development opportunities
    */
-  async analyzePersonCapabilitiesWithAI(personId: string, analysisType?: string): Promise<string> {
+  async analyzePersonCapabilitiesWithAI(
+    personId: string, 
+    analysisType: string = 'capability_analysis',
+    userRole: string = 'hr_manager',
+    urgency: string = 'standard'
+  ): Promise<{
+    analysis: string;
+    metadata: any;
+    confidence?: number;
+  }> {
     try {
       const person = await this.personRepository.findById(personId, true);
       if (!person) {
         throw new Error('Person not found');
       }
 
-      // Prepare data focusing on professional capabilities
-      const personData = {
-        skills: person.skills || [],
-        technologies: person.technologies || [],
-        education: person.education || [],
-        capabilitiesSummary: await this.getPersonCapabilitiesSummary(personId),
-        // Include minimal personal info needed for analysis
-        firstName: person.firstName,
-        lastName: person.lastName
+
+      const capabilitiesSummary = await this.getPersonCapabilitiesSummary(personId);
+
+      // Prepare comprehensive data structure for AI analysis
+      const personAnalysisData = {
+        personalInfo: {
+          firstName: person.firstName,
+          lastName: person.lastName,
+          email: person.email
+        },
+        employmentDetails: {
+          // Employment details not directly available in Person entity
+          position: 'Not specified',
+          department: 'Not specified'
+        },
+        skills: person.skills.map(skill => ({
+          skillName: skill.skillName,
+          skillCategory: skill.skillCategory,
+          proficiencyLevel: skill.proficiencyLevel,
+          yearsOfExperience: skill.yearsOfExperience,
+          certificationName: skill.certificationName,
+          certificationDate: skill.certificationDate,
+          isCertified: skill.isCertified,
+          lastUsed: skill.lastUsed,
+          skillDescription: skill.skillDescription,
+          notes: skill.notes
+        })),
+        technologies: person.technologies.map(tech => ({
+          technologyName: tech.technologyName,
+          technologyCategory: tech.technologyCategory,
+          technologyVersion: tech.technologyVersion,
+          proficiencyLevel: tech.proficiencyLevel,
+          yearsOfExperience: tech.yearsOfExperience,
+          lastUsed: tech.lastUsed,
+          context: tech.context,
+          projectName: tech.projectName,
+          description: tech.description
+        })),
+        education: person.education.map(edu => ({
+          institution: edu.institution,
+          degree: edu.degree,
+          fieldOfStudy: edu.fieldOfStudy,
+          startDate: edu.startDate,
+          graduationDate: edu.graduationDate,
+          gpa: edu.gpa,
+          description: edu.description,
+          isCurrentlyEnrolled: edu.isCurrentlyEnrolled
+        })),
+        workHistory: [], // Work history not available in Person entity
+        capabilitiesSummary,
+        analysisContext: {
+          requestedAt: new Date().toISOString(),
+          analysisType,
+          userRole
+        }
       };
 
-      // Use MCP service to analyze capabilities and provide insights
-      const analysisResult = await this.mcpClientService.analyzeData(
-        JSON.stringify(personData),
-        analysisType || 'capability_analysis'
+      // Use the new MCP client method with proper parameters
+      const result = await this.mcpClientService.analyzeData(
+        JSON.stringify(personAnalysisData),
+        analysisType,
+        userRole,
+        urgency,
+        'internal' // confidentiality level
       );
 
-      return analysisResult;
+      // Get confidence score for the analysis
+      let confidence;
+      try {
+        const confidenceResult = await this.mcpClientService.getAnalysisConfidence(
+          JSON.stringify(personAnalysisData)
+        );
+        confidence = confidenceResult.confidence;
+      } catch (error) {
+        console.warn('Could not get confidence score:', error);
+      }
+
+      return {
+        analysis: result.content?.[0]?.text || 'Analysis completed',
+        metadata: {
+          ...result.metadata,
+          confidence,
+          personId,
+          dataCompleteness: this.calculateDataCompleteness(person)
+        },
+        confidence
+      };
     } catch (error: any) {
       console.error('AI analysis failed:', error);
       throw new Error(`AI analysis failed: ${error.message}`);
@@ -268,7 +346,15 @@ export class PersonService {
    * Creates a formatted document suitable for sharing, including personal details, 
    * professional background, and achievements
    */
-  async generatePersonReport(personId: string, reportType: string = 'comprehensive'): Promise<string> {
+  async generatePersonReport(
+    personId: string, 
+    reportType: string = 'comprehensive',
+    userRole: string = 'hr_manager',
+    includeMetrics: boolean = true
+  ): Promise<{
+    report: string;
+    metadata: any;
+  }> {
     try {
       const person = await this.personRepository.findById(personId, true);
       if (!person) {
@@ -278,7 +364,7 @@ export class PersonService {
       // Get capabilities summary for the report
       const capabilitiesSummary = await this.getPersonCapabilitiesSummary(personId);
 
-      // Format the data for a comprehensive report
+      // Prepare comprehensive data for report generation
       const reportData = {
         personalInfo: {
           firstName: person.firstName,
@@ -290,29 +376,234 @@ export class PersonService {
           city: person.city,
           country: person.country
         },
-        professionalSummary: {
-          skills: person.skills || [],
-          technologies: person.technologies || [],
-          education: person.education || [],
-          capabilitiesSummary
+        employmentDetails: {
+          position: 'Not specified',
+          department: 'Not specified',
+          startDate: null,
+          employmentType: 'Not specified'
         },
+        skills: person.skills.map(skill => ({
+          skillName: skill.skillName,
+          skillCategory: skill.skillCategory,
+          proficiencyLevel: skill.proficiencyLevel,
+          yearsOfExperience: skill.yearsOfExperience,
+          certificationName: skill.certificationName,
+          certificationDate: skill.certificationDate,
+          isCertified: skill.isCertified,
+          lastUsed: skill.lastUsed,
+          skillDescription: skill.skillDescription,
+          notes: skill.notes
+        })),
+        technologies: person.technologies.map(tech => ({
+          technologyName: tech.technologyName,
+          technologyCategory: tech.technologyCategory,
+          technologyVersion: tech.technologyVersion,
+          proficiencyLevel: tech.proficiencyLevel,
+          yearsOfExperience: tech.yearsOfExperience,
+          lastUsed: tech.lastUsed,
+          context: tech.context,
+          projectName: tech.projectName,
+          description: tech.description
+        })),
+        education: person.education.map(edu => ({
+          institution: edu.institution,
+          degree: edu.degree,
+          fieldOfStudy: edu.fieldOfStudy,
+          startDate: edu.startDate,
+          graduationDate: edu.graduationDate,
+          gpa: edu.gpa,
+          description: edu.description,
+          isCurrentlyEnrolled: edu.isCurrentlyEnrolled
+        })),
+        workHistory: [],
+        capabilitiesSummary,
         reportMetadata: {
           generatedAt: new Date().toISOString(),
           reportType,
-          version: '1.0'
+          userRole,
+          version: '2.0'
         }
       };
 
-      // Use MCP service to generate a formatted report
-      const reportResult = await this.mcpClientService.generateReport(
+      // Use the new MCP client method
+      const result = await this.mcpClientService.generateReport(
+        JSON.stringify(reportData),
         reportType,
-        reportData
+        userRole,
+        includeMetrics,
+        'internal' // confidentiality level
       );
 
-      return reportResult;
+      return {
+        report: result.content?.[0]?.text || 'Report generated',
+        metadata: {
+          ...result.metadata,
+          personId,
+          dataCompleteness: this.calculateDataCompleteness(person)
+        }
+      };
     } catch (error: any) {
       console.error('Report generation failed:', error);
       throw new Error(`Report generation failed: ${error.message}`);
     }
+  }
+
+  /**
+   * Perform skill benchmarking for a person
+   */
+  async benchmarkPersonSkills(
+    personId: string,
+    industry?: string,
+    region?: string,
+    includeProjections: boolean = true
+  ): Promise<{
+    benchmarking: string;
+    metadata: any;
+  }> {
+    try {
+      const person = await this.personRepository.findById(personId, true);
+      if (!person) {
+        throw new Error('Person not found');
+      }
+
+      const benchmarkingData = {
+        personalInfo: {
+          firstName: person.firstName,
+          lastName: person.lastName
+        },
+        skills: person.skills,
+        technologies: person.technologies,
+        education: person.education,
+        employmentDetails: {
+          position: 'Not specified',
+          department: 'Not specified'
+        },
+        benchmarkingContext: {
+          industry,
+          region,
+          requestedAt: new Date().toISOString()
+        }
+      };
+
+      const result = await this.mcpClientService.skillBenchmarking(
+        JSON.stringify(benchmarkingData),
+        industry,
+        region,
+        includeProjections
+      );
+
+      return {
+        benchmarking: result.content?.[0]?.text || 'Benchmarking completed',
+        metadata: {
+          ...result.metadata,
+          personId
+        }
+      };
+    } catch (error: any) {
+      console.error('Skill benchmarking failed:', error);
+      throw new Error(`Skill benchmarking failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Perform compensation analysis for a person
+   */
+  async analyzePersonCompensation(
+    personId: string,
+    marketScope: string = 'national',
+    includeEquityAnalysis: boolean = true
+  ): Promise<{
+    analysis: string;
+    metadata: any;
+  }> {
+    try {
+      const person = await this.personRepository.findById(personId, true);
+      if (!person) {
+        throw new Error('Person not found');
+      }
+
+      const compensationData = {
+        personalInfo: {
+          firstName: person.firstName,
+          lastName: person.lastName
+        },
+        employmentDetails: {
+          position: 'Not specified',
+          department: 'Not specified',
+          location: `${person.city || ''}, ${person.country || ''}`.trim().replace(/^,\s*|,\s*$/g, '') || 'Not specified'
+        },
+        skills: person.skills,
+        technologies: person.technologies,
+        education: person.education,
+        experience: {
+          totalYears: this.calculateTotalExperience(person),
+          skillsExperience: person.skills.map(s => ({
+            skill: s.skillName,
+            years: s.yearsOfExperience
+          }))
+        },
+        analysisContext: {
+          marketScope,
+          requestedAt: new Date().toISOString()
+        }
+      };
+
+      const result = await this.mcpClientService.compensationAnalysis(
+        JSON.stringify(compensationData),
+        marketScope,
+        includeEquityAnalysis
+      );
+
+      return {
+        analysis: result.content?.[0]?.text || 'Compensation analysis completed',
+        metadata: {
+          ...result.metadata,
+          personId
+        }
+      };
+    } catch (error: any) {
+      console.error('Compensation analysis failed:', error);
+      throw new Error(`Compensation analysis failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Helper method to calculate data completeness score
+   */
+  private calculateDataCompleteness(person: Person): number {
+    let score = 0;
+    const factors = [
+      { field: 'email', weight: 10, present: !!person.email },
+      { field: 'phone', weight: 5, present: !!person.phone },
+      { field: 'address', weight: 5, present: !!person.address },
+      { field: 'skills', weight: 25, present: person.skills.length > 0 },
+      { field: 'technologies', weight: 20, present: person.technologies.length > 0 },
+      { field: 'education', weight: 15, present: person.education.length > 0 },
+      { field: 'position', weight: 10, present: !!(person as any).position },
+      { field: 'department', weight: 5, present: !!(person as any).department },
+      { field: 'workHistory', weight: 5, present: !!(person as any).workHistory?.length }
+    ];
+
+    factors.forEach(factor => {
+      if (factor.present) score += factor.weight;
+    });
+
+    return score;
+  }
+
+  /**
+   * Helper method to calculate total years of experience
+   */
+  private calculateTotalExperience(person: Person): number {
+    const skillsExperience = person.skills.reduce((max, skill) => {
+      const years = skill.yearsOfExperience ? parseInt(skill.yearsOfExperience, 10) : 0;
+      return Math.max(max, isNaN(years) ? 0 : years);
+    }, 0);
+    const techExperience = person.technologies.reduce((max, tech) => {
+      const years = tech.yearsOfExperience ? parseInt(tech.yearsOfExperience, 10) : 0;
+      return Math.max(max, isNaN(years) ? 0 : years);
+    }, 0);
+    
+    return Math.max(skillsExperience, techExperience);
   }
 } 

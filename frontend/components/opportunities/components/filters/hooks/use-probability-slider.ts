@@ -86,7 +86,6 @@ export const useProbabilitySlider = (
 
     setTimeout(() => {
       resetInitiatedRef.current = false;
-      console.log('Reset flag cleared after timeout');
     }, 400);
   };
 

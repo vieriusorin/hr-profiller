@@ -1,23 +1,7 @@
 import { TypeOpportunityStatus } from '@db/enums/opportunity-status.enum';
+import { TypeOpportunity } from '@db/schema';
 
-// Define proper entity interface with Date objects
-export interface OpportunityData {
-  id: string;
-  opportunityName: string;
-  clientId: string | null;
-  clientName: string | null;
-  expectedStartDate: Date | null;
-  expectedEndDate: Date | null;
-  probability: number | null;
-  status: TypeOpportunityStatus;
-  comment: string | null;
-  isActive: boolean | null;
-  activatedAt: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export class Opportunity implements OpportunityData {
+export class Opportunity implements Omit<TypeOpportunity, 'expectedStartDate' | 'expectedEndDate'> {
   readonly id!: string;
   readonly opportunityName!: string;
   readonly clientId!: string | null;
@@ -32,13 +16,11 @@ export class Opportunity implements OpportunityData {
   readonly createdAt!: Date;
   readonly updatedAt!: Date;
 
-  constructor(data: any) {
-    // Handle date conversion for expected dates
-    const parseDate = (dateValue: any): Date | null => {
+  constructor(data: TypeOpportunity) {
+    const parseDate = (dateValue: string | Date | null): Date | null => {
       if (!dateValue) return null;
       if (dateValue instanceof Date) return dateValue;
       if (typeof dateValue === 'string') {
-        // Handle date-only format (YYYY-MM-DD)
         if (/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
           return new Date(dateValue + 'T00:00:00.000Z');
         }

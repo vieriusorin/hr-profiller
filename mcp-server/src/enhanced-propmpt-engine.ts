@@ -4,11 +4,11 @@
  */
 
 export class EnhancedHRPromptEngine {
-    
+
     /**
      * Advanced system prompt with role-specific intelligence
      */
-    private getSystemPrompt(userRole: string = 'hr_manager'): string {
+    getSystemPrompt(userRole: string = 'hr_manager'): string {
         const rolePrompts = {
             hr_manager: `You are ARIA (Advanced Recruitment & Intelligence Advisor), an elite HR strategist with 15+ years of experience in talent analytics, organizational psychology, and workforce optimization. You possess deep expertise in:
 
@@ -52,7 +52,19 @@ Your insights are strategic, forward-thinking, and focused on competitive advant
      */
     createAdvancedAnalysisPrompt(context: any, analysisType: string, userRole: string = 'hr_manager'): string {
         const timestamp = new Date().toISOString();
-        const { person, similarPersons, skillsContext, marketData, industryBenchmarks } = context;
+        
+        // Handle both old format (with person property) and new format (direct properties)
+        const person = context.person || context;
+        const { similarPersons, skillsContext, marketData, industryBenchmarks } = context;
+
+        // Extract person data from nested structure
+        const firstName = person.personalInfo?.firstName || person.firstName || 'Unknown';
+        const lastName = person.personalInfo?.lastName || person.lastName || '';
+        const email = person.personalInfo?.email || person.email || 'Not provided';
+        const position = person.employmentDetails?.position || 'Position TBD';
+        const company = person.employmentDetails?.company || 'Not specified';
+        const location = person.personalInfo?.city || person.location || 'Location flexible';
+        const salaryRange = person.employmentDetails?.salaryRange || 'Negotiable';
 
         // Build comprehensive context
         let prompt = `🎯 **STRATEGIC TALENT ANALYSIS REQUEST**
@@ -65,12 +77,12 @@ Your insights are strategic, forward-thinking, and focused on competitive advant
 📋 **CANDIDATE PROFILE SNAPSHOT**
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-👤 **Identity:** ${person.firstName} ${person.lastName}
-📧 **Contact:** ${person.email}
-💼 **Current Role:** ${person.employmentDetails?.position || 'Position TBD'}
-🏢 **Organization:** ${person.employmentDetails?.company || 'Not specified'}
-📍 **Location:** ${person.location || 'Location flexible'}
-💰 **Salary Range:** ${person.employmentDetails?.salaryRange || 'Negotiable'}
+👤 **Identity:** ${firstName} ${lastName}
+📧 **Contact:** ${email}
+💼 **Current Role:** ${position}
+🏢 **Organization:** ${company}
+📍 **Location:** ${location}
+💰 **Salary Range:** ${salaryRange}
 🎓 **Education Level:** ${this.getEducationSummary(person.education)}
 ⏱️ **Experience:** ${this.calculateExperience(person)} years
 
@@ -100,9 +112,9 @@ ${marketData}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📈 **Peer Comparison (Top ${Math.min(5, similarPersons.length)} matches):**
-${similarPersons.slice(0, 5).map((similar: any, index: number) => 
-    `${index + 1}. ${similar.personName} | Similarity: ${similar.similarity}% | Role: ${similar.role || 'Not specified'}`
-).join('\n')}
+${similarPersons.slice(0, 5).map((similar: any, index: number) =>
+                `${index + 1}. ${similar.personName} | Similarity: ${similar.similarity}% | Role: ${similar.role || 'Not specified'}`
+            ).join('\n')}
 
 🎯 **Market Position:** ${this.calculateMarketPosition(person, similarPersons)}
 
@@ -144,12 +156,19 @@ ${skillsContext}
      * Enhanced report generation with executive-level insights
      */
     createAdvancedReportPrompt(context: any, reportType: string, userRole: string = 'hr_manager'): string {
-        const { person, similarPersons, skillsContext, marketData } = context;
+        // Handle both old format (with person property) and new format (direct properties)
+        const person = context.person || context;
+        const { similarPersons, skillsContext, marketData } = context;
+
+        // Extract person data from nested structure
+        const firstName = person.personalInfo?.firstName || person.firstName || 'Unknown';
+        const lastName = person.personalInfo?.lastName || person.lastName || '';
+        const company = person.employmentDetails?.company || 'Organization';
 
         let prompt = `📊 **EXECUTIVE TALENT INTELLIGENCE REPORT**
-🏢 Client: ${person.employmentDetails?.company || 'Organization'}
+🏢 Client: ${company}
 📅 Generated: ${new Date().toLocaleDateString()}
-👤 Subject: ${person.firstName} ${person.lastName}
+👤 Subject: ${firstName} ${lastName}
 🎯 Report Type: ${reportType.toUpperCase()}
 
 ═══════════════════════════════════════════════════════════════
@@ -346,7 +365,7 @@ Design a comprehensive performance enhancement strategy:
      */
     private getEducationSummary(education: any[]): string {
         if (!education?.length) return 'Not specified';
-        const highest = education.reduce((prev, curr) => 
+        const highest = education.reduce((prev, curr) =>
             this.getEducationLevel(curr.degree) > this.getEducationLevel(prev.degree) ? curr : prev
         );
         return `${highest.degree} in ${highest.fieldOfStudy}`;
@@ -371,16 +390,16 @@ Design a comprehensive performance enhancement strategy:
 
     private categorizeSkills(skills: any[], category: 'technical' | 'soft'): string {
         if (!skills?.length) return 'None specified';
-        
+
         const technical = ['programming', 'software', 'data', 'cloud', 'AI', 'machine learning'];
         const soft = ['leadership', 'communication', 'teamwork', 'problem solving'];
-        
+
         const filtered = skills.filter(skill => {
             const skillName = skill.skillName?.toLowerCase() || '';
             const keywords = category === 'technical' ? technical : soft;
             return keywords.some(keyword => skillName.includes(keyword));
         });
-        
+
         return filtered.map(s => s.skillName).join(', ') || 'None in this category';
     }
 
@@ -394,7 +413,7 @@ Design a comprehensive performance enhancement strategy:
 
     private calculateMarketPosition(person: any, similarPersons: any[]): string {
         const avgSimilarity = similarPersons.reduce((sum, p) => sum + p.similarity, 0) / similarPersons.length;
-        
+
         if (avgSimilarity > 80) return 'Top Tier (Highly competitive profile)';
         if (avgSimilarity > 60) return 'Above Average (Strong market position)';
         if (avgSimilarity > 40) return 'Average (Standard market positioning)';
@@ -402,10 +421,15 @@ Design a comprehensive performance enhancement strategy:
     }
 
     private buildContextualData(person: any, similarPersons: any[], skillsContext: any, marketData: any): string {
+        // Handle nested structure
+        const firstName = person.personalInfo?.firstName || person.firstName || 'Unknown';
+        const lastName = person.personalInfo?.lastName || person.lastName || '';
+        const position = person.employmentDetails?.position || 'Not specified';
+
         let context = `
 🎯 **SUBJECT PROFILE:**
-Name: ${person.firstName} ${person.lastName}
-Position: ${person.employmentDetails?.position || 'Not specified'}
+Name: ${firstName} ${lastName}
+Position: ${position}
 Experience: ${this.calculateExperience(person)} years
 Education: ${this.getEducationSummary(person.education)}
 Key Skills: ${person.skills?.slice(0, 5).map((s: any) => s.skillName).join(', ') || 'None'}
@@ -415,9 +439,9 @@ Technologies: ${person.technologies?.slice(0, 5).map((t: any) => t.technologyNam
         if (similarPersons?.length > 0) {
             context += `
 🔍 **PEER COMPARISON DATA:**
-${similarPersons.slice(0, 3).map((p: any, i: number) => 
-    `${i + 1}. ${p.personName} (${p.similarity}% similarity)`
-).join('\n')}
+${similarPersons.slice(0, 3).map((p: any, i: number) =>
+                `${i + 1}. ${p.personName} (${p.similarity}% similarity)`
+            ).join('\n')}
 `;
         }
 

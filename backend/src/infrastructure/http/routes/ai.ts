@@ -10,8 +10,33 @@ const aiController = container.get<AIController>(TYPES.AIController);
  * @swagger
  * /api/v1/ai/analyze:
  *   post:
- *     summary: Analyze a person using AI with RAG
- *     description: Performs AI-powered analysis of a person using Retrieval-Augmented Generation (RAG) with vector similarity search and context from similar professionals.
+ *     summary: Analyze a person using AI with RAG and MCP integration
+ *     description: |
+ *       Performs comprehensive AI-powered analysis of a person using Retrieval-Augmented Generation (RAG) 
+ *       with vector similarity search and context from similar professionals. The analysis leverages MCP 
+ *       (Model Context Protocol) for advanced HR analytics and talent intelligence.
+ *       
+ *       **Available Analysis Types:**
+ *       - `capability_analysis` - Comprehensive assessment of professional capabilities and strengths
+ *       - `skill_gap` - Identifies gaps between current skills and market demands or role requirements
+ *       - `career_recommendation` - Provides personalized career development and progression recommendations
+ *       - `performance_analysis` - Analyzes performance metrics and patterns for improvement insights
+ *       - `general` - General AI analysis with basic insights and recommendations
+ *       
+ *       **User Role Context:**
+ *       The analysis is tailored based on the requester's role:
+ *       - `hr_manager` - Strategic HR insights, hiring recommendations, team optimization
+ *       - `employee` - Personal development, skill building, career guidance
+ *       - `executive` - High-level talent intelligence, strategic workforce planning
+ *       - `recruiter` - Candidate assessment, role fit analysis, market positioning
+ *       - `team_lead` - Team performance, skill distribution, project staffing insights
+ *       
+ *       **Analysis Features:**
+ *       - Vector similarity search for contextual insights from similar professionals
+ *       - Market skill context and industry benchmarking
+ *       - Confidence scoring and reliability assessment
+ *       - Customizable urgency and confidentiality levels
+ *       - Comprehensive metadata and processing information
  *     tags:
  *       - AI Analysis
  *     requestBody:
@@ -26,19 +51,67 @@ const aiController = container.get<AIController>(TYPES.AIController);
  *               personId:
  *                 type: string
  *                 description: ID of the person to analyze
+ *                 example: "123e4567-e89b-12d3-a456-426614174000"
  *               analysisType:
  *                 type: string
- *                 enum: [capability_analysis, skill_gap, career_recommendation, general]
+ *                 enum: [capability_analysis, skill_gap, career_recommendation, performance_analysis, general]
  *                 default: general
- *                 description: Type of analysis to perform
+ *                 description: |
+ *                   Type of analysis to perform:
+ *                   - `capability_analysis`: Comprehensive professional capability assessment
+ *                   - `skill_gap`: Identify skills gaps and development opportunities
+ *                   - `career_recommendation`: Personalized career development guidance
+ *                   - `performance_analysis`: Performance metrics and improvement insights
+ *                   - `general`: Basic AI analysis with general insights
+ *                 example: "capability_analysis"
+ *               userRole:
+ *                 type: string
+ *                 enum: [hr_manager, employee, executive, recruiter, team_lead]
+ *                 default: hr_manager
+ *                 description: |
+ *                   Role of the user requesting the analysis (affects perspective and depth):
+ *                   - `hr_manager`: Strategic HR insights and recommendations
+ *                   - `employee`: Personal development and career guidance
+ *                   - `executive`: High-level talent intelligence and strategic insights
+ *                   - `recruiter`: Candidate assessment and role fit analysis
+ *                   - `team_lead`: Team performance and project staffing insights
+ *                 example: "hr_manager"
+ *               urgency:
+ *                 type: string
+ *                 enum: [immediate, standard, strategic]
+ *                 default: standard
+ *                 description: |
+ *                   Urgency level affecting analysis depth and processing priority:
+ *                   - `immediate`: Quick analysis for urgent decisions
+ *                   - `standard`: Balanced analysis with good depth and speed
+ *                   - `strategic`: Comprehensive deep analysis for strategic planning
+ *                 example: "standard"
+ *               confidentialityLevel:
+ *                 type: string
+ *                 enum: [public, internal, confidential, restricted]
+ *                 default: internal
+ *                 description: |
+ *                   Confidentiality level for the analysis:
+ *                   - `public`: Can be shared openly
+ *                   - `internal`: For internal company use only
+ *                   - `confidential`: Restricted access, sensitive information
+ *                   - `restricted`: Highest security, very limited access
+ *                 example: "internal"
  *               includeSimilarPersons:
  *                 type: boolean
  *                 default: true
- *                 description: Whether to include similar persons for context
+ *                 description: Whether to include similar persons for contextual analysis and benchmarking
+ *                 example: true
  *               includeSkillsContext:
  *                 type: boolean
  *                 default: false
- *                 description: Whether to include market context for skills
+ *                 description: Whether to include market context for skills and industry benchmarking
+ *                 example: true
+ *               includeConfidenceScore:
+ *                 type: boolean
+ *                 default: true
+ *                 description: Whether to include confidence scoring in the analysis results
+ *                 example: true
  *     responses:
  *       200:
  *         description: Analysis completed successfully
@@ -49,21 +122,116 @@ const aiController = container.get<AIController>(TYPES.AIController);
  *               properties:
  *                 success:
  *                   type: boolean
+ *                   example: true
  *                 data:
  *                   type: object
  *                   properties:
  *                     personId:
  *                       type: string
+ *                       description: ID of the analyzed person
+ *                       example: "123e4567-e89b-12d3-a456-426614174000"
  *                     analysisType:
  *                       type: string
+ *                       description: Type of analysis performed
+ *                       example: "capability_analysis"
  *                     analysis:
  *                       type: string
+ *                       description: The comprehensive AI-generated analysis result
+ *                       example: "This professional demonstrates strong technical capabilities with expertise in modern web technologies. Key strengths include 5+ years of JavaScript experience, advanced React proficiency, and solid backend development skills..."
+ *                     confidence:
+ *                       type: object
+ *                       description: Confidence scoring for the analysis
+ *                       properties:
+ *                         score:
+ *                           type: number
+ *                           minimum: 0
+ *                           maximum: 1
+ *                           description: Overall confidence score (0-1)
+ *                           example: 0.87
+ *                         level:
+ *                           type: string
+ *                           enum: [low, medium, high, very_high]
+ *                           description: Confidence level category
+ *                           example: "high"
+ *                         factors:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                           description: Factors affecting confidence
+ *                           example: ["Complete skill profile", "Recent experience data", "Similar professionals context"]
+ *                     metadata:
+ *                       type: object
+ *                       description: Analysis metadata and processing information
+ *                       properties:
+ *                         userRole:
+ *                           type: string
+ *                           example: "hr_manager"
+ *                         urgency:
+ *                           type: string
+ *                           example: "standard"
+ *                         confidentialityLevel:
+ *                           type: string
+ *                           example: "internal"
+ *                         processingTime:
+ *                           type: string
+ *                           description: Time taken to complete the analysis
+ *                           example: "3.2s"
+ *                         similarPersonsUsed:
+ *                           type: integer
+ *                           description: Number of similar persons used for context
+ *                           example: 12
+ *                         skillsAnalyzed:
+ *                           type: integer
+ *                           description: Number of skills analyzed
+ *                           example: 15
+ *                         marketContextIncluded:
+ *                           type: boolean
+ *                           example: true
+ *                     recommendations:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           type:
+ *                             type: string
+ *                             enum: [skill_development, career_path, training, certification]
+ *                             description: Type of recommendation
+ *                           priority:
+ *                             type: string
+ *                             enum: [high, medium, low]
+ *                             description: Priority level
+ *                           description:
+ *                             type: string
+ *                             description: Detailed recommendation
+ *                           timeline:
+ *                             type: string
+ *                             description: Suggested timeline for implementation
+ *                       description: AI-generated recommendations based on the analysis
+ *                       example: [
+ *                         {
+ *                           "type": "skill_development",
+ *                           "priority": "high",
+ *                           "description": "Consider advancing cloud architecture skills, particularly AWS or Azure",
+ *                           "timeline": "3-6 months"
+ *                         }
+ *                       ]
  *                     timestamp:
  *                       type: string
+ *                       format: date-time
+ *                       description: When the analysis was performed
+ *                       example: "2024-01-15T14:30:00Z"
  *       400:
- *         description: Bad request - missing required fields
+ *         description: Bad request - missing required fields or invalid parameters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
- *         description: Internal server error
+ *         description: Internal server error - analysis failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post('/analyze', (req, res) => aiController.analyzePerson(req, res));
 

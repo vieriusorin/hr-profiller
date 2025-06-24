@@ -15,8 +15,6 @@ export class DrizzleOpportunityRepository implements OpportunityRepository {
 
   async findAll(): Promise<Opportunity[]> {
     const result = await this.db.select().from(opportunities).orderBy(opportunities.expectedStartDate);
-    console.log('🔍 [DrizzleOpportunityRepository] Total opportunities found:', result.length);
-    console.log('🔍 [DrizzleOpportunityRepository] All opportunities:', JSON.stringify(result, null, 2));
     return result.map(this.mapToEntity);
   }
 
@@ -30,7 +28,6 @@ export class DrizzleOpportunityRepository implements OpportunityRepository {
   }
 
   async create(data: CreateOpportunityData): Promise<Opportunity> {
-    // Use raw SQL like the employment repository to ensure proper date handling
     const result = await this.db.execute(sql`
       INSERT INTO opportunities (
         opportunity_name, client_id, client_name, expected_start_date, expected_end_date,
@@ -75,7 +72,6 @@ export class DrizzleOpportunityRepository implements OpportunityRepository {
       updateData.activatedAt = data.activatedAt ? new Date(data.activatedAt) : null;
     }
 
-    // Always update the updatedAt timestamp
     updateData.updatedAt = new Date();
 
     const [updated] = await this.db
@@ -103,22 +99,6 @@ export class DrizzleOpportunityRepository implements OpportunityRepository {
   }
 
   private mapToEntity(data: any): Opportunity {
-    console.log('🔍 [DrizzleOpportunityRepository] Raw data from DB:', JSON.stringify(data, null, 2));
-    console.log('🔍 [DrizzleOpportunityRepository] Object keys:', Object.keys(data));
-    
-    // Check all possible field name variations
-    console.log('🔍 [DrizzleOpportunityRepository] Date field analysis:');
-    console.log('  data.expectedStartDate:', data.expectedStartDate);
-    console.log('  data.expected_start_date:', data.expected_start_date);
-    
-    // Try to find the correct field names by looking at all fields that contain "start" or "end"
-    Object.keys(data).forEach(key => {
-      if (key.toLowerCase().includes('start') || key.toLowerCase().includes('end')) {
-        console.log(`  Found date-related field: ${key} = ${data[key]}`);
-      }
-    });
-
-    // Pass raw data to entity constructor and let it handle the conversion
     return new Opportunity({
       id: data.id,
       opportunityName: data.opportunityName || data.opportunity_name,
