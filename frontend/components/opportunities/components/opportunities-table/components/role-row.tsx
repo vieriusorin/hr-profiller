@@ -6,13 +6,14 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import { StatusBadge } from "@/shared/components/status-badge";
-import { Users } from "lucide-react";
+import { AlertCircleIcon, CheckCircleIcon, Users } from "lucide-react";
 import { EditRoleModal } from "../../modals/edit-role-modal";
 import { RoleStatusConfirmationDialog } from "../../role-status-confirmation";
 import { Grade, RoleStatus } from "@/lib/types";
 import { RoleRowProps } from "./types";
 import { useRoleRow } from "../hooks/use-role-row";
 import { RoleActions } from "./role-actions";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export const RoleRow = ({
 	row,
@@ -94,11 +95,23 @@ export const RoleRow = ({
 				</TableCell>
 				<TableCell>
 					{row.needsHire ? (
-						<Badge variant='outline' className='text-xs'>
-							{row.newHireName || "Needs Hire"}
-						</Badge>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<AlertCircleIcon className='h-3 w-3 text-red-500 cursor-pointer' />
+							</TooltipTrigger>
+							<TooltipContent className='max-w-xs whitespace-pre-wrap'>
+								No hire needed
+							</TooltipContent>
+						</Tooltip>
 					) : (
-						<span className='text-muted-foreground italic'>No Hire</span>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<CheckCircleIcon className='h-3 w-3 text-green-500 cursor-pointer' />
+							</TooltipTrigger>
+							<TooltipContent className='max-w-xs whitespace-pre-wrap'>
+								Hire needed
+							</TooltipContent>
+						</Tooltip>
 					)}
 				</TableCell>
 

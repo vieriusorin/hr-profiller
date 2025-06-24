@@ -4,6 +4,712 @@
  */
 
 export interface paths {
+    "/api/v1/ai/analyze": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Analyze a person using AI with RAG and MCP integration
+         * @description Performs comprehensive AI-powered analysis of a person using Retrieval-Augmented Generation (RAG)
+         *     with vector similarity search and context from similar professionals. The analysis leverages MCP
+         *     (Model Context Protocol) for advanced HR analytics and talent intelligence.
+         *
+         *     **Available Analysis Types:**
+         *     - `capability_analysis` - Comprehensive assessment of professional capabilities and strengths
+         *     - `skill_gap` - Identifies gaps between current skills and market demands or role requirements
+         *     - `career_recommendation` - Provides personalized career development and progression recommendations
+         *     - `performance_analysis` - Analyzes performance metrics and patterns for improvement insights
+         *     - `general` - General AI analysis with basic insights and recommendations
+         *
+         *     **User Role Context:**
+         *     The analysis is tailored based on the requester's role:
+         *     - `hr_manager` - Strategic HR insights, hiring recommendations, team optimization
+         *     - `employee` - Personal development, skill building, career guidance
+         *     - `executive` - High-level talent intelligence, strategic workforce planning
+         *     - `recruiter` - Candidate assessment, role fit analysis, market positioning
+         *     - `team_lead` - Team performance, skill distribution, project staffing insights
+         *
+         *     **Analysis Features:**
+         *     - Vector similarity search for contextual insights from similar professionals
+         *     - Market skill context and industry benchmarking
+         *     - Confidence scoring and reliability assessment
+         *     - Customizable urgency and confidentiality levels
+         *     - Comprehensive metadata and processing information
+         *
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description ID of the person to analyze
+                         * @example 123e4567-e89b-12d3-a456-426614174000
+                         */
+                        personId: string;
+                        /**
+                         * @description Type of analysis to perform:
+                         *     - `capability_analysis`: Comprehensive professional capability assessment
+                         *     - `skill_gap`: Identify skills gaps and development opportunities
+                         *     - `career_recommendation`: Personalized career development guidance
+                         *     - `performance_analysis`: Performance metrics and improvement insights
+                         *     - `general`: Basic AI analysis with general insights
+                         *
+                         * @default general
+                         * @example capability_analysis
+                         * @enum {string}
+                         */
+                        analysisType?: "capability_analysis" | "skill_gap" | "career_recommendation" | "performance_analysis" | "general";
+                        /**
+                         * @description Role of the user requesting the analysis (affects perspective and depth):
+                         *     - `hr_manager`: Strategic HR insights and recommendations
+                         *     - `employee`: Personal development and career guidance
+                         *     - `executive`: High-level talent intelligence and strategic insights
+                         *     - `recruiter`: Candidate assessment and role fit analysis
+                         *     - `team_lead`: Team performance and project staffing insights
+                         *
+                         * @default hr_manager
+                         * @example hr_manager
+                         * @enum {string}
+                         */
+                        userRole?: "hr_manager" | "employee" | "executive" | "recruiter" | "team_lead";
+                        /**
+                         * @description Urgency level affecting analysis depth and processing priority:
+                         *     - `immediate`: Quick analysis for urgent decisions
+                         *     - `standard`: Balanced analysis with good depth and speed
+                         *     - `strategic`: Comprehensive deep analysis for strategic planning
+                         *
+                         * @default standard
+                         * @example standard
+                         * @enum {string}
+                         */
+                        urgency?: "immediate" | "standard" | "strategic";
+                        /**
+                         * @description Confidentiality level for the analysis:
+                         *     - `public`: Can be shared openly
+                         *     - `internal`: For internal company use only
+                         *     - `confidential`: Restricted access, sensitive information
+                         *     - `restricted`: Highest security, very limited access
+                         *
+                         * @default internal
+                         * @example internal
+                         * @enum {string}
+                         */
+                        confidentialityLevel?: "public" | "internal" | "confidential" | "restricted";
+                        /**
+                         * @description Whether to include similar persons for contextual analysis and benchmarking
+                         * @default true
+                         * @example true
+                         */
+                        includeSimilarPersons?: boolean;
+                        /**
+                         * @description Whether to include market context for skills and industry benchmarking
+                         * @default false
+                         * @example true
+                         */
+                        includeSkillsContext?: boolean;
+                        /**
+                         * @description Whether to include confidence scoring in the analysis results
+                         * @default true
+                         * @example true
+                         */
+                        includeConfidenceScore?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Analysis completed successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example true */
+                            success?: boolean;
+                            data?: {
+                                /**
+                                 * @description ID of the analyzed person
+                                 * @example 123e4567-e89b-12d3-a456-426614174000
+                                 */
+                                personId?: string;
+                                /**
+                                 * @description Type of analysis performed
+                                 * @example capability_analysis
+                                 */
+                                analysisType?: string;
+                                /**
+                                 * @description The comprehensive AI-generated analysis result
+                                 * @example This professional demonstrates strong technical capabilities with expertise in modern web technologies. Key strengths include 5+ years of JavaScript experience, advanced React proficiency, and solid backend development skills...
+                                 */
+                                analysis?: string;
+                                /** @description Confidence scoring for the analysis */
+                                confidence?: {
+                                    /**
+                                     * @description Overall confidence score (0-1)
+                                     * @example 0.87
+                                     */
+                                    score?: number;
+                                    /**
+                                     * @description Confidence level category
+                                     * @example high
+                                     * @enum {string}
+                                     */
+                                    level?: "low" | "medium" | "high" | "very_high";
+                                    /**
+                                     * @description Factors affecting confidence
+                                     * @example [
+                                     *       "Complete skill profile",
+                                     *       "Recent experience data",
+                                     *       "Similar professionals context"
+                                     *     ]
+                                     */
+                                    factors?: string[];
+                                };
+                                /** @description Analysis metadata and processing information */
+                                metadata?: {
+                                    /** @example hr_manager */
+                                    userRole?: string;
+                                    /** @example standard */
+                                    urgency?: string;
+                                    /** @example internal */
+                                    confidentialityLevel?: string;
+                                    /**
+                                     * @description Time taken to complete the analysis
+                                     * @example 3.2s
+                                     */
+                                    processingTime?: string;
+                                    /**
+                                     * @description Number of similar persons used for context
+                                     * @example 12
+                                     */
+                                    similarPersonsUsed?: number;
+                                    /**
+                                     * @description Number of skills analyzed
+                                     * @example 15
+                                     */
+                                    skillsAnalyzed?: number;
+                                    /** @example true */
+                                    marketContextIncluded?: boolean;
+                                };
+                                /**
+                                 * @description AI-generated recommendations based on the analysis
+                                 * @example [
+                                 *       {
+                                 *         "type": "skill_development",
+                                 *         "priority": "high",
+                                 *         "description": "Consider advancing cloud architecture skills, particularly AWS or Azure",
+                                 *         "timeline": "3-6 months"
+                                 *       }
+                                 *     ]
+                                 */
+                                recommendations?: {
+                                    /**
+                                     * @description Type of recommendation
+                                     * @enum {string}
+                                     */
+                                    type?: "skill_development" | "career_path" | "training" | "certification";
+                                    /**
+                                     * @description Priority level
+                                     * @enum {string}
+                                     */
+                                    priority?: "high" | "medium" | "low";
+                                    /** @description Detailed recommendation */
+                                    description?: string;
+                                    /** @description Suggested timeline for implementation */
+                                    timeline?: string;
+                                }[];
+                                /**
+                                 * Format: date-time
+                                 * @description When the analysis was performed
+                                 * @example 2024-01-15T14:30:00Z
+                                 */
+                                timestamp?: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Bad request - missing required fields or invalid parameters */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Internal server error - analysis failed */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ai/similar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Find similar persons using vector similarity search
+         * @description Searches for persons similar to the given query using vector embeddings and cosine similarity.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Text query to find similar persons */
+                        query: string;
+                        /**
+                         * @description Maximum number of results to return
+                         * @default 10
+                         */
+                        limit?: number;
+                        /**
+                         * @description Minimum similarity score (0-1)
+                         * @default 0.7
+                         */
+                        similarityThreshold?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Similar persons found successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            success?: boolean;
+                            data?: {
+                                persons?: Record<string, never>[];
+                                query?: string;
+                                metadata?: Record<string, never>;
+                            };
+                        };
+                    };
+                };
+                /** @description Bad request - missing required fields */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ai/embeddings/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate embeddings for a specific person
+         * @description Generates and stores vector embeddings for a person's profile data.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description ID of the person to generate embeddings for */
+                        personId: string;
+                        /**
+                         * @description Type of embedding to generate
+                         * @default profile
+                         */
+                        embeddingType?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Embedding generated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            success?: boolean;
+                            message?: string;
+                            data?: Record<string, never>;
+                        };
+                    };
+                };
+                /** @description Bad request - missing required fields */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ai/embeddings/generate-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate embeddings for all persons
+         * @description Batch operation to generate embeddings for all persons in the database.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Batch embedding generation completed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            success?: boolean;
+                            message?: string;
+                            data?: Record<string, never>;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ai/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get RAG system statistics
+         * @description Returns statistics about the RAG system including embeddings, searches, and costs.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Statistics retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            success?: boolean;
+                            data?: {
+                                embeddings?: Record<string, never>;
+                                searches?: Record<string, never>;
+                                costs?: Record<string, never>;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ai/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Health check for AI services
+         * @description Checks the health status of AI services including OpenAI and vector database connections.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description AI services are healthy */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            success?: boolean;
+                            status?: string;
+                            services?: Record<string, never>;
+                            timestamp?: string;
+                        };
+                    };
+                };
+                /** @description AI services are unhealthy */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Login with email and password
+         * @description Authenticates a user and returns their profile and role.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: email
+                         * @example admin@ddroidd.com
+                         */
+                        email: string;
+                        /** @example password123 */
+                        password: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Login successful. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            user?: components["schemas"]["User"];
+                        };
+                    };
+                };
+                /** @description Email and password are required. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example Email and password are required */
+                            error?: string;
+                        };
+                    };
+                };
+                /** @description Invalid credentials. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example Invalid credentials */
+                            error?: string;
+                        };
+                    };
+                };
+                /** @description Internal server error. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example Internal server error */
+                            error?: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get user profile
+         * @description Returns the profile of the currently authenticated user.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description User profile returned successfully. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message?: string;
+                            user?: components["schemas"]["User"];
+                        };
+                    };
+                };
+                /** @description Access token required. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Invalid or expired token / Insufficient permissions. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/employees": {
         parameters: {
             query?: never;
@@ -1102,6 +1808,722 @@ export interface paths {
                     };
                 };
                 500: components["responses"]["InternalServerError"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/mcp/tools": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get list of available MCP tools
+         * @description Retrieves the list of available tools from the MCP server for AI-powered HR analytics and talent intelligence.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successfully retrieved MCP tools */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            status?: "success";
+                            data?: {
+                                tools?: components["schemas"]["McpTool"][];
+                            };
+                            meta?: {
+                                /** Format: date-time */
+                                timestamp?: string;
+                                requestId?: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Failed to retrieve MCP tools */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/mcp/analyze": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Analyze data using MCP AI tools
+         * @description Performs AI-powered data analysis using the dedicated analyze-data endpoint with configurable analysis parameters for HR analytics and talent intelligence.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description The data to analyze (employee profiles, skills, performance metrics, etc.)
+                         * @example Employee: John Doe, Skills: JavaScript, Python, React, Experience: 5 years
+                         */
+                        data: string;
+                        /**
+                         * @description The type of analysis to perform
+                         * @default capability_analysis
+                         * @enum {string}
+                         */
+                        analysisType?: "capability_analysis" | "skill_gap" | "career_recommendation" | "performance_analysis";
+                        /**
+                         * @description The role of the user requesting the analysis
+                         * @default hr_manager
+                         * @enum {string}
+                         */
+                        userRole?: "hr_manager" | "employee" | "executive" | "recruiter" | "team_lead";
+                        /**
+                         * @description The urgency level of the analysis
+                         * @default standard
+                         * @enum {string}
+                         */
+                        urgency?: "immediate" | "standard" | "strategic";
+                        /**
+                         * @description The confidentiality level of the analysis
+                         * @default internal
+                         * @enum {string}
+                         */
+                        confidentialityLevel?: "public" | "internal" | "confidential" | "restricted";
+                    };
+                };
+            };
+            responses: {
+                /** @description Analysis completed successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            status?: "success";
+                            data?: {
+                                result?: {
+                                    /** @description The AI-generated analysis result */
+                                    analysis?: string;
+                                    /** @description Additional metadata about the analysis */
+                                    metadata?: Record<string, never>;
+                                    /** @description Confidence score of the analysis */
+                                    confidence?: number;
+                                };
+                            };
+                            meta?: {
+                                /** Format: date-time */
+                                timestamp?: string;
+                                requestId?: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Bad request - data is required */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Analysis failed */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/mcp/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate comprehensive reports using MCP AI tools
+         * @description Generates detailed reports using the dedicated generate-report endpoint with customizable report parameters for HR analytics and talent intelligence.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description The data to generate a report for (team performance, skills analysis, etc.)
+                         * @example Team: Development Team, Members: 15, Skills: Full-stack development, Performance: High
+                         */
+                        data: string;
+                        /**
+                         * @description The type of report to generate
+                         * @default comprehensive
+                         * @enum {string}
+                         */
+                        reportType?: "comprehensive" | "summary" | "detailed" | "executive";
+                        /**
+                         * @description The role of the user requesting the report
+                         * @default hr_manager
+                         * @enum {string}
+                         */
+                        userRole?: "hr_manager" | "employee" | "executive" | "recruiter" | "team_lead";
+                        /**
+                         * @description Whether to include quantitative metrics in the report
+                         * @default true
+                         */
+                        includeMetrics?: boolean;
+                        /**
+                         * @description The confidentiality level of the report
+                         * @default internal
+                         * @enum {string}
+                         */
+                        confidentialityLevel?: "public" | "internal" | "confidential" | "restricted";
+                    };
+                };
+            };
+            responses: {
+                /** @description Report generated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            status?: "success";
+                            data?: {
+                                result?: {
+                                    /** @description The generated report content */
+                                    report?: string;
+                                    /** @description Report metadata and statistics */
+                                    metadata?: Record<string, never>;
+                                    /** @description Report format information */
+                                    format?: string;
+                                };
+                            };
+                            meta?: {
+                                /** Format: date-time */
+                                timestamp?: string;
+                                requestId?: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Bad request - data is required */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Report generation failed */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/mcp/skill-benchmarking": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Perform skill benchmarking analysis
+         * @description Performs comprehensive skill benchmarking using the dedicated endpoint to compare skills against industry standards and market trends.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description The data to perform skill benchmarking on (employee skills, team capabilities, etc.)
+                         * @example Skills: JavaScript, Python, React, Node.js, AWS, Docker
+                         */
+                        data: string;
+                        /**
+                         * @description The industry to benchmark against (e.g., 'technology', 'finance', 'healthcare')
+                         * @example technology
+                         */
+                        industry?: string;
+                        /**
+                         * @description The region to benchmark against (e.g., 'north_america', 'europe', 'global')
+                         * @example north_america
+                         */
+                        region?: string;
+                        /**
+                         * @description Whether to include future skill demand projections in the benchmarking
+                         * @default true
+                         */
+                        includeProjections?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Skill benchmarking completed successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            status?: "success";
+                            data?: {
+                                result?: {
+                                    /** @description The skill benchmarking analysis result */
+                                    benchmarking?: string;
+                                    /** @description Market comparison data */
+                                    marketComparison?: Record<string, never>;
+                                    /** @description Skill development recommendations */
+                                    recommendations?: string[];
+                                };
+                            };
+                            meta?: {
+                                /** Format: date-time */
+                                timestamp?: string;
+                                requestId?: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Bad request - data is required */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Skill benchmarking failed */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/mcp/compensation-analysis": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Perform compensation analysis
+         * @description Performs comprehensive compensation analysis using the dedicated endpoint to analyze salary data against market standards and equity considerations.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description The data to perform compensation analysis on (salary data, benefits, equity, etc.)
+                         * @example Position: Senior Developer, Salary: $95000, Benefits: Health, Dental, 401k, Equity: 0.1%
+                         */
+                        data: string;
+                        /**
+                         * @description The scope of the market to analyze compensation against
+                         * @default national
+                         * @enum {string}
+                         */
+                        marketScope?: "national" | "regional" | "global" | "local";
+                        /**
+                         * @description Whether to include equity analysis in the compensation analysis
+                         * @default true
+                         */
+                        includeEquityAnalysis?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Compensation analysis completed successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            status?: "success";
+                            data?: {
+                                result?: {
+                                    /** @description The compensation analysis result */
+                                    analysis?: string;
+                                    /** @description Market compensation comparison data */
+                                    marketComparison?: Record<string, never>;
+                                    /** @description Compensation adjustment recommendations */
+                                    recommendations?: string[];
+                                };
+                            };
+                            meta?: {
+                                /** Format: date-time */
+                                timestamp?: string;
+                                requestId?: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Bad request - data is required */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Compensation analysis failed */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/mcp/confidence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get analysis confidence score
+         * @description Retrieves the confidence score for AI analysis results, providing insights into the reliability and accuracy of the analysis.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description The data to get the analysis confidence score for
+                         * @example Analysis result: Employee shows strong technical skills with 85% proficiency in required technologies
+                         */
+                        data: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Confidence analysis completed successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            status?: "success";
+                            data?: {
+                                result?: components["schemas"]["McpAnalysisConfidence"];
+                            };
+                            meta?: {
+                                /** Format: date-time */
+                                timestamp?: string;
+                                requestId?: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Bad request - data is required */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Confidence analysis failed */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/mcp/execute": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Execute any MCP tool with custom arguments
+         * @description Generic endpoint for executing any available MCP tool with custom arguments. Provides legacy support for the generic tool execution interface.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description The name of the MCP tool to execute
+                         * @example analyze-data
+                         */
+                        toolName: string;
+                        /**
+                         * @description The arguments to pass to the tool (varies by tool)
+                         * @example {
+                         *       "data": "Employee performance data",
+                         *       "analysisType": "capability_analysis"
+                         *     }
+                         */
+                        arguments?: Record<string, never>;
+                    };
+                };
+            };
+            responses: {
+                /** @description Tool executed successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            status?: "success";
+                            data?: {
+                                /** @description The result of the tool execution (varies by tool) */
+                                result?: Record<string, never>;
+                            };
+                            meta?: {
+                                /** Format: date-time */
+                                timestamp?: string;
+                                requestId?: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Bad request - tool name is required */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Tool execution failed */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/mcp/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Check MCP server health status
+         * @description Performs a health check on the MCP server to ensure it's running and responsive. Returns connection status and server availability.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Health check completed successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            status?: "success";
+                            data?: {
+                                /** @description Whether the MCP server is healthy */
+                                healthy?: boolean;
+                                /**
+                                 * @description MCP server connection status
+                                 * @enum {string}
+                                 */
+                                mcpServer?: "connected" | "disconnected";
+                            };
+                            meta?: {
+                                /** Format: date-time */
+                                timestamp?: string;
+                                requestId?: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Health check failed */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            status?: "error";
+                            data?: {
+                                /** @enum {boolean} */
+                                healthy?: false;
+                                /** @description Error message describing the health check failure */
+                                message?: string;
+                            };
+                            meta?: {
+                                /** Format: date-time */
+                                timestamp?: string;
+                                requestId?: string;
+                            };
+                        };
+                    };
+                };
             };
         };
         put?: never;
@@ -2284,6 +3706,130 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/persons/{id}/analyze-ai": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Analyze person capabilities using AI */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The person ID */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Type of analysis to perform
+                         * @default capability_analysis
+                         * @example capability_analysis
+                         */
+                        analysisType?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description AI analysis result */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            status?: "success";
+                            data?: {
+                                /** @description AI-generated analysis text */
+                                analysis?: string;
+                                /** Format: uuid */
+                                personId?: string;
+                                analysisType?: string;
+                            };
+                        };
+                    };
+                };
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/persons/{id}/generate-report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate AI-powered report for person */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The person ID */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Type of report to generate
+                         * @default comprehensive
+                         * @example comprehensive
+                         */
+                        reportType?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description AI-generated report */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            status?: "success";
+                            data?: {
+                                /** @description AI-generated report text */
+                                report?: string;
+                                /** Format: uuid */
+                                personId?: string;
+                                reportType?: string;
+                            };
+                        };
+                    };
+                };
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/roles/opportunity/{opportunityId}": {
         parameters: {
             query?: never;
@@ -2778,6 +4324,47 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        User: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the user
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id: string;
+            /**
+             * Format: email
+             * @description Email address of the user
+             * @example admin@ddroidd.com
+             */
+            email: string;
+            /**
+             * @description Full name of the user
+             * @example John Doe
+             */
+            name: string;
+            /**
+             * @description User role in the system
+             * @example admin
+             */
+            role: string;
+            /**
+             * @description Whether the user account is active
+             * @example true
+             */
+            isActive: boolean;
+            /**
+             * Format: date-time
+             * @description When the user was created
+             * @example 2024-01-10T09:00:00Z
+             */
+            createdAt?: string;
+            /**
+             * Format: date-time
+             * @description When the user was last updated
+             * @example 2024-01-10T09:00:00Z
+             */
+            updatedAt?: string;
+        };
         Employee: {
             /**
              * Format: uuid
@@ -3422,14 +5009,6 @@ export interface components {
              * @example Updated requirements - now requires team leadership experience
              */
             notes?: string | null;
-            /**
-             * @description Array of person IDs to assign to this role
-             * @example [
-             *       "550e8400-e29b-41d4-a716-446655440000",
-             *       "660e8400-e29b-41d4-a716-446655440001"
-             *     ]
-             */
-            assignedMembers?: string[];
         };
         PaginationMeta: {
             /**
@@ -5428,6 +7007,61 @@ export interface components {
          * @enum {string}
          */
         RoleStatus: "Open" | "Staffed" | "Won" | "Lost";
+        /**
+         * @description Type of AI analysis to perform:
+         *     - capability_analysis: Comprehensive professional capability assessment
+         *     - skill_gap: Identify skills gaps and development opportunities
+         *     - career_recommendation: Personalized career development guidance
+         *     - performance_analysis: Performance metrics and improvement insights
+         *     - general: Basic AI analysis with general insights
+         * @enum {string}
+         */
+        AIAnalysisType: "capability_analysis" | "skill_gap" | "career_recommendation" | "performance_analysis" | "general";
+        /** @enum {string} */
+        UserRole: "hr_manager" | "employee" | "executive" | "recruiter" | "team_lead";
+        McpTool: {
+            /**
+             * @description Name of the MCP tool
+             * @example analyze-data
+             */
+            name: string;
+            /**
+             * @description Description of what the tool does
+             * @example Analyzes employee data for insights and recommendations
+             */
+            description: string;
+            /** @description Schema defining the input parameters for the tool */
+            inputSchema: {
+                [key: string]: unknown;
+            };
+        };
+        McpAnalysisConfidence: {
+            /**
+             * @description Confidence score between 0 and 1
+             * @example 0.85
+             */
+            confidence: number;
+            /**
+             * @description Confidence level category
+             * @example high
+             * @enum {string}
+             */
+            level: "low" | "medium" | "high";
+            /**
+             * @description List of recommendations to improve confidence
+             * @example [
+             *       "Provide more specific data points",
+             *       "Include historical context"
+             *     ]
+             */
+            recommendations: string[];
+            /**
+             * Format: date-time
+             * @description When the confidence analysis was performed
+             * @example 2024-01-10T09:00:00Z
+             */
+            timestamp: string;
+        };
     };
     responses: {
         /** @description The specified resource was not found */

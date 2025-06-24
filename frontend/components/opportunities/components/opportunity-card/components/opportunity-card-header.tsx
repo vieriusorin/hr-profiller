@@ -49,10 +49,13 @@ export const OpportunityCardHeader: React.FC<OpportunityCardHeaderProps> = ({
 							<Pencil className='h-4 w-4' />
 						</Button>
 					</CardTitle>
-					<StatusBadge status={status as OpportunityStatus} />
-					<CountdownBadge startDate={expectedStartDate} size='md' />
+					
 				</div>
 				{actions && <div className='flex items-center gap-2'>{actions}</div>}
+			</div>
+			<div className='flex items-center gap-2'>
+				<StatusBadge status={status as OpportunityStatus} />
+				<CountdownBadge startDate={expectedStartDate} size='md' />
 			</div>
 		</CardHeader>
 	);

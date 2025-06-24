@@ -26,7 +26,6 @@ export const GroupedOpportunitiesList = ({
 }: OpportunitiesListProps) => {
 	const { filters } = useOpportunityFilters();
 
-	// Filter opportunities to only show those with matching roles
 	const filteredOpportunities = useMemo(() => {
 		return filterOpportunitiesWithMatchingRoles(opportunities, filters);
 	}, [opportunities, filters]);
@@ -55,7 +54,6 @@ export const GroupedOpportunitiesList = ({
 		return <div className='text-center py-8 text-gray-500'>{emptyMessage}</div>;
 	}
 
-	// Show filtered empty state
 	if (
 		filteredOpportunities.length === 0 &&
 		opportunities.length > 0 &&
@@ -89,7 +87,7 @@ export const GroupedOpportunitiesList = ({
 						monthLabel={monthGroup.monthLabel}
 						opportunityCount={monthGroup.opportunities.length}
 					/>
-					<div className='space-y-4 px-2'>
+					<div className='space-y-4 px-2 grid grid-cols-1 md:grid-cols-2 gap-4'>
 						{monthGroup.opportunities.map((opportunity: Opportunity) => (
 							<OpportunityCard
 								key={`${monthGroup.monthKey}-${opportunity.id}`}

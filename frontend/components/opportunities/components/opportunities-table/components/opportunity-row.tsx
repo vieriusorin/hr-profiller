@@ -4,12 +4,19 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
 import { ProbabilityBadge } from "@/shared/components/probability-badge";
-import { Building, Calendar, Users } from "lucide-react";
+import { Building, Calendar, Users, MessageSquare } from "lucide-react";
 import { EditOpportunityModal } from "../../modals/edit-role-modal";
 import { OpportunityRowProps } from "./types";
 import { useOpportunityRow } from "../hooks/use-opportunity-row";
 import { OpportunityActions } from "./opportunity-actions";
+import { format } from "date-fns";
 
 export const OpportunityRow = ({
 	row,
@@ -34,31 +41,31 @@ export const OpportunityRow = ({
 				className={`${urgencyConfig.bgClass} transition-colors duration-200`}
 				title={tooltip}
 			>
-				<TableCell rowSpan={row.rowSpan} className='font-medium align-top'>
+				<TableCell rowSpan={row.rowSpan} className='font-medium align-top w-[160px] max-w-[160px]'>
 					<div>
 						<div
-							className='font-semibold underline decoration-dotted underline-offset-4 cursor-pointer'
+							className='font-semibold underline decoration-dotted underline-offset-4 cursor-pointer truncate'
 							onClick={handleEditOpportunity}
+							title={row.opportunityName}
 						>
 							{row.opportunityName}
 						</div>
 					</div>
 				</TableCell>
-				<TableCell rowSpan={row.rowSpan} className='align-top'>
-					<div className='flex items-center gap-1'>
-						<Building className='h-3 w-3' />
-						{row.clientName}
+				<TableCell rowSpan={row.rowSpan} className='align-top w-[140px] max-w-[140px]'>
+					<div className='flex items-center gap-1' title={row.clientName}>
+						<Building className='h-3 w-3 flex-shrink-0' />
+						<span className='truncate'>{row.clientName}</span>
 					</div>
 				</TableCell>
 				<TableCell rowSpan={row.rowSpan} className='align-top'>
 					<div className='flex flex-col gap-1'>
 						<div className='flex items-center gap-1'>
-							<Calendar className='h-3 w-3' />
 							<span
 								className={`font-medium ${urgencyConfig.textClass}`}
 								title={tooltip}
 							>
-								{row.expectedStartDate}
+								{format(row.expectedStartDate, "MMM/dd/yyyy")}	
 							</span>
 						</div>
 						{/* <CountdownBadge startDate={row.expectedStartDate} size='sm' /> */}
@@ -69,23 +76,22 @@ export const OpportunityRow = ({
 				</TableCell>
 
 				{/* This cell is for the first role's comment */}
-				<TableCell className='w-[180px] max-w-[180px] truncate'>
+				<TableCell className='w-[60px] max-w-[60px]'>
 					{row.comment ? (
-						row.comment.length > 30 ? (
-							<Popover>
-								<PopoverTrigger asChild>
-									<span className='cursor-pointer underline'>
-										{row.comment.slice(0, 30)}...{" "}
-										<span className='text-xs'>(more)</span>
-									</span>
-								</PopoverTrigger>
-								<PopoverContent className='max-w-xs whitespace-pre-wrap'>
-									{row.comment}
-								</PopoverContent>
-							</Popover>
-						) : (
-							<span>{row.comment}</span>
-						)
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<Button
+									variant='ghost'
+									size='sm'
+									className='h-7 px-2 text-xs'
+								>
+									<MessageSquare className='h-3 w-3 mr-1' />
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent className='max-w-xs whitespace-pre-wrap'>
+								{row.comment}
+							</TooltipContent>
+						</Tooltip>
 					) : (
 						<span className='text-muted-foreground italic'>—</span>
 					)}

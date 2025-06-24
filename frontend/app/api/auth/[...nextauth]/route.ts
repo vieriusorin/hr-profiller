@@ -3,24 +3,20 @@ import AzureADProvider from 'next-auth/providers/azure-ad';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { JWT } from 'next-auth/jwt';
 import { z } from 'zod';
+import { 
+  ExtendedUser, 
+  ExtendedJWT, 
+  LoginRequest, 
+  LoginResponse,
+  isValidLoginResponse 
+} from '@/types/auth';
 
-// Input validation schemas
 const credentialsSchema = z.object({
   email: z.string().email('Invalid email format'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
-// Enhanced types
-interface ExtendedJWT extends JWT {
-  id: string;
-  role: string;
-  provider: string;
-  backendToken?: string;
-  tokenExpiry?: number;
-}
-
-// Utility function to create backend token
-async function createBackendToken(user: any): Promise<{ token: string; expiresAt: number }> {
+async function createBackendToken(user: ExtendedUser): Promise<{ token: string; expiresAt: number }> {
   const payload = {
     userId: user.id,
     email: user.email,
@@ -70,28 +66,30 @@ const handler = NextAuth({
       })
     ] : []),
 
-    // Enhanced Credentials Provider
     CredentialsProvider({
       name: 'credentials',
       credentials: {
         email: { label: 'Email', type: 'email', placeholder: 'user@ddroidd.com' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials, req) {
+      async authorize(credentials, req): Promise<ExtendedUser | null> {
         if (!credentials?.email || !credentials?.password) {
           throw new Error('Email and password are required');
         }
 
-        // Validate input with Zod
         const validationResult = credentialsSchema.safeParse(credentials);
         if (!validationResult.success) {
           throw new Error('Invalid email or password format');
         }
 
-        // Get client info for security logging
         const clientIP = req.headers?.['x-forwarded-for'] || req.headers?.['x-real-ip'];
 
         try {
+          const loginPayload: LoginRequest = {
+            email: validationResult.data.email,
+            password: validationResult.data.password,
+          };
+
           const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`, {
             method: 'POST',
             headers: {
@@ -99,21 +97,18 @@ const handler = NextAuth({
               'X-Client-IP': clientIP as string || '',
               'X-User-Agent': req.headers?.['user-agent'] || '',
             },
-            body: JSON.stringify({
-              email: validationResult.data.email,
-              password: validationResult.data.password,
-            }),
+            body: JSON.stringify(loginPayload),
           });
 
           if (!res.ok) {
             const errorData = await res.json().catch(() => ({}));
-            throw new Error(errorData.message || 'Authentication failed');
+            throw new Error(errorData.error || 'Authentication failed');
           }
 
-          const userData = await res.json();
+          const userData: LoginResponse = await res.json();
 
-          if (!userData.user || !userData.user.isActive) {
-            throw new Error('Account is inactive');
+          if (!isValidLoginResponse(userData) || !userData.user?.isActive) {
+            throw new Error('Account is inactive or invalid response');
           }
 
           return {
@@ -122,9 +117,11 @@ const handler = NextAuth({
             name: userData.user.name,
             role: userData.user.role,
             isActive: userData.user.isActive,
+            createdAt: userData.user.createdAt,
+            updatedAt: userData.user.updatedAt,
           };
         } catch (error) {
-          console.error("Authentication error:", error);
+          console.error('Authentication error:', error);
           throw new Error(error instanceof Error ? error.message : 'Authentication failed');
         }
       }
@@ -142,8 +139,7 @@ const handler = NextAuth({
             return '/auth/error?error=AccessDenied';
           }
         }
-
-        // Log successful sign-in for security audit
+        
         console.info(`Successful sign-in: ${user.email} via ${account?.provider}`);
         return true;
       } catch (error) {
@@ -154,15 +150,15 @@ const handler = NextAuth({
     async jwt({ token, user, account }): Promise<ExtendedJWT> {
       const extendedToken = token as ExtendedJWT;
 
-      // Initial sign-in
       if (user && account) {
-        extendedToken.id = user.id;
-        extendedToken.role = (user as any).role || 'user';
+        const extendedUser = user as ExtendedUser;
+        extendedToken.id = extendedUser.id;
+        extendedToken.role = extendedUser.role || 'user';
         extendedToken.provider = account.provider;
 
         // Create backend token for API calls
         try {
-          const { token: backendToken, expiresAt } = await createBackendToken(user);
+          const { token: backendToken, expiresAt } = await createBackendToken(extendedUser);
           extendedToken.backendToken = backendToken;
           extendedToken.tokenExpiry = expiresAt;
         } catch (error) {
