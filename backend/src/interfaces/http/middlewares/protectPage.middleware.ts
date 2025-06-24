@@ -1,5 +1,4 @@
 import { Response, NextFunction } from 'express';
-import { hkdfSync } from 'crypto';
 import { DecodedToken, AuthenticatedRequest } from '@domain/interfaces/auth.interface';
 
 /**
@@ -32,22 +31,22 @@ export const protectPageWithSession = async (req: AuthenticatedRequest, res: Res
   }
 
   try {
-    // Dynamic import for jose library (ESM module)
-    const { jwtDecrypt } = await import('jose');
+    // Use Next.js's built-in JWT decode function
+    const { decode } = await import('next-auth/jwt');
     
-    // Next.js uses HKDF to derive the encryption key from the secret
-    // This matches the internal Next.js implementation
-    const secret = process.env.NEXTAUTH_SECRET;
-    const salt = 'NextAuth.js Generated Encryption Key';
-    const info = '';
-    
-    // Derive 32-byte key using HKDF-SHA256 (matching Next.js)
-    const derivedKey = new Uint8Array(hkdfSync('sha256', secret, salt, info, 32));
-    
-    const { payload } = await jwtDecrypt(token, derivedKey);
+    const decoded = await decode({
+      token,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+
+    if (!decoded) {
+      throw new Error('Token decode returned null');
+    }
+
+    console.log('✅ Token decoded successfully:', Object.keys(decoded));
     
     // Attach user to request for downstream middlewares (like authorize)
-    req.user = payload as DecodedToken;
+    req.user = decoded as DecodedToken;
     next();
   } catch (error) {
     console.error('Token decryption failed:', (error as Error).message);

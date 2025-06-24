@@ -33,16 +33,10 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: () => {
-        // TEMPORARILY DISABLED FOR TESTING - Allow all requests
-        return true;
-
-        // Original check - uncomment when ready to re-enable auth
-        // Check if user has a valid token and is from ddroidd.com domain
-        // if (token?.email && token.email.endsWith('@ddroidd.com')) {
-        //   return true;
-        // }
-        // return false;
+      authorized: ({ token }) => {
+        // A token will exist if the user is successfully authenticated
+        // via any provider. This is the master switch for route protection.
+        return !!token;
       },
     },
     pages: {
@@ -55,6 +49,8 @@ export default withAuth(
 export const config = {
   matcher: [
     '/dashboard/:path*',
-    '/((?!api/auth|auth|_next/static|_next/image|favicon.ico).*)',
+    // This regex protects all routes except for the ones specified in the negative lookahead
+    // We add 'api-docs' to the exclusion list to allow access to the backend's Swagger UI
+    '/((?!api/auth|auth|_next/static|_next/image|favicon.ico|api-docs).*)',
   ],
 }; 

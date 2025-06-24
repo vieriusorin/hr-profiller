@@ -1,5 +1,7 @@
 import type { components } from '@/types/api';
 import { JobGrade, RoleStatus } from './backend-types/enums';
+import axios from 'axios';
+import { getSession } from 'next-auth/react';
 
 // Type-safe API client using generated OpenAPI types
 type ApiComponents = components;
@@ -120,10 +122,16 @@ async function apiRequest<T = any>(
 ): Promise<T> {
   const url = buildApiUrl(endpoint);
 
-  const defaultHeaders = {
+  const session = await getSession();
+
+  const defaultHeaders: HeadersInit = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   };
+
+  if (session && (session as any).accessToken) {
+    defaultHeaders['Authorization'] = `Bearer ${(session as any).accessToken.jti}`;
+  }
 
   const config: RequestInit = {
     ...options,

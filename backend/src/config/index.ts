@@ -1,7 +1,9 @@
 import merge from 'lodash.merge';
 
 // make sure NODE_ENV is set
-process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+if (!process.env.NODE_ENV) {
+  throw new Error('NODE_ENV is not set');
+}
 
 const stage = process.env.STAGE || 'local';
 let envConfig;

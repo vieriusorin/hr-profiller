@@ -23,4 +23,8 @@ export interface UseSignInReturn {
   // Individual mutation states
   isCredentialsLoading: boolean;
   isMicrosoftLoading: boolean;
+  
+  // Enhanced callback URL handling
+  callbackUrl: string;
+  hasCallbackUrl: boolean;
 } 
