@@ -33,6 +33,10 @@ export const RoleRow = ({
 		handleCloseDialog,
 	} = useRoleRow(onUpdateRole);
 
+	const roleDetails = fullOpportunity?.roles.find(
+		(role) => role.id === row.roleId
+	);
+
 	return (
 		<>
 			<TableRow
@@ -94,10 +98,10 @@ export const RoleRow = ({
 					)}
 				</TableCell>
 				<TableCell>
-					{row.needsHire ? (
+					{!row.needsHire ? (
 						<Tooltip>
 							<TooltipTrigger asChild>
-								<AlertCircleIcon className='h-3 w-3 text-red-500 cursor-pointer' />
+								<CheckCircleIcon className='h-3 w-3 text-green-500 cursor-pointer' />
 							</TooltipTrigger>
 							<TooltipContent className='max-w-xs whitespace-pre-wrap'>
 								No hire needed
@@ -106,7 +110,7 @@ export const RoleRow = ({
 					) : (
 						<Tooltip>
 							<TooltipTrigger asChild>
-								<CheckCircleIcon className='h-3 w-3 text-green-500 cursor-pointer' />
+								<AlertCircleIcon className='h-3 w-3 text-red-500 cursor-pointer' />
 							</TooltipTrigger>
 							<TooltipContent className='max-w-xs whitespace-pre-wrap'>
 								Hire needed
@@ -132,28 +136,11 @@ export const RoleRow = ({
 				{showActions && <TableCell></TableCell>}
 			</TableRow>
 
-			{row.roleId && fullOpportunity && (
+			{roleDetails && fullOpportunity && (
 				<EditRoleModal
 					isOpen={isEditModalOpen}
 					onClose={handleCloseEditModal}
-					role={{
-						id: row.roleId,
-						opportunityId: row.opportunityId,
-						roleName: row.roleName ?? "",
-						jobGrade: (row.requiredGrade as Grade) ?? ("" as Grade),
-						allocation: row.allocation ?? 0,
-						createdAt: new Date().toISOString(),
-						updatedAt: new Date().toISOString(),
-						status: (row.roleStatus as RoleStatus) ?? ("Open" as RoleStatus),
-						assignedMembers:
-							row.assignedMemberIds?.map((id) => ({
-								id,
-								firstName: "",
-								lastName: "",
-								fullName: "",
-								email: "",
-							})) ?? [],
-					}}
+					role={roleDetails}
 					opportunity={fullOpportunity}
 				/>
 			)}

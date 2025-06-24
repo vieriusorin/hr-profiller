@@ -68,7 +68,6 @@ export const OpportunityRow = ({
 								{format(row.expectedStartDate, "MMM/dd/yyyy")}	
 							</span>
 						</div>
-						{/* <CountdownBadge startDate={row.expectedStartDate} size='sm' /> */}
 					</div>
 				</TableCell>
 				<TableCell rowSpan={row.rowSpan} className='align-top'>
@@ -107,28 +106,15 @@ export const OpportunityRow = ({
 				</TableCell>
 
 				{/* Placeholder cells for role-specific columns */}
-				<TableCell className='text-muted-foreground italic text-center'>
-					—
-				</TableCell>
-				<TableCell className='text-muted-foreground italic text-center'>
-					—
-				</TableCell>
-				<TableCell className='text-muted-foreground italic text-center'>
-					—
-				</TableCell>
-				<TableCell className='text-muted-foreground italic text-center'>
-					—
-				</TableCell>
-
-				<TableCell className='text-muted-foreground italic text-center'>
-					—
-				</TableCell>
+				<TableCell className='text-muted-foreground italic text-center' />
+				<TableCell className='text-muted-foreground italic text-center' />
+				<TableCell className='text-muted-foreground italic text-center' />
+				<TableCell className='text-muted-foreground italic text-center' />
+				<TableCell className='text-muted-foreground italic text-center' />
 
 				{/* Role Actions - empty for opportunity row */}
 				{showActions && (
-					<TableCell className='text-muted-foreground italic text-center'>
-						—
-					</TableCell>
+					<TableCell className='text-muted-foreground italic text-center' />
 				)}
 
 				{/* Opportunity Actions */}

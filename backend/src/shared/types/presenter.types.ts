@@ -31,6 +31,9 @@ export interface FilterParams {
 
 export interface QueryParams extends PaginationParams, SortParams, SearchParams {
   filters?: FilterParams;
+  status?: string;
+  client?: string;
+  probability?: string;
 }
 
 export interface PaginatedResponse<T> {

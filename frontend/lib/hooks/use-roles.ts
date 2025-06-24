@@ -1,5 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient, Opportunity, type CreateRole, type UpdateRole } from '@/lib/api-client';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
+import { apiClient, Opportunity, RoleResponse, type CreateRole, type UpdateRole } from '@/lib/api-client';
 import { opportunityKeys } from './use-opportunities';
 import { JobGrade, RoleStatus } from '../backend-types/enums';
 
@@ -26,12 +26,13 @@ export function useRoles(params?: {
   });
 }
 
-export function useRole(id: string) {
-  return useQuery({
+export function useRole(id: string, options?: Omit<UseQueryOptions<RoleResponse, Error>, 'queryKey' | 'queryFn'>) {
+  return useQuery<RoleResponse, Error>({
     queryKey: roleKeys.detail(id),
     queryFn: () => apiClient.roles.getById(id),
-    enabled: !!id,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    ...options,
+    enabled: !!id && (options?.enabled ?? true),
   });
 }
 

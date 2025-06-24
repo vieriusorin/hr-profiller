@@ -21,8 +21,11 @@ export const EditRoleModal = ({
 	role,
 	opportunity,
 }: Omit<EditRoleModalProps, "opportunityId">) => {
-	const { data: latestRole, isLoading: isRoleLoading } = useRole(role.id);
-	const currentRole = latestRole || role;
+	const { data: latestRoleData, isLoading: isRoleLoading } = useRole(role.id, {
+		enabled: isOpen,
+	});
+
+	const currentRole = latestRoleData || role;
 
 	const { handleSubmit, isPending } = useEditRoleModal({
 		opportunityId: opportunity.id,

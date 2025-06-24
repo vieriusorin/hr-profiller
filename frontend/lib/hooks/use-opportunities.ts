@@ -20,26 +20,24 @@ export function useOpportunities(params?: {
   probability?: string;
   grades?: string;  // Comma-separated grades string (e.g., "JT,T,ST")
   needsHire?: 'yes' | 'no' | 'all';
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }) {
-  const normalizedParams = {
-    page: params?.page || 1,
-    limit: params?.limit || 10,
-    search: params?.search || '',
-    status: params?.status || '',
-    client: params?.client || '',
-    probability: params?.probability || '',
-    grades: params?.grades || '',
-    needsHire: params?.needsHire || '',
+  const queryParams = {
+    ...params,
+    sortBy: params?.sortBy || 'updatedAt',
+    sortOrder: params?.sortOrder || 'desc',
   };
 
-  // Remove empty values to create cleaner query key
-  const cleanParams = Object.entries(normalizedParams)
+  const { page = 1, limit = 10, ...restParams } = queryParams;
+
+  const cleanParams = Object.entries({ page, limit, ...restParams })
     .filter(([, value]) => value !== '' && value !== undefined && value !== null)
     .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
 
   return useQuery({
     queryKey: opportunityKeys.list(cleanParams),
-    queryFn: () => apiClient.opportunities.list(params),
+    queryFn: () => apiClient.opportunities.list(queryParams),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
@@ -61,37 +59,30 @@ export function useInfiniteOpportunities(params?: {
   probability?: string;
   grades?: string;
   needsHire?: 'yes' | 'no' | 'all';
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }) {
-  const baseParams = {
-    limit: params?.limit || 10,
-    search: params?.search || '',
-    status: params?.status || '',
-    client: params?.client || '',
-    probability: params?.probability || '',
-    grades: params?.grades || '',
-    needsHire: params?.needsHire || '',
+  const queryParams = {
+    ...params,
+    sortBy: params?.sortBy || 'updatedAt',
+    sortOrder: params?.sortOrder || 'desc',
   };
 
-  const cleanParams = Object.entries(baseParams)
+  const { limit = 5, ...restParams } = queryParams;
+
+  const cleanParams = Object.entries({ limit, ...restParams })
     .filter(([, value]) => value !== '' && value !== undefined && value !== null)
     .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
 
   const query = useInfiniteQuery({
     queryKey: [...opportunityKeys.lists(), 'infinite', cleanParams],
     queryFn: ({ pageParam = 1 }) => {
-      const queryParams = {
-        ...params,
+      const allParams = {
+        ...queryParams,
         page: pageParam,
-        limit: baseParams.limit,
+        limit,
       };
-
-      try {
-        const result = apiClient.opportunities.list(queryParams);
-        return result;
-      } catch (error) {
-        console.error('❌ Error in queryFn:', error);
-        throw error;
-      }
+      return apiClient.opportunities.list(allParams);
     },
     getNextPageParam: (lastPage) => {
       if (lastPage.pagination?.hasNextPage) {

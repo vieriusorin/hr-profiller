@@ -2,12 +2,11 @@
 import { faker } from '@faker-js/faker';
 import { randomUUID } from 'crypto';
 import db from './index';
-import { eq } from 'drizzle-orm';
 import bcrypt from 'bcrypt';
 
 import { users, roles, userRoles } from './schema/auth.schema';
 import { clients } from './schema/clients.schema';
-import { opportunities, TypeNewOpportunity } from './schema/opportunities.schema';
+import { opportunities } from './schema/opportunities.schema';
 import { opportunityRoles, TypeNewOpportunityRole } from './schema/opportunity-roles.schema';
 import { opportunityRoleAssignments } from './schema/opportunity-role-assignments.schema';
 import { people } from './schema/people.schema';
@@ -21,10 +20,10 @@ import { technologies } from './schema/technologies.schema';
 import { personTechnologies } from './schema/person-technologies.schema';
 import { personEmbeddings } from './schema/embeddings.schema';
 
-import { jobGradeEnum, TypeJobGrade } from './enums/job-grade.enum';
-import { opportunityLevelEnum, TypeOpportunityLevel } from './enums/opportunity-level.enum';
-import { roleStatusEnum, TypeRoleStatus } from './enums/role-status.enum';
-import { opportunityStatusEnum, TypeOpportunityStatus } from './enums/opportunity-status.enum';
+import { jobGradeEnum } from './enums/job-grade.enum';
+import { opportunityLevelEnum } from './enums/opportunity-level.enum';
+import { roleStatusEnum } from './enums/role-status.enum';
+import { TypeOpportunityStatus } from './enums/opportunity-status.enum';
 
 const SEED_COUNT = {
   CLIENTS: 10,

@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useOpportunityFilters } from '@/components/opportunities/hooks/useOpportunityFilters';
-import { useOpportunities } from '@/lib/hooks/use-opportunities';
-import { useCreateOpportunity, useUpdateOpportunity } from '@/lib/hooks/use-opportunities';
+import { useInfiniteOpportunities, useCreateOpportunity, useUpdateOpportunity } from '@/lib/hooks/use-opportunities';
 import { useCreateRole, useUpdateRole } from '@/lib/hooks/use-roles';
 import {
   type Opportunity,
@@ -28,31 +27,24 @@ export const useDashboard = (): UseDashboardReturn => {
         : undefined,
   };
 
-
-  // TEMPORARY: Use regular queries instead of infinite queries to test
-  const inProgressQuery = useOpportunities({
+  const inProgressQuery = useInfiniteOpportunities({
     status: 'In Progress',
-    limit: 50, // Get more results
     ...apiFilters,
   });
 
-  const onHoldQuery = useOpportunities({
+  const onHoldQuery = useInfiniteOpportunities({
     status: 'On Hold',
-    limit: 50,
     ...apiFilters,
   });
 
-  const completedQuery = useOpportunities({
+  const completedQuery = useInfiniteOpportunities({
     status: 'Done',
-    limit: 50,
     ...apiFilters,
   });
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const inProgressOpportunities = inProgressQuery.data?.data ?? [];
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const onHoldOpportunities = onHoldQuery.data?.data ?? [];
-  const completedOpportunities = completedQuery.data?.data ?? [];
+  const inProgressOpportunities = inProgressQuery.data?.pages.flatMap(page => page.data) ?? [];
+  const onHoldOpportunities = onHoldQuery.data?.pages.flatMap(page => page.data) ?? [];
+  const completedOpportunities = completedQuery.data?.pages.flatMap(page => page.data) ?? [];
 
   const createOpportunityMutation = useCreateOpportunity();
   const updateOpportunityMutation = useUpdateOpportunity();
@@ -273,15 +265,19 @@ export const useDashboard = (): UseDashboardReturn => {
     handleMoveToInProgress,
     handleMoveToCompleted,
 
-    // TEMPORARY: Mock pagination for regular queries
-    fetchNextPageInProgress: () => { },
-    hasNextPageInProgress: false,
-    isFetchingNextPageInProgress: false,
-    fetchNextPageOnHold: () => { },
-    hasNextPageOnHold: false,
-    isFetchingNextPageOnHold: false,
-    fetchNextPageCompleted: () => { },
-    hasNextPageCompleted: false,
-    isFetchingNextPageCompleted: false,
+    // In Progress
+    fetchNextPageInProgress: inProgressQuery.fetchNextPage,
+    hasNextPageInProgress: inProgressQuery.hasNextPage,
+    isFetchingNextPageInProgress: inProgressQuery.isFetchingNextPage,
+
+    // On Hold
+    fetchNextPageOnHold: onHoldQuery.fetchNextPage,
+    hasNextPageOnHold: onHoldQuery.hasNextPage,
+    isFetchingNextPageOnHold: onHoldQuery.isFetchingNextPage,
+
+    // Completed
+    fetchNextPageCompleted: completedQuery.fetchNextPage,
+    hasNextPageCompleted: completedQuery.hasNextPage,
+    isFetchingNextPageCompleted: completedQuery.isFetchingNextPage,
   };
 }; 

@@ -73,7 +73,7 @@ export const useFlattenedOpportunities = (
           roleName: role.roleName,
           requiredGrade: role.jobGrade || undefined, // Map jobGrade to requiredGrade for table display, handle null
           roleStatus: role.status,
-          assignedMemberIds: [], // This property doesn't exist in the API, default to empty array
+          assignedMemberIds: role.assignedMembers?.map((member) => member.id) || [],
           allocation: role.allocation || undefined, // Handle null values
           needsHire: role.status === 'Open', // Derive needsHire from status
           newHireName: undefined, // This property doesn't exist in the API
