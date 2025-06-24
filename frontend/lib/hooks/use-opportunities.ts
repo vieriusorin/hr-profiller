@@ -68,7 +68,7 @@ export function useInfiniteOpportunities(params?: {
     sortOrder: params?.sortOrder || 'desc',
   };
 
-  const { limit = 5, ...restParams } = queryParams;
+  const { limit = 25, ...restParams } = queryParams;
 
   const cleanParams = Object.entries({ limit, ...restParams })
     .filter(([, value]) => value !== '' && value !== undefined && value !== null)

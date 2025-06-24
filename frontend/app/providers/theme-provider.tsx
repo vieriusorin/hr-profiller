@@ -63,29 +63,7 @@ const ThemeContext = createContext<ThemeContextType>({
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 	const [settings, setSettingsState] = useState<Settings>(defaultSettings);
-	const [isLoading, setIsLoading] = useState(true);
-
-	useEffect(() => {
-		const fetchSettings = async () => {
-			setIsLoading(true);
-			try {
-				const response = await fetch("/api/whitelabel");
-				if (!response.ok) {
-					throw new Error("Failed to fetch settings");
-				}
-				const fetchedSettings = await response.json();
-				if (fetchedSettings) {
-					setSettingsState((prev) => ({ ...prev, ...fetchedSettings }));
-				}
-			} catch (error) {
-				console.error("Error fetching settings:", error);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchSettings();
-	}, []);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const style = useMemo(() => {
 		const s = settings;

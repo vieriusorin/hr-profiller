@@ -172,7 +172,7 @@ const handler = NextAuth({
       const extendedToken = token as ExtendedJWT;
       
       if (extendedToken && session.user) {
-        (session.user as any).role = extendedToken.role;
+        session.user.role = extendedToken.role;
         (session.user as any).id = extendedToken.id;
         (session as any).backendToken = extendedToken.backendToken;
       }

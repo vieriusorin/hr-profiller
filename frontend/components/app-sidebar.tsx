@@ -93,19 +93,63 @@ const navigationItems: NavigationItem[] = [
 ];
 
 export const AppSidebar = () => {
-	const { data: session } = useSession();
+	const { data: session, status } = useSession();
 	const router = useRouter();
 	const pathname = usePathname();
 	const { settings, isLoading: isThemeLoading } = useTheme();
 
-	// Get user role from session
-	const userRole = (session?.user as User)?.role as UserRole;
+	console.log('Session:', session);
+	console.log('Session Status:', status);
+
+	// If session is loading, show loading state
+	if (status === 'loading' || isThemeLoading) {
+		return (
+			<Sidebar>
+				<SidebarHeader className={componentThemes.sidebar.header}>
+					<div className='flex items-center gap-2 px-4 py-3'>
+						<div className='w-8 h-8 bg-gray-200 rounded-lg animate-pulse' />
+					</div>
+				</SidebarHeader>
+				<SidebarContent>
+					<SidebarGroup>
+						<SidebarGroupLabel>Navigation</SidebarGroupLabel>
+						<SidebarGroupContent>
+							<SidebarMenu>
+								{[1, 2, 3].map((i) => (
+									<SidebarMenuItem key={i}>
+										<div className='h-8 bg-gray-100 rounded-md animate-pulse' />
+									</SidebarMenuItem>
+								))}
+							</SidebarMenu>
+						</SidebarGroupContent>
+					</SidebarGroup>
+				</SidebarContent>
+			</Sidebar>
+		);
+	}
+
+	// If no session, redirect to login
+	if (status === 'unauthenticated') {
+		router.push('/auth/signin');
+		return null;
+	}
+
+	// Get user role from session with type safety
+	const userRole = (session?.user?.role || 'user') as UserRole;
+	const isValidRole = ['admin', 'hr_manager', 'recruiter', 'employee', 'user'].includes(userRole);
+	
+	// Debug logs
+	console.log('User Role:', userRole);
+	console.log('Is Valid Role:', isValidRole);
 
 	// Filter navigation items based on user role
 	const allowedNavItems = getFilteredNavigation(
-		userRole || "user",
+		isValidRole ? userRole : 'user',
 		navigationItems
 	);
+	
+	// Debug navigation items
+	console.log('Allowed Nav Items:', allowedNavItems);
 
 	// Get role display info
 	// const roleInfo = userRole ? ROLE_DISPLAY_INFO[userRole] : null;
@@ -191,16 +235,16 @@ export const AppSidebar = () => {
 								<DropdownMenuTrigger asChild>
 									<SidebarMenuButton className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'>
 										<Avatar className='w-6 h-6'>
-											<AvatarImage src={session.user.image || ""} />
+											<AvatarImage src={session.user.image || ''} />
 											<AvatarFallback className='text-xs bg-primary text-primary-foreground'>
 												{getInitials(
-													session.user.name || session.user.email || "U"
+													session.user.name || session.user.email || 'U'
 												)}
 											</AvatarFallback>
 										</Avatar>
 										<div className='flex flex-col items-start flex-1 text-left'>
 											<span className='text-sm font-medium truncate'>
-												{session.user.name || "User"}
+												{session.user.name || 'User'}
 											</span>
 											<span className='text-xs text-sidebar-foreground/70 truncate'>
 												{session.user.email}
@@ -211,23 +255,24 @@ export const AppSidebar = () => {
 								</DropdownMenuTrigger>
 								<DropdownMenuContent
 									side='top'
+									align='start'
 									className='w-[--radix-popper-anchor-width]'
 								>
 									<DropdownMenuItem onClick={handleAccountSettings}>
 										<Settings className='w-4 h-4 mr-2' />
 										Account Settings
 									</DropdownMenuItem>
-									{hasPermission(userRole, "edit_system_settings") && (
+									{hasPermission(userRole, 'edit_system_settings') && (
 										<DropdownMenuItem
-											onClick={() => router.push("/dashboard/settings/import")}
+											onClick={() => router.push('/dashboard/settings/import')}
 										>
 											<Upload className='w-4 h-4 mr-2' />
 											Import Data
 										</DropdownMenuItem>
 									)}
-									{hasPermission(userRole, "edit_system_settings") && (
+									{hasPermission(userRole, 'edit_system_settings') && (
 										<DropdownMenuItem
-											onClick={() => router.push("/dashboard/settings")}
+											onClick={() => router.push('/dashboard/settings')}
 										>
 											<Settings className='w-4 h-4 mr-2' />
 											Customization
