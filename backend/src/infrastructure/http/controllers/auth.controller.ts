@@ -51,12 +51,15 @@ export class AuthController {
 
       const roleName = userRoleRelation?.role?.name || 'employee';
 
-      // 4. Return user data (without password hash)
+      // 4. Return user data (without password hash) in the structure expected by frontend
       res.status(200).json({
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: roleName,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: roleName,
+          isActive: user.isActive,
+        }
       });
     } catch (error) {
       console.error('Login error:', error);

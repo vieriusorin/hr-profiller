@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import express, { ErrorRequestHandler } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import routes from './routes';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from '../../infrastructure/swagger/swagger.config';
@@ -15,6 +16,8 @@ import { helmetMiddleware } from './middlewares/helmet.middleware';
 import { payloadLimiter, speedLimiter } from './middlewares/request-limiter.middleware';
 import { securityHeaders } from './middlewares/security-header.middleware';
 import { errorHandler } from './middlewares/error-handler.middleware';
+import { protectPageWithSession } from './middlewares/protectPage.middleware';
+import { authorize } from './middlewares/authorization.middleware';
 
 const createServer = () => {
   const app = express();
@@ -62,13 +65,20 @@ const createServer = () => {
   );
   app.use(morgan('dev'));
   app.use(express.json());
+  app.use(cookieParser());
   app.use(payloadLimiter);
   app.use(speedLimiter);
   app.use(express.urlencoded({ extended: true }));
   app.use(apiLimiter, metricsLimiter, authLimiter, swaggerLimiter);
   app.use(securityHeaders);
 
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.use(
+    '/api-docs',
+    protectPageWithSession,
+    authorize(['admin']),
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec)
+  );
 
   app.use('/api/v1', routes);
 
