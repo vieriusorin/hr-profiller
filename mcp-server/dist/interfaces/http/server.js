@@ -9,8 +9,8 @@ const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swagger_config_1 = require("../../infrastructure/swagger/swagger.config");
-const protectPage_middleware_1 = require("../../middlewares/protectPage.middleware");
-const authorization_middleware_1 = require("../../middlewares/authorization.middleware");
+const protectPage_middleware_1 = require("./middlewares/protectPage.middleware");
+const authorization_middleware_1 = require("./middlewares/authorization.middleware");
 const container_1 = require("../../infrastructure/container");
 const types_1 = require("../../shared/types");
 const createServer = () => {
@@ -20,10 +20,9 @@ const createServer = () => {
     // Get controllers from DI container
     const mcpToolsController = container_1.container.get(types_1.TYPES.McpToolsController);
     const healthController = container_1.container.get(types_1.TYPES.HealthController);
+    app.use('/api-docs', protectPage_middleware_1.protectPageWithSession, (0, authorization_middleware_1.authorize)(['admin']), swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_config_1.swaggerSpec));
     // Setup routes
     setupRoutes(app, mcpToolsController, healthController);
-    // Protect Swagger UI with authentication (admin only)
-    app.use('/api-docs', protectPage_middleware_1.protectPageWithSession, (0, authorization_middleware_1.authorize)(['admin']), swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_config_1.swaggerSpec));
     return app;
 };
 function setupExpressMiddleware(app) {

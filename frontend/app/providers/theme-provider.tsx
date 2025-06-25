@@ -63,7 +63,6 @@ const ThemeContext = createContext<ThemeContextType>({
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 	const [settings, setSettingsState] = useState<Settings>(defaultSettings);
-	const [isLoading, setIsLoading] = useState(false);
 
 	const style = useMemo(() => {
 		const s = settings;
@@ -132,7 +131,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 	};
 
 	return (
-		<ThemeContext.Provider value={{ settings, setSettings, isLoading }}>
+		<ThemeContext.Provider value={{ settings, setSettings, isLoading: false }}>
 			{children}
 		</ThemeContext.Provider>
 	);

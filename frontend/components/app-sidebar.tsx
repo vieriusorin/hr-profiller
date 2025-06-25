@@ -42,7 +42,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
-import { User } from "next-auth";
 import { useTheme } from "@/app/providers/theme-provider";
 import Image from "next/image";
 
@@ -98,10 +97,6 @@ export const AppSidebar = () => {
 	const pathname = usePathname();
 	const { settings, isLoading: isThemeLoading } = useTheme();
 
-	console.log('Session:', session);
-	console.log('Session Status:', status);
-
-	// If session is loading, show loading state
 	if (status === 'loading' || isThemeLoading) {
 		return (
 			<Sidebar>
@@ -128,7 +123,6 @@ export const AppSidebar = () => {
 		);
 	}
 
-	// If no session, redirect to login
 	if (status === 'unauthenticated') {
 		router.push('/auth/signin');
 		return null;

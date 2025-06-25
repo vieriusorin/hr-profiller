@@ -24,7 +24,7 @@ let OpenAIServiceImpl = class OpenAIServiceImpl {
     async generateCompletion(prompt, options) {
         try {
             const completion = await this.openai.chat.completions.create({
-                model: options?.model || 'gpt-4o',
+                model: options?.model || 'gpt-4',
                 messages: [
                     {
                         role: 'user',

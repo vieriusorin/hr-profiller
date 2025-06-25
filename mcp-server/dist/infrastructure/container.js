@@ -12,6 +12,9 @@ const prompt_engine_service_1 = require("./services/prompt-engine.service");
 // Controllers
 const mcp_tools_controller_1 = require("./http/controllers/mcp-tools.controller");
 const health_controller_1 = require("./http/controllers/health.controller");
+// Middleware
+const protectPage_middleware_1 = require("../interfaces/http/middlewares/protectPage.middleware");
+const authorization_middleware_1 = require("../interfaces/http/middlewares/authorization.middleware");
 const container = new inversify_1.Container();
 exports.container = container;
 // Infrastructure service bindings
@@ -22,3 +25,6 @@ container.bind(types_1.TYPES.McpAnalysisService).to(mcp_analysis_service_1.McpAn
 // Controller bindings
 container.bind(types_1.TYPES.McpToolsController).to(mcp_tools_controller_1.McpToolsController);
 container.bind(types_1.TYPES.HealthController).to(health_controller_1.HealthController);
+// Middleware bindings (for dependency injection if needed)
+container.bind(types_1.TYPES.AuthenticationMiddleware).toFunction(protectPage_middleware_1.protectPageWithSession);
+container.bind(types_1.TYPES.AuthorizationMiddleware).toFunction(authorization_middleware_1.authorize);

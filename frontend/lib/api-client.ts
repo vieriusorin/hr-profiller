@@ -1,6 +1,5 @@
 import type { components } from '@/types/api';
 import { JobGrade, RoleStatus } from './backend-types/enums';
-import axios from 'axios';
 import { getSession } from 'next-auth/react';
 
 // Type-safe API client using generated OpenAPI types

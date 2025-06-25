@@ -8,124 +8,75 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PromptEngineServiceImpl = void 0;
 const inversify_1 = require("inversify");
+const analysis_types_1 = require("../prompts/analysis-types");
+const confidentiality_notes_1 = require("../prompts/confidentiality-notes");
+const base_template_1 = require("../prompts/base-template");
 let PromptEngineServiceImpl = class PromptEngineServiceImpl {
     async generateAnalysisPrompt(analysis) {
         const personaContext = analysis.getPersonaContext();
         const analysisTypePrompt = this.getAnalysisTypePrompt(analysis.analysisType);
         const confidentialityNote = this.getConfidentialityNote(analysis.confidentialityLevel);
-        return `
-# HR Analytics AI Assistant
-
-## Context
-You are an advanced HR analytics AI assistant with specialized expertise in talent analysis. You are currently operating as: **${personaContext}**.
-
-## Analysis Request
-**Type**: ${analysis.analysisType}
-**Urgency**: ${analysis.urgency}
-**Confidentiality**: ${analysis.confidentialityLevel}
-
-${analysisTypePrompt}
-
-## Data to Analyze
-\`\`\`
-${analysis.content}
-\`\`\`
-
-## Instructions
-1. Analyze the provided data comprehensively
-2. Provide actionable insights relevant to the analysis type
-3. Include specific recommendations
-4. Maintain appropriate confidentiality level
-5. Structure your response clearly with sections
-
-## Response Format
-Please structure your response as follows:
-
-### Analysis Summary
-[Provide a clear, concise summary of your findings]
-
-### Key Insights
-[List 3-5 key insights with specific details]
-
-### Recommendations
-[Provide actionable recommendations]
-
-### Confidence Assessment
-[Rate your confidence in this analysis from 0.0 to 1.0 and explain why]
-
-${confidentialityNote}
-
-Begin your analysis:
-`;
+        // Replace template variables
+        return base_template_1.baseTemplate
+            .replace('${personaContext}', personaContext)
+            .replace('${analysisType}', analysis.analysisType)
+            .replace('${urgency}', analysis.urgency)
+            .replace('${confidentialityLevel}', analysis.confidentialityLevel)
+            .replace('${analysisTypePrompt}', analysisTypePrompt)
+            .replace('${content}', analysis.content)
+            .replace('${confidentialityNote}', confidentialityNote);
     }
     extractInsights(rawResult) {
-        // Extract confidence score
-        const confidenceMatch = rawResult.match(/confidence.*?(\d+(?:\.\d+)?)/i);
+        // Extract confidence score - look for both numeric and textual representations
+        const confidenceMatch = rawResult.match(/confidence[^\d]*(\d+(?:\.\d+)?)/i) ||
+            rawResult.match(/(\d+(?:\.\d+)?)[^\d]*confidence/i);
         const confidence = confidenceMatch ? parseFloat(confidenceMatch[1]) : 0.7;
-        // Extract recommendations section
-        const recommendationsSection = this.extractSection(rawResult, 'recommendations');
-        const recommendations = this.parseRecommendations(recommendationsSection);
-        // Clean up the analysis (remove the confidence section for cleaner output)
-        const analysis = rawResult.replace(/### Confidence Assessment[\s\S]*$/i, '').trim();
+        // Extract recommendations - look for both bullet points and numbered lists
+        const recommendationsRegex = /recommendations?:?\s*((?:[-•*\d\s]+[^\n]+\n?)+)/i;
+        const recommendationsMatch = rawResult.match(recommendationsRegex);
+        let recommendations = [];
+        if (recommendationsMatch) {
+            recommendations = recommendationsMatch[1]
+                .split(/\n/)
+                .map(line => line.replace(/^[-•*\d\s]+/, '').trim())
+                .filter(line => line.length > 0)
+                .slice(0, 5); // Limit to 5 recommendations
+        }
+        // If no recommendations found, try to extract from sentences
+        if (recommendations.length === 0) {
+            const sentences = rawResult.split(/[.!?]+/);
+            recommendations = sentences
+                .filter(s => s.toLowerCase().includes('recommend') || s.toLowerCase().includes('should'))
+                .map(s => s.trim())
+                .filter(s => s.length > 20)
+                .slice(0, 5);
+        }
+        // Clean up the analysis text
+        let analysis = rawResult;
+        // Remove confidence section
+        analysis = analysis.replace(/confidence[^\n]*(0\.\d+|[01])[^\n]*(\n|$)/ig, '');
+        // Remove recommendations section if it exists as a distinct section
+        if (recommendationsMatch) {
+            analysis = analysis.replace(recommendationsRegex, '');
+        }
+        // Clean up any remaining markdown or section headers
+        analysis = analysis
+            .replace(/^#+ /gm, '') // Remove markdown headers
+            .replace(/\n{3,}/g, '\n\n') // Normalize multiple newlines
+            .trim();
         return {
             analysis,
             confidence: Math.min(Math.max(confidence, 0), 1), // Clamp between 0 and 1
-            recommendations
+            recommendations: recommendations.length > 0 ? recommendations : ['No specific recommendations provided']
         };
     }
     getAnalysisTypePrompt(analysisType) {
-        const prompts = {
-            capability_analysis: `
-### Capability Analysis Focus
-Analyze the person's core capabilities, strengths, and potential areas for development. Focus on:
-- Technical and soft skills assessment
-- Experience depth and breadth
-- Leadership and collaboration abilities
-- Growth potential and adaptability
-`,
-            skill_gap: `
-### Skill Gap Analysis Focus
-Identify gaps between current skills and market demands or role requirements. Focus on:
-- Missing critical skills for current/target role
-- Market trends and emerging skill requirements
-- Prioritized learning recommendations
-- Timeline for skill development
-`,
-            career_recommendation: `
-### Career Recommendation Focus
-Provide personalized career development guidance. Focus on:
-- Career progression opportunities
-- Skill development priorities
-- Industry trends and opportunities
-- Long-term career strategy
-`,
-            performance_optimization: `
-### Performance Optimization Focus
-Analyze current performance and identify optimization opportunities. Focus on:
-- Performance strengths and improvement areas
-- Efficiency and productivity insights
-- Goal alignment and achievement strategies
-- Resource and support recommendations
-`,
-            succession_planning: `
-### Succession Planning Focus
-Evaluate succession readiness and development needs. Focus on:
-- Leadership readiness assessment
-- Critical role preparation
-- Development gap analysis
-- Succession timeline and milestones
-`
-        };
-        return prompts[analysisType] || prompts.capability_analysis;
+        return analysis_types_1.analysisTypePrompts[analysisType] ||
+            analysis_types_1.analysisTypePrompts.capability_analysis;
     }
     getConfidentialityNote(level) {
-        const notes = {
-            public: '**Note**: This analysis is suitable for public sharing.',
-            internal: '**Note**: This analysis is for internal use within the organization.',
-            confidential: '**Note**: This analysis contains confidential information. Handle with discretion.',
-            restricted: '**Note**: This analysis contains highly sensitive information. Restrict access to authorized personnel only.'
-        };
-        return notes[level] || notes.internal;
+        return confidentiality_notes_1.confidentialityNotes[level] ||
+            confidentiality_notes_1.confidentialityNotes.internal;
     }
     extractSection(text, sectionName) {
         const regex = new RegExp(`###\\s*${sectionName}[\\s\\S]*?(?=###|$)`, 'i');

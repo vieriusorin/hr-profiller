@@ -12,77 +12,10 @@ const options = {
             title: 'Enhanced HR MCP Server API',
             version: '2.0.0',
             description: `
-# Advanced HR Analytics & Talent Intelligence Platform
+      # Advanced HR Analytics & Talent Intelligence Platform
 
-A sophisticated API powered by advanced AI for comprehensive talent analysis, executive reporting, and strategic workforce planning.
-
-## 🚀 Key Features
-
-- **Advanced AI Analysis**: Role-specific AI personas for contextual insights
-- **Domain Driven Design**: Clean architecture with clear separation of concerns
-- **Dependency Injection**: Inversify-based IoC container
-- **Authentication Protected**: Admin-only access to API documentation
-- **Executive Reporting**: Multi-step report generation with strategic recommendations
-- **Market Intelligence**: Real-time benchmarking and competitive analysis  
-- **Skill Analytics**: Comprehensive skill benchmarking with future projections
-
-## 🎯 AI Capabilities
-
-- **Dynamic Model Selection**: Optimizes AI model based on urgency and complexity
-- **Context Enrichment**: Automatically enhances data with market intelligence
-- **Multi-Step Generation**: Complex reports use staged AI generation for depth
-- **Bias Mitigation**: Built-in inclusive language and compliance considerations
-
-## 🏗️ Architecture
-
-This service follows Domain Driven Design (DDD) principles:
-
-- **Domain Layer**: Business entities and services
-- **Infrastructure Layer**: External dependencies and implementations
-- **Interface Layer**: HTTP controllers and middleware
-- **Shared Layer**: Common types and utilities
-
-## 🔧 Usage Examples
-
-### Basic Analysis
-\`\`\`json
-POST /tools/analyze-data
-{
-  "data": "{\\"firstName\\": \\"John\\", \\"lastName\\": \\"Doe\\", ...}",
-  "analysisType": "capability_analysis",
-  "userRole": "hr_manager"
-}
-\`\`\`
-
-### Health Check
-\`\`\`json
-GET /health
-\`\`\`
-
-## 📊 Response Format
-
-All analysis responses include comprehensive metadata:
-- Confidence scores and processing metrics
-- Token usage and model information
-- Timestamp and version tracking
-- Quality assessments and recommendations
-
-## 🛡️ Compliance & Ethics
-
-- GDPR and EEOC compliant analysis
-- Bias-free language and inclusive practices
-- Configurable confidentiality levels
-- Legal compliance validation
-      `,
-            contact: {
-                name: 'HR Analytics API Support',
-                email: 'support@company.com',
-                url: 'https://company.com/support'
-            },
-            license: {
-                name: 'MIT',
-                url: 'https://opensource.org/licenses/MIT'
-            }
+      A sophisticated API powered by advanced AI for comprehensive talent analysis, executive reporting, and strategic workforce planning.
+      `
         },
         servers: [
             {

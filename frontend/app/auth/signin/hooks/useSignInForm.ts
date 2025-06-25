@@ -120,7 +120,7 @@ export const useSignInForm = (): UseSignInReturn => {
       email: formData.email.trim().toLowerCase(), // Normalize email
       password: formData.password,
     });
-  }, [formData.email, formData.password, credentialsMutation]);
+  }, [formData, credentialsMutation]);
 
   const handleMicrosoftSignIn = useCallback(() => {
     setValidationError(null);

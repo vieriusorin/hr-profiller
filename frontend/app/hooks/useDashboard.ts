@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useOpportunityFilters } from '@/components/opportunities/hooks/useOpportunityFilters';
 import { useInfiniteOpportunities, useCreateOpportunity, useUpdateOpportunity } from '@/lib/hooks/use-opportunities';
 import { useCreateRole, useUpdateRole } from '@/lib/hooks/use-roles';
@@ -42,9 +42,17 @@ export const useDashboard = (): UseDashboardReturn => {
     ...apiFilters,
   });
 
-  const inProgressOpportunities = inProgressQuery.data?.pages.flatMap(page => page.data) ?? [];
-  const onHoldOpportunities = onHoldQuery.data?.pages.flatMap(page => page.data) ?? [];
-  const completedOpportunities = completedQuery.data?.pages.flatMap(page => page.data) ?? [];
+  const inProgressOpportunities = useMemo(() => 
+    inProgressQuery.data?.pages.flatMap(page => page.data) ?? []
+  , [inProgressQuery.data]);
+
+  const onHoldOpportunities = useMemo(() => 
+    onHoldQuery.data?.pages.flatMap(page => page.data) ?? []
+  , [onHoldQuery.data]);
+
+  const completedOpportunities = useMemo(() => 
+    completedQuery.data?.pages.flatMap(page => page.data) ?? []
+  , [completedQuery.data]);
 
   const createOpportunityMutation = useCreateOpportunity();
   const updateOpportunityMutation = useUpdateOpportunity();

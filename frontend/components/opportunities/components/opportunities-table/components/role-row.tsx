@@ -9,7 +9,7 @@ import { StatusBadge } from "@/shared/components/status-badge";
 import { AlertCircleIcon, CheckCircleIcon, Users } from "lucide-react";
 import { EditRoleModal } from "../../modals/edit-role-modal";
 import { RoleStatusConfirmationDialog } from "../../role-status-confirmation";
-import { Grade, RoleStatus } from "@/lib/types";
+import { RoleStatus } from "@/lib/types";
 import { RoleRowProps } from "./types";
 import { useRoleRow } from "../hooks/use-role-row";
 import { RoleActions } from "./role-actions";

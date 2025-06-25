@@ -109,9 +109,9 @@ class Analysis {
     }
     getOptimalModelConfig() {
         const configs = {
-            [UrgencyLevel.IMMEDIATE]: { model: 'gpt-4o-mini', temperature: 0.3, maxTokens: 2000 },
-            [UrgencyLevel.STANDARD]: { model: 'gpt-4o', temperature: 0.5, maxTokens: 4000 },
-            [UrgencyLevel.STRATEGIC]: { model: 'gpt-4o', temperature: 0.7, maxTokens: 6000 }
+            [UrgencyLevel.IMMEDIATE]: { model: 'gpt-3.5-turbo', temperature: 0.3, maxTokens: 2000 },
+            [UrgencyLevel.STANDARD]: { model: 'gpt-4', temperature: 0.5, maxTokens: 4000 },
+            [UrgencyLevel.STRATEGIC]: { model: 'gpt-4', temperature: 0.7, maxTokens: 6000 }
         };
         return configs[this.urgency];
     }

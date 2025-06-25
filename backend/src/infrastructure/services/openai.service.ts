@@ -1,9 +1,21 @@
 import { injectable } from 'inversify';
 import OpenAI from 'openai';
-import { OpenAIService } from '../../domain/services/mcp-analysis.service';
+
 import { systemPrompts } from '../prompts/system-prompts';
 import { analysisTemplates } from '../prompts/analysis-templates';
 import { reportSpecifications, reportTypes, contextTemplate, peerComparisonTemplate, marketContextTemplate, marketIntelligenceTemplate } from '../prompts/report-templates';
+
+export interface OpenAIService {
+  generateCompletion(prompt: string, options?: {
+    model?: string;
+    temperature?: number;
+    maxTokens?: number;
+  }): Promise<{
+    content: string;
+    tokensUsed: number;
+    model: string;
+  }>;
+}
 
 @injectable()
 export class OpenAIServiceImpl implements OpenAIService {

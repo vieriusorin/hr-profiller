@@ -1,8 +1,6 @@
 "use strict";
-// Shared types and dependency injection symbols for MCP Server
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TYPES = void 0;
-// Dependency Injection Types
 const TYPES = {
     // External Services
     OpenAIService: Symbol.for('OpenAIService'),

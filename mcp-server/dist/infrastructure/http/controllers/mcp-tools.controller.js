@@ -17,7 +17,6 @@ const inversify_1 = require("inversify");
 const zod_1 = require("zod");
 const types_1 = require("../../../shared/types");
 const mcp_analysis_service_1 = require("../../../domain/services/mcp-analysis.service");
-// Validation schemas
 const AnalysisRequestSchema = zod_1.z.object({
     data: zod_1.z.string().min(1, 'Data is required'),
     analysisType: zod_1.z.string().optional(),
@@ -28,12 +27,29 @@ const AnalysisRequestSchema = zod_1.z.object({
 const ConfidenceRequestSchema = zod_1.z.object({
     data: zod_1.z.string().min(1, 'Data is required'),
 });
+/**
+ * @swagger
+ * tags:
+ *   - name: Tools
+ *     description: Advanced HR analytics and AI-powered tools
+ */
 let McpToolsController = class McpToolsController {
     constructor(analysisService) {
         this.analysisService = analysisService;
     }
     /**
-     * Get list of available MCP tools
+     * @swagger
+     * /tools:
+     *   get:
+     *     summary: Get list of available MCP tools
+     *     tags: [Tools]
+     *     responses:
+     *       200:
+     *         description: List of available tools
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/ResponseEnvelope'
      */
     async getTools(req, res) {
         try {
@@ -109,7 +125,24 @@ let McpToolsController = class McpToolsController {
         }
     }
     /**
-     * Analyze data using AI
+     * @swagger
+     * /tools/analyze-data:
+     *   post:
+     *     summary: Analyze data using AI
+     *     tags: [Tools]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             $ref: '#/components/schemas/AnalysisRequest'
+     *     responses:
+     *       200:
+     *         description: Analysis results
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/ResponseEnvelope'
      */
     async analyzeData(req, res) {
         try {
@@ -151,7 +184,30 @@ let McpToolsController = class McpToolsController {
         }
     }
     /**
-     * Get analysis confidence score
+     * @swagger
+     * /confidence:
+     *   post:
+     *     summary: Get analysis confidence score
+     *     tags: [Analytics]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - data
+     *             properties:
+     *               data:
+     *                 type: string
+     *                 description: Data to analyze for confidence
+     *     responses:
+     *       200:
+     *         description: Confidence analysis results
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/ResponseEnvelope'
      */
     async getConfidence(req, res) {
         try {

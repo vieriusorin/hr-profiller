@@ -10,14 +10,6 @@ async function bootstrap() {
         const app = (0, server_1.default)();
         const port = process.env.PORT || 3002;
         app.listen(port, () => {
-            console.log(`🚀 Enhanced HR MCP Server is running on port ${port}`);
-            console.log(`📖 API Documentation: http://localhost:${port}/api-docs`);
-            console.log(`🏥 Health Check: http://localhost:${port}/health`);
-            console.log(`🔧 Available Tools: http://localhost:${port}/tools`);
-            console.log('');
-            console.log('🏗️  Architecture: Domain Driven Design (DDD)');
-            console.log('💉 Dependency Injection: Inversify IoC Container');
-            console.log('🔐 Authentication: Admin-protected Swagger UI');
             console.log('🤖 AI Capabilities: Advanced HR Analytics & Talent Intelligence');
         });
     }

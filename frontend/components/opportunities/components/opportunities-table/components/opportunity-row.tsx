@@ -1,17 +1,12 @@
 import { TableRow, TableCell } from "@/components/ui/table";
 import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
-import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { ProbabilityBadge } from "@/shared/components/probability-badge";
-import { Building, Calendar, Users, MessageSquare } from "lucide-react";
+import { Building, Users, MessageSquare } from "lucide-react";
 import { EditOpportunityModal } from "../../modals/edit-role-modal";
 import { OpportunityRowProps } from "./types";
 import { useOpportunityRow } from "../hooks/use-opportunity-row";

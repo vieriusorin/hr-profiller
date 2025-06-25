@@ -19,7 +19,6 @@ const getRoleDiscipline = (roleName: string): keyof typeof KEYWORDS | null => {
 };
 
 const isAvailable = (employee: Employee, opportunity: Opportunity): boolean => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error - need to have this field in BE and sync with FE
   if (!employee.unavailableDates || employee.unavailableDates.length === 0) {
     return true;
@@ -31,8 +30,6 @@ const isAvailable = (employee: Employee, opportunity: Opportunity): boolean => {
 
   const opportunityStartDate = new Date(opportunity.expectedStartDate || "");
   const opportunityEndDate = new Date(opportunity.expectedEndDate || "");
-
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error - need to have this field in BE and sync with FE
   for (const unavailability of employee.unavailableDates) {
     const unavailableStartDate = new Date(unavailability.startDate);

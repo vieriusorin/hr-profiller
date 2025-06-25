@@ -106,7 +106,6 @@ export const getThemeClasses = {
 // Utility function to get classes as string
 export const tc = (classPath: string): string => {
   const pathArray = classPath.split('.');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let current = getThemeClasses as any;
 
   for (const key of pathArray) {

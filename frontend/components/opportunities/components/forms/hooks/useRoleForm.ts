@@ -84,14 +84,14 @@ export const useRoleForm = ({
     } else if (mode === 'create') {
       form.reset(defaultFormValues);
     }
-  }, [mode, initialData]);
+  }, [mode, initialData, form, defaultFormValues]);
 
   const handleSubmit = async () => {
-    await form.handleSubmit(async (data) => {
+    await form.handleSubmit(async (data: CreateRoleFormData) => {
       setIsSubmitting(true);
 
       try {
-        const roleData: UpdateRole = {
+        const roleData: UpdateRole & { assignedMembers?: string[] } = {
           roleName: data.roleName,
           jobGrade: data.requiredGrade,
           level: data.opportunityLevel,

@@ -15,7 +15,6 @@ export const useCreateOpportunityForm = ({
   initialData,
   mode = 'create',
   isSubmitting: externalIsSubmitting,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }: any): UseCreateOpportunityFormReturn => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<CreateOpportunityFormData>({

@@ -8,9 +8,33 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HealthController = void 0;
 const inversify_1 = require("inversify");
+/**
+ * @swagger
+ * tags:
+ *   - name: Health
+ *     description: System health and capability reporting
+ */
 let HealthController = class HealthController {
     /**
-     * Health check endpoint
+     * @swagger
+     * /health:
+     *   get:
+     *     summary: Health check endpoint
+     *     description: Returns the health status of the service, including capabilities and version.
+     *     tags: [Health]
+     *     responses:
+     *       200:
+     *         description: Service health status
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/ResponseEnvelope'
+     *       503:
+     *         description: Service unhealthy
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/ResponseEnvelope'
      */
     async getHealth(req, res) {
         try {
@@ -56,7 +80,19 @@ let HealthController = class HealthController {
         }
     }
     /**
-     * Detailed system status (internal use)
+     * @swagger
+     * /system/status:
+     *   get:
+     *     summary: Detailed system status
+     *     description: Returns detailed system information including memory usage and environment details.
+     *     tags: [Health]
+     *     responses:
+     *       200:
+     *         description: Detailed system status
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/ResponseEnvelope'
      */
     async getSystemStatus(req, res) {
         try {
