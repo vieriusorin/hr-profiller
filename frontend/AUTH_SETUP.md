@@ -173,38 +173,3 @@ NEXTAUTH_DEBUG=true
 ```
 
 This will provide detailed logging for authentication flows.
-
-## File Structure
-
-The authentication implementation includes these files:
-
-```
-app/
-├── api/auth/[...nextauth]/route.ts    # NextAuth.js configuration
-├── auth/
-│   ├── signin/page.tsx                # Custom sign-in page
-│   └── error/page.tsx                 # Authentication error page
-├── components/auth/
-│   └── auth-button.tsx                # Sign in/out button component
-├── providers.tsx                       # Session provider setup
-├── page.tsx                           # Root page with redirect logic
-├── middleware.ts                      # Route protection
-└── globals.css                        # Styles
-```
-
-## Next Steps
-
-1. **Customize the UI**: Modify the sign-in and error pages to match your brand
-2. **Add User Management**: Implement user roles and permissions
-3. **Session Management**: Configure session timeouts and refresh tokens
-4. **Audit Logging**: Add logging for authentication events
-5. **Multi-factor Authentication**: Consider enabling MFA in Azure AD
-
-## Support
-
-If you encounter issues:
-
-1. Check the Azure Portal for any error messages
-2. Review the NextAuth.js documentation: https://next-auth.js.org/
-3. Check the browser console and server logs for error details
-4. Verify all environment variables are correctly set 

@@ -1,21 +1,22 @@
-import 'dotenv/config';
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import {
-    CallToolRequestSchema,
-    ListToolsRequestSchema,
-    Tool
-} from '@modelcontextprotocol/sdk/types.js';
-import express, { Request, Response } from 'express';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import swaggerUi from 'swagger-ui-express';
-import { swaggerSpec } from './swagger.config';
-import OpenAI from 'openai';
-import { EnhancedHRPromptEngine } from './enhanced-propmpt-engine';
-import { protectPageWithSession } from './middlewares/protectPage.middleware';
-import { authorize } from './middlewares/authorization.middleware';
-
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.HttpMcpServer = void 0;
+require("dotenv/config");
+const index_js_1 = require("@modelcontextprotocol/sdk/server/index.js");
+const stdio_js_1 = require("@modelcontextprotocol/sdk/server/stdio.js");
+const types_js_1 = require("@modelcontextprotocol/sdk/types.js");
+const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
+const swagger_config_1 = require("./swagger.config");
+const openai_1 = __importDefault(require("openai"));
+const enhanced_propmpt_engine_1 = require("./enhanced-propmpt-engine");
+const protectPage_middleware_1 = require("./middlewares/protectPage.middleware");
+const authorization_middleware_1 = require("./middlewares/authorization.middleware");
 /**
  * @swagger
  * /health:
@@ -44,7 +45,6 @@ import { authorize } from './middlewares/authorization.middleware';
  *                     type: string
  *                   example: ["advanced_analysis", "executive_reports", "market_intelligence"]
  */
-
 /**
  * @swagger
  * /tools:
@@ -79,51 +79,31 @@ import { authorize } from './middlewares/authorization.middleware';
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-
-export class HttpMcpServer {
-    private app = express();
-    private mcpServer: Server;
-    private openai: OpenAI;
-    private promptEngine: EnhancedHRPromptEngine;
-
+class HttpMcpServer {
     constructor() {
-        this.openai = new OpenAI({
+        this.app = (0, express_1.default)();
+        this.openai = new openai_1.default({
             apiKey: process.env.OPENAI_API_KEY,
         });
-
         // Initialize the enhanced prompt engine
-        this.promptEngine = new EnhancedHRPromptEngine();
-
+        this.promptEngine = new enhanced_propmpt_engine_1.EnhancedHRPromptEngine();
         // Setup Express middleware
         this.setupExpressMiddleware();
-
-        this.mcpServer = new Server(
-            {
-                name: 'enhanced-hr-mcp-server',
-                description: 'Enhanced MCP server for advanced HR analytics, talent intelligence, and strategic workforce planning',
-                version: '2.0.0',
+        this.mcpServer = new index_js_1.Server({
+            name: 'enhanced-hr-mcp-server',
+            description: 'Enhanced MCP server for advanced HR analytics, talent intelligence, and strategic workforce planning',
+            version: '2.0.0',
+        }, {
+            capabilities: {
+                tools: {},
             },
-            {
-                capabilities: {
-                    tools: {},
-                },
-            }
-        );
-
+        });
         this.setupMcpHandlers();
         this.setupHttpRoutes();
-
         // Protect Swagger UI with authentication (admin only)
-        this.app.use(
-            '/api-docs',
-            protectPageWithSession,
-            authorize(['admin']),
-            swaggerUi.serve,
-            swaggerUi.setup(swaggerSpec)
-        );
+        this.app.use('/api-docs', protectPage_middleware_1.protectPageWithSession, (0, authorization_middleware_1.authorize)(['admin']), swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_config_1.swaggerSpec));
     }
-
-    private setupExpressMiddleware() {
+    setupExpressMiddleware() {
         // CORS configuration to allow frontend access
         const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
             'http://localhost:3000',
@@ -131,47 +111,39 @@ export class HttpMcpServer {
             'http://127.0.0.1:3000',
             'http://127.0.0.1:3001'
         ];
-
-        this.app.use(
-            cors({
-                origin: (origin, callback) => {
-                    // Allow requests with no origin (like mobile apps, curl requests, or Postman)
-                    if (!origin) return callback(null, true);
-
-                    // In development, be more permissive
-                    if (process.env.NODE_ENV === 'development') {
-                        // Allow localhost and 127.0.0.1 with any port
-                        if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
-                            return callback(null, true);
-                        }
-                    }
-
-                    // Check against allowed origins
-                    if (allowedOrigins.indexOf(origin) !== -1) {
+        this.app.use((0, cors_1.default)({
+            origin: (origin, callback) => {
+                // Allow requests with no origin (like mobile apps, curl requests, or Postman)
+                if (!origin)
+                    return callback(null, true);
+                // In development, be more permissive
+                if (process.env.NODE_ENV === 'development') {
+                    // Allow localhost and 127.0.0.1 with any port
+                    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
                         return callback(null, true);
                     }
-
-                    // Allow the server's own origin for Swagger UI
-                    if (origin.includes(`http://localhost:${process.env.PORT || 3002}`)) {
-                        return callback(null, true);
-                    }
-
-                    console.log(`CORS: Rejecting origin: ${origin}`);
-                    return callback(new Error('Not allowed by CORS'));
-                },
-                methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-                allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
-                credentials: true,
-            })
-        );
-
+                }
+                // Check against allowed origins
+                if (allowedOrigins.indexOf(origin) !== -1) {
+                    return callback(null, true);
+                }
+                // Allow the server's own origin for Swagger UI
+                if (origin.includes(`http://localhost:${process.env.PORT || 3002}`)) {
+                    return callback(null, true);
+                }
+                console.log(`CORS: Rejecting origin: ${origin}`);
+                return callback(new Error('Not allowed by CORS'));
+            },
+            methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+            allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+            credentials: true,
+        }));
         // Parse JSON and cookies
-        this.app.use(express.json());
-        this.app.use(cookieParser());
-        this.app.use(express.urlencoded({ extended: true }));
+        this.app.use(express_1.default.json());
+        this.app.use((0, cookie_parser_1.default)());
+        this.app.use(express_1.default.urlencoded({ extended: true }));
     }
-
-    private getAvailableTools(): Tool[] {
+    getAvailableTools() {
         return [
             {
                 name: 'analyze_data',
@@ -188,7 +160,7 @@ export class HttpMcpServer {
                             description: 'Type of advanced analysis to perform',
                             enum: [
                                 'capability_analysis',
-                                'skill_gap', 
+                                'skill_gap',
                                 'career_recommendation',
                                 'performance_optimization',
                                 'succession_planning',
@@ -321,90 +293,56 @@ export class HttpMcpServer {
             }
         ];
     }
-
-    private setupMcpHandlers() {
-        this.mcpServer.setRequestHandler(ListToolsRequestSchema, async () => {
+    setupMcpHandlers() {
+        this.mcpServer.setRequestHandler(types_js_1.ListToolsRequestSchema, async () => {
             return {
-                tools: this.getAvailableTools() as Tool[]
+                tools: this.getAvailableTools()
             };
         });
-
-        this.mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
+        this.mcpServer.setRequestHandler(types_js_1.CallToolRequestSchema, async (request) => {
             const { name, arguments: args } = request.params;
-
             switch (name) {
                 case 'analyze_data':
                     if (!args || typeof args !== 'object') {
                         throw new Error('Invalid arguments provided');
                     }
-                    const { data, analysisType, userRole, urgency, confidentialityLevel } = args as any;
-
+                    const { data, analysisType, userRole, urgency, confidentialityLevel } = args;
                     if (typeof data !== 'string') {
                         throw new Error('Data must be a JSON string');
                     }
-
-                    return await this.enhancedAnalyzeData(
-                        data,
-                        analysisType || 'capability_analysis',
-                        userRole || 'hr_manager',
-                        urgency || 'standard',
-                        confidentialityLevel || 'internal'
-                    );
-
+                    return await this.enhancedAnalyzeData(data, analysisType || 'capability_analysis', userRole || 'hr_manager', urgency || 'standard', confidentialityLevel || 'internal');
                 case 'generate_report':
                     if (!args || typeof args !== 'object') {
                         throw new Error('Invalid arguments provided');
                     }
-                    const { 
-                        data: reportData, 
-                        reportType, 
-                        userRole: reportUserRole, 
-                        includeMetrics, 
-                        confidentialityLevel: reportConfidentiality 
-                    } = args as any;
-
+                    const { data: reportData, reportType, userRole: reportUserRole, includeMetrics, confidentialityLevel: reportConfidentiality } = args;
                     if (typeof reportData !== 'string') {
                         throw new Error('Data must be a JSON string');
                     }
-
-                    return await this.enhancedGenerateReport(
-                        reportData,
-                        reportType || 'comprehensive',
-                        reportUserRole || 'hr_manager',
-                        includeMetrics !== false,
-                        reportConfidentiality || 'internal'
-                    );
-
+                    return await this.enhancedGenerateReport(reportData, reportType || 'comprehensive', reportUserRole || 'hr_manager', includeMetrics !== false, reportConfidentiality || 'internal');
                 case 'skill_benchmarking':
                     if (!args || typeof args !== 'object') {
                         throw new Error('Invalid arguments provided');
                     }
-                    const { data: skillData, industry, region, includeProjections } = args as any;
-
+                    const { data: skillData, industry, region, includeProjections } = args;
                     if (typeof skillData !== 'string') {
                         throw new Error('Data must be a JSON string');
                     }
-
                     return await this.skillBenchmarking(skillData, industry, region, includeProjections !== false);
-
                 case 'compensation_analysis':
                     if (!args || typeof args !== 'object') {
                         throw new Error('Invalid arguments provided');
                     }
-                    const { data: compData, marketScope, includeEquityAnalysis } = args as any;
-
+                    const { data: compData, marketScope, includeEquityAnalysis } = args;
                     if (typeof compData !== 'string') {
                         throw new Error('Data must be a JSON string');
                     }
-
                     return await this.compensationAnalysis(compData, marketScope || 'national', includeEquityAnalysis !== false);
-
                 default:
                     throw new Error(`Unknown tool: ${name}`);
             }
         });
     }
-
     /**
     * This method performs advanced AI-powered analysis on talent data, leveraging contextual intelligence and market insights.
     * It supports various analysis types such as capability analysis, skill gap identification, and performance optimization.
@@ -418,21 +356,15 @@ export class HttpMcpServer {
     * @returns A structured analysis object containing the generated content and metadata
     * @throws Error if analysis fails
      */
-    private async enhancedAnalyzeData(
-        data: string, 
-        analysisType: string = 'capability_analysis', 
-        userRole: string = 'hr_manager',
-        urgency: string = 'standard',
-        confidentialityLevel: string = 'internal'
-    ) {
+    async enhancedAnalyzeData(data, analysisType = 'capability_analysis', userRole = 'hr_manager', urgency = 'standard', confidentialityLevel = 'internal') {
         try {
             const startTime = Date.now();
-            
             // Handle both JSON object data and plain text data
-            let context: any;
+            let context;
             try {
                 context = JSON.parse(data);
-            } catch (parseError) {
+            }
+            catch (parseError) {
                 // If parsing fails, treat as plain text and create a minimal context
                 context = {
                     rawData: data,
@@ -441,17 +373,10 @@ export class HttpMcpServer {
                 };
             }
             const enrichedContext = await this.enrichContext(context);
-
             // Create advanced prompt using the enhanced engine
-            const prompt = this.promptEngine.createAdvancedAnalysisPrompt(
-                enrichedContext, 
-                analysisType, 
-                userRole
-            );
-
+            const prompt = this.promptEngine.createAdvancedAnalysisPrompt(enrichedContext, analysisType, userRole);
             // Get optimal model configuration based on urgency and complexity
             const modelConfig = this.getOptimalModelConfig(urgency, analysisType);
-
             // Enhanced OpenAI API call with optimized parameters
             const completion = await this.openai.chat.completions.create({
                 model: modelConfig.model,
@@ -471,10 +396,8 @@ export class HttpMcpServer {
                 frequency_penalty: 0.1,
                 top_p: 0.9
             });
-
             const analysis = completion.choices[0]?.message?.content || 'Analysis could not be completed.';
             const processingTime = Date.now() - startTime;
-
             return {
                 content: [
                     {
@@ -495,12 +418,12 @@ export class HttpMcpServer {
                     version: '2.0.0-enhanced'
                 }
             };
-        } catch (error) {
+        }
+        catch (error) {
             console.error('Enhanced AI analysis failed:', error);
             throw new Error(`Enhanced AI analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
-
     /**
      * This method leverages advanced AI capabilities to produce high-quality reports that can be used for strategic decision-making, performance reviews, and talent management.
      * It incorporates contextual analysis, market intelligence, and benchmarking data to provide a comprehensive view of the subject matter.
@@ -514,21 +437,15 @@ export class HttpMcpServer {
      * @returns A structured report object containing the generated content and metadata
      * @throws Error if report generation fails
      */
-    private async enhancedGenerateReport(
-        data: string, 
-        reportType: string = 'comprehensive', 
-        userRole: string = 'hr_manager',
-        includeMetrics: boolean = true,
-        confidentialityLevel: string = 'internal'
-    ) {
+    async enhancedGenerateReport(data, reportType = 'comprehensive', userRole = 'hr_manager', includeMetrics = true, confidentialityLevel = 'internal') {
         try {
             const startTime = Date.now();
-            
             // Handle both JSON object data and plain text data
-            let context: any;
+            let context;
             try {
                 context = JSON.parse(data);
-            } catch (parseError) {
+            }
+            catch (parseError) {
                 // If parsing fails, treat as plain text and create a minimal context
                 context = {
                     rawData: data,
@@ -537,25 +454,12 @@ export class HttpMcpServer {
                 };
             }
             const enrichedContext = await this.enrichContext(context);
-            
             // For complex reports, use multi-step generation
             if (reportType === 'comprehensive' || reportType === 'executive_brief') {
-                return await this.generateMultiStepReport(
-                    enrichedContext, 
-                    reportType, 
-                    userRole, 
-                    includeMetrics,
-                    confidentialityLevel
-                );
+                return await this.generateMultiStepReport(enrichedContext, reportType, userRole, includeMetrics, confidentialityLevel);
             }
-
             // Create advanced report prompt
-            const prompt = this.promptEngine.createAdvancedReportPrompt(
-                enrichedContext, 
-                reportType, 
-                userRole
-            );
-
+            const prompt = this.promptEngine.createAdvancedReportPrompt(enrichedContext, reportType, userRole);
             const completion = await this.openai.chat.completions.create({
                 model: 'gpt-4',
                 messages: [
@@ -573,10 +477,8 @@ export class HttpMcpServer {
                 presence_penalty: 0.2,
                 frequency_penalty: 0.1
             });
-
             const report = completion.choices[0]?.message?.content || 'Report could not be generated.';
             const processingTime = Date.now() - startTime;
-
             return {
                 content: [
                     {
@@ -597,27 +499,23 @@ export class HttpMcpServer {
                     version: '2.0.0-enhanced'
                 }
             };
-        } catch (error) {
+        }
+        catch (error) {
             console.error('Enhanced AI report generation failed:', error);
             throw new Error(`Enhanced AI report generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
-
     /**
      * Advanced skill benchmarking with market intelligence
      */
-    private async skillBenchmarking(
-        data: string, 
-        industry?: string, 
-        region?: string, 
-        includeProjections: boolean = true
-    ) {
+    async skillBenchmarking(data, industry, region, includeProjections = true) {
         try {
             // Handle both JSON object data and plain text data
-            let context: any;
+            let context;
             try {
                 context = JSON.parse(data);
-            } catch (parseError) {
+            }
+            catch (parseError) {
                 // If parsing fails, treat as plain text and create a minimal context
                 context = {
                     rawData: data,
@@ -626,7 +524,6 @@ export class HttpMcpServer {
                 };
             }
             const enrichedContext = await this.enrichContext(context);
-
             const prompt = `
 🎯 **ADVANCED SKILL BENCHMARKING ANALYSIS**
 ═══════════════════════════════════════════════════════════════
@@ -664,7 +561,6 @@ ${this.buildCandidateProfileSummary(context)}
 
 Provide detailed benchmarking analysis with scores, projections, and strategic recommendations.
             `;
-
             const completion = await this.openai.chat.completions.create({
                 model: 'gpt-4',
                 messages: [
@@ -680,7 +576,6 @@ Provide detailed benchmarking analysis with scores, projections, and strategic r
                 temperature: 0.4,
                 max_tokens: 2500
             });
-
             return {
                 content: [
                     {
@@ -697,26 +592,23 @@ Provide detailed benchmarking analysis with scores, projections, and strategic r
                     tokenUsage: completion.usage?.total_tokens || 0
                 }
             };
-        } catch (error) {
+        }
+        catch (error) {
             console.error('Skill benchmarking failed:', error);
             throw new Error(`Skill benchmarking failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
-
     /**
      * Comprehensive compensation analysis
      */
-    private async compensationAnalysis(
-        data: string, 
-        marketScope: string = 'national', 
-        includeEquityAnalysis: boolean = true
-    ) {
+    async compensationAnalysis(data, marketScope = 'national', includeEquityAnalysis = true) {
         try {
             // Handle both JSON object data and plain text data
-            let context: any;
+            let context;
             try {
                 context = JSON.parse(data);
-            } catch (parseError) {
+            }
+            catch (parseError) {
                 // If parsing fails, treat as plain text and create a minimal context
                 context = {
                     rawData: data,
@@ -725,7 +617,6 @@ Provide detailed benchmarking analysis with scores, projections, and strategic r
                 };
             }
             const enrichedContext = await this.enrichContext(context);
-
             const prompt = `
 💰 **COMPREHENSIVE COMPENSATION ANALYSIS**
 ═══════════════════════════════════════════════════════════════
@@ -762,7 +653,6 @@ ${this.buildCandidateProfileSummary(context)}
 
 Provide detailed compensation analysis with specific recommendations and market data.
             `;
-
             const completion = await this.openai.chat.completions.create({
                 model: 'gpt-4',
                 messages: [
@@ -778,7 +668,6 @@ Provide detailed compensation analysis with specific recommendations and market 
                 temperature: 0.3,
                 max_tokens: 2500
             });
-
             return {
                 content: [
                     {
@@ -794,27 +683,20 @@ Provide detailed compensation analysis with specific recommendations and market 
                     tokenUsage: completion.usage?.total_tokens || 0
                 }
             };
-        } catch (error) {
+        }
+        catch (error) {
             console.error('Compensation analysis failed:', error);
             throw new Error(`Compensation analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
-
     /**
      * Multi-step report generation for complex analysis
      */
-    private async generateMultiStepReport(
-        context: any, 
-        reportType: string, 
-        userRole: string, 
-        includeMetrics: boolean,
-        confidentialityLevel: string
-    ): Promise<any> {
+    async generateMultiStepReport(context, reportType, userRole, includeMetrics, confidentialityLevel) {
         try {
             // Step 1: Generate executive summary
-            const summaryPrompt = this.promptEngine.createAdvancedReportPrompt(context, reportType, userRole) + 
+            const summaryPrompt = this.promptEngine.createAdvancedReportPrompt(context, reportType, userRole) +
                 '\n\nFOCUS: Generate ONLY the executive summary section (300-400 words) with key findings and strategic recommendations.';
-            
             const summaryCompletion = await this.openai.chat.completions.create({
                 model: 'gpt-4',
                 messages: [
@@ -824,11 +706,9 @@ Provide detailed compensation analysis with specific recommendations and market 
                 temperature: 0.3,
                 max_tokens: 700
             });
-
             // Step 2: Generate detailed analysis
-            const detailPrompt = this.promptEngine.createAdvancedReportPrompt(context, reportType, userRole) + 
+            const detailPrompt = this.promptEngine.createAdvancedReportPrompt(context, reportType, userRole) +
                 `\n\nFOCUS: Generate the detailed analysis sections (excluding executive summary). Build upon this executive summary:\n\n${summaryCompletion.choices[0]?.message?.content}`;
-            
             const detailCompletion = await this.openai.chat.completions.create({
                 model: 'gpt-4',
                 messages: [
@@ -838,9 +718,7 @@ Provide detailed compensation analysis with specific recommendations and market 
                 temperature: 0.4,
                 max_tokens: 3000
             });
-
             const fullReport = `${summaryCompletion.choices[0]?.message?.content}\n\n${detailCompletion.choices[0]?.message?.content}`;
-
             return {
                 content: [{ type: 'text', text: fullReport }],
                 metadata: {
@@ -855,42 +733,38 @@ Provide detailed compensation analysis with specific recommendations and market 
                     version: '2.0.0-enhanced'
                 }
             };
-        } catch (error) {
+        }
+        catch (error) {
             console.error('Multi-step report generation failed:', error);
             throw new Error(`Multi-step report generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
-
     /**
      * Context enrichment with market intelligence and benchmarking data
      */
-    private async enrichContext(context: any): Promise<any> {
+    async enrichContext(context) {
         try {
             // Add market salary data if position is available
             if (context.employmentDetails?.position) {
                 context.marketData = await this.fetchMarketData(context.employmentDetails.position);
             }
-
             // Add industry benchmarks for skills
             if (context.skills?.length > 0) {
                 context.industryBenchmarks = await this.fetchIndustryBenchmarks(context.skills);
             }
-
             // Add learning recommendations
             context.learningRecommendations = await this.generateLearningRecommendations(context);
-
             // Add competitive intelligence
             if (context.similarPersons?.length > 0) {
                 context.competitiveIntelligence = await this.analyzeCompetitiveLandscape(context.similarPersons);
             }
-
             return context;
-        } catch (error) {
+        }
+        catch (error) {
             console.warn('Context enrichment failed, proceeding with basic context:', error);
             return context;
         }
     }
-
     /**
      * Dynamic model configuration based on request complexity and urgency
      * @param urgency - Urgency level of the analysis (immediate, standard, strategic)
@@ -899,31 +773,28 @@ Provide detailed compensation analysis with specific recommendations and market 
      * This method selects the most appropriate AI model and parameters based on the urgency and complexity of the analysis requested.
      * It considers the type of analysis to determine if a more complex model is needed, especially for strategic or detailed reports.
      */
-    private getOptimalModelConfig(urgency: string, analysisType?: string): any {
+    getOptimalModelConfig(urgency, analysisType) {
         const complexAnalysisTypes = ['succession_planning', 'diversity_analytics', 'compensation_equity'];
         const isComplex = complexAnalysisTypes.includes(analysisType || '');
-    
         const configs = {
             immediate: {
-                model: 'gpt-4o-mini',  // Fast, cost-effective for quick insights
-                temperature: 0.3,      // Lower for consistent, factual responses
+                model: 'gpt-4o-mini', // Fast, cost-effective for quick insights
+                temperature: 0.3, // Lower for consistent, factual responses
                 maxTokens: 1500
             },
             standard: {
-                model: isComplex ? 'gpt-4o' : 'gpt-4o-mini',  // Scale based on complexity
-                temperature: 0.5,      // Balanced for analysis
+                model: isComplex ? 'gpt-4o' : 'gpt-4o-mini', // Scale based on complexity
+                temperature: 0.5, // Balanced for analysis
                 maxTokens: isComplex ? 3000 : 2000
             },
             strategic: {
-                model: 'gpt-4o',       // Most capable model for strategic decisions
-                temperature: 0.6,      // Slightly higher for strategic creativity
-                maxTokens: 4500        // More tokens for comprehensive analysis
+                model: 'gpt-4o', // Most capable model for strategic decisions
+                temperature: 0.6, // Slightly higher for strategic creativity
+                maxTokens: 4500 // More tokens for comprehensive analysis
             }
         };
-    
-        return configs[urgency as keyof typeof configs] || configs.standard;
+        return configs[urgency] || configs.standard;
     }
-
     /**
      * Calculate confidence score based on data completeness and quality
      * This method evaluates the provided context to determine a confidence score that reflects the completeness and quality of the data available for analysis.
@@ -933,7 +804,7 @@ Provide detailed compensation analysis with specific recommendations and market 
      * @return A confidence score between 0 and 100, where higher scores indicate more complete and reliable data for analysis.
      * This score can be used to gauge the reliability of the analysis results and to prioritize data collection efforts.
      */
-    private calculateConfidenceScore(context: any): number {
+    calculateConfidenceScore(context) {
         let score = 0;
         const factors = [
             { field: 'skills', weight: 20, present: context.skills?.length > 0 },
@@ -944,14 +815,12 @@ Provide detailed compensation analysis with specific recommendations and market 
             { field: 'skillsContext', weight: 10, present: !!context.skillsContext },
             { field: 'marketData', weight: 5, present: !!context.marketData }
         ];
-
         factors.forEach(factor => {
-            if (factor.present) score += factor.weight;
+            if (factor.present)
+                score += factor.weight;
         });
-
         return Math.round(score);
     }
-
     /**
      * Helper methods for data integration (implement based on your data sources)
      * These methods should integrate with external APIs or databases to fetch market data, industry benchmarks, and other relevant information.
@@ -960,18 +829,16 @@ Provide detailed compensation analysis with specific recommendations and market 
      * @return A promise that resolves to a string containing market intelligence data for the specified position.
      * This method should return relevant market intelligence such as average salary ranges, demand trends, and key skills in the market.
      */
-    private async fetchMarketData(position: string): Promise<string> {
+    async fetchMarketData(position) {
         // Integrate with salary APIs like Glassdoor, PayScale, etc.
         return `Market intelligence for ${position}: Avg salary $75K-$120K (varies by experience/location). High demand with 15% YoY growth. Key skills premium: Cloud, AI/ML, Leadership.`;
     }
-
-    private async fetchIndustryBenchmarks(skills: any[]): Promise<string> {
+    async fetchIndustryBenchmarks(skills) {
         // Integrate with industry benchmark APIs
         const topSkills = skills.slice(0, 3).map(s => s.skillName).join(', ');
         return `Industry benchmarks show ${topSkills} are in high demand with 18% year-over-year growth. These skills command 15-25% salary premium in current market.`;
     }
-
-    private async generateLearningRecommendations(context: any): Promise<string[]> {
+    async generateLearningRecommendations(context) {
         // Generate personalized learning recommendations based on profile
         const recommendations = [
             'Advanced Data Analytics & Machine Learning Certification',
@@ -982,14 +849,12 @@ Provide detailed compensation analysis with specific recommendations and market 
         ];
         return recommendations.slice(0, 3); // Return top 3
     }
-
-    private async analyzeCompetitiveLandscape(similarPersons: any[]): Promise<string> {
+    async analyzeCompetitiveLandscape(similarPersons) {
         // Analyze competitive positioning
         const avgSimilarity = similarPersons.reduce((sum, p) => sum + p.similarity, 0) / similarPersons.length;
         return `Competitive analysis: ${avgSimilarity.toFixed(1)}% average similarity to market peers. Strong differentiation opportunities in emerging skill areas.`;
     }
-
-    private buildCandidateProfileSummary(context: any): string {
+    buildCandidateProfileSummary(context) {
         // Handle plain text data
         if (context.parseMethod === 'plain_text') {
             return `
@@ -998,16 +863,14 @@ Content: ${context.rawData || context.skillText || 'No data provided'}
 Analysis Type: Free-form text analysis
             `;
         }
-
         // Handle both flat and nested context structures (JSON data)
         const firstName = context.personalInfo?.firstName || context.firstName || 'Unknown';
         const lastName = context.personalInfo?.lastName || context.lastName || '';
         const position = context.employmentDetails?.position || 'Not specified';
         const workHistoryLength = context.workHistory?.length || 0;
         const education = context.education?.[0]?.degree || 'Not specified';
-        const skills = context.skills?.slice(0, 5).map((s: any) => s.skillName).join(', ') || 'None';
-        const technologies = context.technologies?.slice(0, 5).map((t: any) => t.technologyName).join(', ') || 'None';
-
+        const skills = context.skills?.slice(0, 5).map((s) => s.skillName).join(', ') || 'None';
+        const technologies = context.technologies?.slice(0, 5).map((t) => t.technologyName).join(', ') || 'None';
         return `
 Name: ${firstName} ${lastName}
 Position: ${position}
@@ -1017,21 +880,19 @@ Key Skills: ${skills}
 Technologies: ${technologies}
         `;
     }
-
-    private setupHttpRoutes() {
-        this.app.use(express.json());
-
+    setupHttpRoutes() {
+        this.app.use(express_1.default.json());
         /**
          * Enhanced health check with capability reporting
          */
-        this.app.get('/health', (req: Request, res: Response) => {
-            res.json({ 
-                status: 'healthy', 
+        this.app.get('/health', (req, res) => {
+            res.json({
+                status: 'healthy',
                 service: 'enhanced-hr-mcp-server',
                 version: '2.0.0-enhanced',
                 capabilities: [
                     'advanced_analysis',
-                    'executive_reports', 
+                    'executive_reports',
                     'market_intelligence',
                     'skill_benchmarking',
                     'compensation_analysis',
@@ -1041,15 +902,13 @@ Technologies: ${technologies}
                 timestamp: new Date().toISOString()
             });
         });
-
         /**
          * Enhanced tools listing with capabilities and endpoints
          */
-        this.app.get('/tools', async (req: Request, res: Response) => {
+        this.app.get('/tools', async (req, res) => {
             try {
                 const tools = this.getAvailableTools();
                 const baseUrl = `${req.protocol}://${req.get('host')}`;
-                
                 const toolEndpoints = [
                     {
                         name: 'analyze_data',
@@ -1076,8 +935,7 @@ Technologies: ${technologies}
                         description: 'Comprehensive compensation analysis with market rates'
                     }
                 ];
-
-                res.json({ 
+                res.json({
                     tools,
                     toolEndpoints,
                     totalTools: tools.length,
@@ -1085,14 +943,12 @@ Technologies: ${technologies}
                     genericEndpoint: `${baseUrl}/tools/:toolName`,
                     version: '2.0.0-enhanced'
                 });
-            } catch (error) {
+            }
+            catch (error) {
                 const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
                 res.status(500).json({ error: errorMessage });
             }
         });
-
-
-
         /**
          * @swagger
          * /tools/analyze-data:
@@ -1219,22 +1075,13 @@ Technologies: ${technologies}
          *                   type: string
          *                   example: "2024-01-15T10:30:00Z"
          */
-        this.app.post('/tools/analyze-data', async (req: Request, res: Response) => {
+        this.app.post('/tools/analyze-data', async (req, res) => {
             try {
                 const { data, analysisType, userRole, urgency, confidentialityLevel } = req.body;
-                
                 if (typeof data !== 'string') {
                     return res.status(400).json({ error: 'Data must be a JSON string' });
                 }
-
-                const result = await this.enhancedAnalyzeData(
-                    data, 
-                    analysisType || 'capability_analysis', 
-                    userRole || 'hr_manager', 
-                    urgency || 'standard', 
-                    confidentialityLevel || 'internal'
-                );
-
+                const result = await this.enhancedAnalyzeData(data, analysisType || 'capability_analysis', userRole || 'hr_manager', urgency || 'standard', confidentialityLevel || 'internal');
                 res.json({
                     ...result,
                     requestInfo: {
@@ -1243,17 +1090,17 @@ Technologies: ${technologies}
                         version: '2.0.0-enhanced'
                     }
                 });
-            } catch (error) {
+            }
+            catch (error) {
                 const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
                 console.error('Analyze data tool error:', error);
-                res.status(500).json({ 
+                res.status(500).json({
                     error: errorMessage,
                     toolName: 'analyze_data',
                     timestamp: new Date().toISOString()
                 });
             }
         });
-
         /**
          * @swagger
          * /tools/generate-report:
@@ -1382,22 +1229,13 @@ Technologies: ${technologies}
          *                   type: string
          *                   example: "2024-01-15T11:45:00Z"
          */
-        this.app.post('/tools/generate-report', async (req: Request, res: Response) => {
+        this.app.post('/tools/generate-report', async (req, res) => {
             try {
                 const { data, reportType, userRole, includeMetrics, confidentialityLevel } = req.body;
-                
                 if (typeof data !== 'string') {
                     return res.status(400).json({ error: 'Data must be a JSON string' });
                 }
-
-                const result = await this.enhancedGenerateReport(
-                    data, 
-                    reportType || 'comprehensive', 
-                    userRole || 'hr_manager', 
-                    includeMetrics !== false, 
-                    confidentialityLevel || 'internal'
-                );
-
+                const result = await this.enhancedGenerateReport(data, reportType || 'comprehensive', userRole || 'hr_manager', includeMetrics !== false, confidentialityLevel || 'internal');
                 res.json({
                     ...result,
                     requestInfo: {
@@ -1406,17 +1244,17 @@ Technologies: ${technologies}
                         version: '2.0.0-enhanced'
                     }
                 });
-            } catch (error) {
+            }
+            catch (error) {
                 const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
                 console.error('Generate report tool error:', error);
-                res.status(500).json({ 
+                res.status(500).json({
                     error: errorMessage,
                     toolName: 'generate_report',
                     timestamp: new Date().toISOString()
                 });
             }
         });
-
         /**
          * @swagger
          * /tools/skill-benchmarking:
@@ -1535,21 +1373,13 @@ Technologies: ${technologies}
          *                   type: string
          *                   example: "2024-01-15T12:00:00Z"
          */
-        this.app.post('/tools/skill-benchmarking', async (req: Request, res: Response) => {
+        this.app.post('/tools/skill-benchmarking', async (req, res) => {
             try {
                 const { data, industry, region, includeProjections } = req.body;
-                
                 if (typeof data !== 'string') {
                     return res.status(400).json({ error: 'Data must be a JSON string' });
                 }
-
-                const result = await this.skillBenchmarking(
-                    data, 
-                    industry, 
-                    region, 
-                    includeProjections !== false
-                );
-
+                const result = await this.skillBenchmarking(data, industry, region, includeProjections !== false);
                 res.json({
                     ...result,
                     requestInfo: {
@@ -1558,17 +1388,17 @@ Technologies: ${technologies}
                         version: '2.0.0-enhanced'
                     }
                 });
-            } catch (error) {
+            }
+            catch (error) {
                 const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
                 console.error('Skill benchmarking tool error:', error);
-                res.status(500).json({ 
+                res.status(500).json({
                     error: errorMessage,
                     toolName: 'skill_benchmarking',
                     timestamp: new Date().toISOString()
                 });
             }
         });
-
         /**
          * @swagger
          * /tools/compensation-analysis:
@@ -1680,20 +1510,13 @@ Technologies: ${technologies}
          *                   type: string
          *                   example: "2024-01-15T13:30:00Z"
          */
-        this.app.post('/tools/compensation-analysis', async (req: Request, res: Response) => {
+        this.app.post('/tools/compensation-analysis', async (req, res) => {
             try {
                 const { data, marketScope, includeEquityAnalysis } = req.body;
-                
                 if (typeof data !== 'string') {
                     return res.status(400).json({ error: 'Data must be a JSON string' });
                 }
-
-                const result = await this.compensationAnalysis(
-                    data, 
-                    marketScope || 'national', 
-                    includeEquityAnalysis !== false
-                );
-
+                const result = await this.compensationAnalysis(data, marketScope || 'national', includeEquityAnalysis !== false);
                 res.json({
                     ...result,
                     requestInfo: {
@@ -1702,17 +1525,17 @@ Technologies: ${technologies}
                         version: '2.0.0-enhanced'
                     }
                 });
-            } catch (error) {
+            }
+            catch (error) {
                 const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
                 console.error('Compensation analysis tool error:', error);
-                res.status(500).json({ 
+                res.status(500).json({
                     error: errorMessage,
                     toolName: 'compensation_analysis',
                     timestamp: new Date().toISOString()
                 });
             }
         });
-
         /**
          * @swagger
          * /analytics/confidence:
@@ -1781,28 +1604,26 @@ Technologies: ${technologies}
          *                   type: string
          *                   example: "Confidence analysis failed: Invalid JSON format"
          */
-        this.app.post('/analytics/confidence', async (req: Request, res: Response) => {
+        this.app.post('/analytics/confidence', async (req, res) => {
             try {
                 const { data } = req.body;
                 if (typeof data !== 'string') {
                     return res.status(400).json({ error: 'Data must be a JSON string' });
                 }
-
                 // Handle both JSON and plain text input
-                let context: any;
+                let context;
                 try {
                     context = JSON.parse(data);
-                } catch (parseError) {
+                }
+                catch (parseError) {
                     // If JSON parsing fails, treat as plain text
                     context = {
                         rawData: data,
                         parseMethod: 'plain_text'
                     };
                 }
-
                 const enrichedContext = await this.enrichContext(context);
                 const confidence = this.calculateConfidenceScore(enrichedContext);
-
                 res.json({
                     confidence,
                     level: confidence >= 80 ? 'High' : confidence >= 60 ? 'Medium' : 'Low',
@@ -1813,31 +1634,28 @@ Technologies: ${technologies}
                     ] : ['Profile is comprehensive for analysis'],
                     timestamp: new Date().toISOString()
                 });
-            } catch (error) {
+            }
+            catch (error) {
                 const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
                 res.status(500).json({ error: errorMessage });
             }
         });
-
         // IMPORTANT: Generic route is defined LAST to avoid catching specific routes
         // This route provides legacy support for the old MCP protocol format
         /**
          * Enhanced tool execution with advanced parameter handling (GENERIC - legacy support)
          */
-        this.app.post('/tools/:toolName', async (req: Request, res: Response) => {
+        this.app.post('/tools/:toolName', async (req, res) => {
             try {
                 const { toolName } = req.params;
                 const { arguments: args } = req.body;
-
                 if (!args || typeof args !== 'object') {
-                    return res.status(400).json({ 
+                    return res.status(400).json({
                         error: 'Invalid arguments provided',
                         expected: 'Arguments object with tool-specific parameters'
                     });
                 }
-
                 let result;
-
                 switch (toolName) {
                     case 'analyze_data':
                         const { data, analysisType, userRole, urgency, confidentialityLevel } = args;
@@ -1846,7 +1664,6 @@ Technologies: ${technologies}
                         }
                         result = await this.enhancedAnalyzeData(data, analysisType, userRole, urgency, confidentialityLevel);
                         break;
-
                     case 'generate_report':
                         const { data: reportData, reportType, userRole: reportUserRole, includeMetrics, confidentialityLevel: reportConfidentiality } = args;
                         if (typeof reportData !== 'string') {
@@ -1854,7 +1671,6 @@ Technologies: ${technologies}
                         }
                         result = await this.enhancedGenerateReport(reportData, reportType, reportUserRole, includeMetrics, reportConfidentiality);
                         break;
-
                     case 'skill_benchmarking':
                         const { data: skillData, industry, region, includeProjections } = args;
                         if (typeof skillData !== 'string') {
@@ -1862,7 +1678,6 @@ Technologies: ${technologies}
                         }
                         result = await this.skillBenchmarking(skillData, industry, region, includeProjections);
                         break;
-
                     case 'compensation_analysis':
                         const { data: compData, marketScope, includeEquityAnalysis } = args;
                         if (typeof compData !== 'string') {
@@ -1870,14 +1685,12 @@ Technologies: ${technologies}
                         }
                         result = await this.compensationAnalysis(compData, marketScope, includeEquityAnalysis);
                         break;
-
                     default:
-                        return res.status(404).json({ 
+                        return res.status(404).json({
                             error: `Unknown tool: ${toolName}`,
                             availableTools: this.getAvailableTools().map(t => t.name)
                         });
                 }
-
                 res.json({
                     ...result,
                     requestInfo: {
@@ -1886,11 +1699,11 @@ Technologies: ${technologies}
                         version: '2.0.0-enhanced'
                     }
                 });
-
-            } catch (error) {
+            }
+            catch (error) {
                 const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
                 console.error(`Tool execution error for ${req.params.toolName}:`, error);
-                res.status(500).json({ 
+                res.status(500).json({
                     error: errorMessage,
                     toolName: req.params.toolName,
                     timestamp: new Date().toISOString()
@@ -1898,9 +1711,8 @@ Technologies: ${technologies}
             }
         });
     }
-
-    async start(port: number = 3002) {
-        return new Promise<void>((resolve) => {
+    async start(port = 3002) {
+        return new Promise((resolve) => {
             this.app.listen(port, () => {
                 console.log(`🚀 Enhanced HR MCP Server v2.0 running on port ${port}`);
                 console.log(`📊 Advanced AI Analytics: ACTIVE`);
@@ -1912,13 +1724,12 @@ Technologies: ${technologies}
             });
         });
     }
-
     async startStdio() {
-        const transport = new StdioServerTransport();
+        const transport = new stdio_js_1.StdioServerTransport();
         await this.mcpServer.connect(transport);
     }
 }
-
+exports.HttpMcpServer = HttpMcpServer;
 // Start the enhanced server
 const server = new HttpMcpServer();
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3002;

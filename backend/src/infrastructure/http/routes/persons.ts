@@ -267,6 +267,106 @@ try {
    */
   personRouter.delete('/:id', (req, res) => personController.delete(req, res));
 
+  // ===== SEARCH ENDPOINTS =====
+
+  /**
+   * @swagger
+   * /api/v1/persons/search/skills:
+   *   post:
+   *     summary: Search persons by skills
+   *     tags: [Person Search]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               skills:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: List of skill names to search for
+   *                 example: ["JavaScript", "React", "Node.js"]
+   *             required:
+   *               - skills
+   *     responses:
+   *       200:
+   *         description: List of persons matching the skills criteria
+   *       400:
+   *         $ref: '#/components/responses/ValidationError'
+   *       500:
+   *         $ref: '#/components/responses/InternalServerError'
+   */
+  personRouter.post('/search/skills', (req, res) => personController.searchBySkills(req, res));
+
+  /**
+   * @swagger
+   * /api/v1/persons/search/technologies:
+   *   post:
+   *     summary: Search persons by technologies
+   *     tags: [Person Search]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               technologies:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: List of technology names to search for
+   *                 example: ["React", "PostgreSQL", "Docker"]
+   *             required:
+   *               - technologies
+   *     responses:
+   *       200:
+   *         description: List of persons matching the technologies criteria
+   *       400:
+   *         $ref: '#/components/responses/ValidationError'
+   *       500:
+   *         $ref: '#/components/responses/InternalServerError'
+   */
+  personRouter.post('/search/technologies', (req, res) => personController.searchByTechnologies(req, res));
+
+  /**
+   * @swagger
+   * /api/v1/persons/search/education:
+   *   post:
+   *     summary: Search persons by education
+   *     tags: [Person Search]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               institution:
+   *                 type: string
+   *                 description: Institution name (partial match)
+   *                 example: "Stanford"
+   *               degree:
+   *                 type: string
+   *                 description: Degree type (partial match)
+   *                 example: "Bachelor"
+   *               fieldOfStudy:
+   *                 type: string
+   *                 description: Field of study (partial match)
+   *                 example: "Computer Science"
+   *             minProperties: 1
+   *     responses:
+   *       200:
+   *         description: List of persons matching the education criteria
+   *       400:
+   *         $ref: '#/components/responses/ValidationError'
+   *       500:
+   *         $ref: '#/components/responses/InternalServerError'
+   */
+  personRouter.post('/search/education', (req, res) => personController.searchByEducation(req, res));
+
   // ===== SKILLS MANAGEMENT ENDPOINTS =====
 
   /**
@@ -627,106 +727,6 @@ try {
    *         $ref: '#/components/responses/InternalServerError'
    */
   personRouter.delete('/:id/education/:educationId', (req, res) => personController.removeEducation(req, res));
-
-  // ===== SEARCH ENDPOINTS =====
-
-  /**
-   * @swagger
-   * /api/v1/persons/search/skills:
-   *   post:
-   *     summary: Search persons by skills
-   *     tags: [Person Search]
-   *     requestBody:
-   *       required: true
-   *       content:
-   *         application/json:
-   *           schema:
-   *             type: object
-   *             properties:
-   *               skills:
-   *                 type: array
-   *                 items:
-   *                   type: string
-   *                 description: List of skill names to search for
-   *                 example: ["JavaScript", "React", "Node.js"]
-   *             required:
-   *               - skills
-   *     responses:
-   *       200:
-   *         description: List of persons matching the skills criteria
-   *       400:
-   *         $ref: '#/components/responses/ValidationError'
-   *       500:
-   *         $ref: '#/components/responses/InternalServerError'
-   */
-  personRouter.post('/search/skills', (req, res) => personController.searchBySkills(req, res));
-
-  /**
-   * @swagger
-   * /api/v1/persons/search/technologies:
-   *   post:
-   *     summary: Search persons by technologies
-   *     tags: [Person Search]
-   *     requestBody:
-   *       required: true
-   *       content:
-   *         application/json:
-   *           schema:
-   *             type: object
-   *             properties:
-   *               technologies:
-   *                 type: array
-   *                 items:
-   *                   type: string
-   *                 description: List of technology names to search for
-   *                 example: ["React", "PostgreSQL", "Docker"]
-   *             required:
-   *               - technologies
-   *     responses:
-   *       200:
-   *         description: List of persons matching the technologies criteria
-   *       400:
-   *         $ref: '#/components/responses/ValidationError'
-   *       500:
-   *         $ref: '#/components/responses/InternalServerError'
-   */
-  personRouter.post('/search/technologies', (req, res) => personController.searchByTechnologies(req, res));
-
-  /**
-   * @swagger
-   * /api/v1/persons/search/education:
-   *   post:
-   *     summary: Search persons by education
-   *     tags: [Person Search]
-   *     requestBody:
-   *       required: true
-   *       content:
-   *         application/json:
-   *           schema:
-   *             type: object
-   *             properties:
-   *               institution:
-   *                 type: string
-   *                 description: Institution name (partial match)
-   *                 example: "Stanford"
-   *               degree:
-   *                 type: string
-   *                 description: Degree type (partial match)
-   *                 example: "Bachelor"
-   *               fieldOfStudy:
-   *                 type: string
-   *                 description: Field of study (partial match)
-   *                 example: "Computer Science"
-   *             minProperties: 1
-   *     responses:
-   *       200:
-   *         description: List of persons matching the education criteria
-   *       400:
-   *         $ref: '#/components/responses/ValidationError'
-   *       500:
-   *         $ref: '#/components/responses/InternalServerError'
-   */
-  personRouter.post('/search/education', (req, res) => personController.searchByEducation(req, res));
 
   /**
    * @swagger

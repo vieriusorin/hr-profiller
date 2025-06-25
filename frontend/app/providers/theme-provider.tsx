@@ -11,7 +11,7 @@ import {
 import { Settings, ThemeContextType } from "../types";
 
 const defaultSettings: Settings = {
-	primaryColor: "oklch(0.63 0.22 264)", // Default primary color
+	primaryColor: "oklch(0.88 0.18 95.1)", // Default primary color
 	logoUrl: "",
 	logoWidth: 100,
 	logoHeight: 40,
