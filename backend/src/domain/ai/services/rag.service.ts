@@ -98,10 +98,19 @@ export class RAGService {
         'standard',   // urgency
         'internal'    // confidentialityLevel
       );
-      if (!analysisResult || !analysisResult.content || analysisResult.content.length === 0) {
+
+      // Handle the new response format
+      if (!analysisResult || !analysisResult.data) {
         throw new Error('Analysis returned no content');
       }
-      return analysisResult.content?.[0]?.text || 'Analysis completed but no content returned';
+
+      // Extract analysis from the new response format
+      const analysis = analysisResult.data.analysis;
+      if (!analysis || typeof analysis !== 'string' || analysis.trim().length === 0) {
+        throw new Error('Analysis returned empty content');
+      }
+
+      return analysis;
 
     } catch (error) {
       console.error('RAG analysis failed:', error);

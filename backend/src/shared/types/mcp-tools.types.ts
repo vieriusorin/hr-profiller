@@ -12,25 +12,24 @@ export interface McpTool {
   }
   
   export interface McpToolResult {
-    content: Array<{
-      type: string;
-      text: string;
-    }>;
-    metadata?: {
-      analysisType?: string;
-      userRole?: string;
-      urgency?: string;
-      confidentialityLevel?: string;
-      reportType?: string;
-      timestamp?: string;
-      confidence?: number;
-      processingTime?: string;
-      tokenUsage?: number;
-      version?: string;
+    data: {
+      analysis: string;
+      confidence: number;
+      recommendations: string[];
+      metadata: {
+        analysisType: string;
+        userRole: string;
+        urgency: string;
+        confidentialityLevel: string;
+        processingTime: number;
+        modelUsed: string;
+        tokensUsed: number;
+        timestamp: string;
+      };
     };
-    requestInfo?: {
-      toolName: string;
+    status: 'success' | 'error';
+    meta: {
       timestamp: string;
-      version: string;
+      processingTime?: number;
     };
   }

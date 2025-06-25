@@ -1,0 +1,69 @@
+# Multi-stage build for MCP Server production
+FROM node:22-alpine AS base
+
+# Install security updates and required packages
+RUN apk update && apk upgrade && apk add --no-cache \
+    curl \
+    dumb-init \
+    && rm -rf /var/cache/apk/*
+
+# Install dependencies only when needed
+FROM base AS deps
+WORKDIR /app/mcp-server
+COPY mcp-server/package*.json ./
+# Use npm ci for faster, reliable, reproducible builds
+RUN npm ci --only=production && npm cache clean --force
+
+# Build the source code
+FROM base AS builder
+WORKDIR /app/mcp-server
+COPY mcp-server/package*.json ./
+RUN npm ci --include=dev
+COPY mcp-server ./
+RUN npm run build && npm prune --production
+
+# Production image
+FROM base AS runner
+WORKDIR /app/mcp-server
+
+# Create non-root user with specific UID/GID
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S mcpuser -u 1001 -G nodejs
+
+# Copy built application and production dependencies
+COPY --from=builder --chown=mcpuser:nodejs /app/mcp-server/dist ./dist
+COPY --from=builder --chown=mcpuser:nodejs /app/mcp-server/node_modules ./node_modules
+COPY --from=builder --chown=mcpuser:nodejs /app/mcp-server/package*.json ./
+
+# Set production environment variables
+ENV NODE_ENV=production
+ENV PORT=3002
+ENV HOST=0.0.0.0
+ENV NODE_OPTIONS="--max-old-space-size=512"
+
+# Add build metadata
+ARG BUILD_DATE
+ARG VCS_REF
+ARG VERSION
+LABEL org.opencontainers.image.created=$BUILD_DATE \
+      org.opencontainers.image.revision=$VCS_REF \
+      org.opencontainers.image.version=$VERSION \
+      org.opencontainers.image.title="MCP Server" \
+      org.opencontainers.image.description="Production MCP Server" \
+      org.opencontainers.image.source="https://github.com/yourorg/profiller-hr"
+
+# Switch to non-root user
+USER mcpuser
+
+# Expose the port
+EXPOSE 3002
+
+# Health check with proper timeouts for production
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:$PORT/health || exit 1
+
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
+
+# Start the application
+CMD ["node", "dist/index.js"] 

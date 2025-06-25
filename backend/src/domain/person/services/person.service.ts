@@ -248,96 +248,23 @@ export class PersonService {
         throw new Error('Person not found');
       }
 
-
-      const capabilitiesSummary = await this.getPersonCapabilitiesSummary(personId);
-
-      // Prepare comprehensive data structure for AI analysis
-      const personAnalysisData = {
-        personalInfo: {
-          firstName: person.firstName,
-          lastName: person.lastName,
-          email: person.email
-        },
-        employmentDetails: {
-          // Employment details not directly available in Person entity
-          position: 'Not specified',
-          department: 'Not specified'
-        },
-        skills: person.skills.map(skill => ({
-          skillName: skill.skillName,
-          skillCategory: skill.skillCategory,
-          proficiencyLevel: skill.proficiencyLevel,
-          yearsOfExperience: skill.yearsOfExperience,
-          certificationName: skill.certificationName,
-          certificationDate: skill.certificationDate,
-          isCertified: skill.isCertified,
-          lastUsed: skill.lastUsed,
-          skillDescription: skill.skillDescription,
-          notes: skill.notes
-        })),
-        technologies: person.technologies.map(tech => ({
-          technologyName: tech.technologyName,
-          technologyCategory: tech.technologyCategory,
-          technologyVersion: tech.technologyVersion,
-          proficiencyLevel: tech.proficiencyLevel,
-          yearsOfExperience: tech.yearsOfExperience,
-          lastUsed: tech.lastUsed,
-          context: tech.context,
-          projectName: tech.projectName,
-          description: tech.description
-        })),
-        education: person.education.map(edu => ({
-          institution: edu.institution,
-          degree: edu.degree,
-          fieldOfStudy: edu.fieldOfStudy,
-          startDate: edu.startDate,
-          graduationDate: edu.graduationDate,
-          gpa: edu.gpa,
-          description: edu.description,
-          isCurrentlyEnrolled: edu.isCurrentlyEnrolled
-        })),
-        workHistory: [], // Work history not available in Person entity
-        capabilitiesSummary,
-        analysisContext: {
-          requestedAt: new Date().toISOString(),
-          analysisType,
-          userRole
-        }
-      };
-
-      // Use the new MCP client method with proper parameters
       const result = await this.mcpClientService.analyzeData(
-        JSON.stringify(personAnalysisData),
+        JSON.stringify(person),
         analysisType,
         userRole,
         urgency,
-        'internal' // confidentiality level
+        'internal'
       );
 
-      // Get confidence score for the analysis
-      let confidence;
-      try {
-        const confidenceResult = await this.mcpClientService.getAnalysisConfidence(
-          JSON.stringify(personAnalysisData)
-        );
-        confidence = confidenceResult.confidence;
-      } catch (error) {
-        console.warn('Could not get confidence score:', error);
-      }
-
       return {
-        analysis: result.content?.[0]?.text || 'Analysis completed',
-        metadata: {
-          ...result.metadata,
-          confidence,
-          personId,
-          dataCompleteness: this.calculateDataCompleteness(person)
-        },
-        confidence
+        analysis: result.data.analysis,
+        metadata: result.data.metadata,
+        confidence: result.data.confidence
       };
-    } catch (error: any) {
-      console.error('AI analysis failed:', error);
-      throw new Error(`AI analysis failed: ${error.message}`);
+
+    } catch (error) {
+      console.error('Failed to analyze person capabilities:', error);
+      throw new Error(`AI analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
@@ -361,90 +288,22 @@ export class PersonService {
         throw new Error('Person not found');
       }
 
-      // Get capabilities summary for the report
-      const capabilitiesSummary = await this.getPersonCapabilitiesSummary(personId);
-
-      // Prepare comprehensive data for report generation
-      const reportData = {
-        personalInfo: {
-          firstName: person.firstName,
-          lastName: person.lastName,
-          email: person.email,
-          phone: person.phone,
-          birthDate: person.birthDate,
-          address: person.address,
-          city: person.city,
-          country: person.country
-        },
-        employmentDetails: {
-          position: 'Not specified',
-          department: 'Not specified',
-          startDate: null,
-          employmentType: 'Not specified'
-        },
-        skills: person.skills.map(skill => ({
-          skillName: skill.skillName,
-          skillCategory: skill.skillCategory,
-          proficiencyLevel: skill.proficiencyLevel,
-          yearsOfExperience: skill.yearsOfExperience,
-          certificationName: skill.certificationName,
-          certificationDate: skill.certificationDate,
-          isCertified: skill.isCertified,
-          lastUsed: skill.lastUsed,
-          skillDescription: skill.skillDescription,
-          notes: skill.notes
-        })),
-        technologies: person.technologies.map(tech => ({
-          technologyName: tech.technologyName,
-          technologyCategory: tech.technologyCategory,
-          technologyVersion: tech.technologyVersion,
-          proficiencyLevel: tech.proficiencyLevel,
-          yearsOfExperience: tech.yearsOfExperience,
-          lastUsed: tech.lastUsed,
-          context: tech.context,
-          projectName: tech.projectName,
-          description: tech.description
-        })),
-        education: person.education.map(edu => ({
-          institution: edu.institution,
-          degree: edu.degree,
-          fieldOfStudy: edu.fieldOfStudy,
-          startDate: edu.startDate,
-          graduationDate: edu.graduationDate,
-          gpa: edu.gpa,
-          description: edu.description,
-          isCurrentlyEnrolled: edu.isCurrentlyEnrolled
-        })),
-        workHistory: [],
-        capabilitiesSummary,
-        reportMetadata: {
-          generatedAt: new Date().toISOString(),
-          reportType,
-          userRole,
-          version: '2.0'
-        }
-      };
-
-      // Use the new MCP client method
       const result = await this.mcpClientService.generateReport(
-        JSON.stringify(reportData),
+        JSON.stringify(person),
         reportType,
         userRole,
         includeMetrics,
-        'internal' // confidentiality level
+        'internal'
       );
 
       return {
-        report: result.content?.[0]?.text || 'Report generated',
-        metadata: {
-          ...result.metadata,
-          personId,
-          dataCompleteness: this.calculateDataCompleteness(person)
-        }
+        report: result.data.analysis,
+        metadata: result.data.metadata
       };
-    } catch (error: any) {
-      console.error('Report generation failed:', error);
-      throw new Error(`Report generation failed: ${error.message}`);
+
+    } catch (error) {
+      console.error('Failed to generate person report:', error);
+      throw new Error(`Report generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
@@ -466,42 +325,21 @@ export class PersonService {
         throw new Error('Person not found');
       }
 
-      const benchmarkingData = {
-        personalInfo: {
-          firstName: person.firstName,
-          lastName: person.lastName
-        },
-        skills: person.skills,
-        technologies: person.technologies,
-        education: person.education,
-        employmentDetails: {
-          position: 'Not specified',
-          department: 'Not specified'
-        },
-        benchmarkingContext: {
-          industry,
-          region,
-          requestedAt: new Date().toISOString()
-        }
-      };
-
       const result = await this.mcpClientService.skillBenchmarking(
-        JSON.stringify(benchmarkingData),
+        JSON.stringify(person),
         industry,
         region,
         includeProjections
       );
 
       return {
-        benchmarking: result.content?.[0]?.text || 'Benchmarking completed',
-        metadata: {
-          ...result.metadata,
-          personId
-        }
+        benchmarking: result.data.analysis,
+        metadata: result.data.metadata
       };
-    } catch (error: any) {
-      console.error('Skill benchmarking failed:', error);
-      throw new Error(`Skill benchmarking failed: ${error.message}`);
+
+    } catch (error) {
+      console.error('Failed to benchmark person skills:', error);
+      throw new Error(`Skill benchmarking failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
@@ -522,48 +360,20 @@ export class PersonService {
         throw new Error('Person not found');
       }
 
-      const compensationData = {
-        personalInfo: {
-          firstName: person.firstName,
-          lastName: person.lastName
-        },
-        employmentDetails: {
-          position: 'Not specified',
-          department: 'Not specified',
-          location: `${person.city || ''}, ${person.country || ''}`.trim().replace(/^,\s*|,\s*$/g, '') || 'Not specified'
-        },
-        skills: person.skills,
-        technologies: person.technologies,
-        education: person.education,
-        experience: {
-          totalYears: this.calculateTotalExperience(person),
-          skillsExperience: person.skills.map(s => ({
-            skill: s.skillName,
-            years: s.yearsOfExperience
-          }))
-        },
-        analysisContext: {
-          marketScope,
-          requestedAt: new Date().toISOString()
-        }
-      };
-
       const result = await this.mcpClientService.compensationAnalysis(
-        JSON.stringify(compensationData),
+        JSON.stringify(person),
         marketScope,
         includeEquityAnalysis
       );
 
       return {
-        analysis: result.content?.[0]?.text || 'Compensation analysis completed',
-        metadata: {
-          ...result.metadata,
-          personId
-        }
+        analysis: result.data.analysis,
+        metadata: result.data.metadata
       };
-    } catch (error: any) {
-      console.error('Compensation analysis failed:', error);
-      throw new Error(`Compensation analysis failed: ${error.message}`);
+
+    } catch (error) {
+      console.error('Failed to analyze person compensation:', error);
+      throw new Error(`Compensation analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 

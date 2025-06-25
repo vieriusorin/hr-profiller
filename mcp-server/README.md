@@ -1,14 +1,40 @@
-# MCP Server with Authentication
+# Enhanced HR MCP Server with Domain Driven Design
 
-Enhanced HR MCP Server with Swagger UI authentication protection.
+Enterprise-grade HR MCP Server with DDD architecture, Swagger UI authentication protection, and advanced AI capabilities.
 
-## Features
+## 🚀 Features
 
+- **Domain Driven Design**: Clean architecture with clear separation of concerns
+- **Dependency Injection**: Inversify IoC container for testability and maintainability
 - **Advanced AI Analytics**: Role-specific AI personas for HR analytics
 - **Executive Reporting**: Multi-step report generation with strategic insights
 - **Skill Benchmarking**: Comprehensive market analysis and benchmarking
 - **Compensation Analysis**: Market positioning and equity analysis
-- **Protected Swagger UI**: Authentication required for API documentation
+- **Protected Swagger UI**: Admin-only authentication required for API documentation
+- **Type Safety**: Full TypeScript implementation with comprehensive validation
+
+## 🏗️ Architecture
+
+This server follows Domain Driven Design (DDD) principles with clear architectural layers:
+
+### Domain Layer (`/domain/`)
+- **Entities**: Core business objects with behavior (`Analysis`)
+- **Services**: Domain logic and business rules (`McpAnalysisService`)
+- **Interfaces**: Domain contracts and types
+
+### Infrastructure Layer (`/infrastructure/`)
+- **Services**: External dependencies (`OpenAIService`, `PromptEngineService`)
+- **HTTP**: Controllers and routes
+- **Container**: Dependency injection setup with Inversify
+- **Swagger**: API documentation configuration
+
+### Interface Layer (`/interfaces/`)
+- **HTTP**: Server setup and middleware
+- **Presenters**: Data transformation for external consumption
+
+### Shared Layer (`/shared/`)
+- **Types**: Common types and dependency injection symbols
+- **Utils**: Common utilities and helpers
 
 ## Authentication Setup
 
