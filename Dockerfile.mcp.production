@@ -9,14 +9,14 @@ RUN apk update && apk upgrade && apk add --no-cache \
 
 # Install dependencies only when needed
 FROM base AS deps
-WORKDIR /app/mcp-server
+WORKDIR /app
 COPY mcp-server/package*.json ./
 # Use npm ci for faster, reliable, reproducible builds
 RUN npm ci --only=production && npm cache clean --force
 
 # Build the source code
 FROM base AS builder
-WORKDIR /app/mcp-server
+WORKDIR /app
 COPY mcp-server/package*.json ./
 RUN npm ci --include=dev
 COPY mcp-server ./
@@ -24,16 +24,16 @@ RUN npm run build && npm prune --production
 
 # Production image
 FROM base AS runner
-WORKDIR /app/mcp-server
+WORKDIR /app
 
 # Create non-root user with specific UID/GID
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S mcpuser -u 1001 -G nodejs
 
 # Copy built application and production dependencies
-COPY --from=builder --chown=mcpuser:nodejs /app/mcp-server/dist ./dist
-COPY --from=builder --chown=mcpuser:nodejs /app/mcp-server/node_modules ./node_modules
-COPY --from=builder --chown=mcpuser:nodejs /app/mcp-server/package*.json ./
+COPY --from=builder --chown=mcpuser:nodejs /app/dist ./dist
+COPY --from=builder --chown=mcpuser:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=mcpuser:nodejs /app/package*.json ./
 
 # Set production environment variables
 ENV NODE_ENV=production
@@ -58,7 +58,7 @@ USER mcpuser
 # Expose the port
 EXPOSE 3002
 
-# Health check with proper timeouts for production
+# Health check with proper timeouts for k8s
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:$PORT/health || exit 1
 

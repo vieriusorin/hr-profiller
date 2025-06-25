@@ -1,9 +1,30 @@
+import 'dotenv/config';
 import { injectable } from 'inversify';
-import OpenAI from 'openai';
+import { createOpenAI } from '@ai-sdk/openai';
+import { generateText, embed, embedMany, cosineSimilarity } from 'ai';
 
 import { systemPrompts } from '../prompts/system-prompts';
 import { analysisTemplates } from '../prompts/analysis-templates';
 import { reportSpecifications, reportTypes, contextTemplate, peerComparisonTemplate, marketContextTemplate, marketIntelligenceTemplate } from '../prompts/report-templates';
+
+export interface EmbeddingResult {
+  embedding: number[];
+  model: string;
+  usage: {
+    promptTokens: number;
+    totalTokens: number;
+  };
+}
+
+export interface ChatCompletionResult {
+  content: string;
+  model: string;
+  usage: {
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+  };
+}
 
 export interface OpenAIService {
   generateCompletion(prompt: string, options?: {
@@ -19,12 +40,24 @@ export interface OpenAIService {
 
 @injectable()
 export class OpenAIServiceImpl implements OpenAIService {
-  private openai: OpenAI;
+  private provider: ReturnType<typeof createOpenAI>;
+  private embeddingModel: string;
+  private chatModel: string;
 
   constructor() {
-    this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      throw new Error('OPENAI_API_KEY environment variable is required');
+    }
+
+    // Initialize AI SDK provider
+    this.provider = createOpenAI({
+      apiKey,
+      compatibility: 'strict',
     });
+
+    this.embeddingModel = process.env.OPENAI_EMBEDDING_MODEL || 'text-embedding-3-small';
+    this.chatModel = process.env.OPENAI_CHAT_MODEL || 'gpt-4o-mini';
   }
 
   async generateCompletion(prompt: string, options?: {
@@ -37,38 +70,94 @@ export class OpenAIServiceImpl implements OpenAIService {
     model: string;
   }> {
     try {
-      const completion = await this.openai.chat.completions.create({
-        model: options?.model || 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
+      const { text, usage } = await generateText({
+        model: this.provider(options?.model || this.chatModel),
+        messages: [{ role: 'user', content: prompt }],
         temperature: options?.temperature || 0.7,
-        max_tokens: options?.maxTokens || 4000,
+        maxTokens: options?.maxTokens || 4000,
+        maxRetries: 3,
+        abortSignal: AbortSignal.timeout(60000), // 60 second timeout
       });
 
-      const content = completion.choices[0]?.message?.content || '';
-      const tokensUsed = completion.usage?.total_tokens || 0;
-      const model = completion.model;
+      return {
+        content: text,
+        tokensUsed: usage.totalTokens,
+        model: options?.model || this.chatModel
+      };
+    } catch (error: any) {
+      console.error('Error generating completion with AI SDK:', error);
+      throw new Error(`Failed to generate completion: ${error.message}`);
+    }
+  }
+
+  /**
+   * Generate embeddings for text using AI SDK
+   * @param text - The input text to generate embeddings for
+   * @returns Promise resolving to an EmbeddingResult containing the embedding vector and usage information
+   */
+  async generateEmbeddings(text: string): Promise<EmbeddingResult> {
+    try {
+      const { embedding, usage } = await embed({
+        model: this.provider.embedding(this.embeddingModel),
+        value: text,
+        maxRetries: 3,
+        abortSignal: AbortSignal.timeout(30000), // 30 second timeout for single embedding
+      });
 
       return {
-        content,
-        tokensUsed,
-        model
+        embedding,
+        model: this.embeddingModel,
+        usage: {
+          promptTokens: usage.tokens,
+          totalTokens: usage.tokens,
+        },
       };
-
-    } catch (error) {
-      console.error('OpenAI API error:', error);
-      throw new Error(`OpenAI generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } catch (error: any) {
+      console.error('Error generating embeddings with AI SDK:', error);
+      throw new Error(`Failed to generate embeddings: ${error.message}`);
     }
+  }
+
+  /**
+   * Generate embeddings for multiple texts using AI SDK
+   * @param texts - Array of input texts to generate embeddings for
+   * @returns Promise resolving to an array of EmbeddingResult containing the embedding vectors and usage information
+   */
+  async generateEmbeddingsBatch(texts: string[]): Promise<EmbeddingResult[]> {
+    try {
+      const { embeddings, usage } = await embedMany({
+        model: this.provider.embedding(this.embeddingModel),
+        values: texts,
+        maxRetries: 3,
+        abortSignal: AbortSignal.timeout(60000), // 60 second timeout for batch
+      });
+
+      return embeddings.map((embedding) => ({
+        embedding,
+        model: this.embeddingModel,
+        usage: {
+          promptTokens: usage.tokens,
+          totalTokens: usage.tokens,
+        },
+      }));
+    } catch (error: any) {
+      console.error('Error generating batch embeddings with AI SDK:', error);
+      throw new Error(`Failed to generate batch embeddings: ${error.message}`);
+    }
+  }
+
+  /**
+   * Calculate cosine similarity between two embeddings
+   * This is a utility function that comes with AI SDK
+   */
+  calculateSimilarity(embedding1: number[], embedding2: number[]): number {
+    return cosineSimilarity(embedding1, embedding2);
   }
 
   async skillBenchmarking(data: any, industry: string, region: string, includeProjections = true): Promise<string> {
     try {
-      const completion = await this.openai.chat.completions.create({
-        model: 'gpt-4',
+      const { text } = await generateText({
+        model: this.provider('gpt-4'),
         messages: [
           {
             role: 'system',
@@ -80,20 +169,22 @@ export class OpenAIServiceImpl implements OpenAIService {
           }
         ],
         temperature: 0.4,
-        max_tokens: 2500
+        maxTokens: 2000,
+        maxRetries: 3,
+        abortSignal: AbortSignal.timeout(60000)
       });
 
-      return completion.choices[0]?.message?.content || '';
-    } catch (error) {
+      return text;
+    } catch (error: any) {
       console.error('Error in skill benchmarking:', error);
-      throw new Error('Failed to perform skill benchmarking analysis');
+      throw new Error(`Skill benchmarking failed: ${error.message}`);
     }
   }
 
   async compensationAnalysis(data: any, marketScope = 'national', includeEquityAnalysis = true): Promise<string> {
     try {
-      const completion = await this.openai.chat.completions.create({
-        model: 'gpt-4',
+      const { text } = await generateText({
+        model: this.provider('gpt-4'),
         messages: [
           {
             role: 'system',
@@ -104,52 +195,49 @@ export class OpenAIServiceImpl implements OpenAIService {
             content: analysisTemplates.compensation_analysis
           }
         ],
-        temperature: 0.3,
-        max_tokens: 2500
+        temperature: 0.4,
+        maxTokens: 2000,
+        maxRetries: 3,
+        abortSignal: AbortSignal.timeout(60000)
       });
 
-      return completion.choices[0]?.message?.content || '';
-    } catch (error) {
+      return text;
+    } catch (error: any) {
       console.error('Error in compensation analysis:', error);
-      throw new Error('Failed to perform compensation analysis');
+      throw new Error(`Compensation analysis failed: ${error.message}`);
     }
   }
 
-  async generatePersonReport(personData: any, reportType: string = 'comprehensive'): Promise<string> {
+  async generatePersonReport(data: any, reportType: string = 'comprehensive'): Promise<string> {
     try {
-      const systemPrompt = systemPrompts.hr_manager;
-      const reportPrompt = reportTypes[reportType as keyof typeof reportTypes] || reportTypes.comprehensive;
-
-      const context = this.buildContextualData(personData);
-
-      const userPrompt = `Generate a ${reportType} report for the following person:
-    
-${context}
-    
-${reportPrompt}
-
-${reportSpecifications}`;
-
-      const completion = await this.openai.chat.completions.create({
-        model: 'gpt-4',
+      const { text } = await generateText({
+        model: this.provider('gpt-4'),
         messages: [
           {
             role: 'system',
-            content: systemPrompt
+            content: `${systemPrompts.hr_manager}
+${reportTypes}
+${contextTemplate}
+${peerComparisonTemplate}
+${marketContextTemplate}
+${marketIntelligenceTemplate}
+${reportSpecifications}`
           },
           {
             role: 'user',
-            content: userPrompt
+            content: analysisTemplates.career_recommendation
           }
         ],
         temperature: 0.4,
-        max_tokens: 2500
+        maxTokens: 2000,
+        maxRetries: 3,
+        abortSignal: AbortSignal.timeout(60000)
       });
 
-      return completion.choices[0]?.message?.content || '';
-    } catch (error) {
+      return text;
+    } catch (error: any) {
       console.error('Error generating person report:', error);
-      throw new Error('Failed to generate person report');
+      throw new Error(`Person report generation failed: ${error.message}`);
     }
   }
 

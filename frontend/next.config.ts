@@ -7,6 +7,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  output: 'standalone',
   images: {
     domains: ['localhost', '127.0.0.1'],
   },
