@@ -138,6 +138,7 @@ networks:
   dd-network:
     driver: bridge
 
+# Secrets - these are stored in the ./secrets directory
 secrets:
   postgres_user:
     file: ./secrets/postgres_user

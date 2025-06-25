@@ -25,9 +25,6 @@ services:
       - API_URL=http://backend:4040
       # CORS Configuration
       - CORS_ORIGIN=${CORS_ORIGIN}
-      # Feature Flags
-      - FEATURE_ANALYTICS=${FEATURE_ANALYTICS:-true}
-      - FEATURE_NOTIFICATIONS=${FEATURE_NOTIFICATIONS:-true}
       # Cloud Provider
       - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
       - AZURE_TENANT_ID=${AZURE_TENANT_ID}
@@ -72,7 +69,6 @@ services:
       - HOST=0.0.0.0
       # Database & Cache
       - DATABASE_URL=${DATABASE_URL}
-      - REDIS_URL=${REDIS_URL}
       - POSTGRES_DB=${POSTGRES_DB:-profiller}
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -177,7 +173,5 @@ networks:
     name: profiller-network
 
 volumes:
-  redis-data:
-    name: profiller-redis-data
   postgres-data:
     name: profiller-postgres-data 
