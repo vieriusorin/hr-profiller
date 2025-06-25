@@ -6,6 +6,8 @@ import { Toaster } from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "./providers/theme-provider";
 import { getSettings } from "@/lib/settings";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/authOptions";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -26,18 +28,21 @@ export default async function RootLayout({
 }: {
 	children: React.ReactNode;
 }) {
+	const session = await getServerSession(authOptions);
+	const settings = await getSettings();
+
 	return (
 		<html lang='en' className={cn(outfit.className)} suppressHydrationWarning>
 			<body>
 				<ThemeProvider>
-					<Providers>{children}</Providers>
+					<Providers session={session}>{children}</Providers>
 					<Toaster
 						position='top-right'
 						toastOptions={{
 							duration: 4000,
 							style: {
-								background: (await getSettings()).primaryColor,
-								color: (await getSettings()).primaryForeground,
+								background: settings.primaryColor,
+								color: settings.primaryForeground,
 							},
 							success: {
 								duration: 3000,

@@ -2,11 +2,15 @@
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { SessionProvider } from "next-auth/react";
 import { useState } from "react";
-import { ProvidersProps } from "./types";
+import { SessionProvider } from "next-auth/react";
 
-export function Providers({ children }: ProvidersProps) {
+interface ProvidersProps {
+	children: React.ReactNode;
+	session?: any;
+}
+
+export function Providers({ children, session }: ProvidersProps) {
 	const [queryClient] = useState(
 		() =>
 			new QueryClient({
@@ -30,8 +34,11 @@ export function Providers({ children }: ProvidersProps) {
 			})
 	);
 
+	// Type assertion to work around NextAuth v4 + React 19 compatibility issue
+	const SessionProviderComponent = SessionProvider as any;
+
 	return (
-		<SessionProvider>
+		<SessionProviderComponent session={session}>
 			<QueryClientProvider client={queryClient}>
 				<NuqsAdapter>
 					{children}
@@ -40,6 +47,6 @@ export function Providers({ children }: ProvidersProps) {
 					)}
 				</NuqsAdapter>
 			</QueryClientProvider>
-		</SessionProvider>
+		</SessionProviderComponent>
 	);
 }

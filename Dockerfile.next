@@ -7,12 +7,11 @@ RUN adduser -S nextjs -u 1001
 # Set the working directory
 WORKDIR /app/frontend
 
-# Copy package files first for better layer caching
-COPY frontend/package*.json ./
-COPY frontend/yarn.lock* ./
+# Copy package.json only (not package-lock.json to avoid platform conflicts)
+COPY frontend/package.json ./
 
-# Install dependencies as root (needed for npm install)
-RUN npm install --legacy-peer-deps
+# Install dependencies as root (clean install without lock file)
+RUN npm install --legacy-peer-deps --no-package-lock
 
 # Copy the rest of the application code
 COPY frontend /app/frontend
