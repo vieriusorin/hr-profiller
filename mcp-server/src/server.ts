@@ -361,8 +361,18 @@ export class HttpMcpServer {
         try {
             const startTime = Date.now();
             
-            // Parse and enrich the context data
-            const context = JSON.parse(data);
+            // Handle both JSON object data and plain text data
+            let context: any;
+            try {
+                context = JSON.parse(data);
+            } catch (parseError) {
+                // If parsing fails, treat as plain text and create a minimal context
+                context = {
+                    rawData: data,
+                    analysisData: data,
+                    parseMethod: 'plain_text'
+                };
+            }
             const enrichedContext = await this.enrichContext(context);
 
             // Create advanced prompt using the enhanced engine
@@ -437,8 +447,18 @@ export class HttpMcpServer {
         try {
             const startTime = Date.now();
             
-            // Parse and enrich context
-            const context = JSON.parse(data);
+            // Handle both JSON object data and plain text data
+            let context: any;
+            try {
+                context = JSON.parse(data);
+            } catch (parseError) {
+                // If parsing fails, treat as plain text and create a minimal context
+                context = {
+                    rawData: data,
+                    reportData: data,
+                    parseMethod: 'plain_text'
+                };
+            }
             const enrichedContext = await this.enrichContext(context);
             
             // For complex reports, use multi-step generation
@@ -516,7 +536,18 @@ export class HttpMcpServer {
         includeProjections: boolean = true
     ) {
         try {
-            const context = JSON.parse(data);
+            // Handle both JSON object data and plain text data
+            let context: any;
+            try {
+                context = JSON.parse(data);
+            } catch (parseError) {
+                // If parsing fails, treat as plain text and create a minimal context
+                context = {
+                    rawData: data,
+                    skillText: data,
+                    parseMethod: 'plain_text'
+                };
+            }
             const enrichedContext = await this.enrichContext(context);
 
             const prompt = `
@@ -604,7 +635,18 @@ Provide detailed benchmarking analysis with scores, projections, and strategic r
         includeEquityAnalysis: boolean = true
     ) {
         try {
-            const context = JSON.parse(data);
+            // Handle both JSON object data and plain text data
+            let context: any;
+            try {
+                context = JSON.parse(data);
+            } catch (parseError) {
+                // If parsing fails, treat as plain text and create a minimal context
+                context = {
+                    rawData: data,
+                    compensationData: data,
+                    parseMethod: 'plain_text'
+                };
+            }
             const enrichedContext = await this.enrichContext(context);
 
             const prompt = `
@@ -855,7 +897,16 @@ Provide detailed compensation analysis with specific recommendations and market 
     }
 
     private buildCandidateProfileSummary(context: any): string {
-        // Handle both flat and nested context structures
+        // Handle plain text data
+        if (context.parseMethod === 'plain_text') {
+            return `
+Data Source: Plain Text Input
+Content: ${context.rawData || context.skillText || 'No data provided'}
+Analysis Type: Free-form text analysis
+            `;
+        }
+
+        // Handle both flat and nested context structures (JSON data)
         const firstName = context.personalInfo?.firstName || context.firstName || 'Unknown';
         const lastName = context.personalInfo?.lastName || context.lastName || '';
         const position = context.employmentDetails?.position || 'Not specified';
@@ -1644,7 +1695,18 @@ Technologies: ${technologies}
                     return res.status(400).json({ error: 'Data must be a JSON string' });
                 }
 
-                const context = JSON.parse(data);
+                // Handle both JSON and plain text input
+                let context: any;
+                try {
+                    context = JSON.parse(data);
+                } catch (parseError) {
+                    // If JSON parsing fails, treat as plain text
+                    context = {
+                        rawData: data,
+                        parseMethod: 'plain_text'
+                    };
+                }
+
                 const enrichedContext = await this.enrichContext(context);
                 const confidence = this.calculateConfidenceScore(enrichedContext);
 

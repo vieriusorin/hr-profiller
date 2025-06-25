@@ -19,6 +19,13 @@ export class VectorDatabaseService {
 
   /**
    * Store person embedding in the database
+   * @param personId - The ID of the person
+   * @param embedding - The embedding vector as an array of numbers
+   * @param searchableText - Text to be used for searching
+   * @param embeddingType - Type of embedding (e.g., 'profile', 'skills')
+   * @param model - The model used for generating the embedding
+   * @param metadata - Optional metadata associated with the embedding
+   * @returns The stored PersonEmbedding object
    */
   async storePersonEmbedding(
     personId: string,
@@ -82,6 +89,11 @@ export class VectorDatabaseService {
 
   /**
    * Find similar persons using cosine similarity
+   * @param queryEmbedding - The embedding vector to compare against
+   * @param embeddingType - The type of embedding (e.g., 'profile', 'skills')
+   * @param limit - Maximum number of results to return
+   * @param similarityThreshold - Minimum similarity score to consider a match
+   * @returns An array of SimilarityResult objects containing person IDs and similarity scores
    */
   async findSimilarPersons(
     queryEmbedding: number[],
@@ -168,6 +180,9 @@ export class VectorDatabaseService {
 
   /**
    * Get person embedding by ID and type
+   * @param personId - The ID of the person
+   * @param embeddingType - The type of embedding (e.g., 'profile', 'skills')
+   * @return The PersonEmbedding object or null if not found
    */
   async getPersonEmbedding(
     personId: string,
@@ -194,6 +209,9 @@ export class VectorDatabaseService {
 
   /**
    * Delete person embedding
+   * @param personId - The ID of the person
+   * @param embeddingType - The type of embedding to delete (default is 'profile')
+   * @throws Error if deletion fails
    */
   async deletePersonEmbedding(
     personId: string,
@@ -216,6 +234,9 @@ export class VectorDatabaseService {
 
   /**
    * Get embedding statistics
+   * Returns total embeddings, count by type, total cost, and average similarity
+   * @returns An object containing statistics about embeddings
+   * @throws Error if statistics retrieval fails
    */
   async getEmbeddingStats(): Promise<{
     totalEmbeddings: number;
@@ -272,6 +293,14 @@ export class VectorDatabaseService {
 
   /**
    * Store similarity search results for analytics
+   * @param queryEmbedding - The embedding vector used for the search
+   * @param embeddingType - The type of embedding used (e.g., 'profile', 'skills')
+   * @param model - The model used for generating the embedding
+   * @param results - The results of the similarity search
+   * @param limit - The limit of results returned
+   * @param similarityThreshold - The threshold for similarity
+   * @param executionTime - The time taken to execute the search
+   * @throws Error if storing fails
    */
   private async storeSimilaritySearch(
     queryEmbedding: number[],
@@ -303,6 +332,9 @@ export class VectorDatabaseService {
 
   /**
    * Calculate embedding cost based on model and tokens
+   * @param tokens - Number of tokens used in the embedding
+   * @param model - The model used for generating the embedding
+   * @returns The cost as a string formatted to 6 decimal places
    */
   private calculateEmbeddingCost(tokens: number, model: string): string {
     // OpenAI pricing (as of 2024)

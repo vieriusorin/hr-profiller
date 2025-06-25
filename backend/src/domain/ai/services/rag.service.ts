@@ -4,7 +4,7 @@ import { OpenAIService } from './openai.service';
 import { VectorDatabaseService } from './vector-database.service';
 import { McpClientService } from '../../mcp/services/mcp-client.service';
 import { PersonRepository } from '../../person/repositories/person.repository';
-import { type SimilarityResult, type EmbeddingMetadata } from '../../../../db/schema/embeddings.schema';
+import { type SimilarityResult } from '../../../../db/schema/embeddings.schema';
 
 export interface RAGAnalysisResult {
   analysis: string;
@@ -52,6 +52,13 @@ export class RAGService {
   /**
    * Main RAG analysis method - orchestrates the entire flow
    * This is the entry point for person analysis with AI
+   * It retrieves the person data, generates embeddings,
+   * finds similar persons, and calls the MCP server for analysis.
+   * @param request - The analysis request containing person ID and options.
+   * @return A promise that resolves to the analysis result as a string.
+   * If any step fails, it throws an error with a descriptive message.
+   * This method is crucial for providing a comprehensive analysis of a person's profile
+   * and generating insights based on their skills, technologies, and market context.
    */
   async analyzePersonWithRAG(request: AnalysisRequest): Promise<string> {
     try {
@@ -104,6 +111,11 @@ export class RAGService {
 
   /**
    * Get person data with all related information (skills, technologies, education, etc.)
+   * This method retrieves a person by ID and includes all related data
+   * such as skills, technologies, education, and notes.
+   * @param personId - The ID of the person to retrieve.
+   * @return A promise that resolves to the person object with all related data.
+   * If the person is not found, it throws an error with a descriptive message.
    */
   private async getPersonWithContext(personId: string): Promise<any> {
     return await this.personRepository.findById(personId, true);
@@ -111,6 +123,15 @@ export class RAGService {
 
   /**
    * Ensure person has embeddings, generate if not exists
+   * This method checks if the person already has an embedding stored in the vector database.
+   * If not, it generates a new embedding using OpenAI's API and stores it.
+   * @param person - The person object containing all relevant data.
+   * @return A promise that resolves to the embedding vector as an array of numbers.
+   * If the embedding generation fails, it throws an error with a descriptive message.
+   * This method is crucial for ensuring that the person's profile
+   * is represented in the vector database for similarity searches and analysis.
+   * @throws Error if there is an issue generating or storing the embedding.
+   * It handles both the case where the embedding already exists
    */
   private async ensurePersonEmbedding(person: any): Promise<number[]> {
     try {
@@ -153,6 +174,17 @@ export class RAGService {
 
   /**
    * Create text representation of person for embedding generation
+   * This method formats the person's data into a string
+   * that can be used for generating embeddings.
+   * It includes the person's name, email, skills, technologies,
+   * education, and any additional notes.
+   * @param person - The person object containing all relevant data.
+   * @return A string representation of the person, suitable for embedding generation.
+   * If no skills or technologies are found, it returns an empty string.
+   * @throws Error if there is an issue formatting the person's data.
+   * This method is crucial for ensuring that the embeddings
+   * accurately reflect the person's profile and can be used
+   * for similarity searches and analysis.
    */
   private createPersonText(person: any): string {
     const parts = [
@@ -199,6 +231,14 @@ export class RAGService {
 
   /**
    * Get market context for person's skills
+   * This method analyzes the skills and technologies of a person
+   * to generate a market context that can be used in RAG analysis.
+   * It provides insights into the demand for these skills
+   * and how they relate to current market trends.
+   * @param person - The person object containing skills and technologies.
+   * @return A string describing the market context based on the person's skills.
+   * If no skills or technologies are found, it returns a default message.
+   * @throws Error if there is an issue retrieving or processing the skills.
    */
   private async getSkillsContext(person: any): Promise<string> {
     try {

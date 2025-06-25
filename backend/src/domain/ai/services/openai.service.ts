@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { injectable } from 'inversify';
-import OpenAI from 'openai';
+import { createOpenAI } from '@ai-sdk/openai';
+import { generateText, embed, embedMany, cosineSimilarity } from 'ai';
 
 export interface EmbeddingResult {
   embedding: number[];
@@ -23,7 +24,7 @@ export interface ChatCompletionResult {
 
 @injectable()
 export class OpenAIService {
-  private openai: OpenAI;
+  private provider: ReturnType<typeof createOpenAI>;
   private embeddingModel: string;
   private chatModel: string;
 
@@ -33,103 +34,124 @@ export class OpenAIService {
       throw new Error('OPENAI_API_KEY environment variable is required');
     }
 
-    this.openai = new OpenAI({
+    // Initialize AI SDK provider
+    this.provider = createOpenAI({
       apiKey,
-      maxRetries: 3,
+      compatibility: 'strict',
+      
     });
 
     this.embeddingModel = process.env.OPENAI_EMBEDDING_MODEL || 'text-embedding-3-small';
-    this.chatModel = process.env.OPENAI_CHAT_MODEL || 'gpt-4-turbo-preview';
+    this.chatModel = process.env.OPENAI_CHAT_MODEL || 'gpt-4o-mini';
   }
 
   /**
-   * Generate embeddings for text using OpenAI
+   * Generate embeddings for text using AI SDK
+   * @param text - The input text to generate embeddings for
+   * @returns Promise resolving to an EmbeddingResult containing the embedding vector and usage information
    */
   async generateEmbeddings(text: string): Promise<EmbeddingResult> {
     try {
-      const response = await this.openai.embeddings.create({
-        model: this.embeddingModel,
-        input: text,
-        encoding_format: 'float',
+      const { embedding, usage } = await embed({
+        model: this.provider.embedding(this.embeddingModel),
+        value: text,
+        maxRetries: 3,
+        abortSignal: AbortSignal.timeout(30000), // 30 second timeout for single embedding
       });
-
-      const embedding = response.data[0].embedding;
-      const usage = response.usage;
 
       return {
         embedding,
         model: this.embeddingModel,
         usage: {
-          promptTokens: usage.prompt_tokens,
-          totalTokens: usage.total_tokens,
+          promptTokens: usage.tokens,
+          totalTokens: usage.tokens,
         },
       };
     } catch (error: any) {
-      console.error('Error generating embeddings:', error);
+      console.error('Error generating embeddings with AI SDK:', error);
       throw new Error(`Failed to generate embeddings: ${error.message}`);
     }
   }
 
+
+
   /**
-   * Generate embeddings for multiple texts
+   * Generate embeddings for multiple texts using AI SDK
+   * @param texts - Array of input texts to generate embeddings for
+   * @returns Promise resolving to an array of EmbeddingResult containing the embedding vectors and usage information
    */
   async generateEmbeddingsBatch(texts: string[]): Promise<EmbeddingResult[]> {
     try {
-      const response = await this.openai.embeddings.create({
-        model: this.embeddingModel,
-        input: texts,
-        encoding_format: 'float',
+      const { embeddings, usage } = await embedMany({
+        model: this.provider.embedding(this.embeddingModel),
+        values: texts,
+        maxRetries: 3,
+        abortSignal: AbortSignal.timeout(60000), // 60 second timeout for batch
       });
 
-      return response.data.map((item, index) => ({
-        embedding: item.embedding,
+      return embeddings.map((embedding) => ({
+        embedding,
         model: this.embeddingModel,
         usage: {
-          promptTokens: response.usage.prompt_tokens,
-          totalTokens: response.usage.total_tokens,
+          promptTokens: usage.tokens,
+          totalTokens: usage.tokens,
         },
       }));
     } catch (error: any) {
-      console.error('Error generating batch embeddings:', error);
+      console.error('Error generating batch embeddings with AI SDK:', error);
       throw new Error(`Failed to generate batch embeddings: ${error.message}`);
     }
   }
 
+
+
   /**
-   * Generate chat completion for AI analysis
+   * Generate chat completion using AI SDK
+   * @param messages - Array of message objects representing the chat history
+   * @param temperature - Sampling temperature for the model (default is 0.4)
    */
   async generateChatCompletion(
     messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
-    temperature: number = 0.7
+    temperature: number = 0.4
   ): Promise<ChatCompletionResult> {
     try {
-      const response = await this.openai.chat.completions.create({
-        model: this.chatModel,
+      const { text, usage } = await generateText({
+        model: this.provider(this.chatModel),
         messages,
         temperature,
-        max_tokens: 2000,
+        maxTokens: 2000,
+        maxRetries: 3,
+        abortSignal: AbortSignal.timeout(60000), // 60 second timeout
       });
 
-      const content = response.choices[0]?.message?.content || '';
-      const usage = response?.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
-
       return {
-        content,
+        content: text,
         model: this.chatModel,
         usage: {
-          promptTokens: usage.prompt_tokens,
-          completionTokens: usage.completion_tokens,
-          totalTokens: usage.total_tokens,
+          promptTokens: usage.promptTokens,
+          completionTokens: usage.completionTokens,
+          totalTokens: usage.totalTokens,
         },
       };
     } catch (error: any) {
-      console.error('Error generating chat completion:', error);
+      console.error('Error generating chat completion with AI SDK:', error);
       throw new Error(`Failed to generate chat completion: ${error.message}`);
     }
   }
 
   /**
+   * Calculate cosine similarity between two embeddings
+   * This is a utility function that comes with AI SDK
+   */
+  calculateSimilarity(embedding1: number[], embedding2: number[]): number {
+    return cosineSimilarity(embedding1, embedding2);
+  }
+
+  /**
    * Generate person analysis using AI
+   * This function analyzes a person's profile and suggests an internal grade based on provided criteria.
+   * @param personData - The person's profile data to analyze
+   * @param context - Optional additional context for the analysis
    */
   async analyzePerson(personData: any, context?: string): Promise<string> {
     const systemPrompt = `
