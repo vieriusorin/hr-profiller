@@ -6,37 +6,7 @@ import { generateText, embed, embedMany, cosineSimilarity } from 'ai';
 import { systemPrompts } from '../prompts/system-prompts';
 import { analysisTemplates } from '../prompts/analysis-templates';
 import { reportSpecifications, reportTypes, contextTemplate, peerComparisonTemplate, marketContextTemplate, marketIntelligenceTemplate } from '../prompts/report-templates';
-
-export interface EmbeddingResult {
-  embedding: number[];
-  model: string;
-  usage: {
-    promptTokens: number;
-    totalTokens: number;
-  };
-}
-
-export interface ChatCompletionResult {
-  content: string;
-  model: string;
-  usage: {
-    promptTokens: number;
-    completionTokens: number;
-    totalTokens: number;
-  };
-}
-
-export interface OpenAIService {
-  generateCompletion(prompt: string, options?: {
-    model?: string;
-    temperature?: number;
-    maxTokens?: number;
-  }): Promise<{
-    content: string;
-    tokensUsed: number;
-    model: string;
-  }>;
-}
+import { EmbeddingResult, OpenAIService } from '../../shared/types';
 
 @injectable()
 export class OpenAIServiceImpl implements OpenAIService {

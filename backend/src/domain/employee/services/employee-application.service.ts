@@ -21,6 +21,8 @@ export class EmployeeApplicationService {
 
   /**
    * Get complete employee profile by person ID
+   * @param personId - The ID of the person to get the profile for
+   * @returns The employee profile
    */
   async getEmployeeProfile(personId: string): Promise<EmployeeProfile | null> {
     const person = await this.personService.getPersonById(personId, true);
@@ -39,6 +41,7 @@ export class EmployeeApplicationService {
 
   /**
    * Get all active employee profiles
+   * @returns All active employee profiles
    */
   async getAllEmployeeProfiles(): Promise<EmployeeProfile[]> {
     // Get all employments and filter for active ones
@@ -60,6 +63,9 @@ export class EmployeeApplicationService {
   /**
    * Create a new employee (person + employment)
    * This is a cross-domain transaction
+   * @param personData - The data for the new person
+   * @param employmentData - The data for the new employment
+   * @returns The new employee profile
    */
   async createEmployee(
     personData: TypeNewPerson,
@@ -88,6 +94,10 @@ export class EmployeeApplicationService {
 
   /**
    * Update employee profile (coordinates updates across domains)
+   * @param personId - The ID of the person to update the profile for
+   * @param personUpdates - The updates to the person data
+   * @param employmentUpdates - The updates to the employment data
+   * @returns The updated employee profile
    */
   async updateEmployeeProfile(
     personId: string,
@@ -156,6 +166,8 @@ export class EmployeeApplicationService {
 
   /**
    * Search employees by skills (delegates to Person domain)
+   * @param skillNames - The names of the skills to search for
+   * @returns The employee profiles that match the skills
    */
   async searchEmployeesBySkills(skillNames: string[]): Promise<EmployeeProfile[]> {
     const persons = await this.personService.searchPersonsBySkills(skillNames);
@@ -174,6 +186,8 @@ export class EmployeeApplicationService {
 
   /**
    * Search employees by technologies (delegates to Person domain)
+   * @param technologyNames - The names of the technologies to search for
+   * @returns The employee profiles that match the technologies
    */
   async searchEmployeesByTechnologies(technologyNames: string[]): Promise<EmployeeProfile[]> {
     const persons = await this.personService.searchPersonsByTechnologies(technologyNames);
@@ -192,6 +206,10 @@ export class EmployeeApplicationService {
 
   /**
    * Search employees by education (delegates to Person domain)
+   * @param institution - The institution to search for
+   * @param degree - The degree to search for
+   * @param fieldOfStudy - The field of study to search for
+   * @returns The employee profiles that match the education
    */
   async searchEmployeesByEducation(
     institution?: string,
@@ -214,6 +232,8 @@ export class EmployeeApplicationService {
 
   /**
    * Get employee capabilities summary
+   * @param personId - The ID of the person to get the capabilities summary for
+   * @returns The capabilities summary
    */
   async getEmployeeCapabilitiesSummary(personId: string) {
     // Verify person is an active employee first
@@ -227,6 +247,8 @@ export class EmployeeApplicationService {
 
   /**
    * Add skill to employee (delegates to Person domain)
+   * @params personId - The ID of the person to add the skill to
+   * @params skillData - The data for the skill to add
    */
   async addSkillToEmployee(personId: string, skillData: any): Promise<void> {
     // Verify person is an active employee first

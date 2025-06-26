@@ -24,6 +24,7 @@
 	"license": "ISC",
 	"description": "",
 	"dependencies": {
+		"@profiller-hr/shared-types": "file:../shared-types",
 		"@ai-sdk/openai": "^1.3.22",
 		"@types/jsonwebtoken": "^9.0.10",
 		"ai": "^4.3.16",

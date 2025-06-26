@@ -56,3 +56,35 @@ export * from './presenter.types';
 
 // Export presentation types (schema + computed fields)
 export * from './presentation.types';
+
+export interface EmbeddingResult {
+  embedding: number[];
+  model: string;
+  usage: {
+    promptTokens: number;
+    totalTokens: number;
+  };
+}
+
+export interface ChatCompletionResult {
+  content: string;
+  model: string;
+  usage: {
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+  };
+}
+
+
+export interface OpenAIService {
+  generateCompletion(prompt: string, options?: {
+    model?: string;
+    temperature?: number;
+    maxTokens?: number;
+  }): Promise<{
+    content: string;
+    tokensUsed: number;
+    model: string;
+  }>;
+}

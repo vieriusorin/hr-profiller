@@ -16,6 +16,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@profiller-hr/shared-types": "file:../shared-types",
     "@modelcontextprotocol/sdk": "^1.13.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
