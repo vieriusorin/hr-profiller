@@ -37,6 +37,31 @@ CREATE TYPE role_status AS ENUM ('Open', 'Staffed', 'Won', 'Lost');
 
 -- Create base tables (only the ones actually used)
 
+-- Authentication tables
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(255),
+  email VARCHAR(255) UNIQUE NOT NULL,
+  email_verified TIMESTAMP,
+  image TEXT,
+  password_hash TEXT,
+  is_active BOOLEAN DEFAULT TRUE NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+);
+
+CREATE TABLE roles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(100) UNIQUE NOT NULL,
+  description TEXT
+);
+
+CREATE TABLE user_roles (
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  role_id UUID NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+  PRIMARY KEY (user_id, role_id)
+);
+
 CREATE TABLE clients (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(255) NOT NULL,
@@ -226,7 +251,7 @@ CREATE TABLE person_embeddings (
   embedding_type VARCHAR(50) NOT NULL, -- 'profile', 'skills', 'technologies'
   model VARCHAR(100) NOT NULL, -- OpenAI model used
   dimension INTEGER NOT NULL, -- Vector dimension
-  embedding TEXT NOT NULL, -- JSON string of the vector
+  embedding vector(1536) NOT NULL, -- pgvector type for the vector
   searchable_text TEXT NOT NULL, -- Text that was embedded
   tokens_used INTEGER, -- Token usage for cost tracking
   cost VARCHAR(20), -- Cost in USD
@@ -238,7 +263,7 @@ CREATE TABLE person_embeddings (
 CREATE TABLE similarity_searches (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   query_text TEXT NOT NULL,
-  query_embedding TEXT NOT NULL, -- JSON string of query vector
+  query_embedding TEXT NOT NULL, -- JSON string of query vector (kept as text for flexibility)
   embedding_type VARCHAR(50) NOT NULL,
   model VARCHAR(100) NOT NULL,
   results TEXT NOT NULL, -- JSON array of results
@@ -259,6 +284,6 @@ CREATE INDEX idx_similarity_searches_created_at ON similarity_searches(created_a
 -- Add comments for documentation
 COMMENT ON TABLE person_embeddings IS 'Stores vector embeddings for person profiles using pgvector';
 COMMENT ON TABLE similarity_searches IS 'Stores similarity search results for caching and analytics';
-COMMENT ON COLUMN person_embeddings.embedding IS 'JSON string representation of the vector embedding';
+COMMENT ON COLUMN person_embeddings.embedding IS 'pgvector embedding for similarity search';
 COMMENT ON COLUMN person_embeddings.embedding_type IS 'Type of embedding: profile, skills, technologies, etc.';
 COMMENT ON COLUMN person_embeddings.metadata IS 'JSON string containing person metadata for quick access';

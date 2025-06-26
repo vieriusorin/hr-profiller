@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 import OpenAI from 'openai';
-import { OpenAIService } from '../../domain/services/mcp-analysis.service';
+import { OpenAIService } from '../../domain/analysis/services/analysis.service';
 
 @injectable()
 export class OpenAIServiceImpl implements OpenAIService {

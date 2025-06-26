@@ -3,7 +3,7 @@ import { Container } from 'inversify';
 import { TYPES } from '../shared/types';
 
 // Domain Services
-import { McpAnalysisService, OpenAIService, McpPromptEngineService } from '../domain/services/mcp-analysis.service';
+import { McpAnalysisService, OpenAIService, McpPromptEngineService } from '../domain/analysis/services/analysis.service';
 
 // Infrastructure Services
 import { OpenAIServiceImpl } from './services/openai.service';

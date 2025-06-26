@@ -1,4 +1,4 @@
-import { pgTable, uuid, timestamp, text, varchar, integer } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, timestamp, text, varchar, integer, vector } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { people } from './people.schema';
@@ -27,11 +27,10 @@ export const personEmbeddings = pgTable('person_embeddings', {
   dimension: integer('dimension').notNull(), // Vector dimension
   
   // The actual embedding vector (pgvector type)
-  embedding: text('embedding').notNull(), // JSON string of the vector
+  embedding: vector({ dimensions: 1536 }).notNull(), // JSON string of the vector
   
   // Searchable text that was embedded
   searchableText: text('searchable_text').notNull(),
-  
   // Usage tracking
   tokensUsed: integer('tokens_used'),
   cost: varchar('cost', { length: 20 }), // Cost in USD

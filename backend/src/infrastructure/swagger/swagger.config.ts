@@ -4,7 +4,7 @@ const options: swaggerJsdoc.Options = {
   definition: {
     openapi: '3.1.0',
     info: {
-      title: 'Opportunit',
+      title: 'Opportunities',
       version: '1.0.0',
       description: 'Opportunity with management',
       contact: {

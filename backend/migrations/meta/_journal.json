@@ -85,6 +85,20 @@
       "when": 1750753946286,
       "tag": "0011_orange_excalibur",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1750933374741,
+      "tag": "0012_low_flatman",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1750933483951,
+      "tag": "0013_slim_microchip",
+      "breakpoints": true
     }
   ]
 }

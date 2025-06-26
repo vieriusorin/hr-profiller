@@ -20,8 +20,6 @@ export class AuthController {
       return;
     }
 
-    console.log(email, password)
-
     try {
       // 1. Find user in our database
       const user = await this.db.query.users.findFirst({

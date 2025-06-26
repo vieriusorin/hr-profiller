@@ -53,7 +53,7 @@ export class VectorDatabaseService {
         embeddingType,
         model,
         dimension: embedding.length,
-        embedding: JSON.stringify(embedding),
+        embedding: embedding,
         searchableText,
         tokensUsed: Math.ceil(searchableText.length / 4), // Rough estimate
         cost: this.calculateEmbeddingCost(embedding.length, model),

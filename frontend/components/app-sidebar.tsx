@@ -132,18 +132,11 @@ export const AppSidebar = () => {
 	const userRole = (session?.user?.role || 'user') as UserRole;
 	const isValidRole = ['admin', 'hr_manager', 'recruiter', 'employee', 'user'].includes(userRole);
 	
-	// Debug logs
-	console.log('User Role:', userRole);
-	console.log('Is Valid Role:', isValidRole);
-
 	// Filter navigation items based on user role
 	const allowedNavItems = getFilteredNavigation(
 		isValidRole ? userRole : 'user',
 		navigationItems
 	);
-	
-	// Debug navigation items
-	console.log('Allowed Nav Items:', allowedNavItems);
 
 	// Get role display info
 	// const roleInfo = userRole ? ROLE_DISPLAY_INFO[userRole] : null;

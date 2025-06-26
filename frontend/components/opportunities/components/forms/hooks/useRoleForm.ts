@@ -52,7 +52,7 @@ export const useRoleForm = ({
 }: UseRoleFormProps): UseRoleFormReturn => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Always start with default values for form initialization
+
   const defaultFormValues: CreateRoleFormData = {
     roleName: '',
     requiredGrade: 'SE' as JobGrade,
@@ -64,7 +64,6 @@ export const useRoleForm = ({
     newHireName: '',
   };
 
-  // If we have initialData at mount time, use it immediately
   const initialFormValues = mode === 'edit' && initialData
     ? mapRoleToFormData(initialData.data)
     : defaultFormValues;
@@ -74,7 +73,6 @@ export const useRoleForm = ({
     defaultValues: initialFormValues,
   });
 
-  // Handle form population when initialData becomes available or changes
   useEffect(() => {
     if (mode === 'edit' && initialData) {
       const formData = mapRoleToFormData(initialData.data);
@@ -84,7 +82,8 @@ export const useRoleForm = ({
     } else if (mode === 'create') {
       form.reset(defaultFormValues);
     }
-  }, [mode, initialData, form, defaultFormValues]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, initialData]);
 
   const handleSubmit = async () => {
     await form.handleSubmit(async (data: CreateRoleFormData) => {

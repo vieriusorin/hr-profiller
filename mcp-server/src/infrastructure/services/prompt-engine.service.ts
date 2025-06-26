@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
-import { Analysis } from '../../domain/entities/analysis.entity';
-import { McpPromptEngineService } from '../../domain/services/mcp-analysis.service';
+import { Analysis } from '../../domain/analysis/entities/analysis.entity';
+import { McpPromptEngineService } from '../../domain/analysis/services/analysis.service';
 import { analysisTypePrompts } from '../prompts/analysis-types';
 import { confidentialityNotes } from '../prompts/confidentiality-notes';
 import { baseTemplate } from '../prompts/base-template';

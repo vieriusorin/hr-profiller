@@ -360,8 +360,21 @@ export class PersonService {
         throw new Error('Person not found');
       }
 
+      // Clean the person object to avoid JSON serialization issues
+      const cleanPerson = JSON.parse(JSON.stringify(person, (key, value) => {
+        // Handle Date objects
+        if (value instanceof Date) {
+          return value.toISOString();
+        }
+        // Handle circular references and undefined values
+        if (typeof value === 'undefined') {
+          return null;
+        }
+        return value;
+      }));
+
       const result = await this.mcpClientService.compensationAnalysis(
-        JSON.stringify(person),
+        JSON.stringify(cleanPerson),
         marketScope,
         includeEquityAnalysis
       );

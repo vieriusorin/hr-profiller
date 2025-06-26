@@ -1,0 +1,2 @@
+ALTER TABLE "person_embeddings" ALTER COLUMN "embedding" SET DATA TYPE vector(1536) USING embedding::vector(1536);--> statement-breakpoint
+ALTER TABLE "similarity_searches" ALTER COLUMN "query_embedding" SET DATA TYPE text;

@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify';
-import { TYPES } from '../../shared/types';
+import { TYPES } from '../../../shared/types';
 import { Analysis, AnalysisType, UserRole, UrgencyLevel, ConfidentialityLevel } from '../entities/analysis.entity';
-import { AnalysisRequest, AnalysisResponse } from '../../shared/types';
+import { AnalysisRequest, AnalysisResponse } from '../../../shared/types';
 
 export interface OpenAIService {
   generateCompletion(prompt: string, options?: {

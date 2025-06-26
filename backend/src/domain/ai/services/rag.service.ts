@@ -92,7 +92,17 @@ export class RAGService {
 
       // Step 6: Call MCP server for AI analysis
       const analysisResult = await this.mcpService.analyzeData(
-        JSON.stringify(context),
+        JSON.stringify(context, (key, value) => {
+          // Handle Date objects
+          if (value instanceof Date) {
+            return value.toISOString();
+          }
+          // Handle circular references and undefined values
+          if (typeof value === 'undefined') {
+            return null;
+          }
+          return value;
+        }),
         request.analysisType,
         'hr_manager', // userRole
         'standard',   // urgency
@@ -145,9 +155,29 @@ export class RAGService {
   private async ensurePersonEmbedding(person: any): Promise<number[]> {
     try {
       const existingEmbedding = await this.vectorDb.getPersonEmbedding(person.id, 'profile');
-      
       if (existingEmbedding) {
-        return JSON.parse(existingEmbedding.embedding);
+        // The embedding comes from pgvector as an array, not JSON string
+        // If it's already an array, return it directly
+        if (Array.isArray(existingEmbedding.embedding)) {
+          return existingEmbedding.embedding;
+        }
+        
+        // If it's a string representation, try to parse it safely
+        try {
+          const embeddingStr = String(existingEmbedding.embedding);
+          // Handle pgvector format like "[1,2,3]" or "1,2,3"
+          if (embeddingStr.startsWith('[') && embeddingStr.endsWith(']')) {
+            return JSON.parse(embeddingStr) as number[];
+          } else if (embeddingStr.includes(',')) {
+            // Handle comma-separated values
+            return embeddingStr.split(',').map(n => parseFloat(n.trim()));
+          } else {
+            throw new Error('Invalid embedding format');
+          }
+        } catch (parseError) {
+          console.warn('Failed to parse existing embedding, regenerating:', parseError);
+          // Fall through to generate new embedding
+        }
       }
 
       const personText = this.createPersonText(person);

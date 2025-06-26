@@ -84,8 +84,11 @@ export const RoleForm = ({
 			setValue("newHireName", "");
 		}
 	}, [needsHire, setValue]);
+	
 
 	useEffect(() => {
+		console.log("assignedMemberIds", assignedMemberIds);
+		console.log("opportunity", opportunity);
 		if (!assignedMemberIds || assignedMemberIds.length === 0 || !opportunity) {
 			setAllocationWarning(null);
 			setIsSaveDisabled(false);
@@ -158,18 +161,18 @@ export const RoleForm = ({
 		initialData,
 	]);
 
-	const availableEmployees = useMemo(() => {
-		return getAvailableEmployees(employees, roleName, opportunity);
-	}, [employees, roleName, opportunity]);
+	// const availableEmployees = useMemo(() => {
+	// 	return getAvailableEmployees(employees, roleName, opportunity);
+	// }, [employees, roleName, opportunity]);
 
-	const employeeOptions = useMemo(
-		() =>
-			availableEmployees.map((emp) => ({
-				value: emp.id,
-				label: `${emp.fullName} (${emp.position || ""})`,
-			})),
-		[availableEmployees]
-	);
+	// const employeeOptions = useMemo(
+	// 	() =>
+	// 		availableEmployees.map((emp) => ({
+	// 			value: emp.id,
+	// 			label: `${emp.fullName} (${emp.position || ""})`,
+	// 		})),
+	// 	[availableEmployees]
+	// );
 
 	return (
 		<div className='space-y-4'>
@@ -300,7 +303,7 @@ export const RoleForm = ({
 						render={({ field }) => (
 							<MultiSelect
 								key={`multiselect-${field.value?.join(",") || "empty"}`}
-								options={employeeOptions}
+								options={[]}
 								onValueChange={field.onChange}
 								defaultValue={field.value || []}
 								placeholder='Select employees'
@@ -334,13 +337,13 @@ export const RoleForm = ({
 				/>
 			)}
 
-			{allocationWarning && (
+			{/* {allocationWarning && (
 				<Alert variant='destructive'>
 					<Terminal className='h-4 w-4' />
 					<AlertTitle>Over-allocation Warning</AlertTitle>
 					<AlertDescription>{allocationWarning}</AlertDescription>
 				</Alert>
-			)}
+			)} */}
 
 			<div className='space-y-2'>
 				<label className='text-sm font-medium'>

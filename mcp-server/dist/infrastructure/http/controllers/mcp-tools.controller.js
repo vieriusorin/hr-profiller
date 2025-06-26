@@ -27,6 +27,11 @@ const AnalysisRequestSchema = zod_1.z.object({
 const ConfidenceRequestSchema = zod_1.z.object({
     data: zod_1.z.string().min(1, 'Data is required'),
 });
+const CompensationAnalysisRequestSchema = zod_1.z.object({
+    data: zod_1.z.string().min(1, 'Data is required'),
+    marketScope: zod_1.z.string().optional().default('national'),
+    includeEquityAnalysis: zod_1.z.boolean().optional().default(true),
+});
 /**
  * @swagger
  * tags:
@@ -299,6 +304,96 @@ let McpToolsController = class McpToolsController {
                 metadata: {
                     timestamp: new Date().toISOString()
                 }
+            });
+        }
+    }
+    /**
+     * @swagger
+     * /tools/compensation-analysis:
+     *   post:
+     *     summary: Perform compensation analysis
+     *     tags: [Tools]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - data
+     *             properties:
+     *               data:
+     *                 type: string
+     *                 description: Compensation data to analyze
+     *               marketScope:
+     *                 type: string
+     *                 enum: [national, regional, global, local]
+     *                 default: national
+     *               includeEquityAnalysis:
+     *                 type: boolean
+     *                 default: true
+     *     responses:
+     *       200:
+     *         description: Compensation analysis results
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/ResponseEnvelope'
+     */
+    async compensationAnalysis(req, res) {
+        try {
+            const validation = CompensationAnalysisRequestSchema.safeParse(req.body);
+            if (!validation.success) {
+                res.status(400).json({
+                    status: 'error',
+                    data: {
+                        message: 'Invalid request body',
+                        code: 'VALIDATION_ERROR',
+                        details: validation.error.format()
+                    },
+                    meta: { timestamp: new Date().toISOString() }
+                });
+                return;
+            }
+            const { data, marketScope, includeEquityAnalysis } = validation.data;
+            // Create analysis request for compensation analysis
+            const analysisRequest = {
+                data: `Compensation Analysis Request:
+Data: ${data}
+Market Scope: ${marketScope}
+Include Equity Analysis: ${includeEquityAnalysis}
+
+Please provide a comprehensive compensation analysis including:
+1. Market comparison and benchmarking
+2. Salary competitiveness assessment
+3. Benefits and equity evaluation
+4. Recommendations for adjustments
+5. Risk assessment for retention`,
+                analysisType: 'compensation_analysis',
+                userRole: 'hr_manager',
+                urgency: 'standard',
+                confidentialityLevel: 'internal'
+            };
+            const result = await this.analysisService.analyzeData(analysisRequest);
+            const response = {
+                status: 'success',
+                data: result,
+                meta: {
+                    timestamp: new Date().toISOString(),
+                    processingTime: result.metadata.processingTime
+                }
+            };
+            res.status(200).json(response);
+        }
+        catch (error) {
+            console.error('Error performing compensation analysis:', error);
+            res.status(500).json({
+                status: 'error',
+                data: {
+                    message: error.message || 'Compensation analysis failed',
+                    code: 'COMPENSATION_ANALYSIS_ERROR'
+                },
+                meta: { timestamp: new Date().toISOString() }
             });
         }
     }

@@ -74,6 +74,8 @@ function setupRoutes(app, mcpToolsController, healthController) {
     // Analysis routes
     app.post('/tools/analyze-data', mcpToolsController.analyzeData.bind(mcpToolsController));
     app.post('/analyze', mcpToolsController.analyzeData.bind(mcpToolsController)); // Alternative endpoint
+    // Compensation analysis route
+    app.post('/tools/compensation-analysis', mcpToolsController.compensationAnalysis.bind(mcpToolsController));
     // Confidence routes
     app.post('/confidence', mcpToolsController.getConfidence.bind(mcpToolsController));
     // Legacy tool execution route (for backward compatibility)

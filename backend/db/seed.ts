@@ -585,7 +585,7 @@ async function seedSampleEmbeddings(peopleData: any[]) {
         embeddingType: 'profile',
         model: 'text-embedding-3-small',
         dimension: 1536,
-        embedding: JSON.stringify(sampleEmbedding),
+        embedding: sampleEmbedding, // Store as array directly, not JSON string
         searchableText,
         tokensUsed: Math.ceil(searchableText.length / 4), // Rough estimate
         cost: '0.000001', // Sample cost

@@ -1,0 +1,21 @@
+{
+  "name": "@profiller-hr/shared-types",
+  "version": "1.0.0",
+  "description": "Shared TypeScript types for Profiller HR backend and MCP server",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "publishConfig": {
+    "access": "private"
+  }
+} 
