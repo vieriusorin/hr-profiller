@@ -13,7 +13,8 @@ import { EditOpportunityModalProps, EditRoleModalProps } from "./types";
 import { useEditRoleModal } from "./hooks/use-edit-role-modal";
 import { useEditOpportunityModal } from "./hooks/use-edit-opportunity-modal";
 import { useRole } from "@/lib/hooks/use-roles";
-import { Role, UpdateRole } from "@/lib/api-client";
+import { Role, UpdateRole, RoleResponse } from "@/lib/api-client";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const EditRoleModal = ({
 	isOpen,
@@ -23,13 +24,14 @@ export const EditRoleModal = ({
 }: Omit<EditRoleModalProps, "opportunityId">) => {
 	const { data: latestRoleData, isLoading: isRoleLoading } = useRole(role.id, {
 		enabled: isOpen,
+		refetchOnMount: true,
 	});
 
-	const currentRole = latestRoleData || role;
+	const currentRole = latestRoleData?.data || role;
 
 	const { handleSubmit, isPending } = useEditRoleModal({
 		opportunityId: opportunity.id,
-		role: currentRole as Role,
+		role: { data: currentRole },
 		onClose,
 	});
 
@@ -40,14 +42,20 @@ export const EditRoleModal = ({
 					<DialogTitle>Edit Role</DialogTitle>
 				</DialogHeader>
 				{isRoleLoading ? (
-					<div className='p-4 text-center text-muted-foreground'>
-						Loading latest role data...
+					<div className='space-y-4'>
+						<Skeleton className='h-10 w-full' />
+						<Skeleton className='h-10 w-full' />
+						<Skeleton className='h-10 w-full' />
+						<Skeleton className='h-20 w-full' />
 					</div>
 				) : (
 					<RoleForm
 						mode='edit'
-						initialData={currentRole as Role}
-						onSubmit={handleSubmit as (role: UpdateRole) => Promise<void>}
+						initialData={currentRole}
+						onSubmit={async (data) => {
+							await handleSubmit(data);
+							return { status: 'success', data: currentRole } as RoleResponse;
+						}}
 						onCancel={onClose}
 						isSubmitting={isPending}
 						opportunity={opportunity}

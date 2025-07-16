@@ -1,5 +1,5 @@
 import { UseFormReturn } from 'react-hook-form';
-import { Opportunity, Role, UpdateRole } from '@/lib/api-client';
+import { Opportunity, Role, UpdateRole, RoleResponse } from '@/lib/api-client';
 import { CreateOpportunityForm } from '@/lib/types';
 import { CreateRoleFormData } from './schemas';
 
@@ -25,8 +25,8 @@ export interface CreateOpportunityFormProps extends FormActions {
 
 export interface RoleFormProps extends FormActions {
   mode?: 'create' | 'edit';
-  initialData?: Partial<Role>;
-  onSubmit: (role: UpdateRole) => Promise<void>;
+  initialData?: { data: Role };
+  onSubmit: (role: UpdateRole) => Promise<RoleResponse>;
   isSubmitting?: boolean;
   comment?: string;
   opportunity?: Opportunity;
@@ -42,8 +42,8 @@ export interface UseCreateOpportunityFormProps extends FormActions {
 
 export interface UseRoleFormProps extends FormActions {
   mode?: 'create' | 'edit';
-  initialData?: { success: boolean; data: Partial<Role> };
-  onSubmit: (role: UpdateRole) => Promise<void>;
+  initialData?: { data: Role };
+  onSubmit: (role: UpdateRole) => Promise<RoleResponse>;
   isSubmitting?: boolean;
   comment?: string;
 }

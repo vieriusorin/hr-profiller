@@ -609,6 +609,13 @@ const options: swaggerJsdoc.Options = {
                   jobGrade: 'SE',
                   level: 'High',
                   allocation: 80,
+                  assignedMembers: [
+                    {
+                      id: '456e7890-e89b-12d3-a456-426614174001',
+                      firstName: 'John',
+                      lastName: 'Doe',
+                    }
+                  ],
                   status: 'Open',
                   notes: 'React experience required',
                   createdAt: '2024-01-10T09:00:00Z',
@@ -935,64 +942,72 @@ const options: swaggerJsdoc.Options = {
         },
         UpdateRole: {
           type: 'object',
-          additionalProperties: false,
-          description: 'Schema for updating role information via PATCH request. All fields are optional.',
           properties: {
             roleName: {
               type: 'string',
-              minLength: 1,
-              maxLength: 255,
-              description: 'Name/title of the role',
+              description: 'Name of the role',
               example: 'Senior Frontend Developer'
             },
             jobGrade: {
               type: 'string',
               enum: ['JT', 'T', 'ST', 'EN', 'SE', 'C', 'SC', 'SM'],
               nullable: true,
-              description: 'Job grade/seniority level: JT=Junior Trainee, T=Trainee, ST=Senior Trainee, EN=Engineer, SE=Senior Engineer, C=Consultant, SC=Senior Consultant, SM=Senior Manager',
+              description: 'Job grade level',
               example: 'SE'
             },
             level: {
               type: 'string',
-              enum: ['Low', 'Medium', 'High'],
+              enum: ['High', 'Medium', 'Low'],
               nullable: true,
-              description: 'Opportunity priority/importance level',
-              example: 'High'
+              description: 'Opportunity level',
+              example: 'Medium'
             },
             allocation: {
-              type: 'integer',
+              type: 'number',
+              nullable: true,
               minimum: 0,
               maximum: 100,
-              nullable: true,
-              description: 'Percentage of time allocated to this role (0-100%)',
-              example: 80
-            },
-            startDate: {
-              type: 'string',
-              format: 'date',
-              nullable: true,
-              description: 'Role start date (YYYY-MM-DD format)',
-              example: '2024-03-15'
-            },
-            endDate: {
-              type: 'string',
-              format: 'date',
-              nullable: true,
-              description: 'Role end date (YYYY-MM-DD format)',
-              example: '2024-09-15'
+              description: 'Allocation percentage',
+              example: 100
             },
             status: {
               type: 'string',
-              enum: ['Open', 'Staffed', 'Won', 'Lost'],
-              description: 'Current status of the role: Open=needs to be filled, Staffed=assigned to someone, Won=successfully filled and project won, Lost=lost to competition',
+              enum: ['Open', 'Assigned', 'Closed'],
+              description: 'Role status',
               example: 'Open'
             },
             notes: {
               type: 'string',
               nullable: true,
-              maxLength: 1000,
-              description: 'Additional notes, requirements, or comments about the role',
-              example: 'Updated requirements - now requires team leadership experience'
+              description: 'Additional notes about the role',
+              example: 'Looking for someone with React experience'
+            }
+          }
+        },
+        AssignMemberRequest: {
+          type: 'object',
+          required: ['personId'],
+          properties: {
+            personId: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID of the person to assign',
+              example: '123e4567-e89b-12d3-a456-426614174000'
+            }
+          }
+        },
+        UpdateAssignedMembersRequest: {
+          type: 'object',
+          required: ['personIds'],
+          properties: {
+            personIds: {
+              type: 'array',
+              items: {
+                type: 'string',
+                format: 'uuid'
+              },
+              description: 'List of person IDs to assign to the role',
+              example: ['123e4567-e89b-12d3-a456-426614174000']
             }
           }
         },

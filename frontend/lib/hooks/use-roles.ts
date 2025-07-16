@@ -30,7 +30,8 @@ export function useRole(id: string, options?: Omit<UseQueryOptions<RoleResponse,
   return useQuery<RoleResponse, Error>({
     queryKey: roleKeys.detail(id),
     queryFn: () => apiClient.roles.getById(id),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 0, // Always fetch fresh data
+    cacheTime: 5 * 60 * 1000, // Cache for 5 minutes
     ...options,
     enabled: !!id && (options?.enabled ?? true),
   });

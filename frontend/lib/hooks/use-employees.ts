@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { apiClient, type CreateEmployee, type UpdateEmployee } from '@/lib/api-client';
 import { EmployeeStatus, WorkStatus } from '../types';
 
@@ -35,6 +35,56 @@ export function useEmployee(id: string) {
     enabled: !!id,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+}
+
+export function useInfiniteEmployees(params?: {
+  limit?: number;
+  search?: string;
+  position?: string;
+  employeeStatus?: EmployeeStatus;
+  workStatus?: WorkStatus;
+  location?: string;
+}) {
+  const queryParams = {
+    ...params,
+  };
+
+  const { limit = 25, ...restParams } = queryParams;
+
+  const cleanParams = Object.entries({ limit, ...restParams })
+    .filter(([, value]) => value !== '' && value !== undefined && value !== null)
+    .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+
+  const query = useInfiniteQuery({
+    queryKey: [...employeeKeys.lists(), 'infinite', cleanParams],
+    queryFn: ({ pageParam = 1 }) => {
+      const allParams = {
+        ...queryParams,
+        page: pageParam,
+        limit,
+      };
+      return apiClient.employees.list(allParams);
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.pagination?.hasNextPage) {
+        return lastPage.pagination.nextPage;
+      }
+      return undefined;
+    },
+    getPreviousPageParam: (firstPage) => {
+      if (firstPage.pagination?.hasPreviousPage) {
+        return firstPage.pagination.previousPage;
+      }
+      return undefined;
+    },
+    initialPageParam: 1,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: true,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+
+  return query;
 }
 
 export function useCreateEmployee() {

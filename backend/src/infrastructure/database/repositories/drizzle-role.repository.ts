@@ -1,5 +1,5 @@
 import { injectable, inject } from 'inversify';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 import { opportunityRoles } from '../../../../db/schema/opportunity-roles.schema';
 import { opportunityRoleAssignments } from '../../../../db/schema/opportunity-role-assignments.schema';
 import { Role, AssignedMember } from '../../../domain/opportunity/entities/role.entity';
@@ -122,9 +122,20 @@ export class DrizzleRoleRepository implements RoleRepository {
   }
 
   private async getAssignedMembers(roleId: string): Promise<AssignedMember[]> {
-    // TODO: Implement proper query for assigned members
-    // Temporarily returning empty array to fix TypeScript issues
-    return [];
+    const result = await this.db.execute(sql`
+      SELECT 
+        people.id as "id",
+        people.first_name as "firstName",
+        people.last_name as "lastName",
+        people.full_name as "fullName",
+        people.email as "email",
+        opportunity_role_assignments.created_at as "assignedAt"
+      FROM opportunity_role_assignments
+      INNER JOIN people ON opportunity_role_assignments.person_id = people.id
+      WHERE opportunity_role_assignments.opportunity_role_id = ${roleId}
+    `);
+
+    return result.rows as unknown as AssignedMember[];
   }
 
   private mapToEntity(data: any, assignedMembers: AssignedMember[] = []): Role {

@@ -1,21 +1,21 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  UseRoleFormProps,
-  UseRoleFormReturn
+  UseRoleFormReturn,
+  RoleFormProps
 } from '../types';
 import {
   createRoleSchema,
   CreateRoleFormData
 } from '../schemas';
-import { Role, UpdateRole } from '@/lib/api-client';
+import { Role, UpdateRole, apiClient } from '@/lib/api-client';
 import { OpportunityLevel } from '@/lib/backend-types/enums';
 import { JobGrade } from '@/lib/backend-types/enums';
 
-const mapRoleToFormData = (role: Partial<Role> | undefined): CreateRoleFormData => {
+const mapRoleToFormData = (role: Role | undefined): CreateRoleFormData => {
   if (!role) {
     return {
       roleName: '',
@@ -31,8 +31,8 @@ const mapRoleToFormData = (role: Partial<Role> | undefined): CreateRoleFormData 
 
   const formData: CreateRoleFormData = {
     roleName: role.roleName || '',
-    requiredGrade: (role.jobGrade as JobGrade) || 'SE',
-    opportunityLevel: (role.level as OpportunityLevel) || 'Medium',
+    requiredGrade: role.jobGrade as JobGrade || 'SE',
+    opportunityLevel: role.level as OpportunityLevel || 'Medium',
     allocation: role.allocation || 100,
     needsHire: role.status === 'Open',
     comments: role.notes || '',
@@ -49,81 +49,75 @@ export const useRoleForm = ({
   onSubmit,
   onCancel,
   isSubmitting: externalIsSubmitting,
-}: UseRoleFormProps): UseRoleFormReturn => {
+}: RoleFormProps): UseRoleFormReturn => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-
-  const defaultFormValues: CreateRoleFormData = {
-    roleName: '',
-    requiredGrade: 'SE' as JobGrade,
-    opportunityLevel: 'Medium' as OpportunityLevel,
-    allocation: 100,
-    needsHire: false,
-    comments: '',
-    assignedMemberIds: [],
-    newHireName: '',
-  };
-
-  const initialFormValues = mode === 'edit' && initialData
-    ? mapRoleToFormData(initialData.data)
-    : defaultFormValues;
 
   const form = useForm<CreateRoleFormData>({
     resolver: zodResolver(createRoleSchema),
-    defaultValues: initialFormValues,
+    defaultValues: mapRoleToFormData(initialData as unknown as Role),
   });
 
   useEffect(() => {
-    if (mode === 'edit' && initialData) {
-      const formData = mapRoleToFormData(initialData.data);
+    if (mode === 'edit' && initialData?.data) {
+      const formData = mapRoleToFormData(initialData as unknown as Role);
       form.reset(formData);
       // Force a re-render by triggering form validation
       form.trigger();
     } else if (mode === 'create') {
-      form.reset(defaultFormValues);
+      form.reset(mapRoleToFormData(undefined));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, initialData]);
 
-  const handleSubmit = async () => {
-    await form.handleSubmit(async (data: CreateRoleFormData) => {
-      setIsSubmitting(true);
+  const handleSubmit = useCallback(async (data: CreateRoleFormData) => {
+    if (isSubmitting || externalIsSubmitting) return;
+    setIsSubmitting(true);
 
-      try {
-        const roleData: UpdateRole & { assignedMembers?: string[] } = {
-          roleName: data.roleName,
-          jobGrade: data.requiredGrade,
-          level: data.opportunityLevel,
-          allocation: data.allocation,
-          status: mode === 'create' ? 'Open' as const : initialData?.data?.status,
-          notes: data.comments,
-          assignedMembers: data.needsHire ? [] : data.assignedMemberIds,
-        };
+    try {
+      const roleData: UpdateRole = {
+        roleName: data.roleName,
+        jobGrade: data.requiredGrade,
+        level: data.opportunityLevel,
+        allocation: data.allocation,
+        status: data.needsHire ? 'Open' : 'Assigned',
+        notes: data.comments,
+      };
 
-        await onSubmit(roleData);
-        if (mode === 'create') {
-          form.reset();
+      // First update/create the role
+      const response = await onSubmit(roleData);
+
+      // Then update assigned members if needed
+      if (response?.data?.id) {
+        const roleId = response.data.id;
+        const currentAssignedIds = initialData?.data?.assignedMembers?.map(member => member.id) || [];
+        const newAssignedIds = data.assignedMemberIds || [];
+
+        // Only update if there are changes
+        if (JSON.stringify(currentAssignedIds.sort()) !== JSON.stringify(newAssignedIds.sort())) {
+          await apiClient.roles.updateAssignedMembers(roleId, newAssignedIds);
         }
-      } catch (error) {
-        console.error(`Failed to ${mode} role:`, error);
-      } finally {
-        setIsSubmitting(false);
       }
-    })();
-  };
 
-  const handleCancel = () => {
-    if (mode === 'create') {
-      form.reset();
+      return response;
+    } catch (error) {
+      console.error('Failed to submit role:', error);
+      throw error;
+    } finally {
+      setIsSubmitting(false);
     }
-    onCancel();
-  };
+  }, [mode, initialData, onSubmit, isSubmitting, externalIsSubmitting]);
+
+  const handleCancel = useCallback(() => {
+    if (isSubmitting || externalIsSubmitting) return;
+    form.reset();
+    onCancel?.();
+  }, [form, onCancel, isSubmitting, externalIsSubmitting]);
 
   return {
     form,
-    handleSubmit,
+    handleSubmit: form.handleSubmit(handleSubmit),
     handleCancel,
-    isSubmitting: externalIsSubmitting !== undefined ? externalIsSubmitting : isSubmitting,
+    isSubmitting: externalIsSubmitting || isSubmitting,
     isDirty: form.formState.isDirty,
   };
 }; 

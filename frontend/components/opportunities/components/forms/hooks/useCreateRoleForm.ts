@@ -26,6 +26,7 @@ export const useCreateRoleForm = ({
       allocation: 100,
       needsHire: false,
       comments: '',
+      assignedMemberIds: [],
     },
   });
 

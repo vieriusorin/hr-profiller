@@ -366,7 +366,7 @@ export const apiClient = {
 
     // POST /api/v1/roles/{id}/assign-member
     assignMember: (roleId: string, personId: string) => {
-      return apiRequest<{ status: string; message: string }>(`roles/${roleId}/assign-member`, {
+      return apiRequest<{ status: 'success'; message: string }>(`roles/${roleId}/assign-member`, {
         method: 'POST',
         body: JSON.stringify({ personId }),
       });
@@ -374,16 +374,16 @@ export const apiClient = {
 
     // POST /api/v1/roles/{id}/unassign-member
     unassignMember: (roleId: string, personId: string) => {
-      return apiRequest<{ status: string; message: string }>(`roles/${roleId}/unassign-member`, {
+      return apiRequest<{ status: 'success'; message: string }>(`roles/${roleId}/unassign-member`, {
         method: 'POST',
         body: JSON.stringify({ personId }),
       });
     },
 
-    // PUT /api/v1/roles/{id}/assigned-members
+    // POST /api/v1/roles/{id}/assigned-members
     updateAssignedMembers: (roleId: string, personIds: string[]) => {
-      return apiRequest<{ status: string; message: string }>(`roles/${roleId}/assigned-members`, {
-        method: 'PUT',
+      return apiRequest<{ status: 'success'; message: string }>(`roles/${roleId}/assigned-members`, {
+        method: 'POST',
         body: JSON.stringify({ personIds }),
       });
     },

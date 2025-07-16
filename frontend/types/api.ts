@@ -3135,6 +3135,162 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/v1/persons/search/skills": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Search persons by skills */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description List of skill names to search for
+                         * @example [
+                         *       "JavaScript",
+                         *       "React",
+                         *       "Node.js"
+                         *     ]
+                         */
+                        skills: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description List of persons matching the skills criteria */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                400: components["responses"]["ValidationError"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/persons/search/technologies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Search persons by technologies */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description List of technology names to search for
+                         * @example [
+                         *       "React",
+                         *       "PostgreSQL",
+                         *       "Docker"
+                         *     ]
+                         */
+                        technologies: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description List of persons matching the technologies criteria */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                400: components["responses"]["ValidationError"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/persons/search/education": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Search persons by education */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Institution name (partial match)
+                         * @example Stanford
+                         */
+                        institution?: string;
+                        /**
+                         * @description Degree type (partial match)
+                         * @example Bachelor
+                         */
+                        degree?: string;
+                        /**
+                         * @description Field of study (partial match)
+                         * @example Computer Science
+                         */
+                        fieldOfStudy?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description List of persons matching the education criteria */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                400: components["responses"]["ValidationError"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/persons/{id}/skills": {
         parameters: {
             query?: never;
@@ -3491,162 +3647,6 @@ export interface paths {
                 500: components["responses"]["InternalServerError"];
             };
         };
-        trace?: never;
-    };
-    "/api/v1/persons/search/skills": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Search persons by skills */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        /**
-                         * @description List of skill names to search for
-                         * @example [
-                         *       "JavaScript",
-                         *       "React",
-                         *       "Node.js"
-                         *     ]
-                         */
-                        skills: string[];
-                    };
-                };
-            };
-            responses: {
-                /** @description List of persons matching the skills criteria */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                400: components["responses"]["ValidationError"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/persons/search/technologies": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Search persons by technologies */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        /**
-                         * @description List of technology names to search for
-                         * @example [
-                         *       "React",
-                         *       "PostgreSQL",
-                         *       "Docker"
-                         *     ]
-                         */
-                        technologies: string[];
-                    };
-                };
-            };
-            responses: {
-                /** @description List of persons matching the technologies criteria */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                400: components["responses"]["ValidationError"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/persons/search/education": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Search persons by education */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        /**
-                         * @description Institution name (partial match)
-                         * @example Stanford
-                         */
-                        institution?: string;
-                        /**
-                         * @description Degree type (partial match)
-                         * @example Bachelor
-                         */
-                        degree?: string;
-                        /**
-                         * @description Field of study (partial match)
-                         * @example Computer Science
-                         */
-                        fieldOfStudy?: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description List of persons matching the education criteria */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                400: components["responses"]["ValidationError"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
         trace?: never;
     };
     "/api/v1/persons/{id}/capabilities": {
@@ -4710,6 +4710,13 @@ export interface components {
              *         "jobGrade": "SE",
              *         "level": "High",
              *         "allocation": 80,
+             *         "assignedMembers": [
+             *           {
+             *             "id": "456e7890-e89b-12d3-a456-426614174001",
+             *             "firstName": "John",
+             *             "lastName": "Doe"
+             *           }
+             *         ],
              *         "status": "Open",
              *         "notes": "React experience required",
              *         "createdAt": "2024-01-10T09:00:00Z",
@@ -4962,53 +4969,57 @@ export interface components {
              */
             notes?: string | null;
         };
-        /** @description Schema for updating role information via PATCH request. All fields are optional. */
         UpdateRole: {
             /**
-             * @description Name/title of the role
+             * @description Name of the role
              * @example Senior Frontend Developer
              */
             roleName?: string;
             /**
-             * @description Job grade/seniority level: JT=Junior Trainee, T=Trainee, ST=Senior Trainee, EN=Engineer, SE=Senior Engineer, C=Consultant, SC=Senior Consultant, SM=Senior Manager
+             * @description Job grade level
              * @example SE
              * @enum {string|null}
              */
             jobGrade?: "JT" | "T" | "ST" | "EN" | "SE" | "C" | "SC" | "SM" | null;
             /**
-             * @description Opportunity priority/importance level
-             * @example High
+             * @description Opportunity level
+             * @example Medium
              * @enum {string|null}
              */
-            level?: "Low" | "Medium" | "High" | null;
+            level?: "High" | "Medium" | "Low" | null;
             /**
-             * @description Percentage of time allocated to this role (0-100%)
-             * @example 80
+             * @description Allocation percentage
+             * @example 100
              */
             allocation?: number | null;
             /**
-             * Format: date
-             * @description Role start date (YYYY-MM-DD format)
-             * @example 2024-03-15
-             */
-            startDate?: string | null;
-            /**
-             * Format: date
-             * @description Role end date (YYYY-MM-DD format)
-             * @example 2024-09-15
-             */
-            endDate?: string | null;
-            /**
-             * @description Current status of the role: Open=needs to be filled, Staffed=assigned to someone, Won=successfully filled and project won, Lost=lost to competition
+             * @description Role status
              * @example Open
              * @enum {string}
              */
-            status?: "Open" | "Staffed" | "Won" | "Lost";
+            status?: "Open" | "Assigned" | "Closed";
             /**
-             * @description Additional notes, requirements, or comments about the role
-             * @example Updated requirements - now requires team leadership experience
+             * @description Additional notes about the role
+             * @example Looking for someone with React experience
              */
             notes?: string | null;
+        };
+        AssignMemberRequest: {
+            /**
+             * Format: uuid
+             * @description ID of the person to assign
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            personId: string;
+        };
+        UpdateAssignedMembersRequest: {
+            /**
+             * @description List of person IDs to assign to the role
+             * @example [
+             *       "123e4567-e89b-12d3-a456-426614174000"
+             *     ]
+             */
+            personIds: string[];
         };
         PaginationMeta: {
             /**

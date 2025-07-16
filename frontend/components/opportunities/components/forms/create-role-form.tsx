@@ -16,17 +16,11 @@ import { useRoleForm } from "./hooks/useRoleForm";
 import { RoleFormProps } from "./types";
 import { Controller } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
-import { Input } from "@/components/ui/input";
-import { getAvailableEmployees } from "./lib/employee-filtering";
-import { MultiSelect } from "@/components/ui/multi-select";
+import { useInfiniteEmployees } from "@/lib/hooks/use-employees";
+import { InfiniteMultiSelect } from "@/components/ui/infinite-multi-select";
+import { apiClient, Role, type Opportunity } from "@/lib/api-client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
-import { apiClient, type Employee, type Opportunity } from "@/lib/api-client";
-
-const fetchEmployees = async (): Promise<Employee[]> => {
-	const response = await apiClient.employees.list();
-	return response.data;
-};
 
 const fetchOpportunities = async (): Promise<Opportunity[]> => {
 	const response = await apiClient.opportunities.list();
@@ -41,12 +35,14 @@ export const RoleForm = ({
 	isSubmitting: externalIsSubmitting,
 	opportunity,
 }: RoleFormProps) => {
-	const { form, isSubmitting, handleSubmit, handleCancel, isDirty } =
+	const { form, isSubmitting, handleSubmit, handleCancel } =
 		useRoleForm({
 			mode,
-			// @ts-expect-error - initialData is not defined in the type
 			initialData,
-			onSubmit,
+			onSubmit: async (data) => {
+				const response = await onSubmit(data);
+				return response;
+			},
 			onCancel,
 			isSubmitting: externalIsSubmitting,
 		});
@@ -57,20 +53,28 @@ export const RoleForm = ({
 		watch,
 		setValue,
 	} = form;
-	const roleName = watch("roleName");
 	const needsHire = watch("needsHire");
 	const assignedMemberIds = watch("assignedMemberIds");
 	const allocation = watch("allocation");
 
-	const [allocationWarning, setAllocationWarning] = React.useState<
-		string | null
-	>(null);
+	const [allocationWarning, setAllocationWarning] = React.useState<string | null>(null);
 	const [isSaveDisabled, setIsSaveDisabled] = React.useState(false);
 
-	const { data: employees = [] } = useQuery<Employee[]>({
-		queryKey: ["employees"],
-		queryFn: fetchEmployees,
+	console.log(initialData, 'initialData')
+
+	const {
+		data: employeesData,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+		isLoading: isLoadingEmployees,
+	} = useInfiniteEmployees({
+		limit: 25,
 	});
+
+	const employees = useMemo(() => {
+		return employeesData?.pages.flatMap((page) => page.data) || [];
+	}, [employeesData]);
 
 	const { data: opportunities = [] } = useQuery<Opportunity[]>({
 		queryKey: ["opportunities"],
@@ -84,11 +88,8 @@ export const RoleForm = ({
 			setValue("newHireName", "");
 		}
 	}, [needsHire, setValue]);
-	
 
 	useEffect(() => {
-		console.log("assignedMemberIds", assignedMemberIds);
-		console.log("opportunity", opportunity);
 		if (!assignedMemberIds || assignedMemberIds.length === 0 || !opportunity) {
 			setAllocationWarning(null);
 			setIsSaveDisabled(false);
@@ -128,7 +129,7 @@ export const RoleForm = ({
 				}
 
 				for (const role of opp.roles || []) {
-					if (opportunity.id === opp.id && initialData?.id === role.id) {
+					if (opportunity.id === opp.id && (initialData as unknown as Role)?.id === role.id) {
 						continue;
 					}
 					if (role.assignedMembers?.some((m) => m.id === memberId)) {
@@ -161,18 +162,16 @@ export const RoleForm = ({
 		initialData,
 	]);
 
-	// const availableEmployees = useMemo(() => {
-	// 	return getAvailableEmployees(employees, roleName, opportunity);
-	// }, [employees, roleName, opportunity]);
+	console.log(watch('assignedMemberIds'), 'watch')
 
-	// const employeeOptions = useMemo(
-	// 	() =>
-	// 		availableEmployees.map((emp) => ({
-	// 			value: emp.id,
-	// 			label: `${emp.fullName} (${emp.position || ""})`,
-	// 		})),
-	// 	[availableEmployees]
-	// );
+	const employeeOptions = useMemo(
+		() =>
+			employees.map((emp) => ({
+				value: emp.id,
+				label: `${emp.fullName} (${emp.position || ""})`,
+			})),
+		[employees]
+	);
 
 	return (
 		<div className='space-y-4'>
@@ -191,137 +190,110 @@ export const RoleForm = ({
 				)}
 			/>
 
-			<div className='space-y-2'>
-				<label className='text-sm font-medium'>
-					Required Grade
-					<span className='text-red-500 ml-1'>*</span>
-				</label>
+			<div className='grid grid-cols-2 gap-4'>
 				<Controller
 					name='requiredGrade'
 					control={control}
 					render={({ field }) => (
-						<Select value={field.value} onValueChange={field.onChange}>
-							<SelectTrigger
-								className={errors.requiredGrade ? "border-red-500" : ""}
+						<div className='space-y-2'>
+							<label className='text-sm font-medium'>Required Grade</label>
+							<Select
+								value={field.value}
+								onValueChange={field.onChange}
 							>
-								<SelectValue placeholder='Select required grade' />
-							</SelectTrigger>
-							<SelectContent>
-								{GRADE_OPTIONS.map((grade) => (
-									<SelectItem key={grade.value} value={grade.value}>
-										{grade.label}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
+								<SelectTrigger>
+									<SelectValue placeholder='Select grade' />
+								</SelectTrigger>
+								<SelectContent>
+									{GRADE_OPTIONS.map((grade) => (
+										<SelectItem key={grade.value} value={grade.value}>
+											{grade.label}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+							{errors.requiredGrade && (
+								<p className='text-sm text-red-500'>
+									{errors.requiredGrade.message}
+								</p>
+							)}
+						</div>
 					)}
 				/>
-				{errors.requiredGrade && (
-					<div className='flex items-center gap-1 text-red-600 text-sm'>
-						<span className='h-3 w-3'>⚠</span>
-						{errors.requiredGrade.message}
-					</div>
-				)}
-			</div>
 
-			<div className='space-y-2'>
-				<label className='text-sm font-medium'>
-					Opportunity Level
-					<span className='text-red-500 ml-1'>*</span>
-				</label>
 				<Controller
 					name='opportunityLevel'
 					control={control}
 					render={({ field }) => (
-						<Select value={field.value} onValueChange={field.onChange}>
-							<SelectTrigger
-								className={errors.opportunityLevel ? "border-red-500" : ""}
-							>
-								<SelectValue placeholder='Select opportunity level' />
-							</SelectTrigger>
-							<SelectContent>
-								{OPPORTUNITY_LEVEL_OPTIONS.map((level) => (
-									<SelectItem key={level.value} value={level.value}>
-										{level.label}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
-					)}
-				/>
-				{errors.opportunityLevel && (
-					<div className='flex items-center gap-1 text-red-600 text-sm'>
-						<span className='h-3 w-3'>⚠</span>
-						{errors.opportunityLevel.message}
-					</div>
-				)}
-			</div>
-
-			<div className='space-y-2'>
-				<label className='text-sm font-medium'>
-					Needs Hire?
-					<span className='text-red-500 ml-1'>*</span>
-				</label>
-				<Controller
-					name='needsHire'
-					control={control}
-					render={({ field }) => (
-						<Select
-							value={
-								field.value === true ? "Yes" : field.value === false ? "No" : ""
-							}
-							onValueChange={(val) => field.onChange(val === "Yes")}
-						>
-							<SelectTrigger
-								className={errors.needsHire ? "border-red-500" : ""}
-							>
-								<SelectValue placeholder='Select if hire is needed' />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value='No'>No</SelectItem>
-								<SelectItem value='Yes'>Yes</SelectItem>
-							</SelectContent>
-						</Select>
-					)}
-				/>
-				{errors.needsHire && (
-					<div className='flex items-center gap-1 text-red-600 text-sm'>
-						<span className='h-3 w-3'>⚠</span>
-						{errors.needsHire.message}
-					</div>
-				)}
-			</div>
-
-			{!needsHire ? (
-				<div className='space-y-2'>
-					<label className='text-sm font-medium'>
-						Assign Employees (Optional)
-					</label>
-					<Controller
-						name='assignedMemberIds'
-						control={control}
-						render={({ field }) => (
-							<MultiSelect
-								key={`multiselect-${field.value?.join(",") || "empty"}`}
-								options={[]}
+						<div className='space-y-2'>
+							<label className='text-sm font-medium'>Opportunity Level</label>
+							<Select
+								value={field.value}
 								onValueChange={field.onChange}
-								defaultValue={field.value || []}
-								placeholder='Select employees'
-								variant='inverted'
-								animation={2}
-								maxCount={5}
-							/>
-						)}
-					/>
-					{errors.assignedMemberIds && (
-						<div className='flex items-center gap-1 text-red-600 text-sm'>
-							<span className='h-3 w-3'>⚠</span>
-							{typeof errors.assignedMemberIds.message === "string" &&
-								errors.assignedMemberIds.message}
+							>
+								<SelectTrigger>
+									<SelectValue placeholder='Select level' />
+								</SelectTrigger>
+								<SelectContent>
+									{OPPORTUNITY_LEVEL_OPTIONS.map((level) => (
+										<SelectItem key={level.value} value={level.value}>
+											{level.label}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+							{errors.opportunityLevel && (
+								<p className='text-sm text-red-500'>
+									{errors.opportunityLevel.message}
+								</p>
+							)}
 						</div>
 					)}
-				</div>
-			) : (
+				/>
+			</div>
+
+			<Controller
+				name='allocation'
+				control={control}
+				render={({ field }) => (
+					<FormField
+						label='Allocation (%)'
+						type='number'
+						value={field.value}
+						onChange={field.onChange}
+						placeholder='e.g., 100'
+						error={errors.allocation?.message}
+						required
+					/>
+				)}
+			/>
+
+			<Controller
+				name='needsHire'
+				control={control}
+				render={({ field }) => (
+					<div className='space-y-2'>
+						<label className='text-sm font-medium'>Role Status</label>
+						<Select
+							value={field.value ? "true" : "false"}
+							onValueChange={(value) => field.onChange(value === "true")}
+						>
+							<SelectTrigger>
+								<SelectValue placeholder='Select status' />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value='false'>Assign Existing Employee</SelectItem>
+								<SelectItem value='true'>Open for Hire</SelectItem>
+							</SelectContent>
+						</Select>
+						{errors.needsHire && (
+							<p className='text-sm text-red-500'>{errors.needsHire.message}</p>
+						)}
+					</div>
+				)}
+			/>
+
+			{needsHire ? (
 				<Controller
 					name='newHireName'
 					control={control}
@@ -335,68 +307,59 @@ export const RoleForm = ({
 						/>
 					)}
 				/>
-			)}
-
-			{/* {allocationWarning && (
-				<Alert variant='destructive'>
-					<Terminal className='h-4 w-4' />
-					<AlertTitle>Over-allocation Warning</AlertTitle>
-					<AlertDescription>{allocationWarning}</AlertDescription>
-				</Alert>
-			)} */}
-
-			<div className='space-y-2'>
-				<label className='text-sm font-medium'>
-					Allocation (%)
-					<span className='text-red-500 ml-1'>*</span>
-				</label>
+			) : (
 				<Controller
-					name='allocation'
+					name='assignedMemberIds'
 					control={control}
 					render={({ field }) => (
-						<Input
-							{...field}
-							type='number'
-							min='0'
-							max='100'
-							placeholder='e.g., 100'
-							onChange={(e) =>
-								field.onChange(
-									e.target.value === "" ? undefined : Number(e.target.value)
-								)
-							}
-							value={field.value || ""}
-							className={errors.allocation ? "border-red-500" : ""}
-						/>
+						<div className='space-y-2'>
+							<label className='text-sm font-medium'>Assigned Members</label>
+							<InfiniteMultiSelect
+								value={field.value || []}
+								onChange={field.onChange}
+								options={employeeOptions}
+								isLoading={isLoadingEmployees}
+								hasNextPage={hasNextPage}
+								onFetchNextPage={fetchNextPage}
+								isFetchingNextPage={isFetchingNextPage}
+								placeholder='Select employees'
+							/>
+							{errors.assignedMemberIds && (
+								<p className='text-sm text-red-500'>
+									{errors.assignedMemberIds.message}
+								</p>
+							)}
+						</div>
 					)}
 				/>
-				{errors.allocation && (
-					<div className='flex items-center gap-1 text-red-600 text-sm'>
-						<span className='h-3 w-3'>⚠</span>
-						{errors.allocation.message}
-					</div>
-				)}
-			</div>
+			)}
 
 			<Controller
 				name='comments'
 				control={control}
 				render={({ field }) => (
 					<FormField
-						label='Comments (Optional)'
+						label='Comments'
 						value={field.value}
 						onChange={field.onChange}
-						placeholder='Additional requirements or notes...'
+						placeholder='Any additional notes or requirements'
+						error={errors.comments?.message}
 						type='textarea'
 						rows={3}
-						error={errors.comments?.message}
 					/>
 				)}
 			/>
 
-			<div className='flex justify-end gap-2'>
+			{allocationWarning && (
+				<Alert variant='destructive'>
+					<Terminal className='h-4 w-4' />
+					<AlertTitle>Allocation Warning</AlertTitle>
+					<AlertDescription>{allocationWarning}</AlertDescription>
+				</Alert>
+			)}
+
+			<div className='flex justify-end space-x-2'>
 				<Button
-					type='button'
 					variant='outline'
 					onClick={handleCancel}
 					disabled={isSubmitting}
@@ -404,18 +367,11 @@ export const RoleForm = ({
 					Cancel
 				</Button>
 				<Button
+					type='submit'
 					onClick={handleSubmit}
-					disabled={
-						isSubmitting || (mode === "edit" && !isDirty) || isSaveDisabled
-					}
+					disabled={isSubmitting || isSaveDisabled}
 				>
-					{isSubmitting
-						? mode === "create"
-							? "Adding Role..."
-							: "Saving Changes..."
-						: mode === "create"
-						? "Add Role"
-						: "Save Changes"}
+					{isSubmitting ? "Saving..." : mode === "create" ? "Create" : "Update"}
 				</Button>
 			</div>
 		</div>

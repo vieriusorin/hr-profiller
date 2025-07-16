@@ -40,8 +40,26 @@ export class RoleController {
     if (!parseResult.success) {
       return res.status(400).json({ status: 'error', message: 'Validation failed', errors: parseResult.error.errors });
     }
-    const role = await this.roleService.create(parseResult.data);
-    res.status(201).json({ status: 'success', data: role });
+
+    try {
+      // Extract assignedMembers from request body
+      const { assignedMembers, ...roleData } = req.body;
+
+      // First create the role
+      const role = await this.roleService.create(roleData);
+
+      // Then assign members if provided
+      if (Array.isArray(assignedMembers) && assignedMembers.length > 0) {
+        await this.roleService.updateAssignedMembers(role.id, assignedMembers);
+      }
+
+      // Fetch the created role with its assigned members
+      const createdRole = await this.roleService.findById(role.id);
+      res.status(201).json({ status: 'success', data: createdRole });
+    } catch (error) {
+      console.error('Failed to create role:', error);
+      res.status(500).json({ status: 'error', message: 'Failed to create role' });
+    }
   }
 
   async update(req: Request<{ id: string }>, res: Response) {
@@ -50,8 +68,26 @@ export class RoleController {
     if (!parseResult.success) {
       return res.status(400).json({ status: 'error', message: 'Validation failed', errors: parseResult.error.errors });
     }
-    const role = await this.roleService.update(id, parseResult.data);
-    res.json({ status: 'success', data: role });
+
+    try {
+      // Extract assignedMembers from request body
+      const { assignedMembers, ...roleData } = req.body;
+
+      // First update the role data
+      await this.roleService.update(id, roleData);
+
+      // Then update assigned members if provided
+      if (Array.isArray(assignedMembers)) {
+        await this.roleService.updateAssignedMembers(id, assignedMembers);
+      }
+
+      // Fetch the updated role with its assigned members
+      const updatedRole = await this.roleService.findById(id);
+      res.json({ status: 'success', data: updatedRole });
+    } catch (error) {
+      console.error('Failed to update role:', error);
+      res.status(500).json({ status: 'error', message: 'Failed to update role' });
+    }
   }
 
   async delete(req: Request, res: Response) {
