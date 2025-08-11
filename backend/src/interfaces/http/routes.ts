@@ -6,6 +6,7 @@ import personRoutes from '../../infrastructure/http/routes/persons';
 import { lookupRoutes } from '../../infrastructure/http/routes/lookup';
 import mcpRoutes from '../../infrastructure/http/routes/mcp';
 import aiRoutes from '../../infrastructure/http/routes/ai';
+import securityDemoRoutes from '../../infrastructure/http/routes/security-demo';
 import { metricsHandler } from './middlewares/loggs.middleware';
 import authRoutes from '../../infrastructure/http/routes/auth';
 
@@ -129,6 +130,20 @@ router.get('/', (req, res) => {
             'POST /api/v1/ai/analyze/direct': 'Direct AI analysis using OpenAI',
             'GET /api/v1/ai/stats': 'Get AI system statistics'
           }
+        },
+        security: {
+          base: '/api/v1/security-demo',
+          methods: {
+            'GET /api/v1/security-demo/public': 'Public endpoint - no auth',
+            'GET /api/v1/security-demo/basic': 'Basic JWT auth required',
+            'GET /api/v1/security-demo/employees': 'Permission-based auth',
+            'POST /api/v1/security-demo/reports': 'Scope-based auth',
+            'POST /api/v1/security-demo/admin': 'Admin-only access',
+            'GET /api/v1/security-demo/api-only': 'Technical tokens only',
+            'GET /api/v1/security-demo/rate-limited': 'Rate limited endpoint',
+            'POST /api/v1/security-demo/sensitive': 'Multi-layer security'
+          },
+          description: 'Demonstrates different JWT security levels'
         }
       },
       features: [
@@ -146,7 +161,10 @@ router.get('/', (req, res) => {
         'OpenAI embeddings and vector similarity search',
         'pgvector integration for high-performance similarity search',
         'RAG (Retrieval-Augmented Generation) for AI-powered analysis',
-        'Market context analysis and positioning'
+        'Market context analysis and positioning',
+        'JWT technical token authentication with role-based permissions',
+        'Multi-layer security (authentication + permissions + scope + rate limiting)',
+        'Technical token management (generate, validate, refresh, revoke)'
       ],
       links: {
         documentation: `${req.protocol}://${req.get('host')}/api-docs`,
@@ -168,6 +186,7 @@ router.use('/persons', personRoutes);
 router.use('/lookup', lookupRoutes);
 router.use('/mcp', mcpRoutes);
 router.use('/ai', aiRoutes);
+router.use('/security-demo', securityDemoRoutes);
 router.use('/auth', authRoutes);
 
 export default router;

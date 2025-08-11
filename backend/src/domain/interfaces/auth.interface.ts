@@ -27,6 +27,33 @@ export interface DecodedToken {
   [key: string]: any;
 }
 
+export interface TechnicalClient {
+  id: string;
+  name: string;
+  permissions: Permission[];
+  rateLimits: {
+    requests: number;
+    windowMs: number;
+  };
+  isActive: boolean;
+  createdAt: Date;
+  lastUsed?: Date;
+}
+
+export interface Permission {
+  resource: string;
+  action: string;
+  conditions?: Record<string, any>;
+}
+
+export interface ITechnicalAuthService {
+  validateToken(token: string): Promise<TechnicalClient | null>;
+  getTechnicalClient(clientId: string): Promise<TechnicalClient | null>;
+  hasPermission(client: TechnicalClient, resource: string, action: string): boolean;
+  updateLastUsed(clientId: string): Promise<void>;
+}
+
 export interface AuthenticatedRequest extends Request {
   user?: DecodedToken;
+  technicalClient?: TechnicalClient;
 } 

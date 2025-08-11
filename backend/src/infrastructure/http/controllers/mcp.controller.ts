@@ -13,7 +13,7 @@ export class McpController {
    * GET /api/v1/mcp/tools
    * List available MCP tools
    */
-  async getTools(req: Request, res: Response) {
+  async getTools(req: Request, res: Response): Promise<void> {
     try {
       const tools = await this.mcpClientService.getAvailableTools();
       res.json({ 
@@ -43,7 +43,7 @@ export class McpController {
    * POST /api/v1/mcp/analyze
    * Trigger data analysis via MCP
    */
-  async analyzeData(req: Request, res: Response) {
+  async analyzeData(req: Request, res: Response): Promise<void> {
     try {
       const { 
         data, 
@@ -54,7 +54,7 @@ export class McpController {
       } = req.body;
       
       if (!data) {
-        return res.status(400).json({ 
+        res.status(400).json({ 
           status: 'error',
           data: { message: 'Data is required' },
           meta: {
@@ -62,6 +62,7 @@ export class McpController {
             requestId: req.headers['x-request-id'] || 'unknown'
           }
         });
+        return;
       }
 
       const result = await this.mcpClientService.analyzeData(
@@ -98,7 +99,7 @@ export class McpController {
    * POST /api/v1/mcp/report
    * Generate report via MCP
    */
-  async generateReport(req: Request, res: Response) {
+  async generateReport(req: Request, res: Response): Promise<void> {
     try {
       const { 
         data,
@@ -109,7 +110,7 @@ export class McpController {
       } = req.body;
       
       if (!data) {
-        return res.status(400).json({ 
+        res.status(400).json({ 
           status: 'error',
           data: { message: 'Data is required' },
           meta: {
@@ -117,6 +118,7 @@ export class McpController {
             requestId: req.headers['x-request-id'] || 'unknown'
           }
         });
+        return;
       }
 
       const result = await this.mcpClientService.generateReport(
@@ -153,12 +155,12 @@ export class McpController {
    * POST /api/v1/mcp/execute
    * Execute any MCP tool
    */
-  async executeTool(req: Request, res: Response) {
+  async executeTool(req: Request, res: Response): Promise<void> {
     try {
       const { toolName, arguments: args } = req.body;
       
       if (!toolName) {
-        return res.status(400).json({ 
+        res.status(400).json({ 
           status: 'error',
           data: { message: 'Tool name is required' },
           meta: {
@@ -166,6 +168,7 @@ export class McpController {
             requestId: req.headers['x-request-id'] || 'unknown'
           }
         });
+        return;
       }
 
       const result = await this.mcpClientService.executeTool(toolName, args || {});
@@ -196,7 +199,7 @@ export class McpController {
    * GET /api/v1/mcp/health
    * Check MCP server health
    */
-  async checkHealth(req: Request, res: Response) {
+  async checkHealth(req: Request, res: Response): Promise<void> {
     try {
       const isHealthy = await this.mcpClientService.isHealthy();
       res.json({ 
@@ -229,7 +232,7 @@ export class McpController {
    * POST /api/v1/mcp/skill-benchmarking
    * Perform skill benchmarking analysis via MCP
    */
-  async skillBenchmarking(req: Request, res: Response) {
+  async skillBenchmarking(req: Request, res: Response): Promise<void> {
     try {
       const { 
         data,
@@ -239,7 +242,7 @@ export class McpController {
       } = req.body;
       
       if (!data) {
-        return res.status(400).json({ 
+        res.status(400).json({ 
           status: 'error',
           data: { message: 'Data is required' },
           meta: {
@@ -247,6 +250,7 @@ export class McpController {
             requestId: req.headers['x-request-id'] || 'unknown'
           }
         });
+        return;
       }
 
       const result = await this.mcpClientService.skillBenchmarking(
@@ -282,7 +286,7 @@ export class McpController {
    * POST /api/v1/mcp/compensation-analysis
    * Perform compensation analysis via MCP
    */
-  async compensationAnalysis(req: Request, res: Response) {
+  async compensationAnalysis(req: Request, res: Response): Promise<void> {
     try {
       const { 
         data,
@@ -291,7 +295,7 @@ export class McpController {
       } = req.body;
       
       if (!data) {
-        return res.status(400).json({ 
+        res.status(400).json({ 
           status: 'error',
           data: { message: 'Data is required' },
           meta: {
@@ -299,6 +303,7 @@ export class McpController {
             requestId: req.headers['x-request-id'] || 'unknown'
           }
         });
+        return;
       }
 
       const result = await this.mcpClientService.compensationAnalysis(
@@ -333,12 +338,12 @@ export class McpController {
    * POST /api/v1/mcp/confidence
    * Get analysis confidence score via MCP
    */
-  async getAnalysisConfidence(req: Request, res: Response) {
+  async getAnalysisConfidence(req: Request, res: Response): Promise<void> {
     try {
       const { data } = req.body;
       
       if (!data) {
-        return res.status(400).json({ 
+        res.status(400).json({ 
           status: 'error',
           data: { message: 'Data is required' },
           meta: {
@@ -346,6 +351,7 @@ export class McpController {
             requestId: req.headers['x-request-id'] || 'unknown'
           }
         });
+        return;
       }
 
       const result = await this.mcpClientService.getAnalysisConfidence(data);

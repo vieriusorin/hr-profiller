@@ -2,6 +2,12 @@ import { Router } from 'express';
 import { container } from '../../container';
 import { TYPES } from '../../../shared/types';
 import { AIController } from '../controllers/ai.controller';
+import { 
+  authenticateJWT, 
+  requirePermissions, 
+  requireScope, 
+  rateLimitByClient 
+} from '../../../interfaces/http/middlewares/jwt-technical-auth.middleware';
 
 const router = Router();
 const aiController = container.get<AIController>(TYPES.AIController);
@@ -233,7 +239,14 @@ const aiController = container.get<AIController>(TYPES.AIController);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/analyze', (req, res) => aiController.analyzePerson(req, res));
+// 🟠 AI Analysis - Requires permissions (processes personal data)
+router.post('/analyze', 
+  authenticateJWT,                           // JWT token required
+  requirePermissions(['read:employees', 'read:*']), // HR permissions required
+  requireScope(['api:read', 'api:write']),   // Proper scope required
+  rateLimitByClient(),                       // Rate limit by client
+  (req, res) => aiController.analyzePerson(req, res)
+);
 
 /**
  * @swagger
@@ -291,7 +304,13 @@ router.post('/analyze', (req, res) => aiController.analyzePerson(req, res));
  *       500:
  *         description: Internal server error
  */
-router.post('/similar', (req, res) => aiController.findSimilarPersons(req, res));
+// 🟠 Similar Persons - Requires permissions (accesses personal data)
+router.post('/similar', 
+  authenticateJWT,
+  requirePermissions(['read:employees', 'read:*']),
+  rateLimitByClient(),
+  (req, res) => aiController.findSimilarPersons(req, res)
+);
 
 /**
  * @swagger
@@ -336,7 +355,12 @@ router.post('/similar', (req, res) => aiController.findSimilarPersons(req, res))
  *       500:
  *         description: Internal server error
  */
-router.post('/embeddings/generate', (req, res) => aiController.generatePersonEmbedding(req, res));
+// 🔴 Admin Only - Generate embeddings (system operation)
+router.post('/embeddings/generate', 
+  authenticateJWT,
+  requirePermissions(['admin:system', 'write:*']),
+  (req, res) => aiController.generatePersonEmbedding(req, res)
+);
 
 /**
  * @swagger
@@ -363,7 +387,12 @@ router.post('/embeddings/generate', (req, res) => aiController.generatePersonEmb
  *       500:
  *         description: Internal server error
  */
-router.post('/embeddings/generate-all', (req, res) => aiController.generateAllEmbeddings(req, res));
+// 🔴 Admin Only - Batch operations (system operation)
+router.post('/embeddings/generate-all', 
+  authenticateJWT,
+  requirePermissions(['admin:system', 'write:*']),
+  (req, res) => aiController.generateAllEmbeddings(req, res)
+);
 
 /**
  * @swagger
@@ -395,7 +424,11 @@ router.post('/embeddings/generate-all', (req, res) => aiController.generateAllEm
  *       500:
  *         description: Internal server error
  */
-router.get('/stats', (req, res) => aiController.getRAGStats(req, res));
+// 🟡 Basic Auth - Stats (monitoring data)
+router.get('/stats', 
+  authenticateJWT,
+  (req, res) => aiController.getRAGStats(req, res)
+);
 
 /**
  * @swagger
@@ -424,6 +457,7 @@ router.get('/stats', (req, res) => aiController.getRAGStats(req, res));
  *       500:
  *         description: AI services are unhealthy
  */
+// 🟢 Public - Health check (no auth needed for monitoring)
 router.get('/health', (req, res) => aiController.healthCheck(req, res));
 
 export default router; 

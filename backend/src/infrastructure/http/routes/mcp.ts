@@ -2,6 +2,12 @@ import { Router } from 'express';
 import { container } from '../../container';
 import { TYPES } from '../../../shared/types';
 import { McpController } from '../controllers/mcp.controller';
+import { 
+  authenticateJWT, 
+  requirePermissions, 
+  requireScope, 
+  rateLimitByClient 
+} from '../../../interfaces/http/middlewares/jwt-technical-auth.middleware';
 
 /**
  * MCP (Model Context Protocol) Routes
@@ -75,7 +81,12 @@ const mcpController = container.get<McpController>(TYPES.McpController);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/tools', (req, res) => mcpController.getTools(req, res));
+// 🟡 Basic Auth - List MCP tools (metadata access)
+router.get('/tools', 
+  authenticateJWT,
+  rateLimitByClient(),
+  (req, res) => mcpController.getTools(req, res)
+);
 
 /**
  * @swagger
@@ -166,7 +177,14 @@ router.get('/tools', (req, res) => mcpController.getTools(req, res));
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 //@ts-ignore
-router.post('/analyze', (req, res) => mcpController.analyzeData(req, res));
+// 🟠 MCP Analysis - Requires HR permissions (processes sensitive HR data)
+router.post('/analyze', 
+  authenticateJWT,
+  requirePermissions(['read:employees', 'write:reports', 'read:*']),
+  requireScope(['api:read', 'api:write']),
+  rateLimitByClient(),
+  (req, res) => mcpController.analyzeData(req, res)
+);
 
 /**
  * @swagger
@@ -256,7 +274,14 @@ router.post('/analyze', (req, res) => mcpController.analyzeData(req, res));
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 //@ts-ignore
-router.post('/report', (req, res) => mcpController.generateReport(req, res));
+// 🟠 Report Generation - Requires HR permissions (generates sensitive reports)
+router.post('/report', 
+  authenticateJWT,
+  requirePermissions(['write:reports', 'read:employees', 'write:*']),
+  requireScope(['api:write']),
+  rateLimitByClient(),
+  (req, res) => mcpController.generateReport(req, res)
+);
 
 /**
  * @swagger
@@ -620,6 +645,7 @@ router.post('/execute', (req, res) => mcpController.executeTool(req, res));
  *                     requestId:
  *                       type: string
  */
+// 🟢 Public - Health check (no auth needed for system monitoring)
 router.get('/health', (req, res) => mcpController.checkHealth(req, res));
 
 export default router; 
