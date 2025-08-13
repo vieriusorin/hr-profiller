@@ -34,6 +34,9 @@ const TYPES = {
   OpenAIService: Symbol.for('OpenAIService'),
   VectorDatabaseService: Symbol.for('VectorDatabaseService'),
   RAGService: Symbol.for('RAGService'),
+  CacheService: Symbol.for('CacheService'),
+  OptimizedBatchService: Symbol.for('OptimizedBatchService'),
+  OptimizedSimilarityService: Symbol.for('OptimizedSimilarityService'),
 
   // Controllers
   OpportunityController: Symbol.for('OpportunityController'),
