@@ -117,6 +117,8 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 	}, [settings]);
 
 	useEffect(() => {
+		if (typeof document === 'undefined') return;
+		
 		const root = document.documentElement;
 		Object.entries(style).forEach(([key, value]) => {
 			root.style.setProperty(key, value);

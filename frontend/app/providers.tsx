@@ -42,7 +42,7 @@ export function Providers({ children, session }: ProvidersProps) {
 			<QueryClientProvider client={queryClient}>
 				<NuqsAdapter>
 					{children}
-					{process.env.NODE_ENV === "development" && (
+					{process.env.NODE_ENV === "development" && typeof window !== 'undefined' && (
 						<ReactQueryDevtools initialIsOpen={false} />
 					)}
 				</NuqsAdapter>

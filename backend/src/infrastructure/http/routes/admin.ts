@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { container } from '../../container';
 import { TYPES } from '../../../shared/types';
+import { AuthenticatedRequest } from '../../../domain/interfaces/auth.interface';
 import { 
   authenticateAdmin, 
   authenticateTechnicalOnly,
@@ -77,10 +78,10 @@ router.get('/technical-tokens',
   async (req, res) => {
     try {
       const technicalAuthService = container.get<ITechnicalAuthService>(TYPES.TechnicalAuthService);
-      const clients = technicalAuthService.getAllClients();
+      const clients = await technicalAuthService.getAllClients();
       
       // Remove sensitive information
-      const publicClientInfo = clients.map(client => ({
+      const publicClientInfo = clients.map((client: any) => ({
         id: client.id,
         name: client.name,
         isActive: client.isActive,
@@ -95,7 +96,7 @@ router.get('/technical-tokens',
         data: {
           clients: publicClientInfo,
           totalClients: clients.length,
-          activeClients: clients.filter(c => c.isActive).length
+          activeClients: clients.filter((c: any) => c.isActive).length
         },
         meta: {
           timestamp: new Date().toISOString(),
@@ -226,7 +227,7 @@ router.get('/health',
 router.post('/bulk-operations/users', 
   authenticateTechnicalOnly(), // Only technical tokens for bulk operations
   requireTechnicalPermission('api/bulk-operations', 'write'),
-  async (req, res) => {
+  async (req: AuthenticatedRequest, res) => {
     try {
       const { operation, data, filters } = req.body;
       
@@ -242,7 +243,7 @@ router.post('/bulk-operations/users',
         },
         meta: {
           timestamp: new Date().toISOString(),
-          requestedBy: req.technicalClient?.name
+          requestedBy: (req as AuthenticatedRequest).technicalClient?.name
         }
       });
     } catch (error) {

@@ -49,6 +49,7 @@ export interface Permission {
 export interface ITechnicalAuthService {
   validateToken(token: string): Promise<TechnicalClient | null>;
   getTechnicalClient(clientId: string): Promise<TechnicalClient | null>;
+  getAllClients(): Promise<TechnicalClient[]>;
   hasPermission(client: TechnicalClient, resource: string, action: string): boolean;
   updateLastUsed(clientId: string): Promise<void>;
 }

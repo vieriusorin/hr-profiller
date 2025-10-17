@@ -29,6 +29,8 @@ import { VectorDatabaseService } from '../domain/ai/services/vector-database.ser
 import { RAGService } from '../domain/ai/services/rag.service';
 import { AIController } from './http/controllers/ai.controller';
 import { AuthController } from './http/controllers/auth.controller';
+// Auth service imports
+import { TechnicalAuthService } from '../domain/auth/services/technical-auth.service';
 
 const container = new Container();
 
@@ -55,6 +57,8 @@ container.bind<McpClientService>(TYPES.McpClientService).to(McpClientService);
 container.bind<OpenAIService>(TYPES.OpenAIService).to(OpenAIService);
 container.bind<VectorDatabaseService>(TYPES.VectorDatabaseService).to(VectorDatabaseService);
 container.bind<RAGService>(TYPES.RAGService).to(RAGService);
+// Auth service bindings
+container.bind<TechnicalAuthService>(TYPES.TechnicalAuthService).to(TechnicalAuthService);
 
 // Controller bindings
 container.bind<OpportunityController>(TYPES.OpportunityController).to(OpportunityController);

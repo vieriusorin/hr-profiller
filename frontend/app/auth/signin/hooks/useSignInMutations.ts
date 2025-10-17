@@ -29,7 +29,7 @@ const credentialsSignInApi = async (data: CredentialsSignInRequest, callbackUrl:
     throw new Error('Sign in failed. Please try again');
   }
 
-  if (result.ok && callbackUrl) {
+  if (result.ok && callbackUrl && typeof window !== 'undefined') {
     window.location.href = callbackUrl;
   }
 
@@ -42,7 +42,7 @@ const microsoftSignInApi = async (callbackUrl: string) => {
     redirect: false,
   });
   
-  if (result?.url) {
+  if (result?.url && typeof window !== 'undefined') {
     window.location.href = result.url;
   }
   

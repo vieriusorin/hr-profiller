@@ -37,6 +37,7 @@ const TYPES = {
   CacheService: Symbol.for('CacheService'),
   OptimizedBatchService: Symbol.for('OptimizedBatchService'),
   OptimizedSimilarityService: Symbol.for('OptimizedSimilarityService'),
+  TechnicalAuthService: Symbol.for('TechnicalAuthService'),
 
   // Controllers
   OpportunityController: Symbol.for('OpportunityController'),

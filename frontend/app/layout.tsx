@@ -1,8 +1,8 @@
 import "./globals.css";
+import "@/lib/storage-polyfill";
 import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google";
 import { Providers } from "./providers";
-import { Toaster } from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "./providers/theme-provider";
 import { getSettings } from "@/lib/settings";
@@ -36,30 +36,6 @@ export default async function RootLayout({
 			<body>
 				<ThemeProvider>
 					<Providers session={session}>{children}</Providers>
-					<Toaster
-						position='top-right'
-						toastOptions={{
-							duration: 4000,
-							style: {
-								background: settings.primaryColor,
-								color: settings.primaryForeground,
-							},
-							success: {
-								duration: 3000,
-								iconTheme: {
-									primary: "#4ade80",
-									secondary: "#fff",
-								},
-							},
-							error: {
-								duration: 5000,
-								iconTheme: {
-									primary: "#ef4444",
-									secondary: "#fff",
-								},
-							},
-						}}
-					/>
 				</ThemeProvider>
 			</body>
 		</html>

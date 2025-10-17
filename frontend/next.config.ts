@@ -11,6 +11,15 @@ const nextConfig: NextConfig = {
   images: {
     domains: ['localhost', '127.0.0.1'],
   },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      // Add polyfills for server-side rendering
+      config.resolve.alias = {
+        ...config.resolve.alias,
+      };
+    }
+    return config;
+  },
 };
 
 export default withBundleAnalyzer(nextConfig);

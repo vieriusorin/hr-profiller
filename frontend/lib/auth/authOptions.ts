@@ -29,7 +29,13 @@ async function createBackendToken(user: ExtendedUser): Promise<{ token: string; 
   const expiresAt = Math.floor(Date.now() / 1000) + (60 * 60); // 1 hour
 
   const { SignJWT } = await import('jose');
-  const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET);
+  const secretKey = process.env.NEXTAUTH_SECRET;
+  
+  if (!secretKey) {
+    throw new Error('NEXTAUTH_SECRET is not defined');
+  }
+  
+  const secret = new TextEncoder().encode(secretKey);
 
   const token = await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })

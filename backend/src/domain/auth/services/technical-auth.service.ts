@@ -31,7 +31,7 @@ export class TechnicalAuthService implements ITechnicalAuthService {
 
       console.log(`✅ Initialized ${this.technicalClients.size} technical clients`);
     } catch (error) {
-      console.warn('Warning: Error parsing TECHNICAL_TOKENS (technical auth will be disabled):', error.message);
+      console.warn('Warning: Error parsing TECHNICAL_TOKENS (technical auth will be disabled):', error instanceof Error ? error.message : String(error));
     }
   }
 
@@ -123,6 +123,10 @@ export class TechnicalAuthService implements ITechnicalAuthService {
     return this.technicalClients.get(clientId) || null;
   }
 
+  async getAllClients(): Promise<TechnicalClient[]> {
+    return Array.from(this.technicalClients.values());
+  }
+
   hasPermission(client: TechnicalClient, resource: string, action: string): boolean {
     return client.permissions.some(permission => 
       this.matchesPermission(permission, resource, action)
@@ -150,10 +154,5 @@ export class TechnicalAuthService implements ITechnicalAuthService {
   // Utility methods for token generation (development use)
   generateToken(length: number = 64): string {
     return crypto.randomBytes(length).toString('hex');
-  }
-
-  // Get all clients (for admin purposes)
-  getAllClients(): TechnicalClient[] {
-    return Array.from(this.technicalClients.values());
   }
 }
