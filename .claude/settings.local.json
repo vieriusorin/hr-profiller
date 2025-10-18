@@ -4,7 +4,11 @@
       "Bash(grep:*)",
       "Bash(find:*)",
       "Bash(npm run build:*)",
-      "Bash(rmdir:*)"
+      "Bash(rmdir:*)",
+      "Bash(for file in roles.ts lookup.ts)",
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(done)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }

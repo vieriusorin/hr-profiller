@@ -128,8 +128,8 @@ async function apiRequest<T = any>(
     'Accept': 'application/json',
   };
 
-  if (session && (session as any).accessToken) {
-    defaultHeaders['Authorization'] = `Bearer ${(session as any).accessToken.jti}`;
+  if (session && (session as any).backendToken) {
+    defaultHeaders['Authorization'] = `Bearer ${(session as any).backendToken}`;
   }
 
   const config: RequestInit = {

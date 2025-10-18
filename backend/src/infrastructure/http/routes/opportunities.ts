@@ -1,7 +1,8 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { OpportunityController } from '../controllers/opportunity.controller';
 import { container } from '../../container';
 import { TYPES } from '../../../shared/types';
+import { authenticateJWT, requirePermissions, requireScope, rateLimitByClient } from '../../../interfaces/http/middlewares/jwt-technical-auth.middleware';
 
 const router = Router();
 const opportunityController = container.get<OpportunityController>(TYPES.OpportunityController);
@@ -257,8 +258,20 @@ const opportunityController = container.get<OpportunityController>(TYPES.Opportu
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/', (req, res) => opportunityController.getAll(req, res));
-router.post('/', (req, res) => opportunityController.create(req, res));
+router.get('/',
+  authenticateJWT,
+  requirePermissions(['read:opportunities', 'read:*']),
+  requireScope(['api:read', 'api:write']),
+  rateLimitByClient(),
+  (req, res) => opportunityController.getAll(req, res)
+);
+router.post('/',
+  authenticateJWT,
+  requirePermissions(['write:opportunities', 'write:*']),
+  requireScope(['api:write']),
+  rateLimitByClient(),
+  (req, res) => opportunityController.create(req, res)
+);
 
 /**
  * @swagger
@@ -380,8 +393,26 @@ router.post('/', (req, res) => opportunityController.create(req, res));
  *       404:
  *         description: Opportunity not found
  */
-router.get('/:id', (req, res) => opportunityController.getById(req, res));
-router.patch('/:id', (req, res) => opportunityController.update(req, res));
-router.delete('/:id', (req, res) => opportunityController.delete(req, res));
+router.get('/:id',
+  authenticateJWT,
+  requirePermissions(['read:opportunities', 'read:*']),
+  requireScope(['api:read', 'api:write']),
+  rateLimitByClient(),
+  (req: Request<{ id: string }>, res: Response) => opportunityController.getById(req, res)
+);
+router.patch('/:id',
+  authenticateJWT,
+  requirePermissions(['write:opportunities', 'write:*']),
+  requireScope(['api:write']),
+  rateLimitByClient(),
+  (req: Request<{ id: string }>, res: Response) => opportunityController.update(req, res)
+);
+router.delete('/:id',
+  authenticateJWT,
+  requirePermissions(['delete:opportunities', 'write:*']),
+  requireScope(['api:write']),
+  rateLimitByClient(),
+  (req: Request<{ id: string }>, res: Response) => opportunityController.delete(req, res)
+);
 
 export default router; 

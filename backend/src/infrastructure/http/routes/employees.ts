@@ -1,7 +1,8 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { container } from '../../container';
 import { EmployeeController } from '../controllers/employee.controller';
 import { TYPES } from '../../../shared/types';
+import { authenticateJWT, requirePermissions, requireScope, rateLimitByClient } from '../../../interfaces/http/middlewares/jwt-technical-auth.middleware';
 
 /**
  * @swagger
@@ -97,7 +98,13 @@ try {
    *                       type: string
    *                       format: date-time
    */
-  employeeRouter.get('/', (req, res) => employeeController.getAll(req, res));
+  employeeRouter.get('/', 
+    authenticateJWT,
+    requirePermissions(['read:employees', 'read:*']),
+    requireScope(['api:read', 'api:write']),
+    rateLimitByClient(),
+    (req, res) => employeeController.getAll(req, res)
+  );
 
   /**
    * @swagger
@@ -130,7 +137,13 @@ try {
    *       404:
    *         description: Employee not found
    */
-  employeeRouter.get('/:id', (req, res) => employeeController.getById(req, res));
+  employeeRouter.get('/:id',
+    authenticateJWT,
+    requirePermissions(['read:employees', 'read:*']),
+    requireScope(['api:read', 'api:write']),
+    rateLimitByClient(),
+    (req: Request<{ id: string }>, res: Response) => employeeController.getById(req, res)
+  );
 
   /**
    * @swagger
@@ -396,7 +409,13 @@ try {
    *       500:
    *         description: Internal server error
    */
-  employeeRouter.post('/', (req, res) => employeeController.create(req, res));
+  employeeRouter.post('/',
+    authenticateJWT,
+    requirePermissions(['write:employees', 'write:*']),
+    requireScope(['api:write']),
+    rateLimitByClient(),
+    (req, res) => employeeController.create(req, res)
+  );
 
   /**
    * @swagger
@@ -640,7 +659,13 @@ try {
    *       500:
    *         description: Internal server error
    */
-  employeeRouter.patch('/:id', (req, res) => employeeController.update(req, res));
+  employeeRouter.patch('/:id',
+    authenticateJWT,
+    requirePermissions(['write:employees', 'write:*']),
+    requireScope(['api:write']),
+    rateLimitByClient(),
+    (req: Request<{ id: string }>, res: Response) => employeeController.update(req, res)
+  );
 
   // Employment Domain Operations
 
@@ -679,7 +704,13 @@ try {
    *       404:
    *         description: Employee not found
    */
-  employeeRouter.post('/:id/promote', (req, res) => employeeController.promoteEmployee(req, res));
+  employeeRouter.post('/:id/promote',
+    authenticateJWT,
+    requirePermissions(['write:employees', 'admin:hr', 'write:*']),
+    requireScope(['api:write']),
+    rateLimitByClient(),
+    (req: Request<{ id: string }>, res: Response) => employeeController.promoteEmployee(req, res)
+  );
 
   /**
    * @swagger
@@ -714,7 +745,13 @@ try {
    *       404:
    *         description: Employee not found
    */
-  employeeRouter.post('/:id/terminate', (req, res) => employeeController.terminateEmployee(req, res));
+  employeeRouter.post('/:id/terminate',
+    authenticateJWT,
+    requirePermissions(['write:employees', 'admin:hr', 'write:*']),
+    requireScope(['api:write']),
+    rateLimitByClient(),
+    (req: Request<{ id: string }>, res: Response) => employeeController.terminateEmployee(req, res)
+  );
 
   /**
    * @swagger
@@ -749,7 +786,13 @@ try {
    *       404:
    *         description: Employee or manager not found
    */
-  employeeRouter.post('/:id/assign-manager', (req, res) => employeeController.assignManager(req, res));
+  employeeRouter.post('/:id/assign-manager',
+    authenticateJWT,
+    requirePermissions(['write:employees', 'admin:hr', 'write:*']),
+    requireScope(['api:write']),
+    rateLimitByClient(),
+    (req: Request<{ id: string }>, res: Response) => employeeController.assignManager(req, res)
+  );
 
   /**
    * @swagger
@@ -771,7 +814,13 @@ try {
    *       404:
    *         description: Employee not found
    */
-  employeeRouter.delete('/:id/remove-manager', (req, res) => employeeController.removeManager(req, res));
+  employeeRouter.delete('/:id/remove-manager',
+    authenticateJWT,
+    requirePermissions(['write:employees', 'admin:hr', 'write:*']),
+    requireScope(['api:write']),
+    rateLimitByClient(),
+    (req: Request<{ id: string }>, res: Response) => employeeController.removeManager(req, res)
+  );
 
   /**
    * @swagger
@@ -813,7 +862,13 @@ try {
    *       404:
    *         description: Employee not found
    */
-  employeeRouter.get('/:id/searchable-content', (req, res) => employeeController.getSearchableContent(req, res));
+  employeeRouter.get('/:id/searchable-content',
+    authenticateJWT,
+    requirePermissions(['read:employees', 'read:*']),
+    requireScope(['api:read', 'api:write']),
+    rateLimitByClient(),
+    (req: Request<{ id: string }>, res: Response) => employeeController.getSearchableContent(req, res)
+  );
 
   /**
    * @swagger
@@ -835,7 +890,13 @@ try {
    *       404:
    *         description: Employee not found
    */
-  employeeRouter.delete('/:id', (req, res) => employeeController.delete(req, res));
+  employeeRouter.delete('/:id',
+    authenticateJWT,
+    requirePermissions(['delete:employees', 'admin:hr', 'write:*']),
+    requireScope(['api:write']),
+    rateLimitByClient(),
+    (req: Request<{ id: string }>, res: Response) => employeeController.delete(req, res)
+  );
 } catch (error) {
   console.error('Error getting EmployeeController from container:', error);
   throw error;

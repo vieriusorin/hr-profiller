@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { container } from '../../container';
 import { TYPES } from '../../../shared/types';
 import { LookupController } from '../controllers/lookup.controller';
+import { authenticateJWT, requirePermissions, requireScope, rateLimitByClient } from '../../../interfaces/http/middlewares/jwt-technical-auth.middleware';
 
 const router = Router();
 const lookupController = container.get<LookupController>(TYPES.LookupController);
@@ -72,7 +73,13 @@ const lookupController = container.get<LookupController>(TYPES.LookupController)
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.get('/skills', (req, res) => lookupController.getSkills(req, res));
+router.get('/skills',
+  authenticateJWT,
+  requirePermissions(['read:lookup', 'read:*']),
+  requireScope(['api:read', 'api:write']),
+  rateLimitByClient(),
+  (req, res) => lookupController.getSkills(req, res)
+);
 
 /**
  * @swagger
@@ -99,7 +106,13 @@ router.get('/skills', (req, res) => lookupController.getSkills(req, res));
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.get('/skills/categories', (req, res) => lookupController.getSkillCategories(req, res));
+router.get('/skills/categories',
+  authenticateJWT,
+  requirePermissions(['read:lookup', 'read:*']),
+  requireScope(['api:read', 'api:write']),
+  rateLimitByClient(),
+  (req, res) => lookupController.getSkillCategories(req, res)
+);
 
 /**
  * @swagger
@@ -168,7 +181,13 @@ router.get('/skills/categories', (req, res) => lookupController.getSkillCategori
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.get('/technologies', (req, res) => lookupController.getTechnologies(req, res));
+router.get('/technologies',
+  authenticateJWT,
+  requirePermissions(['read:lookup', 'read:*']),
+  requireScope(['api:read', 'api:write']),
+  rateLimitByClient(),
+  (req, res) => lookupController.getTechnologies(req, res)
+);
 
 /**
  * @swagger
@@ -195,6 +214,12 @@ router.get('/technologies', (req, res) => lookupController.getTechnologies(req, 
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.get('/technologies/categories', (req, res) => lookupController.getTechnologyCategories(req, res));
+router.get('/technologies/categories',
+  authenticateJWT,
+  requirePermissions(['read:lookup', 'read:*']),
+  requireScope(['api:read', 'api:write']),
+  rateLimitByClient(),
+  (req, res) => lookupController.getTechnologyCategories(req, res)
+);
 
 export { router as lookupRoutes }; 

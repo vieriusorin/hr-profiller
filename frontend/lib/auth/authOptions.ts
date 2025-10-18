@@ -112,20 +112,26 @@ export const authOptions: NextAuthOptions = {
             throw new Error(errorData.error || 'Authentication failed');
           }
 
-          const userData: LoginResponse = await res.json();
+          const response = await res.json();
+          
+          // Handle backend's actual response format
+          const userData = response.success ? response.data : response;
+          const user = userData.user || userData;
 
-          if (!isValidLoginResponse(userData) || !userData.user?.isActive) {
+          if (!user || !user.isActive) {
             throw new Error('Account is inactive or invalid response');
           }
 
           return {
-            id: userData.user.id,
-            email: userData.user.email,
-            name: userData.user.name,
-            role: userData.user.role,
-            isActive: userData.user.isActive,
-            createdAt: userData.user.createdAt,
-            updatedAt: userData.user.updatedAt,
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            isActive: user.isActive,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+            backendToken: userData.token,
+            tokenExpiry: userData.expiresAt,
           };
         } catch (error) {
           console.error('Authentication error:', error);
@@ -163,13 +169,12 @@ export const authOptions: NextAuthOptions = {
         extendedToken.role = extendedUser.role || 'user';
         extendedToken.provider = account.provider;
 
-        // Create backend token for API calls
-        try {
-          const { token: backendToken, expiresAt } = await createBackendToken(extendedUser);
-          extendedToken.backendToken = backendToken;
-          extendedToken.tokenExpiry = expiresAt;
-        } catch (error) {
-          console.error('Failed to create backend token:', error);
+        // Get backend token from the user object
+        if ((extendedUser as any).backendToken) {
+          extendedToken.backendToken = (extendedUser as any).backendToken;
+          extendedToken.tokenExpiry = (extendedUser as any).tokenExpiry;
+        } else {
+          console.error('No backend token received from login');
         }
       }
 

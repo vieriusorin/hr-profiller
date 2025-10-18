@@ -1,7 +1,8 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { container } from '../../container';
 import { RoleController } from '../controllers/role.controller';
 import { TYPES } from '../../../shared/types';
+import { authenticateJWT, requirePermissions, requireScope, rateLimitByClient } from '../../../interfaces/http/middlewares/jwt-technical-auth.middleware';
 
 const router = Router();
 const roleController = container.get<RoleController>(TYPES.RoleController);
@@ -42,7 +43,12 @@ const roleController = container.get<RoleController>(TYPES.RoleController);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/opportunity/:opportunityId', async (req, res, next) => {
+router.get('/opportunity/:opportunityId',
+  authenticateJWT,
+  requirePermissions(['read:roles', 'read:*']),
+  requireScope(['api:read', 'api:write']),
+  rateLimitByClient(),
+  async (req, res, next) => {
   try {
     await roleController.getAllByOpportunity(req, res);
   } catch (err) {
@@ -84,7 +90,12 @@ router.get('/opportunity/:opportunityId', async (req, res, next) => {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/:id', async (req, res, next) => {
+router.get('/:id',
+  authenticateJWT,
+  requirePermissions(['read:roles', 'read:*']),
+  requireScope(['api:read', 'api:write']),
+  rateLimitByClient(),
+  async (req, res, next) => {
   try {
     await roleController.getById(req, res);
   } catch (err) {
@@ -141,7 +152,12 @@ router.get('/:id', async (req, res, next) => {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', async (req, res, next) => {
+router.post('/',
+  authenticateJWT,
+  requirePermissions(['write:roles', 'write:*']),
+  requireScope(['api:write']),
+  rateLimitByClient(),
+  async (req, res, next) => {
   try {
     await roleController.create(req, res);
   } catch (err) {
@@ -206,7 +222,12 @@ router.post('/', async (req, res, next) => {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id',
+  authenticateJWT,
+  requirePermissions(['write:roles', 'write:*']),
+  requireScope(['api:write']),
+  rateLimitByClient(),
+  async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
   try {
     await roleController.update(req, res);
   } catch (err) {
@@ -238,7 +259,12 @@ router.patch('/:id', async (req, res, next) => {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id',
+  authenticateJWT,
+  requirePermissions(['delete:roles', 'write:*']),
+  requireScope(['api:write']),
+  rateLimitByClient(),
+  async (req, res, next) => {
   try {
     await roleController.delete(req, res);
   } catch (err) {
@@ -301,7 +327,12 @@ router.delete('/:id', async (req, res, next) => {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/:id/assign-member', async (req, res, next) => {
+router.post('/:id/assign-member',
+  authenticateJWT,
+  requirePermissions(['write:roles', 'admin:hr', 'write:*']),
+  requireScope(['api:write']),
+  rateLimitByClient(),
+  async (req, res, next) => {
   try {
     await roleController.assignMember(req, res);
   } catch (err) {
@@ -364,7 +395,12 @@ router.post('/:id/assign-member', async (req, res, next) => {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/:id/unassign-member', async (req, res, next) => {
+router.post('/:id/unassign-member',
+  authenticateJWT,
+  requirePermissions(['write:roles', 'admin:hr', 'write:*']),
+  requireScope(['api:write']),
+  rateLimitByClient(),
+  async (req, res, next) => {
   try {
     await roleController.unassignMember(req, res);
   } catch (err) {
@@ -429,7 +465,12 @@ router.post('/:id/unassign-member', async (req, res, next) => {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id/assigned-members', async (req, res, next) => {
+router.put('/:id/assigned-members',
+  authenticateJWT,
+  requirePermissions(['write:roles', 'admin:hr', 'write:*']),
+  requireScope(['api:write']),
+  rateLimitByClient(),
+  async (req, res, next) => {
   try {
     await roleController.updateAssignedMembers(req, res);
   } catch (err) {

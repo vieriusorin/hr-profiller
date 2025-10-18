@@ -242,24 +242,53 @@ export class JWTTokenService {
         'write:*', 
         'delete:*',
         'admin:users',
-        'admin:system'
+        'admin:system',
+        'admin:hr'
       ],
       'hr_manager': [
         'read:users',
         'read:employees', 
         'write:employees',
+        'delete:employees',
+        'read:persons',
+        'write:persons',
+        'read:opportunities',
+        'write:opportunities',
+        'read:roles',
+        'write:roles',
         'read:reports',
-        'write:reports'
+        'write:reports',
+        'read:lookup',
+        'admin:hr'
       ],
       'recruiter': [
-        'read:candidates',
-        'write:candidates',
+        'read:persons',
+        'write:persons',
         'read:opportunities',
-        'write:opportunities'
+        'write:opportunities',
+        'delete:opportunities',
+        'read:roles',
+        'write:roles',
+        'read:lookup',
+        'read:employees'
       ],
       'employee': [
         'read:profile',
-        'write:profile'
+        'write:profile',
+        'read:lookup'
+      ],
+      'service': [
+        'read:employees',
+        'write:employees',
+        'read:persons',
+        'write:persons',
+        'read:opportunities',
+        'write:opportunities',
+        'read:roles',
+        'write:roles',
+        'read:lookup',
+        'read:*',
+        'write:*'
       ]
     };
 

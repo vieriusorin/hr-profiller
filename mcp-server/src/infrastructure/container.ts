@@ -31,7 +31,8 @@ container.bind<McpToolsController>(TYPES.McpToolsController).to(McpToolsControll
 container.bind<HealthController>(TYPES.HealthController).to(HealthController);
 
 // Middleware bindings (for dependency injection if needed)
-container.bind<Function>(TYPES.AuthenticationMiddleware).toFunction(protectPageWithSession);
-container.bind<Function>(TYPES.AuthorizationMiddleware).toFunction(authorize);
+// Using .toConstantValue for function bindings since .toFunction does not exist
+container.bind<Function>(TYPES.AuthenticationMiddleware).toConstantValue(protectPageWithSession);
+container.bind<Function>(TYPES.AuthorizationMiddleware).toConstantValue(authorize);
 
 export { container }; 

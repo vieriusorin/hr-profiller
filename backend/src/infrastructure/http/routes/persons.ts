@@ -1,7 +1,8 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { container } from '../../container';
 import { PersonController } from '../controllers/person.controller';
 import { TYPES } from '../../../shared/types';
+import { authenticateJWT, requirePermissions, requireScope, rateLimitByClient } from '../../../interfaces/http/middlewares/jwt-technical-auth.middleware';
 
 /**
  * @swagger
@@ -88,7 +89,13 @@ try {
    *       500:
    *         $ref: '#/components/responses/InternalServerError'
    */
-  personRouter.get('/', (req, res) => personController.getAll(req, res));
+  personRouter.get('/',
+    authenticateJWT,
+    requirePermissions(['read:persons', 'read:*']),
+    requireScope(['api:read', 'api:write']),
+    rateLimitByClient(),
+    (req, res) => personController.getAll(req, res)
+  );
 
   /**
    * @swagger
@@ -141,7 +148,13 @@ try {
    *       500:
    *         $ref: '#/components/responses/InternalServerError'
    */
-  personRouter.get('/:id', (req, res) => personController.getById(req, res));
+  personRouter.get('/:id',
+    authenticateJWT,
+    requirePermissions(['read:persons', 'read:*']),
+    requireScope(['api:read', 'api:write']),
+    rateLimitByClient(),
+    (req: Request<{ id: string }>, res: Response) => personController.getById(req, res)
+  );
 
   /**
    * @swagger
@@ -186,7 +199,13 @@ try {
    *       500:
    *         $ref: '#/components/responses/InternalServerError'
    */
-  personRouter.post('/', (req, res) => personController.create(req, res));
+  personRouter.post('/',
+    authenticateJWT,
+    requirePermissions(['write:persons', 'write:*']),
+    requireScope(['api:write']),
+    rateLimitByClient(),
+    (req, res) => personController.create(req, res)
+  );
 
   /**
    * @swagger
@@ -241,7 +260,13 @@ try {
    *       500:
    *         $ref: '#/components/responses/InternalServerError'
    */
-  personRouter.patch('/:id', (req, res) => personController.update(req, res));
+  personRouter.patch('/:id',
+    authenticateJWT,
+    requirePermissions(['write:persons', 'write:*']),
+    requireScope(['api:write']),
+    rateLimitByClient(),
+    (req: Request<{ id: string }>, res: Response) => personController.update(req, res)
+  );
 
   /**
    * @swagger
@@ -265,7 +290,13 @@ try {
    *       500:
    *         $ref: '#/components/responses/InternalServerError'
    */
-  personRouter.delete('/:id', (req, res) => personController.delete(req, res));
+  personRouter.delete('/:id',
+    authenticateJWT,
+    requirePermissions(['delete:persons', 'write:*']),
+    requireScope(['api:write']),
+    rateLimitByClient(),
+    (req: Request<{ id: string }>, res: Response) => personController.delete(req, res)
+  );
 
   // ===== SEARCH ENDPOINTS =====
 

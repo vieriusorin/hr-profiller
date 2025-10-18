@@ -80,10 +80,10 @@ export class EmployeeController {
   async getAll(req: Request, res: Response): Promise<void> {
     try {
       const employeeProfiles = await this.employeeApplicationService.getAllEmployeeProfiles();
-      
+
       // Use the presenter's flat pagination method that maintains frontend compatibility
       const response = this.presenter.successPaginatedFlat(employeeProfiles, req);
-      
+
       res.status(200).json(response);
     } catch (error: any) {
       console.error('Error in EmployeeController.getAll:', error);
@@ -125,7 +125,7 @@ export class EmployeeController {
       if (!employeeValidation.success) {
         const errorResponse = this.presenter.error({
           message: 'Validation failed',
-          details: employeeValidation.error.errors
+          details: employeeValidation.error.issues.map(issue => issue.message)
         });
         res.status(400).json(errorResponse);
         return;
@@ -191,7 +191,7 @@ export class EmployeeController {
         if (!personValidation.success) {
           const errorResponse = this.presenter.error({
             message: 'Person validation failed',
-            details: personValidation.error.errors
+            details: personValidation.error.issues.map(issue => issue.message)
           });
           res.status(400).json(errorResponse);
           return;
@@ -204,7 +204,7 @@ export class EmployeeController {
         if (!employmentValidation.success) {
           const errorResponse = this.presenter.error({
             message: 'Employment validation failed',
-            details: employmentValidation.error.errors
+            details: employmentValidation.error.issues.map(issue => issue.message)
           });
           res.status(400).json(errorResponse);
           return;
@@ -232,7 +232,7 @@ export class EmployeeController {
       if (!promotionValidation.success) {
         const errorResponse = this.presenter.error({
           message: 'Validation failed',
-          details: promotionValidation.error.errors
+          details: promotionValidation.error.issues.map(issue => issue.message)
         });
         res.status(400).json(errorResponse);
         return;
@@ -264,7 +264,7 @@ export class EmployeeController {
       if (!terminationValidation.success) {
         const errorResponse = this.presenter.error({
           message: 'Validation failed',
-          details: terminationValidation.error.errors
+          details: terminationValidation.error.issues.map(issue => issue.message)
         });
         res.status(400).json(errorResponse);
         return;
@@ -297,7 +297,7 @@ export class EmployeeController {
       if (!managerValidation.success) {
         const errorResponse = this.presenter.error({
           message: 'Validation failed',
-          details: managerValidation.error.errors
+          details: managerValidation.error.issues.map(issue => issue.message)
         });
         res.status(400).json(errorResponse);
         return;

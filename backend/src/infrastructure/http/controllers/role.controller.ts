@@ -38,7 +38,7 @@ export class RoleController {
   async create(req: Request, res: Response) {
     const parseResult = insertOpportunityRoleSchema.safeParse(req.body);
     if (!parseResult.success) {
-      return res.status(400).json({ status: 'error', message: 'Validation failed', errors: parseResult.error.errors });
+      return res.status(400).json({ status: 'error', message: 'Validation failed', errors: parseResult.error.issues.map(issue => issue.message) });
     }
 
     try {
@@ -66,7 +66,7 @@ export class RoleController {
     const { id } = req.params;
     const parseResult = insertOpportunityRoleSchema.partial().safeParse(req.body);
     if (!parseResult.success) {
-      return res.status(400).json({ status: 'error', message: 'Validation failed', errors: parseResult.error.errors });
+      return res.status(400).json({ status: 'error', message: 'Validation failed', errors: parseResult.error.issues.map(issue => issue.message) });
     }
 
     try {
@@ -101,7 +101,7 @@ export class RoleController {
     const { id: roleId } = req.params;
     const parseResult = assignMemberSchema.safeParse(req.body);
     if (!parseResult.success) {
-      return res.status(400).json({ status: 'error', message: 'Validation failed', errors: parseResult.error.errors });
+      return res.status(400).json({ status: 'error', message: 'Validation failed', errors: parseResult.error.issues.map(issue => issue.message) });
     }
 
     try {
@@ -117,7 +117,7 @@ export class RoleController {
     const { id: roleId } = req.params;
     const parseResult = assignMemberSchema.safeParse(req.body);
     if (!parseResult.success) {
-      return res.status(400).json({ status: 'error', message: 'Validation failed', errors: parseResult.error.errors });
+      return res.status(400).json({ status: 'error', message: 'Validation failed', errors: parseResult.error.issues.map(issue => issue.message) });
     }
 
     try {
@@ -133,7 +133,7 @@ export class RoleController {
     const { id: roleId } = req.params;
     const parseResult = updateAssignedMembersSchema.safeParse(req.body);
     if (!parseResult.success) {
-      return res.status(400).json({ status: 'error', message: 'Validation failed', errors: parseResult.error.errors });
+      return res.status(400).json({ status: 'error', message: 'Validation failed', errors: parseResult.error.issues.map(issue => issue.message) });
     }
 
     try {

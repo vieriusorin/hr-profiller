@@ -20,7 +20,6 @@ export class OpenAIService {
     // Initialize AI SDK provider
     this.provider = createOpenAI({
       apiKey,
-      compatibility: 'strict'
     });
 
     this.embeddingModel = process.env.OPENAI_EMBEDDING_MODEL || 'text-embedding-3-small';
@@ -82,7 +81,7 @@ export class OpenAIService {
       throw new Error(`Failed to generate batch embeddings: ${error.message}`);
     }
   }
-  
+
   /**
    * Generate chat completion using AI SDK
    * @param messages - Array of message objects representing the chat history
@@ -97,7 +96,6 @@ export class OpenAIService {
         model: this.provider(this.chatModel),
         messages,
         temperature,
-        maxTokens: 2000,
         maxRetries: 3,
         abortSignal: AbortSignal.timeout(60000), // 60 second timeout
       });
@@ -106,9 +104,9 @@ export class OpenAIService {
         content: text,
         model: this.chatModel,
         usage: {
-          promptTokens: usage.promptTokens,
-          completionTokens: usage.completionTokens,
-          totalTokens: usage.totalTokens,
+          promptTokens: usage.inputTokens ?? 0,
+          completionTokens: usage.outputTokens ?? 0,
+          totalTokens: usage.totalTokens ?? 0,
         },
       };
     } catch (error: any) {
