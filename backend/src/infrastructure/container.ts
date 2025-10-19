@@ -9,6 +9,9 @@ import { DrizzleRoleRepository } from './database/repositories/drizzle-role.repo
 import { RoleService } from '../domain/opportunity/services/role.service';
 import { RoleRepository } from '../domain/opportunity/repositories/role.repository';
 import { RoleController } from './http/controllers/role.controller';
+import { RoleMatchingService } from '../domain/opportunity/services/role-matching.service';
+import { RoleMatchingController } from './http/controllers/role-matching.controller';
+import { RoleMatchingSSEController } from './http/controllers/role-matching-sse.controller';
 import { EmployeeController } from './http/controllers/employee.controller';
 import { LookupController } from './http/controllers/lookup.controller';
 // New DDD imports
@@ -47,6 +50,7 @@ container.bind<EmploymentRepository>(TYPES.EmploymentRepository).to(DrizzleEmplo
 // Service bindings 
 container.bind<OpportunityService>(TYPES.OpportunityService).to(OpportunityService);
 container.bind<RoleService>(TYPES.RoleService).to(RoleService);
+container.bind<RoleMatchingService>(TYPES.RoleMatchingService).to(RoleMatchingService);
 // New DDD service bindings
 container.bind<PersonService>(TYPES.PersonService).to(PersonService);
 container.bind<EmploymentService>(TYPES.EmploymentService).to(EmploymentService);
@@ -63,6 +67,8 @@ container.bind<TechnicalAuthService>(TYPES.TechnicalAuthService).to(TechnicalAut
 // Controller bindings
 container.bind<OpportunityController>(TYPES.OpportunityController).to(OpportunityController);
 container.bind<RoleController>(TYPES.RoleController).to(RoleController);
+container.bind<RoleMatchingController>(TYPES.RoleMatchingController).to(RoleMatchingController);
+container.bind<RoleMatchingSSEController>(TYPES.RoleMatchingSSEController).to(RoleMatchingSSEController);
 container.bind<EmployeeController>(TYPES.EmployeeController).to(EmployeeController);
 container.bind<PersonController>(TYPES.PersonController).to(PersonController);
 container.bind<LookupController>(TYPES.LookupController).to(LookupController);

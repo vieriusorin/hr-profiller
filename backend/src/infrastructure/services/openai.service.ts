@@ -23,7 +23,6 @@ export class OpenAIServiceImpl implements OpenAIService {
     // Initialize AI SDK provider
     this.provider = createOpenAI({
       apiKey,
-      compatibility: 'strict',
     });
 
     this.embeddingModel = process.env.OPENAI_EMBEDDING_MODEL || 'text-embedding-3-small';
@@ -44,14 +43,13 @@ export class OpenAIServiceImpl implements OpenAIService {
         model: this.provider(options?.model || this.chatModel),
         messages: [{ role: 'user', content: prompt }],
         temperature: options?.temperature || 0.7,
-        maxTokens: options?.maxTokens || 4000,
         maxRetries: 3,
         abortSignal: AbortSignal.timeout(60000), // 60 second timeout
       });
 
       return {
         content: text,
-        tokensUsed: usage.totalTokens,
+        tokensUsed: usage?.totalTokens || 0,
         model: options?.model || this.chatModel
       };
     } catch (error: any) {
@@ -139,7 +137,6 @@ export class OpenAIServiceImpl implements OpenAIService {
           }
         ],
         temperature: 0.4,
-        maxTokens: 2000,
         maxRetries: 3,
         abortSignal: AbortSignal.timeout(60000)
       });
@@ -166,7 +163,6 @@ export class OpenAIServiceImpl implements OpenAIService {
           }
         ],
         temperature: 0.4,
-        maxTokens: 2000,
         maxRetries: 3,
         abortSignal: AbortSignal.timeout(60000)
       });
@@ -199,7 +195,6 @@ ${reportSpecifications}`
           }
         ],
         temperature: 0.4,
-        maxTokens: 2000,
         maxRetries: 3,
         abortSignal: AbortSignal.timeout(60000)
       });

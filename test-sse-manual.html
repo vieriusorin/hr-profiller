@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SSE Test</title>
+</head>
+<body>
+    <h1>SSE Role Matching Test</h1>
+    <div id="output"></div>
+    <button onclick="testSSE()">Test SSE Connection</button>
+    
+    <script>
+        function testSSE() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<p>Starting SSE test...</p>';
+            
+            // Test URL - you'll need to replace with actual token and roleId
+            const url = 'http://localhost:3001/api/v1/role-matching/sse/start?roleId=test-role-id&limit=10&token=YOUR_TOKEN_HERE';
+            
+            const eventSource = new EventSource(url);
+            
+            eventSource.onopen = function(event) {
+                output.innerHTML += '<p>✅ SSE Connection opened</p>';
+                console.log('SSE opened:', event);
+            };
+            
+            eventSource.onmessage = function(event) {
+                output.innerHTML += `<p>📨 Message: ${event.data}</p>`;
+                console.log('SSE message:', event.data);
+                
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'complete') {
+                        output.innerHTML += `<p>✅ Complete! Found ${data.data?.totalFound || 0} candidates</p>`;
+                        eventSource.close();
+                    } else if (data.type === 'error') {
+                        output.innerHTML += `<p>❌ Error: ${data.error}</p>`;
+                        eventSource.close();
+                    }
+                } catch (e) {
+                    console.error('Failed to parse SSE data:', e);
+                }
+            };
+            
+            eventSource.onerror = function(event) {
+                output.innerHTML += '<p>❌ SSE Error occurred</p>';
+                console.error('SSE error:', event);
+                eventSource.close();
+            };
+        }
+    </script>
+</body>
+</html>

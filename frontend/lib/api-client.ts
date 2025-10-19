@@ -114,22 +114,66 @@ export class ApiError extends Error {
   }
 }
 
-// Generic fetch wrapper with type safety
+// Helper function to refresh backend token
+async function refreshBackendToken(session: any): Promise<string | null> {
+  try {
+    console.log('Attempting to refresh backend token...');
+    
+    if (!session.user?.email) {
+      console.error('No user email found for token refresh');
+      return null;
+    }
+
+    // Use the refresh token endpoint
+    const refreshResponse = await fetch(`${API_CONFIG.baseUrl}/api/v1/auth/refresh-token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        token: session.backendToken,
+        expiresIn: '24h',
+        clientId: 'user-session'
+      }),
+    });
+
+    if (!refreshResponse.ok) {
+      console.error('Token refresh failed:', refreshResponse.status);
+      return null;
+    }
+
+    const refreshData = await refreshResponse.json();
+    if (refreshData.success && refreshData.data?.token) {
+      console.log('Backend token refreshed successfully');
+      return refreshData.data.token;
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error refreshing backend token:', error);
+    return null;
+  }
+}
+
+// Generic fetch wrapper with type safety and token refresh
 async function apiRequest<T = any>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
   const url = buildApiUrl(endpoint);
 
-  const session = await getSession();
+  let session = await getSession();
 
   const defaultHeaders: HeadersInit = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   };
 
+
   if (session && (session as any).backendToken) {
     defaultHeaders['Authorization'] = `Bearer ${(session as any).backendToken}`;
+  } else {
+    console.warn('No backend token found in session for API request');
   }
 
   const config: RequestInit = {
@@ -142,6 +186,39 @@ async function apiRequest<T = any>(
 
   try {
     const response = await fetch(url, config);
+
+    // If we get a 403 and it might be due to token expiry, try to refresh
+    if (response.status === 403 && session && (session as any).backendToken) {
+      console.log('Got 403, attempting token refresh...');
+      
+      const newToken = await refreshBackendToken(session);
+      if (newToken) {
+        // Update the session (note: this won't persist across page reloads)
+        (session as any).backendToken = newToken;
+        
+        // Retry the request with the new token
+        const retryConfig: RequestInit = {
+          ...config,
+          headers: {
+            ...config.headers,
+            'Authorization': `Bearer ${newToken}`,
+          },
+        };
+        
+        console.log('Retrying request with refreshed token...');
+        const retryResponse = await fetch(url, retryConfig);
+        
+        if (retryResponse.ok) {
+          if (retryResponse.status === 204) {
+            return {} as T;
+          }
+          return await retryResponse.json();
+        }
+      }
+      
+      // If refresh failed or retry failed, continue with original error
+      console.error('Token refresh failed or retry failed');
+    }
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));

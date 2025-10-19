@@ -114,9 +114,13 @@ export const authOptions: NextAuthOptions = {
 
           const response = await res.json();
           
-          // Handle backend's actual response format
-          const userData = response.success ? response.data : response;
-          const user = userData.user || userData;
+          // Handle backend's actual response format (response.success = true, response.data = { token, user, ... })
+          if (!response.success || !response.data) {
+            throw new Error('Invalid response format from backend');
+          }
+
+          const { data } = response;
+          const user = data.user;
 
           if (!user || !user.isActive) {
             throw new Error('Account is inactive or invalid response');
@@ -130,8 +134,8 @@ export const authOptions: NextAuthOptions = {
             isActive: user.isActive,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
-            backendToken: userData.token,
-            tokenExpiry: userData.expiresAt,
+            backendToken: data.token,  // Extract token from data.token
+            tokenExpiry: data.expiresAt,  // Extract expiry from data.expiresAt
           };
         } catch (error) {
           console.error('Authentication error:', error);
@@ -174,7 +178,7 @@ export const authOptions: NextAuthOptions = {
           extendedToken.backendToken = (extendedUser as any).backendToken;
           extendedToken.tokenExpiry = (extendedUser as any).tokenExpiry;
         } else {
-          console.error('No backend token received from login');
+          console.error('JWT Callback: No backend token received from login');
         }
       }
 

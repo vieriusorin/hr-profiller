@@ -4997,7 +4997,7 @@ export interface components {
              * @example Open
              * @enum {string}
              */
-            status?: "Open" | "Assigned" | "Closed";
+            status?: "Open" | "Staffed" | "Won" | "Lost";
             /**
              * @description Additional notes about the role
              * @example Looking for someone with React experience

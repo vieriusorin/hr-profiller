@@ -1,6 +1,9 @@
 import { Router } from 'express';
 import opportunityRoutes from '../../infrastructure/http/routes/opportunities';
 import roleRoutes from '../../infrastructure/http/routes/roles';
+import roleMatchingRoutes from '../../infrastructure/http/routes/role-matching';
+import roleMatchingSSERoutes from '../../infrastructure/http/routes/role-matching-sse';
+import sseTestRoutes from '../../infrastructure/http/routes/sse-test';
 import employeeRoutes from '../../infrastructure/http/routes/employees';
 import personRoutes from '../../infrastructure/http/routes/persons';
 import { lookupRoutes } from '../../infrastructure/http/routes/lookup';
@@ -50,6 +53,16 @@ router.get('/', (req, res) => {
             'POST /api/v1/roles': 'Create new role',
             'PUT /api/v1/roles/:id': 'Update role by ID',
             'DELETE /api/v1/roles/:id': 'Delete role by ID'
+          }
+        },
+        roleMatching: {
+          base: '/api/v1/role-matching',
+          methods: {
+            'POST /api/v1/role-matching/find-matches': 'Find best person-role matches using AI',
+            'POST /api/v1/role-matching/match': 'Match a single person to a single role',
+            'GET /api/v1/role-matching/role/:roleId/candidates': 'Get top candidates for a role',
+            'GET /api/v1/role-matching/person/:personId/roles': 'Get all role matches for a person',
+            'GET /api/v1/role-matching/opportunity/:opportunityId/matches': 'Get all matches for an opportunity'
           }
         },
         employees: {
@@ -161,6 +174,7 @@ router.get('/', (req, res) => {
         'OpenAI embeddings and vector similarity search',
         'pgvector integration for high-performance similarity search',
         'RAG (Retrieval-Augmented Generation) for AI-powered analysis',
+        'AI-powered role assignment optimization (matching people to opportunities)',
         'Market context analysis and positioning',
         'JWT technical token authentication with role-based permissions',
         'Multi-layer security (authentication + permissions + scope + rate limiting)',
@@ -181,6 +195,11 @@ router.get('/', (req, res) => {
 router.get('/metrics', metricsHandler);
 router.use('/opportunities', opportunityRoutes);
 router.use('/roles', roleRoutes);
+console.log('🔧 [Main Routes] Mounting SSE routes at /role-matching/sse');
+router.use('/role-matching/sse', roleMatchingSSERoutes);
+console.log('🔧 [Main Routes] Mounting role-matching routes at /role-matching');
+router.use('/role-matching', roleMatchingRoutes);
+router.use('/sse-test', sseTestRoutes);
 router.use('/employees', employeeRoutes);
 router.use('/persons', personRoutes);
 router.use('/lookup', lookupRoutes);

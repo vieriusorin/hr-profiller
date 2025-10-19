@@ -79,7 +79,7 @@ export const useRoleForm = ({
         jobGrade: data.requiredGrade,
         level: data.opportunityLevel,
         allocation: data.allocation,
-        status: data.needsHire ? 'Open' : 'Assigned',
+        status: 'Open',
         notes: data.comments,
       };
 

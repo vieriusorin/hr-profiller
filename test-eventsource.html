@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EventSource Test</title>
+</head>
+<body>
+    <h1>EventSource URL Length Test</h1>
+    <div id="output"></div>
+    
+    <script>
+        const output = document.getElementById('output');
+        
+        // Test 1: Short URL (should work)
+        output.innerHTML += '<h3>Test 1: Short URL</h3>';
+        const shortUrl = 'http://localhost:3001/api/v1/role-matching/sse/start?roleId=test&limit=10&token=short';
+        const es1 = new EventSource(shortUrl);
+        output.innerHTML += `<p>Short URL (${shortUrl.length} chars): ${shortUrl}</p>`;
+        output.innerHTML += `<p>Initial readyState: ${es1.readyState}</p>`;
+        
+        setTimeout(() => {
+            output.innerHTML += `<p>After 3 seconds readyState: ${es1.readyState}</p>`;
+            es1.close();
+        }, 3000);
+        
+        // Test 2: Long URL with real token (should fail)
+        setTimeout(() => {
+            output.innerHTML += '<h3>Test 2: Long URL with Token</h3>';
+            const longToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NjA4NjE0ODMsImV4cCI6MTc2MDk0Nzg4MywiaXNzIjoiaHItcHJvZmlsZXItYXBpIiwidXNlcklkIjoiY2IyNmYxZjYtNWI5NC00YjE2LTljYmUtMTg2MDVkZDFhMDU0IiwiZW1haWwiOiJhZG1pbkBkZHJvaWRkLmNvbSIsIm5hbWUiOiJBZG1pbiBVc2VyIiwicm9sZSI6ImFkbWluIiwicGVybWlzc2lvbnMiOlsicmVhZDoqIiwid3JpdGU6KiIsImRlbGV0ZToqIiwiYWRtaW46dXNlcnMiLCJhZG1pbjpzeXN0ZW0iLCJhZG1pbjpociJdLCJ0b2tlblR5cGUiOiJ0ZWNobmljYWwiLCJjbGllbnRJZCI6InVzZXItc2Vzc2lvbiIsInNjb3BlIjoiYXBpOnJlYWQgYXBpOndyaXRlIiwianRpIjoiZDdiODAwMGUtZDhhYy00NzMxLWJlM2EtMmY5MGVkNTY3NjVlIn0.2BZXRnFjgrA0CnJdKWJ-1_bKeoRnbVhnLmy362Ot9gg';
+            const longUrl = `http://localhost:3001/api/v1/role-matching/sse/start?roleId=4b376672-a942-48e3-ae57-3ec4d9997879&limit=10&token=${encodeURIComponent(longToken)}`;
+            const es2 = new EventSource(longUrl);
+            output.innerHTML += `<p>Long URL (${longUrl.length} chars)</p>`;
+            output.innerHTML += `<p>Initial readyState: ${es2.readyState}</p>`;
+            
+            setTimeout(() => {
+                output.innerHTML += `<p>After 3 seconds readyState: ${es2.readyState}</p>`;
+                if (es2.readyState === 0) {
+                    output.innerHTML += '<p><strong>❌ Long URL FAILED - EventSource cannot handle URLs this long!</strong></p>';
+                }
+                es2.close();
+            }, 3000);
+        }, 4000);
+    </script>
+</body>
+</html>

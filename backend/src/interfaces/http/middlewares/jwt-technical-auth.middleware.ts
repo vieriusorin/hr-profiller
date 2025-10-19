@@ -39,6 +39,7 @@ export class JWTTechnicalAuthMiddleware {
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
+      console.log('JWT Auth: No token provided in Authorization header');
       res.status(401).json({ 
         success: false,
         error: 'Access token required' 
@@ -46,9 +47,11 @@ export class JWTTechnicalAuthMiddleware {
       return;
     }
 
+
     try {
       // First, try to validate as technical token
       const technicalValidation = this.jwtTokenService.validateToken(token);
+      
       
       if (technicalValidation.valid && technicalValidation.payload) {
         // It's a technical token
@@ -76,6 +79,7 @@ export class JWTTechnicalAuthMiddleware {
           exp: payload.exp
         };
 
+        
         next();
         return;
       }
@@ -100,7 +104,7 @@ export class JWTTechnicalAuthMiddleware {
           });
           return;
         }
-
+        
         req.user = decoded;
         next();
       });

@@ -34,28 +34,36 @@ const createServer = () => {
   app.use(
     cors({
       origin: (origin, callback) => {
+        console.log(`🌐 CORS: Processing origin: ${origin || 'no origin'}`);
+        
         // Allow requests with no origin (like mobile apps, curl requests, or Postman)
-        if (!origin) return callback(null, true);
+        if (!origin) {
+          console.log('🌐 CORS: Allowing request with no origin');
+          return callback(null, true);
+        }
 
         // In development, be more permissive
         if (process.env.NODE_ENV === 'development') {
           // Allow localhost and 127.0.0.1 with any port
           if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+            console.log(`🌐 CORS: Allowing localhost/127.0.0.1 origin: ${origin}`);
             return callback(null, true);
           }
         }
 
         // Check against allowed origins
         if (allowedOrigins.indexOf(origin) !== -1) {
+          console.log(`🌐 CORS: Origin found in allowed list: ${origin}`);
           return callback(null, true);
         }
 
         // Allow the server's own origin for Swagger UI
         if (origin.includes(`http://localhost:${process.env.PORT || 3001}`)) {
+          console.log(`🌐 CORS: Allowing server's own origin: ${origin}`);
           return callback(null, true);
         }
 
-        console.log(`CORS: Rejecting origin: ${origin}`);
+        console.log(`🌐 CORS: Rejecting origin: ${origin}`);
         return callback(new Error('Not allowed by CORS'));
       },
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

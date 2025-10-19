@@ -8,7 +8,9 @@
       "Bash(for file in roles.ts lookup.ts)",
       "Bash(do echo \"=== $file ===\")",
       "Bash(done)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(rg:*)",
+      "Bash(curl:*)"
     ],
     "deny": []
   }

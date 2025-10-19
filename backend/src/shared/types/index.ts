@@ -27,6 +27,7 @@ const TYPES = {
   // Services
   OpportunityService: Symbol.for('OpportunityService'),
   RoleService: Symbol.for('RoleService'),
+  RoleMatchingService: Symbol.for('RoleMatchingService'),
   PersonService: Symbol.for('PersonService'),
   EmploymentService: Symbol.for('EmploymentService'),
   EmployeeApplicationService: Symbol.for('EmployeeApplicationService'),
@@ -42,6 +43,8 @@ const TYPES = {
   // Controllers
   OpportunityController: Symbol.for('OpportunityController'),
   RoleController: Symbol.for('RoleController'),
+  RoleMatchingController: Symbol.for('RoleMatchingController'),
+  RoleMatchingSSEController: Symbol.for('RoleMatchingSSEController'),
   EmployeeController: Symbol.for('EmployeeController'),
   PersonController: Symbol.for('PersonController'),
   LookupController: Symbol.for('LookupController'),

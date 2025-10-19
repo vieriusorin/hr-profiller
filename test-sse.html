@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSE Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+
+    #log {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .log-entry {
+      margin: 5px 0;
+      padding: 5px;
+      border-left: 3px solid #007bff;
+      padding-left: 10px;
+    }
+
+    .error {
+      border-left-color: #dc3545;
+      color: #dc3545;
+    }
+
+    .success {
+      border-left-color: #28a745;
+      color: #28a745;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+      width: 300px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>SSE Connection Test</h1>
+  <p>This page tests the SSE endpoint directly.</p>
+
+  <div>
+    <label>Backend URL: </label>
+    <input type="text" id="apiUrl" value="http://localhost:3001" />
+  </div>
+  <br>
+  <div>
+    <label>Role ID: </label>
+    <input type="text" id="roleId" placeholder="Enter role ID" />
+  </div>
+  <br>
+  <div>
+    <label>Auth Token: </label>
+    <input type="text" id="token" placeholder="Paste your backend token" style="width: 500px;" />
+  </div>
+  <br>
+  <button id="connectBtn">Connect SSE</button>
+  <button id="closeBtn" disabled>Close Connection</button>
+  <button id="clearBtn">Clear Log</button>
+
+  <div id="log"></div>
+
+  <script>
+    let eventSource = null;
+    const logDiv = document.getElementById('log');
+    const connectBtn = document.getElementById('connectBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    const clearBtn = document.getElementById('clearBtn');
+
+    function addLog(message, type = 'info') {
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logDiv.appendChild(entry);
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    function connect() {
+      const apiUrl = document.getElementById('apiUrl').value;
+      const roleId = document.getElementById('roleId').value;
+      const token = document.getElementById('token').value;
+
+      if (!roleId) {
+        addLog('Please enter a Role ID', 'error');
+        return;
+      }
+
+      if (!token) {
+        addLog('Please enter an Auth Token', 'error');
+        return;
+      }
+
+      const url = `${apiUrl}/api/v1/role-matching/sse/start?roleId=${roleId}&limit=10&token=${encodeURIComponent(token)}`;
+
+      addLog(`Connecting to: ${url.replace(/token=[^&]+/, 'token=***')}`, 'info');
+
+      try {
+        eventSource = new EventSource(url);
+
+        connectBtn.disabled = true;
+        closeBtn.disabled = false;
+
+        eventSource.onopen = () => {
+          addLog('✅ SSE Connection opened!', 'success');
+        };
+
+        eventSource.onmessage = (event) => {
+          addLog(`📨 Message: ${event.data}`, 'info');
+
+          try {
+            const data = JSON.parse(event.data);
+            if (data.type === 'status') {
+              addLog(`📊 Progress: ${data.progress}% - ${data.message}`, 'success');
+            } else if (data.type === 'complete') {
+              addLog(`✅ Complete! Found ${data.data?.totalFound || 0} candidates`, 'success');
+            } else if (data.type === 'error') {
+              addLog(`❌ Error: ${data.error}`, 'error');
+            }
+          } catch (e) {
+            addLog(`⚠️ Failed to parse JSON: ${e.message}`, 'error');
+          }
+        };
+
+        eventSource.onerror = (error) => {
+          addLog(`❌ SSE Error occurred. ReadyState: ${eventSource?.readyState}`, 'error');
+          addLog(`Error details: ${JSON.stringify(error)}`, 'error');
+
+          if (eventSource?.readyState === EventSource.CLOSED) {
+            addLog('Connection closed by server', 'error');
+            connectBtn.disabled = false;
+            closeBtn.disabled = true;
+          }
+        };
+
+      } catch (error) {
+        addLog(`❌ Failed to create EventSource: ${error.message}`, 'error');
+        connectBtn.disabled = false;
+        closeBtn.disabled = true;
+      }
+    }
+
+    function close() {
+      if (eventSource) {
+        eventSource.close();
+        addLog('Connection closed by client', 'info');
+        eventSource = null;
+      }
+      connectBtn.disabled = false;
+      closeBtn.disabled = true;
+    }
+
+    function clearLog() {
+      logDiv.innerHTML = '';
+    }
+
+    connectBtn.addEventListener('click', connect);
+    closeBtn.addEventListener('click', close);
+    clearBtn.addEventListener('click', clearLog);
+
+    addLog('Ready. Enter Role ID and Token, then click Connect SSE');
+  </script>
+</body>
+
+</html>
