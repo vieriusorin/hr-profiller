@@ -243,13 +243,18 @@ export class RoleMatchingService {
   private async matchPersonsToRole(role: any, persons: any[]): Promise<RoleMatch[]> {
     const matches: RoleMatch[] = [];
 
-    for (const person of persons) {
+    for (let i = 0; i < persons.length; i++) {
+      const person = persons[i];
       try {
+        // eslint-disable-next-line no-console
+        console.log(`🔄 [Role Matching] Analyzing person ${i + 1}/${persons.length}: ${person.firstName} ${person.lastName}`);
         const match = await this.analyzeMatch(person, role);
         matches.push(match);
+        // eslint-disable-next-line no-console
+        console.log(`✅ [Role Matching] Completed ${i + 1}/${persons.length} - Score: ${match.matchScore}`);
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.error(`Failed to match person ${person.id} to role ${role.id}:`, error);
+        console.error(`❌ [Role Matching] Failed person ${i + 1}/${persons.length} (${person.firstName} ${person.lastName}):`, error);
         // Continue with other persons
       }
     }
@@ -271,18 +276,33 @@ export class RoleMatchingService {
       const aiResult = await this.openaiService.generateChatCompletion([
         { role: 'system', content: 'You are an expert HR analyst. Respond with valid JSON only.' },
         { role: 'user', content: analysisPrompt }
-      ], 0.2); // Lower temperature for faster responses
+      ], 0.2, true, 90000); // Lower temperature, force JSON mode, 90s timeout for concurrent requests
 
       // Parse AI response
       let analysis;
       try {
-        // Extract JSON from response (in case there's additional text)
-        const jsonMatch = aiResult.content.match(/\{[\s\S]*\}/);
-        const jsonStr = jsonMatch ? jsonMatch[0] : aiResult.content;
-        analysis = JSON.parse(jsonStr);
+        let jsonContent = aiResult.content.trim();
+
+        // Strip markdown code blocks if present (```json ... ```)
+        if (jsonContent.startsWith('```')) {
+          const codeBlockMatch = jsonContent.match(/```(?:json)?\s*([\s\S]*?)```/);
+          if (codeBlockMatch) {
+            jsonContent = codeBlockMatch[1].trim();
+          }
+        }
+
+        // Extract JSON object if there's extra text
+        const jsonMatch = jsonContent.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          jsonContent = jsonMatch[0];
+        }
+
+        analysis = JSON.parse(jsonContent);
       } catch (parseError) {
         // eslint-disable-next-line no-console
         console.error('Failed to parse AI response:', parseError);
+        // eslint-disable-next-line no-console
+        console.error('AI response content:', aiResult.content);
         throw parseError;
       }
 

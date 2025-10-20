@@ -86,19 +86,31 @@ export class OpenAIService {
    * Generate chat completion using AI SDK
    * @param messages - Array of message objects representing the chat history
    * @param temperature - Sampling temperature for the model (default is 0.4)
+   * @param forceJson - Force JSON output format (default is false)
    */
   async generateChatCompletion(
     messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
-    temperature: number = 0.4
+    temperature: number = 0.4,
+    forceJson: boolean = false,
+    timeoutMs: number = 60000
   ): Promise<ChatCompletionResult> {
     try {
-      const { text, usage } = await generateText({
+      const config: any = {
         model: this.provider(this.chatModel),
         messages,
         temperature,
         maxRetries: 3,
-        abortSignal: AbortSignal.timeout(60000), // 60 second timeout
-      });
+        abortSignal: AbortSignal.timeout(timeoutMs),
+      };
+
+      // Add JSON mode if requested
+      if (forceJson) {
+        config.responseFormat = { type: 'json_object' };
+        // eslint-disable-next-line no-console
+        console.log('🔧 [OpenAI] JSON mode enabled');
+      }
+
+      const { text, usage } = await generateText(config);
 
       return {
         content: text,
