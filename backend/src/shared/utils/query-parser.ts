@@ -14,6 +14,16 @@ const getFullUrl = (req: Request): URL => {
   return new URL(req.originalUrl || req.url || '/', `${protocol}://${host}`);
 };
 
+/**
+ * @description Utility class for parsing query parameters from Express requests.
+ * @class QueryParser
+ * @static parsePagination - Parses pagination parameters
+ * @static parseSort - Parses sorting parameters
+ * @static parseSearch - Parses search parameters
+ * @static parseFilters - Parses filtering parameters
+ * @static parseOpportunityFilters - Parses opportunity-specific filters
+ * @static parseAll - Parses all query parameters into a single object
+ */
 export class QueryParser {
   /**
    * Parse pagination parameters from request

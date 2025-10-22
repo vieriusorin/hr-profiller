@@ -7,6 +7,20 @@ import {
   OpportunitySortBuilder
 } from './builders/opportunity-builders';
 
+/**
+ * @description Presenter for Opportunity entities.
+ * Transforms Opportunity domain entities into OpportunityPresentation format.
+ * Utilizes filtering, searching, and sorting builders for enhanced data handling.
+ * @method present - Transforms an Opportunity into OpportunityPresentation format.
+ * @constructor - Sets up the filter, search, and sort builders.
+ * @uses OpportunityFilterBuilder
+ * @uses OpportunitySearchBuilder
+ * @uses OpportunitySortBuilder
+ * @class OpportunityPresenter
+ * @extends {EnhancedBasePresenter<Opportunity, OpportunityPresentation>}
+ * @method present - Transforms an Opportunity into OpportunityPresentation format.
+ * @param {Opportunity} opportunity - The Opportunity entity to present
+ */
 export class OpportunityPresenter extends EnhancedBasePresenter<Opportunity, OpportunityPresentation> {
 
   constructor() {

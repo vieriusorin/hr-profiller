@@ -4,6 +4,12 @@ import config from './config';
 
 dotenv.config();
 
+/**
+ * @description Bootstraps the backend server.
+ * @function bootstrap
+ * @async
+ * @returns {Promise<void>} A promise that resolves when the server is running.
+ */
 async function bootstrap() {
   const app = createServer();
 

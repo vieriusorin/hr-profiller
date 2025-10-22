@@ -10,6 +10,14 @@ import {
 } from '../../../shared/types/presenter.types';
 
 
+/**
+ * @description Opportunity Filter Builder - applies various filters to opportunity lists
+ * @class OpportunityFilterBuilder
+ * @implements {FilterBuilder<Opportunity>}
+ * @method apply - Applies filters to a list of opportunities
+ * @method validate - Validates the filter parameters
+ * @method sanitize - Sanitizes the filter parameters
+ */
 export class OpportunityFilterBuilder implements FilterBuilder<Opportunity> {
   apply(opportunities: Opportunity[], filters: FilterParams | OpportunityFilters): Opportunity[] {
     return opportunities.filter(opportunity => {
@@ -112,7 +120,12 @@ export class OpportunityFilterBuilder implements FilterBuilder<Opportunity> {
 }
 
 /**
- * Opportunity Search Builder - full-text search across multiple fields
+ * @description Opportunity Search Builder - search by various fields
+ * @class OpportunitySearchBuilder
+ * @implements {SearchBuilder<Opportunity>}
+ * @method apply - Applies search to a list of opportunities
+ * @method getSearchableFields - Returns the list of searchable fields
+ * @private getFieldValue - Helper to get field value by name
  */
 export class OpportunitySearchBuilder implements SearchBuilder<Opportunity> {
   private readonly searchableFields = [
@@ -154,7 +167,12 @@ export class OpportunitySearchBuilder implements SearchBuilder<Opportunity> {
 }
 
 /**
- * Opportunity Sort Builder - sort by various fields
+ * @description Opportunity Sort Builder - sorts by various fields
+ * @class OpportunitySortBuilder
+ * @implements {SortBuilder<Opportunity>}
+ * @method apply - Applies sorting to a list of opportunities
+ * @method getSortableFields - Returns the list of sortable fields
+ * @private getFieldValue - Helper to get field value by name
  */
 export class OpportunitySortBuilder implements SortBuilder<Opportunity> {
   private readonly sortableFields = [

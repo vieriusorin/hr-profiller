@@ -1,12 +1,19 @@
 import { ErrorResponse, ResponseEnvelope } from '@shared/types';
 
 /**
- * Base presenter class that all other presenters will extend
+ * @description Base Presenter Class
+ * @abstract
+ * @class BasePresenter
+ * @template T - The type of the input data
+ * @template R - The type of the presented data
+ * @method present - Abstract method to transform a single item
+ * @method presentCollection - Method to transform a collection of items
+ * @method success - Method to create a success response
+ * @method successCollection - Method to create a success response for a collection
+ * @method error - Method to create an error response
+ * @protected createEnvelope - Helper method to create a standard response envelope
  */
 export abstract class BasePresenter<T, R> {
-  /**
-   * Standard response envelope
-   */
   protected createEnvelope<D>(
     status: 'success' | 'error',
     data: D,
@@ -21,38 +28,22 @@ export abstract class BasePresenter<T, R> {
       },
     };
   }
-
-  /**
-   * Transform a single item
-   */
   abstract present(item: T, options?: any): R;
 
-  /**
-   * Transform a collection of items
-   */
   presentCollection(items: T[], options?: any): R[] {
     return items.map(item => this.present(item, options));
   }
 
-  /**
-   * Create a success response with properly formatted data
-   */
   success(item: T, meta?: Record<string, any>): ResponseEnvelope<R> {
     const presentedData = this.present(item);
     return this.createEnvelope('success', presentedData, meta);
   }
 
-  /**
-   * Create a success response for a collection
-   */
   successCollection(items: T[], meta?: Record<string, any>): ResponseEnvelope<R[]> {
     const presentedData = this.presentCollection(items);
     return this.createEnvelope('success', presentedData, meta);
   }
 
-  /**
-   * Create an error response
-   */
   error(error: any): ResponseEnvelope<ErrorResponse> {
     const errorData: ErrorResponse = {
       message: error.message || 'An unexpected error occurred',

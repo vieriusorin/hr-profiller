@@ -7,6 +7,18 @@ import {
   EmployeeSortBuilder
 } from './builders/employee-builders';
 
+/**
+ * @class EmployeePresenter
+ * @description Presenter for EmployeeProfile entities.
+ * Transforms EmployeeProfile domain entities into EmployeePresentation format.
+ * Utilizes filtering, searching, and sorting builders for enhanced data handling.
+ * @extends EnhancedBasePresenter<EmployeeProfile, EmployeePresentation>
+ * @method present - Transforms an EmployeeProfile into EmployeePresentation format.
+ * @constructor - Sets up the filter, search, and sort builders.
+ * @uses EmployeeFilterBuilder
+ * @uses EmployeeSearchBuilder
+ * @uses EmployeeSortBuilder
+ */
 export class EmployeePresenter extends EnhancedBasePresenter<EmployeeProfile, EmployeePresentation> {
 
   constructor() {

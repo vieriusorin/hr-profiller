@@ -14,7 +14,30 @@ import {
   SortBuilder
 } from '../../shared/types/presenter.types';
 import { QueryParser } from '../../shared/utils/query-parser';
-
+/**
+ * @description Enhanced Base Presenter Class
+ * @abstract
+ * @class EnhancedBasePresenter
+ * @template TInput - The type of the input data
+ * @template TOutput - The type of the presented data
+ * @method present - Abstract method to transform a single item
+ * @method presentCollection - Method to transform a collection of items
+ * @method success - Method to create a success response
+ * @method successCollection - Method to create a success response for a collection
+ * @method successPaginated - Method to create a paginated success response
+ * @method successPaginatedFlat - Method to create a paginated success response with flat structure
+ * @method error - Method to create an error response
+ * @method setFilterBuilder - Sets the filter builder
+ * @method setSearchBuilder - Sets the search builder
+ * @method setSortBuilder - Sets the sort builder
+ * @protected createEnvelope - Helper method to create a standard response envelope
+ * @protected createPaginationMeta - Helper to create pagination metadata
+ * @protected applyFilters - Applies filtering using the filter builder
+ * @protected applySearch - Applies searching using the search builder
+ * @protected applySort - Applies sorting using the sort builder
+ * @protected applyPagination - Applies pagination to the data
+ * @protected processCollection - Processes the collection with filtering, searching, sorting, and pagination
+ */
 export abstract class EnhancedBasePresenter<TInput, TOutput> {
   protected filterBuilder?: FilterBuilder<TInput>;
   protected searchBuilder?: SearchBuilder<TInput>;

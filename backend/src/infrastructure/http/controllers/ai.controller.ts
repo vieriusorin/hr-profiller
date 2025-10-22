@@ -10,6 +10,10 @@ import { VectorDatabaseService } from '../../../domain/ai/services/vector-databa
  * @description Controller for AI-related endpoints.
  * Handles requests for person analysis, similar person search,
  * embedding generation, and RAG statistics.
+ * @constructor
+ * @param ragService - The RAG service for retrieval-augmented generation
+ * @param openaiService - The OpenAI service for AI model interactions
+ * @param vectorDbService - The vector database service for embedding storage and retrieval
  * @method analyzePerson - Analyze a person using RAG.
  * @method findSimilarPersons - Find similar persons using vector similarity search.
  * @method generatePersonEmbedding - Generate embeddings for a specific person.

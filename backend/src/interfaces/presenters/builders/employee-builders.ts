@@ -8,6 +8,10 @@ import {
   SortParams
 } from '../../../shared/types/presenter.types';
 
+/**
+ * @description Employee Filter Builder - filter by various criteria.
+ * This builder applies filters such as position, status, location, and hire date range.
+ */
 export class EmployeeFilterBuilder implements FilterBuilder<EmployeeProfile> {
   apply(employees: EmployeeProfile[], filters: FilterParams): EmployeeProfile[] {
     return employees.filter(employee => {
