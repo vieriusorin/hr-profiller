@@ -31,7 +31,7 @@ export function useRole(id: string, options?: Omit<UseQueryOptions<RoleResponse,
     queryKey: roleKeys.detail(id),
     queryFn: () => apiClient.roles.getById(id),
     staleTime: 0, // Always fetch fresh data
-    cacheTime: 5 * 60 * 1000, // Cache for 5 minutes
+    gcTime: 5 * 60 * 1000, // Cache for 5 minutes
     ...options,
     enabled: !!id && (options?.enabled ?? true),
   });

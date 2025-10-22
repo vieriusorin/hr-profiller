@@ -66,8 +66,7 @@ export const useRoleForm = ({
     } else if (mode === 'create') {
       form.reset(mapRoleToFormData(undefined));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, initialData]);
+  }, [form, mode, initialData]);
 
   const handleSubmit = useCallback(async (data: CreateRoleFormData) => {
     if (isSubmitting || externalIsSubmitting) return;
@@ -105,7 +104,7 @@ export const useRoleForm = ({
     } finally {
       setIsSubmitting(false);
     }
-  }, [mode, initialData, onSubmit, isSubmitting, externalIsSubmitting]);
+  }, [initialData, onSubmit, isSubmitting, externalIsSubmitting]);
 
   const handleCancel = useCallback(() => {
     if (isSubmitting || externalIsSubmitting) return;

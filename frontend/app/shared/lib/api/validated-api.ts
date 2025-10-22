@@ -179,7 +179,7 @@ function validateOpportunityData(data: unknown, endpoint: string): Opportunity[]
     if (error instanceof z.ZodError) {
       const validationErrors: ValidationErrorDetails = {};
 
-      error.errors.forEach((err) => {
+      error.issues.forEach((err) => {
         const path = err.path.join('.');
         if (!validationErrors[path]) {
           validationErrors[path] = [];
@@ -218,7 +218,7 @@ function validateSingleOpportunityData(data: unknown, endpoint: string): Opportu
     if (error instanceof z.ZodError) {
       const validationErrors: ValidationErrorDetails = {};
 
-      error.errors.forEach((err) => {
+      error.issues.forEach((err) => {
         const path = err.path.join('.');
         if (!validationErrors[path]) {
           validationErrors[path] = [];

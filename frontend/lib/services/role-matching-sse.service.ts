@@ -39,7 +39,6 @@ export class RoleMatchingSSEService {
         },
       });
       console.log('🧪 [Frontend] Basic response status:', basicResponse.status);
-      console.log('🧪 [Frontend] Basic response headers:', [...basicResponse.headers.entries()]);
       
       // Now try SSE
       console.log('🧪 [Frontend] Testing SSE fetch...');
@@ -51,7 +50,6 @@ export class RoleMatchingSSEService {
       });
 
       console.log('🧪 [Frontend] SSE response status:', response.status);
-      console.log('🧪 [Frontend] SSE response headers:', [...response.headers.entries()]);
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);

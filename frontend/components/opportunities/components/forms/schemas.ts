@@ -38,8 +38,7 @@ export const createOpportunitySchema = z.object({
 
   probability: z
     .number({
-      required_error: 'Probability is required',
-      invalid_type_error: 'Probability must be a number',
+      message: 'Probability is required and must be a number',
     })
     .min(0, 'Probability must be at least 0%')
     .max(100, 'Probability cannot exceed 100%')
@@ -70,16 +69,13 @@ export const createRoleSchema = z.object({
   requiredGrade: GradeSchema,
 
   opportunityLevel: OpportunityLevelSchema,
-
   allocation: z
     .number({
-      required_error: 'Allocation is required',
-      invalid_type_error: 'Allocation must be a number',
+      message: 'Allocation is required and must be a number',
     })
     .min(0, 'Allocation cannot be negative')
     .max(100, 'Allocation cannot exceed 100%')
     .int('Allocation must be a whole number'),
-
   needsHire: z.boolean(),
 
   comments: z

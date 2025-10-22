@@ -1,11 +1,9 @@
 import "./globals.css";
-import "@/lib/storage-polyfill";
 import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google";
 import { Providers } from "./providers";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "./providers/theme-provider";
-import { getSettings } from "@/lib/settings";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/authOptions";
 
@@ -29,7 +27,6 @@ export default async function RootLayout({
 	children: React.ReactNode;
 }) {
 	const session = await getServerSession(authOptions);
-	const settings = await getSettings();
 
 	return (
 		<html lang='en' className={cn(outfit.className)} suppressHydrationWarning>

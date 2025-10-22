@@ -16,7 +16,7 @@ exports.McpToolsController = void 0;
 const inversify_1 = require("inversify");
 const zod_1 = require("zod");
 const types_1 = require("../../../shared/types");
-const mcp_analysis_service_1 = require("../../../domain/services/mcp-analysis.service");
+const analysis_service_1 = require("../../../domain/analysis/services/analysis.service");
 const AnalysisRequestSchema = zod_1.z.object({
     data: zod_1.z.string().min(1, 'Data is required'),
     analysisType: zod_1.z.string().optional(),
@@ -402,5 +402,5 @@ exports.McpToolsController = McpToolsController;
 exports.McpToolsController = McpToolsController = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.McpAnalysisService)),
-    __metadata("design:paramtypes", [mcp_analysis_service_1.McpAnalysisService])
+    __metadata("design:paramtypes", [analysis_service_1.McpAnalysisService])
 ], McpToolsController);

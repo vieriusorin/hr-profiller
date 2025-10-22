@@ -13,6 +13,8 @@ export interface ExtendedUser extends ApiUser, NextAuthUser {
   name: string;
   role: string;
   isActive: boolean;
+  backendToken?: string;
+  tokenExpiry?: number;
 }
 
 export interface ExtendedJWT extends JWT {

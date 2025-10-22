@@ -26,7 +26,7 @@ export interface CreateOpportunityFormProps extends FormActions {
 export interface RoleFormProps extends FormActions {
   mode?: 'create' | 'edit';
   initialData?: { data: Role };
-  onSubmit: (role: UpdateRole) => Promise<RoleResponse>;
+  onSubmit: (role: Role | UpdateRole) => Promise<RoleResponse | void>;
   isSubmitting?: boolean;
   comment?: string;
   opportunity?: Opportunity;

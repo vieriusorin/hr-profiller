@@ -13,8 +13,8 @@ import { EditOpportunityModalProps, EditRoleModalProps } from "./types";
 import { useEditRoleModal } from "./hooks/use-edit-role-modal";
 import { useEditOpportunityModal } from "./hooks/use-edit-opportunity-modal";
 import { useRole } from "@/lib/hooks/use-roles";
-import { Role, UpdateRole, RoleResponse } from "@/lib/api-client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Role } from "@/lib/types";
 
 export const EditRoleModal = ({
 	isOpen,
@@ -31,7 +31,7 @@ export const EditRoleModal = ({
 
 	const { handleSubmit, isPending } = useEditRoleModal({
 		opportunityId: opportunity.id,
-		role: { data: currentRole },
+		role: currentRole as Role,
 		onClose,
 	});
 
@@ -51,10 +51,10 @@ export const EditRoleModal = ({
 				) : (
 					<RoleForm
 						mode='edit'
-						initialData={currentRole}
+						initialData={{ data: currentRole }}
 						onSubmit={async (data) => {
-							await handleSubmit(data);
-							return { status: 'success', data: currentRole } as RoleResponse;
+							await handleSubmit(data as any);
+							return { status: 'success', data: currentRole };
 						}}
 						onCancel={onClose}
 						isSubmitting={isPending}

@@ -95,7 +95,7 @@ function setupRoutes(app, mcpToolsController, healthController) {
         });
     });
     // 404 handler
-    app.use('*', (req, res) => {
+    app.use((req, res) => {
         res.status(404).json({
             status: 'error',
             data: {

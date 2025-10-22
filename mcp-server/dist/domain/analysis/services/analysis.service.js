@@ -14,7 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.McpAnalysisService = void 0;
 const inversify_1 = require("inversify");
-const types_1 = require("../../shared/types");
+const types_1 = require("../../../shared/types");
 const analysis_entity_1 = require("../entities/analysis.entity");
 let McpAnalysisService = class McpAnalysisService {
     constructor(openAIService, promptEngine) {

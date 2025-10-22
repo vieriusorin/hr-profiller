@@ -50,7 +50,7 @@ async function makeApiRequest<T>(
 ): Promise<T> {
   const url = `${API_BASE_URL}/api/v1${endpoint}`;
 
-  let session = await getSession();
+  const session = await getSession();
 
   const defaultHeaders: HeadersInit = {
     'Content-Type': 'application/json',

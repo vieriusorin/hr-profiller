@@ -8,43 +8,12 @@ import {
   ExtendedUser,
   ExtendedJWT,
   LoginRequest,
-  LoginResponse,
-  isValidLoginResponse
 } from '@/types/auth';
 
 const credentialsSchema = z.object({
   email: z.string().email('Invalid email format'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
-
-async function createBackendToken(user: ExtendedUser): Promise<{ token: string; expiresAt: number }> {
-  const payload = {
-    userId: user.id,
-    email: user.email,
-    role: user.role,
-    iss: 'nextjs-frontend',
-    aud: 'nodejs-backend',
-  };
-
-  const expiresAt = Math.floor(Date.now() / 1000) + (60 * 60); // 1 hour
-
-  const { SignJWT } = await import('jose');
-  const secretKey = process.env.NEXTAUTH_SECRET;
-  
-  if (!secretKey) {
-    throw new Error('NEXTAUTH_SECRET is not defined');
-  }
-  
-  const secret = new TextEncoder().encode(secretKey);
-
-  const token = await new SignJWT(payload)
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setExpirationTime(expiresAt)
-    .sign(secret);
-
-  return { token, expiresAt };
-}
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,

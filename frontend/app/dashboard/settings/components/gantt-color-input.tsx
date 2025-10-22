@@ -42,7 +42,7 @@ export const GanttColorInput: React.FC<{
 								/>
 							</PopoverTrigger>
 							<PopoverContent className='w-auto p-0 border-none'>
-								<AnyColorPicker color={field.value} onChange={field.onChange} />
+								<AnyColorPicker color={field.value || ''} onChange={field.onChange} />
 							</PopoverContent>
 						</Popover>
 					</div>

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RoleMatchCard } from "./role-match-card";
 import { RoleMatchDetailDialog } from "./role-match-detail-dialog";
@@ -34,6 +34,8 @@ export const RoleMatchingResultsModal = ({
 }: RoleMatchingResultsModalProps) => {
 	const [selectedMatch, setSelectedMatch] = useState<RoleMatch | null>(null);
 	const [detailOpen, setDetailOpen] = useState(false);
+
+	console.log(roleId)
 
 	const handleMatchClick = (match: RoleMatch) => {
 		setSelectedMatch(match);

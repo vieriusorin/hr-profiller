@@ -162,7 +162,7 @@ async function apiRequest<T = any>(
 ): Promise<T> {
   const url = buildApiUrl(endpoint);
 
-  let session = await getSession();
+  const session = await getSession();
 
   const defaultHeaders: HeadersInit = {
     'Content-Type': 'application/json',
