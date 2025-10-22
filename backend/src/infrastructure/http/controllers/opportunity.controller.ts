@@ -11,6 +11,8 @@ type CreateOpportunityRequest = Request<{}, QueryParams, TypeOpportunity>;
  * @class OpportunityController
  * @description Controller for opportunity-related endpoints.
  * Handles requests for creating, retrieving, updating, and deleting opportunities.
+ * @constructor
+ * @param opportunityService - Service for managing opportunities.
  * @method getAll - Retrieve all opportunities with pagination.
  * @method getById - Retrieve a specific opportunity by ID.
  * @method create - Create a new opportunity.

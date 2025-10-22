@@ -29,6 +29,8 @@ const updateAssignedMembersSchema = z.object({
  * @description Controller for role-related endpoints.
  * Handles requests for creating, retrieving, updating, and deleting roles,
  * as well as managing assigned members.
+ * @constructor - Injects RoleService for business logic operations.
+ * @param roleService - Service for role operations.
  * @method getAllByOpportunity - Retrieve all roles for a specific opportunity.
  * @method getById - Retrieve a specific role by ID.
  * @method create - Create a new role.

@@ -7,6 +7,8 @@ import { sql } from 'drizzle-orm';
  * @class LookupController
  * @description Controller for lookup-related endpoints.
  * Handles requests for fetching skills, technologies, and their categories.
+ * @constructor - Injects the database dependency.
+ * @param db - Database instance for executing queries.
  * @method getSkills - Retrieve a list of skills with optional filtering and pagination.
  * @method getTechnologies - Retrieve a list of technologies with optional filtering and pagination.
  * @method getSkillCategories - Retrieve distinct skill categories.

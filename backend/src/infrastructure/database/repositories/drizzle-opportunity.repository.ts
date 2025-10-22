@@ -10,6 +10,8 @@ import { opportunities } from '../../../../db/schema/opportunities.schema';
  * @class DrizzleOpportunityRepository
  * @description Implementation of OpportunityRepository using Drizzle ORM.
  * Provides methods for CRUD operations on Opportunity entity.
+ * @constructor - Injects the Drizzle ORM database instance.
+ * @param db - Drizzle ORM database instance.
  * @implements OpportunityRepository
  * @method findAll - Retrieve all opportunity records.
  * @method findById - Retrieve an opportunity record by its ID.

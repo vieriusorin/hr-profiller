@@ -140,9 +140,6 @@ export class EmployeeController {
     private readonly employmentService: EmploymentService
   ) { }
 
-  /**
-   * Get all employees with their employment details
-   */
   async getAll(req: Request, res: Response): Promise<void> {
     try {
       const employeeProfiles = await this.employeeApplicationService.getAllEmployeeProfiles();
@@ -159,9 +156,6 @@ export class EmployeeController {
     }
   }
 
-  /**
-   * Get employee by ID with employment details
-   */
   async getById(req: Request<{ id: string }>, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -182,9 +176,6 @@ export class EmployeeController {
     }
   }
 
-  /**
-   * Create a new employee (Person + Employment)
-   */
   async create(req: Request<unknown, unknown, CreateEmployeeRequestData>, res: Response): Promise<void> {
     try {
       const employeeValidation = CreateEmployeeSchema.safeParse(req.body);
@@ -237,9 +228,6 @@ export class EmployeeController {
     }
   }
 
-  /**
-   * Update employee information (Person and/or Employment)
-   */
   async update(req: Request<{ id: string }, unknown, { person?: any; employment?: any }>, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -287,9 +275,6 @@ export class EmployeeController {
     }
   }
 
-  /**
-   * Promote an employee (Employment domain operation)
-   */
   async promoteEmployee(req: Request<{ id: string }, unknown, PromoteEmployeeRequestData>, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -319,9 +304,6 @@ export class EmployeeController {
     }
   }
 
-  /**
-   * Terminate an employee (Employment domain operation)
-   */
   async terminateEmployee(req: Request<{ id: string }, unknown, TerminateEmployeeRequestData>, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -352,9 +334,6 @@ export class EmployeeController {
     }
   }
 
-  /**
-   * Assign a manager to an employee (Employment domain operation)
-   */
   async assignManager(req: Request<{ id: string }, unknown, AssignManagerRequestData>, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -384,9 +363,6 @@ export class EmployeeController {
     }
   }
 
-  /**
-   * Remove manager from an employee (Employment domain operation)
-   */
   async removeManager(req: Request<{ id: string }>, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -435,9 +411,6 @@ export class EmployeeController {
     }
   }
 
-  /**
-   * Get searchable content for RAG (includes both Person and Employment data)
-   */
   async getSearchableContent(req: Request<{ id: string }>, res: Response): Promise<void> {
     try {
       const { id } = req.params;

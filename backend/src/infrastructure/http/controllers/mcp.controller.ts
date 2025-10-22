@@ -7,6 +7,8 @@ import { McpClientService } from '../../../domain/mcp/services/mcp-client.servic
  * @class McpController
  * @description Controller for MCP-related endpoints.
  * Handles requests for MCP tools, data analysis, report generation, and more.
+ * @constructor - Injects McpClientService for MCP interactions.
+ * @param mcpClientService - Service for interacting with the MCP.
  * @method getTools - Retrieve available MCP tools.
  * @method analyzeData - Trigger data analysis via MCP.
  * @method generateReport - Generate report via MCP.

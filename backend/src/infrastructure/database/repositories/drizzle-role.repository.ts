@@ -11,7 +11,11 @@ import { TYPES, DatabaseType } from '../../../shared/types';
  * @class DrizzleRoleRepository
  * @description Implementation of RoleRepository using Drizzle ORM.
  * Provides methods for CRUD operations on Role entity and managing assigned members.
+ * @constructor - Injects the Drizzle ORM database instance.
+ * @param db - Drizzle ORM database instance.
  * @implements RoleRepository
+ * @constructor - Injects the Drizzle ORM database instance.
+ * @param db - Drizzle ORM database instance.
  * @method findAllByOpportunity - Retrieve all roles for a specific opportunity.
  * @method findById - Retrieve a role record by its ID.
  * @method create - Create a new role record.

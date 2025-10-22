@@ -48,6 +48,8 @@ const singleMatchRequestSchema = z.object({
  * @description Controller for role matching-related endpoints.
  * Handles requests for finding matches, matching a person to a role,
  * and retrieving top candidates for roles.
+ * @constructor - Injects the role matching service dependency.
+ * @param roleMatchingService - Service for managing role matching data and operations.
  * @method findMatches - Find best matches for roles based on criteria.
  * @method matchPersonToRole - Match a single person to a single role.
  * @method getTopCandidatesForRole - Get top candidates for a specific role.

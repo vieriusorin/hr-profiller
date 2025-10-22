@@ -50,7 +50,15 @@ export interface RoleMatchingRequest {
 }
 
 /**
- * Response for role matching
+ * @description Response structure for role matching
+ * @interface RoleMatchingResponse
+ * @property matches - List of role match results
+ * @property metadata - Metadata about the matching process
+ * @property metadata.totalPersonsAnalyzed - Total number of persons analyzed
+ * @property metadata.totalRolesAnalyzed - Total number of roles analyzed
+ * @property metadata.averageMatchScore - Average match score across all matches
+ * @property metadata.processingTime - Time taken to process the request (ms)
+ * @property metadata.timestamp - Timestamp of when the matching was performed
  */
 export interface RoleMatchingResponse {
   matches: RoleMatch[];

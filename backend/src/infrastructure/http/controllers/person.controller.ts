@@ -159,6 +159,8 @@ type CreatePersonEducationRequestData = z.infer<typeof CreatePersonEducationSche
  * @description Controller for person-related endpoints.
  * Handles requests for creating, retrieving, updating, and deleting persons,
  * as well as managing their skills, technologies, and education records.
+ * @constructor - Injects the person service dependency.
+ * @param personService - Service for managing person data and operations.
  * @method getAll - Retrieve all persons with optional filtering, searching, and pagination.
  * @method getById - Retrieve a specific person by ID.
  * @method create - Create a new person.

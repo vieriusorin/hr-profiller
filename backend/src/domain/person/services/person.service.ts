@@ -11,6 +11,9 @@ import { McpClientService } from '../../mcp/services/mcp-client.service';
  * Provides methods to create, retrieve, update, and delete persons,
  * as well as managing their skills, technologies, and education records.
  * Also includes business logic for analyzing person capabilities using AI tools.
+ * @constructor - Initializes the PersonService with required repositories and services.
+ * @param personRepository - Repository for person data access.
+ * @param mcpClientService - Service for interacting with MCP AI tools.
  * @method getAllPersons - Retrieve all persons with optional capabilities.
  * @method getPersonById - Retrieve a specific person by ID with optional capabilities.
  * @method getPersonByEmail - Retrieve a specific person by email with optional capabilities.

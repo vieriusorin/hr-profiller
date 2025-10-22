@@ -7,6 +7,8 @@ import { RoleMatchingService } from '../../../domain/opportunity/services/role-m
  * @class RoleMatchingSSEController
  * @description Controller for handling Server-Sent Events (SSE) related to role matching.
  * Manages real-time communication for AI-powered candidate search based on role requirements.
+ * @constructor - Injects the role matching service dependency.
+ * @param roleMatchingService - Service for managing role matching data and operations.
  * @method startRoleMatching - Initiates the SSE connection and streams role matching updates.
  * @param req - Express request object containing query parameters for role matching.
  * @param res - Express response object used to send SSE data.

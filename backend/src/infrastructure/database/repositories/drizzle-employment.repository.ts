@@ -10,6 +10,7 @@ import { TypeEmploymentDetails } from '../../../../db/schema/employment-details.
  * Provides methods for CRUD operations and employment-specific actions.
  * @class DrizzleEmploymentRepository
  * @extends EmploymentRepository
+ * @constructor @param db - Drizzle ORM database instance.
  * @method findAll - Retrieve all employment records.
  * @method findById - Retrieve an employment record by its ID.
  * @method findByPersonId - Get employment records by person ID.

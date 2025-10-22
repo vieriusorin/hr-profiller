@@ -10,6 +10,8 @@ import { TypeNewPerson, TypePerson } from '../../../../db/schema/people.schema';
  * @description Implementation of PersonRepository using Drizzle ORM.
  * Provides methods for CRUD operations on Person entity,
  * as well as managing skills and technologies associated with persons.
+ * @constructor - Injects the Drizzle ORM database instance.
+ * @param db - Drizzle ORM database instance.
  * @implements PersonRepository
  * @method findAll - Retrieve all person records, optionally including capabilities.
  * @method findById - Retrieve a person record by its ID, optionally including capabilities.
