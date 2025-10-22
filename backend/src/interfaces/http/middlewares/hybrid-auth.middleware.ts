@@ -3,12 +3,24 @@ import { AuthenticatedRequest } from '../../../domain/interfaces/auth.interface'
 import { authenticateToken } from './auth.middleware';
 import { authenticateTechnicalToken } from './technical-auth.middleware';
 
+/**
+ * @enum AuthType
+ * @description Enumeration of authentication types.
+ * USER - User JWT token authentication.
+ * TECHNICAL - Technical token authentication.
+ * BOTH - Either user or technical token authentication.
+ */
 export enum AuthType {
   USER = 'user',
   TECHNICAL = 'technical',
   BOTH = 'both'
 }
 
+/**
+ * Middleware to authenticate requests based on allowed authentication types.
+ * @param allowedTypes - Array of allowed authentication types.
+ * @returns Middleware function.
+ */
 export const authenticateRequest = (allowedTypes: AuthType[] = [AuthType.BOTH]) => {
   return async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     const hasUserToken = req.headers['authorization'];
@@ -34,6 +46,7 @@ export const authenticateRequest = (allowedTypes: AuthType[] = [AuthType.BOTH]) 
         });
         return;
       } catch (error) {
+        console.error('Technical token authentication failed:', error);
         // Fall through to user authentication if allowed
         if (!hasUserToken || (!allowedTypes.includes(AuthType.USER) && !allowedTypes.includes(AuthType.BOTH))) {
           res.status(401).json({ 
@@ -78,11 +91,27 @@ export const authenticateRequest = (allowedTypes: AuthType[] = [AuthType.BOTH]) 
 };
 
 // Convenience middleware for common authentication patterns
+/**
+ * Middleware to authenticate user-only requests.
+ * @returns Middleware function.
+ */
 export const authenticateUserOnly = () => authenticateRequest([AuthType.USER]);
+/**
+ * Middleware to authenticate technical-only requests.
+ * @returns Middleware function.
+ */
 export const authenticateTechnicalOnly = () => authenticateRequest([AuthType.TECHNICAL]);
+/**
+ * Middleware to authenticate any requests (user or technical).
+ * @returns Middleware function.
+ */
 export const authenticateAny = () => authenticateRequest([AuthType.BOTH]);
 
 // Admin endpoints that require either admin user or admin technical token
+/**
+ * Middleware to authenticate admin requests.
+ * @returns Middleware function.
+ */
 export const authenticateAdmin = () => {
   return async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     await authenticateRequest([AuthType.BOTH])(req, res, (error) => {
@@ -114,6 +143,10 @@ export const authenticateAdmin = () => {
 };
 
 // Middleware to log authentication method used (non-breaking)
+/**
+ * Middleware to log authentication method used.
+ * @returns Middleware function.
+ */
 export const logAuthMethod = () => {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
     try {

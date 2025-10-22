@@ -50,6 +50,15 @@ function getRandomDate(from: Date, to: Date): Date {
     from = now;
     to = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
   }
+  
+  // Ensure 'from' date is before 'to' date
+  if (from.getTime() >= to.getTime()) {
+    // If dates are in wrong order or equal, swap them or use a safe range
+    const temp = from;
+    from = to;
+    to = new Date(temp.getTime() + 24 * 60 * 60 * 1000); // Add 1 day to ensure valid range
+  }
+  
   return faker.date.between({ from, to });
 }
 
@@ -232,7 +241,9 @@ async function seedOpportunities(clientsData: any[]): Promise<{ id: string, expe
 
     // Only add activatedAt if the opportunity is active
     if (opportunityData.isActive) {
-      opportunityData.activatedAt = getRandomDate(new Date(), startDate);
+      // For active opportunities, set activation date between 30 days ago and now
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      opportunityData.activatedAt = getRandomDate(thirtyDaysAgo, new Date());
     }
 
     const insertedOpportunity = await db.insert(opportunities).values(opportunityData).returning();

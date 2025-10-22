@@ -3,6 +3,15 @@ import { injectable, inject } from 'inversify';
 import { TYPES, DatabaseType } from '../../../shared/types';
 import { sql } from 'drizzle-orm';
 
+/**
+ * @class LookupController
+ * @description Controller for lookup-related endpoints.
+ * Handles requests for fetching skills, technologies, and their categories.
+ * @method getSkills - Retrieve a list of skills with optional filtering and pagination.
+ * @method getTechnologies - Retrieve a list of technologies with optional filtering and pagination.
+ * @method getSkillCategories - Retrieve distinct skill categories.
+ * @method getTechnologyCategories - Retrieve distinct technology categories.
+ */
 @injectable()
 export class LookupController {
   constructor(
@@ -14,7 +23,7 @@ export class LookupController {
     try {
       const { search, category, limit = '50', offset = '0' } = req.query;
       
-      let whereConditions: string[] = [];
+      const whereConditions: string[] = [];
       
       if (search) {
         whereConditions.push(`LOWER(name) LIKE '%${(search as string).toLowerCase()}%'`);
@@ -64,7 +73,7 @@ export class LookupController {
     try {
       const { search, category, limit = '50', offset = '0' } = req.query;
       
-      let whereConditions: string[] = [];
+      const whereConditions: string[] = [];
       
       if (search) {
         whereConditions.push(`LOWER(name) LIKE '%${(search as string).toLowerCase()}%'`);

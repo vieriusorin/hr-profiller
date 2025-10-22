@@ -1,6 +1,24 @@
 import { TypeOpportunityStatus } from '@db/enums/opportunity-status.enum';
 import { TypeOpportunity } from '@db/schema';
 
+/**
+ * Includes details such as client, dates, probability, status, and comments.
+ * @class Opportunity
+ * @description Entity representing a business opportunity.
+ * @property id - Unique identifier for the opportunity.
+ * @property opportunityName - Name of the opportunity.
+ * @property clientId - Reference to the client associated with the opportunity.
+ * @property clientName - Name of the client.
+ * @property expectedStartDate - Expected start date of the opportunity.
+ * @property expectedEndDate - Expected end date of the opportunity.
+ * @property probability - Probability of winning the opportunity (0-100).
+ * @property status - Current status of the opportunity.
+ * @property comment - Additional comments about the opportunity.
+ * @property isActive - Indicates if the opportunity is currently active.
+ * @property activatedAt - Date when the opportunity was activated.
+ * @property createdAt - Timestamp of when the opportunity was created.
+ * @property updatedAt - Timestamp of the last update to the opportunity.
+ */
 export class Opportunity implements Omit<TypeOpportunity, 'expectedStartDate' | 'expectedEndDate'> {
   readonly id!: string;
   readonly opportunityName!: string;
@@ -39,10 +57,19 @@ export class Opportunity implements Omit<TypeOpportunity, 'expectedStartDate' | 
     });
   }
 
+  /**
+   * Check if the opportunity has a high probability of success.
+   * @returns True if the probability is 80% or higher, false otherwise.
+   */
   isHighProbability(): boolean {
     return this.probability !== null && this.probability >= 80;
   }
 
+  /**
+   * Check if the opportunity is expiring soon.
+   * @param days The number of days to check for expiration.
+   * @returns True if the opportunity is expiring within the specified number of days, false otherwise.
+   */
   isExpiringSoon(days: number = 30): boolean {
     if (!this.expectedEndDate) return false;
     const endDate = new Date(this.expectedEndDate);
@@ -51,6 +78,10 @@ export class Opportunity implements Omit<TypeOpportunity, 'expectedStartDate' | 
     return endDate <= daysFromNow;
   }
 
+  /**
+   * Get the duration of the opportunity in days.
+   * @returns The duration in days, or null if dates are not set.
+   */
   getDuration(): number | null {
     if (!this.expectedStartDate || !this.expectedEndDate) return null;
     const start = new Date(this.expectedStartDate);

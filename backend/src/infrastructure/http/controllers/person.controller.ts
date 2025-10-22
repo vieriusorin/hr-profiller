@@ -7,6 +7,21 @@ import { TypeNewPerson } from '../../../../db/schema/people.schema';
 import { z } from 'zod';
 
 // Validation schemas for Person domain
+/**
+ * @schema CreatePersonSchema
+ * @description Schema for creating a new person.
+ * Includes required and optional fields for person details.
+ * @property firstName - The first name of the person.
+ * @property lastName - The last name of the person.
+ * @property fullName - The full name of the person (optional).
+ * @property email - The email address of the person.
+ * @property phone - The phone number of the person (optional).
+ * @property birthDate - The birth date of the person (optional).
+ * @property address - The address of the person (optional).
+ * @property city - The city of the person (optional).
+ * @property country - The country of the person (optional).
+ * @property notes - Additional notes about the person (optional).
+ */
 const CreatePersonSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
@@ -20,8 +35,26 @@ const CreatePersonSchema = z.object({
   notes: z.string().optional(),
 });
 
+/**
+ * @schema UpdatePersonSchema
+ * @description Schema for updating a person.
+ * All fields are optional to allow partial updates.
+ */
 const UpdatePersonSchema = CreatePersonSchema.partial();
 
+/**
+ * @schema CreatePersonSkillSchema
+ * @description Schema for adding a skill to a person.
+ * Includes required skill name and optional details.
+ * @property skillName - The name of the skill.
+ * @property proficiencyLevel - The proficiency level in the skill (optional).
+ * @property yearsOfExperience - The years of experience with the skill (optional).
+ * @property lastUsed - The last used date for the skill (optional).
+ * @property isCertified - Whether the person is certified in the skill (optional).
+ * @property certificationName - The name of the certification (optional).
+ * @property certificationDate - The date of the certification (optional).
+ * @property notes - Additional notes about the skill (optional).
+ */
 const CreatePersonSkillSchema = z.object({
   skillName: z.string().min(1, 'Skill name is required'),
   proficiencyLevel: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT']).optional(),
@@ -33,6 +66,18 @@ const CreatePersonSkillSchema = z.object({
   notes: z.string().optional(),
 });
 
+/**
+ * @schema CreatePersonTechnologySchema
+ * @description Schema for adding a technology to a person.
+ * Includes required technology name and optional details.
+ * @property technologyName - The name of the technology.
+ * @property proficiencyLevel - The proficiency level in the technology (optional).
+ * @property yearsOfExperience - The years of experience with the technology (optional).
+ * @property lastUsed - The last used date for the technology (optional).
+ * @property context - The context in which the technology was used (optional).
+ * @property projectName - The name of the project where the technology was used (optional).
+ * @property description - Additional description about the technology usage (optional).
+ */
 const CreatePersonTechnologySchema = z.object({
   technologyName: z.string().min(1, 'Technology name is required'),
   proficiencyLevel: z.string().optional(),
@@ -43,6 +88,19 @@ const CreatePersonTechnologySchema = z.object({
   description: z.string().optional(),
 });
 
+/**
+ * @schema CreatePersonEducationSchema
+ * @description Schema for adding an education record to a person.
+ * Includes required institution and optional details.
+ * @property institution - The name of the educational institution.
+ * @property degree - The degree obtained (optional).
+ * @property fieldOfStudy - The field of study (optional).
+ * @property startDate - The start date of the education (optional).
+ * @property graduationDate - The graduation date (optional).
+ * @property description - Additional description about the education (optional).
+ * @property gpa - The GPA achieved (optional).
+ * @property isCurrentlyEnrolled - Whether the person is currently enrolled (optional).
+ */
 const CreatePersonEducationSchema = z.object({
   institution: z.string().min(1, 'Institution is required'),
   degree: z.string().optional(),
@@ -54,14 +112,34 @@ const CreatePersonEducationSchema = z.object({
   isCurrentlyEnrolled: z.string().optional(),
 });
 
+/**
+ * @schema SearchSkillsSchema
+ * @description Schema for searching skills.
+ * Includes an array of skill names to search for.
+ * @property skills - An array of skill names.
+ */
 const SearchSkillsSchema = z.object({
   skills: z.array(z.string()).min(1, 'At least one skill is required'),
 });
 
+/**
+ * @schema SearchTechnologiesSchema
+ * @description Schema for searching technologies.
+ * Includes an array of technology names to search for.
+ * @property technologies - An array of technology names.
+ */
 const SearchTechnologiesSchema = z.object({
   technologies: z.array(z.string()).min(1, 'At least one technology is required'),
 });
 
+/**
+ * @schema SearchEducationSchema
+ * @description Schema for searching education records.
+ * Includes optional fields to filter education records.
+ * @property institution - The name of the educational institution (optional).
+ * @property degree - The degree obtained (optional).
+ * @property fieldOfStudy - The field of study (optional).
+ */
 const SearchEducationSchema = z.object({
   institution: z.string().optional(),
   degree: z.string().optional(),
@@ -76,6 +154,32 @@ type CreatePersonSkillRequestData = z.infer<typeof CreatePersonSkillSchema>;
 type CreatePersonTechnologyRequestData = z.infer<typeof CreatePersonTechnologySchema>;
 type CreatePersonEducationRequestData = z.infer<typeof CreatePersonEducationSchema>;
 
+/**
+ * @class PersonController
+ * @description Controller for person-related endpoints.
+ * Handles requests for creating, retrieving, updating, and deleting persons,
+ * as well as managing their skills, technologies, and education records.
+ * @method getAll - Retrieve all persons with optional filtering, searching, and pagination.
+ * @method getById - Retrieve a specific person by ID.
+ * @method create - Create a new person.
+ * @method update - Update an existing person by ID.
+ * @method delete - Delete a person by ID.
+ * @method addSkill - Add a skill to a person.
+ * @method updateSkill - Update a skill of a person.
+ * @method removeSkill - Remove a skill from a person.
+ * @method addTechnology - Add a technology to a person.
+ * @method updateTechnology - Update a technology of a person.
+ * @method removeTechnology - Remove a technology from a person.
+ * @method addEducation - Add an education record to a person.
+ * @method updateEducation - Update an education record of a person.
+ * @method removeEducation - Remove an education record from a person.
+ * @method searchBySkills - Search persons by skills.
+ * @method searchByTechnologies - Search persons by technologies.
+ * @method searchByEducation - Search persons by education criteria.
+ * @method getCapabilities - Retrieve capabilities of a person.
+ * @method analyzeWithAI - Analyze a person's profile using AI.
+ * @method generateReport - Generate a report for a person.
+ */
 @injectable()
 export class PersonController {
   constructor(

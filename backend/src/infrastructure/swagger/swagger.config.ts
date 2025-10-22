@@ -1,5 +1,13 @@
 import swaggerJsdoc from 'swagger-jsdoc';
 
+/**
+ * @description Swagger configuration options for API documentation.
+ * Defines OpenAPI version, API info, server details, components, and schemas.
+ * @constant options - Swagger configuration options.
+ * @type {swaggerJsdoc.Options}
+ * @property definition - OpenAPI definition including info, servers, components, and schemas.
+ * @property apis - Paths to the API route files for documentation generation.
+ */
 const options: swaggerJsdoc.Options = {
   definition: {
     openapi: '3.1.0',

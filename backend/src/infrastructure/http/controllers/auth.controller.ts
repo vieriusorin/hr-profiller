@@ -6,6 +6,19 @@ import { inject, injectable } from 'inversify';
 import { DatabaseType, TYPES } from '../../../shared/types';
 import { JWTTokenService, TokenGenerationOptions } from '../../../domain/auth/services/jwt-token.service';
 
+/**
+ * @class AuthController
+ * @description Controller for authentication-related endpoints.
+ * Handles user login, technical token generation,
+ * token validation, refresh, and revocation.
+ * @method login - User login with email and password.
+ * @method generateTechnicalToken - Generate a technical token for service-to-service authentication.
+ * @method validateToken - Validate a given JWT token.
+ * @method refreshToken - Refresh an existing JWT token.
+ * @method revokeToken - Revoke a given JWT token.
+ * @private db - Drizzle ORM database instance.
+ * @private jwtTokenService - Service for JWT token operations.
+ */
 @injectable()
 export class AuthController {
   private readonly jwtTokenService: JWTTokenService;

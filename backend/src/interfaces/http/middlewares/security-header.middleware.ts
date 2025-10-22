@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
 /**
- * Security headers middleware to secure the application by setting various HTTP headers
+ * @description Middleware to set security-related HTTP headers.
  * @param req - The request object
  * @param res - The response object
  * @param next - The next function

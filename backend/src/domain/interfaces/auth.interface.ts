@@ -1,5 +1,25 @@
 import { Request } from 'express';
 
+/**
+ * @description Decoded JWT token structure used in authentication.
+ * Combines standard JWT fields with custom application-specific fields.
+ * @interface DecodedToken
+ * @property {string} [name] - The name of the user.
+ * @property {string} [email] - The email of the user.
+ * @property {string} [picture] - The profile picture URL of the user.
+ * @property {string} [sub] - The subject (user ID) of the token.
+ * @property {string} [id] - Custom user ID field.
+ * @property {string} [role] - Custom user role field.
+ * @property {string} [provider] - Custom authentication provider field.
+ * @property {number} [iat] - Issued at timestamp.
+ * @property {number} [exp] - Expiration timestamp.
+ * @property {number} [nbf] - Not before timestamp.
+ * @property {string} [jti] - JWT ID.
+ * @property {string} [iss] - Issuer of the token.
+ * @property {string|string[]} [aud] - Audience of the token.
+ * @property {string} [sessionToken] - NextAuth session token.
+ * @property {any} [key: string] - Additional dynamic fields.
+ */
 export interface DecodedToken {
   // NextAuth standard fields
   name?: string;

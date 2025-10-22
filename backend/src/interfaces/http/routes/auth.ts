@@ -6,6 +6,17 @@ import { protectPageWithSession } from '../middlewares/protectPage.middleware';
 import { authorize } from '../middlewares/authorization.middleware';
 import { AuthenticatedRequest } from '../../../domain/interfaces/auth.interface';
 
+/**
+ * @description Authentication routes for the application.
+ * Includes login and test endpoints for session and admin authorization.
+ * @module AuthRoutes
+ * @requires AuthController
+ * @requires protectPageWithSession
+ * @requires authorize
+ * @example
+ * import authRoutes from './routes/auth';
+ * app.use('/auth', authRoutes);
+ */
 const router = Router();
 const authController = container.get<AuthController>(TYPES.AuthController);
 

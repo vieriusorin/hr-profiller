@@ -7,6 +7,19 @@ import { RoleService } from './role.service';
 import { CreateOpportunityData } from '../../../shared/types/schema.types';
 import { Opportunity } from '../entities/opportunity.entity';
 
+/**
+ * @class Opportunity
+ * @description Service for managing business opportunities.
+ * Provides methods to create, retrieve, update, and delete opportunities,
+ * as well as applying business logic related to opportunity activation based on probability.
+ * @method getAllOpportunities - Retrieve all opportunities with their roles.
+ * @method getOpportunityById - Retrieve a specific opportunity by ID with its roles.
+ * @method createOpportunity - Create a new opportunity with auto-activation logic.
+ * @method updateOpportunity - Update an existing opportunity with auto-activation/deactivation logic.
+ * @method deleteOpportunity - Delete an opportunity by ID.
+ * @private opportunityRepository - Repository for opportunity data access.
+ * @private roleService - Service for managing roles associated with opportunities.
+ */
 @injectable()
 export class OpportunityService {
   constructor(

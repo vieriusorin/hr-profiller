@@ -8,7 +8,10 @@ import { TypeNewPerson } from '../../../../db/schema/people.schema';
 import { CreateEmploymentData } from '../../../domain/employee/repositories/employment.repository';
 import { z } from 'zod';
 
-// Validation schemas focused on Employment domain
+/**
+ * @schema CreateEmployeeSchema
+ * @description Schema for creating a new employee, including person and employment details.
+ */
 const CreatePersonSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
@@ -22,6 +25,12 @@ const CreatePersonSchema = z.object({
   notes: z.string().optional(),
 });
 
+/**
+ * @schema CreateEmploymentSchema
+ * @description Schema for creating employment details for a new employee.
+ * Includes position, location, salary, hire date, and other relevant fields.
+ * All fields are optional except position.
+ */
 const CreateEmploymentSchema = z.object({
   position: z.string().min(1, 'Position is required'),
   location: z.string().optional(),
@@ -35,24 +44,62 @@ const CreateEmploymentSchema = z.object({
   notes: z.string().optional(),
 });
 
+/**
+ * @schema CreateEmployeeSchema
+ * @description Schema for creating a new employee, combining person and employment schemas.
+ * Includes all necessary fields for both person and employment details.
+ * @property person - Person details schema.
+ * @property employment - Employment details schema.
+ */
 const CreateEmployeeSchema = z.object({
   person: CreatePersonSchema,
   employment: CreateEmploymentSchema,
 });
 
+/**
+ * @schema UpdatePersonSchema
+ * @description Schema for updating person details.
+ * All fields are optional to allow partial updates.
+ */
 const UpdatePersonSchema = CreatePersonSchema.partial();
+
+/**
+ * @schema UpdateEmploymentSchema
+ * @description Schema for updating employment details.
+ * All fields are optional to allow partial updates.
+ */
 const UpdateEmploymentSchema = CreateEmploymentSchema.partial();
 
+/**
+ * @schema PromoteEmployeeSchema
+ * @description Schema for promoting an employee.
+ * Includes new position and optional new salary.
+ * @property newPosition - The new job position for the employee.
+ * @property newSalary - The new salary amount for the employee (optional).
+ */
 const PromoteEmployeeSchema = z.object({
   newPosition: z.string().min(1, 'New position is required'),
   newSalary: z.number().positive().optional(),
 });
 
+/**
+ * @schema TerminateEmployeeSchema
+ * @description Schema for terminating an employee.
+ * Includes optional end date and notes.
+ * @property endDate - The termination date (optional).
+ * @property notes - Additional notes regarding the termination (optional).
+ */
 const TerminateEmployeeSchema = z.object({
   endDate: z.string().optional(),
   notes: z.string().optional(),
 });
 
+/**
+ * @schema AssignManagerSchema
+ * @description Schema for assigning a manager to an employee.
+ * Includes the manager ID.
+ * @property managerId - The ID of the manager to assign.
+ */
 const AssignManagerSchema = z.object({
   managerId: z.string().min(1, 'Manager ID is required'),
 });
@@ -63,6 +110,25 @@ type PromoteEmployeeRequestData = z.infer<typeof PromoteEmployeeSchema>;
 type TerminateEmployeeRequestData = z.infer<typeof TerminateEmployeeSchema>;
 type AssignManagerRequestData = z.infer<typeof AssignManagerSchema>;
 
+/**
+ * @description Controller for managing employee-related HTTP requests.
+ * Handles operations such as creating, updating, promoting, and terminating employees.
+ * Utilizes EmployeeApplicationService for business logic and EmployeePresenter for response formatting.
+ * @class EmployeeController
+ * @property employeeApplicationService - Service for employee application logic.
+ * @property employmentService - Service for employment-specific operations.
+ * @property presenter - Presenter for formatting employee responses.
+ * @method getAll - Get all employees with their employment details.
+ * @method getById - Get employee by ID with employment details.
+ * @method create - Create a new employee (Person + Employment).
+ * @method update - Update employee information (Person and/or Employment).
+ * @method promoteEmployee - Promote an employee (Employment domain operation).
+ * @method terminateEmployee - Terminate an employee (Employment domain operation).
+ * @method assignManager - Assign a manager to an employee (Employment domain operation).
+ * @method removeManager - Remove manager from an employee (Employment domain operation).
+ * @method delete - Delete an employee (both Person and Employment).
+ * @method getSearchableContent - Get searchable content for RAG (includes both Person and Employment data).
+ */
 @injectable()
 export class EmployeeController {
   private readonly presenter = new EmployeePresenter();

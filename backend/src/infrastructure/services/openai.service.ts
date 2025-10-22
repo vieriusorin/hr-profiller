@@ -8,6 +8,24 @@ import { analysisTemplates } from '../prompts/analysis-templates';
 import { reportSpecifications, reportTypes, contextTemplate, peerComparisonTemplate, marketContextTemplate, marketIntelligenceTemplate } from '../prompts/report-templates';
 import { EmbeddingResult, OpenAIService } from '../../shared/types';
 
+/**
+ * @class OpenAIServiceImpl
+ * @description Service for interacting with OpenAI's API using AI SDK.
+ * Provides methods for generating text completions, creating embeddings,
+ * performing skill benchmarking, compensation analysis, and generating person reports.
+ * Utilizes environment variables for configuration.
+ * @method generateCompletion - Generate text completion based on a prompt.
+ * @method generateEmbeddings - Generate embeddings for a single text.
+ * @method generateEmbeddingsBatch - Generate embeddings for multiple texts.
+ * @method calculateSimilarity - Calculate cosine similarity between two embeddings.
+ * @method skillBenchmarking - Perform skill benchmarking analysis.
+ * @method compensationAnalysis - Perform compensation analysis.
+ * @method generatePersonReport - Generate a comprehensive person report.
+ * @param prompt - The input prompt for text generation.
+ * @param options - Optional parameters for text generation (model, temperature, maxTokens).
+ * @returns Promise resolving to generated text content, tokens used, and model information.
+ * @throws Error if required environment variables are missing or API calls fail.
+ */
 @injectable()
 export class OpenAIServiceImpl implements OpenAIService {
   private provider: ReturnType<typeof createOpenAI>;
@@ -182,12 +200,12 @@ export class OpenAIServiceImpl implements OpenAIService {
           {
             role: 'system',
             content: `${systemPrompts.hr_manager}
-${reportTypes}
-${contextTemplate}
-${peerComparisonTemplate}
-${marketContextTemplate}
-${marketIntelligenceTemplate}
-${reportSpecifications}`
+              ${reportTypes}
+              ${contextTemplate}
+              ${peerComparisonTemplate}
+              ${marketContextTemplate}
+              ${marketIntelligenceTemplate}
+              ${reportSpecifications}`
           },
           {
             role: 'user',

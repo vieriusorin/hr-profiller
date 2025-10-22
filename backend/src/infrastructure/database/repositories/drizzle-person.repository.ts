@@ -5,6 +5,30 @@ import { Person, PersonData } from '../../../domain/person/entities/person.entit
 import { PersonRepository, CreatePersonSkillData, CreatePersonTechnologyData, CreatePersonEducationData } from '../../../domain/person/repositories/person.repository';
 import { TypeNewPerson, TypePerson } from '../../../../db/schema/people.schema';
 
+/**
+ * @class DrizzlePersonRepository
+ * @description Implementation of PersonRepository using Drizzle ORM.
+ * Provides methods for CRUD operations on Person entity,
+ * as well as managing skills and technologies associated with persons.
+ * @implements PersonRepository
+ * @method findAll - Retrieve all person records, optionally including capabilities.
+ * @method findById - Retrieve a person record by its ID, optionally including capabilities.
+ * @method findByEmail - Retrieve a person record by email, optionally including capabilities.
+ * @method create - Create a new person record.
+ * @method update - Update an existing person record.
+ * @method delete - Delete a person record by its ID.
+ * @method addSkillToPerson - Add a skill to a person.
+ * @method updatePersonSkill - Update a person's skill.
+ * @method removeSkillFromPerson - Remove a skill from a person.
+ * @method addTechnologyToPerson - Add a technology to a person.
+ * @method updatePersonTechnology - Update a person's technology.
+ * @method removeTechnologyFromPerson - Remove a technology from a person.
+ * @method addEducationToPerson - Add an education record to a person.
+ * @method updatePersonEducation - Update a person's education record.
+ * @method removeEducationFromPerson - Remove an education record from a person.
+ * @private db - Drizzle ORM database instance.
+ * @returns {Person} Mapped Person entity from database row.
+ */
 @injectable()
 export class DrizzlePersonRepository implements PersonRepository {
   constructor(

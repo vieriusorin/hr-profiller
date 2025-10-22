@@ -3,6 +3,19 @@ import { Request, Response } from 'express';
 import { TYPES } from '../../../shared/types';
 import { McpClientService } from '../../../domain/mcp/services/mcp-client.service';
 
+/**
+ * @class McpController
+ * @description Controller for MCP-related endpoints.
+ * Handles requests for MCP tools, data analysis, report generation, and more.
+ * @method getTools - Retrieve available MCP tools.
+ * @method analyzeData - Trigger data analysis via MCP.
+ * @method generateReport - Generate report via MCP.
+ * @method executeTool - Execute any MCP tool.
+ * @method checkHealth - Check MCP server health.
+ * @method skillBenchmarking - Perform skill benchmarking analysis via MCP.
+ * @method compensationAnalysis - Perform compensation analysis via MCP.
+ * @method getAnalysisConfidence - Get analysis confidence score via MCP.
+ */
 @injectable()
 export class McpController {
   constructor(

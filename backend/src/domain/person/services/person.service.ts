@@ -5,6 +5,39 @@ import { Person } from '../entities/person.entity';
 import { TypeNewPerson, TypePerson } from '../../../../db/schema/people.schema';
 import { McpClientService } from '../../mcp/services/mcp-client.service';
 
+/**
+ * @class PersonService
+ * @description Service for managing persons and their capabilities.
+ * Provides methods to create, retrieve, update, and delete persons,
+ * as well as managing their skills, technologies, and education records.
+ * Also includes business logic for analyzing person capabilities using AI tools.
+ * @method getAllPersons - Retrieve all persons with optional capabilities.
+ * @method getPersonById - Retrieve a specific person by ID with optional capabilities.
+ * @method getPersonByEmail - Retrieve a specific person by email with optional capabilities.
+ * @method createPerson - Create a new person record.
+ * @method updatePerson - Update an existing person record.
+ * @method deletePerson - Delete a person record by ID.
+ * @method addSkillToPerson - Add a skill to a person with business rules.
+ * @method updatePersonSkill - Update a person's skill.
+ * @method removeSkillFromPerson - Remove a skill from a person.
+ * @method addTechnologyToPerson - Add a technology to a person with business rules.
+ * @method updatePersonTechnology - Update a person's technology.
+ * @method removeTechnologyFromPerson - Remove a technology from a person.
+ * @method addEducationToPerson - Add an education record to a person with validation.
+ * @method updatePersonEducation - Update a person's education record with validation.
+ * @method removeEducationFromPerson - Remove an education record from a person.
+ * @method searchPersonsBySkills - Search persons by skill names.
+ * @method searchPersonsByTechnologies - Search persons by technology names.
+ * @method searchPersonsByEducation - Search persons by education details.
+ * @method searchPersonsByText - General text search for persons.
+ * @method getPersonCapabilitiesSummary - Get a summary of a person's capabilities.
+ * @method analyzePersonCapabilitiesWithAI - Analyze person capabilities using MCP AI tools.
+ * @method generatePersonReport - Generate a comprehensive report for a person.
+ * @method benchmarkPersonSkills - Perform skill benchmarking for a person.
+ * @method analyzePersonCompensation - Perform compensation analysis for a person.
+ * @private personRepository - Repository for person data access.
+ * @private mcpClientService - Service for interacting with MCP AI tools.
+ */
 @injectable()
 export class PersonService {
   constructor(

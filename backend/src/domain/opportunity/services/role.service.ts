@@ -4,6 +4,21 @@ import { RoleRepository } from '../repositories/role.repository';
 import { TypeNewOpportunityRole } from '../../../../db/schema/opportunity-roles.schema';
 import { TYPES } from '../../../shared/types';
 
+/**
+ * @class RoleService
+ * @description Service for managing roles within opportunities.
+ * Provides methods to create, retrieve, update, and delete roles,
+ * as well as managing assigned members to roles.
+ * @method findAllByOpportunity - Retrieve all roles for a specific opportunity.
+ * @method findById - Retrieve a specific role by ID.
+ * @method create - Create a new role.
+ * @method update - Update an existing role.
+ * @method delete - Delete a role by ID.
+ * @method assignMember - Assign a member to a role.
+ * @method unassignMember - Unassign a member from a role.
+ * @method updateAssignedMembers - Update the list of assigned members for a role.
+ * @private roleRepository - Repository for role data access.
+ */
 @injectable()
 export class RoleService {
   constructor(

@@ -6,6 +6,18 @@ import { OpportunityRepository } from '../../../domain/opportunity/repositories/
 import { CreateOpportunityData } from '../../../shared/types/schema.types';
 import { opportunities } from '../../../../db/schema/opportunities.schema';
 
+/**
+ * @class DrizzleOpportunityRepository
+ * @description Implementation of OpportunityRepository using Drizzle ORM.
+ * Provides methods for CRUD operations on Opportunity entity.
+ * @implements OpportunityRepository
+ * @method findAll - Retrieve all opportunity records.
+ * @method findById - Retrieve an opportunity record by its ID.
+ * @method create - Create a new opportunity record.
+ * @method update - Update an existing opportunity record.
+ * @method delete - Delete an opportunity record by its ID.
+ * @private db - Drizzle ORM database instance.
+ */
 @injectable()
 export class DrizzleOpportunityRepository implements OpportunityRepository {
   constructor(

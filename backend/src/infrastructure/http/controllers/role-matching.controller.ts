@@ -4,7 +4,16 @@ import { RoleMatchingService, RoleMatchingRequest } from '../../../domain/opport
 import { TYPES } from '../../../shared/types';
 import { z } from 'zod';
 
-// Validation schemas
+/**
+ * @schema RoleMatchingRequest
+ * @description Schema for role matching request.
+ * Includes either roleId or opportunityId, along with optional filters.
+ * @property roleId - The ID of the role to match against (optional).
+ * @property opportunityId - The ID of the opportunity to match roles from (optional).
+ * @property personIds - An array of person IDs to consider for matching (optional).
+ * @property minMatchScore - Minimum match score threshold (optional).
+ * @property limit - Maximum number of matches to return (optional).
+ */
 const roleMatchingRequestSchema = z.object({
   roleId: z.string().uuid('Role ID must be a valid UUID').optional(),
   opportunityId: z.string().uuid('Opportunity ID must be a valid UUID').optional(),
@@ -16,6 +25,12 @@ const roleMatchingRequestSchema = z.object({
   'Either roleId or opportunityId must be provided'
 );
 
+/**
+ * @schema SingleMatchRequest
+ * @description Schema for matching a single person to a single role.
+ * @property personId - The ID of the person to be matched.
+ * @property roleId - The ID of the role to match against.
+ */
 const singleMatchRequestSchema = z.object({
   personId: z.string().uuid('Person ID must be a valid UUID'),
   roleId: z.string().uuid('Role ID must be a valid UUID'),
@@ -26,6 +41,19 @@ const singleMatchRequestSchema = z.object({
  * 
  * Handles HTTP requests for AI-powered role matching functionality.
  * Provides endpoints for matching people to opportunity roles.
+ */
+
+/**
+ * @class RoleMatchingController
+ * @description Controller for role matching-related endpoints.
+ * Handles requests for finding matches, matching a person to a role,
+ * and retrieving top candidates for roles.
+ * @method findMatches - Find best matches for roles based on criteria.
+ * @method matchPersonToRole - Match a single person to a single role.
+ * @method getTopCandidatesForRole - Get top candidates for a specific role.
+ * @method getRolesForPerson - Get all role matches for a specific person.
+ * @method getMatchesForOpportunity - Get all role matches for an entire opportunity.
+ * @private roleMatchingService - Service for role matching operations.
  */
 @injectable()
 export class RoleMatchingController {

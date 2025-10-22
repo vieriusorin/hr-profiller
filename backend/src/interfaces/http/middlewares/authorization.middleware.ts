@@ -1,6 +1,11 @@
 import { Response, NextFunction } from 'express';
 import { AuthenticatedRequest } from '../../../domain/interfaces/auth.interface';
 
+/**
+ * Middleware to authorize user roles.
+ * @param requiredRoles - Array of roles permitted to access the route.
+ * @returns Middleware function.
+ */
 export const authorize = (requiredRoles: string[]) => {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
     if (!req.user || !req.user.role) {

@@ -2,6 +2,19 @@ import { Response, NextFunction } from 'express';
 import { JWTTokenService } from '../../../domain/auth/services/jwt-token.service';
 import { AuthenticatedRequest } from '../../../domain/interfaces/auth.interface';
 
+/**
+ * @interface TechnicalAuthRequest
+ * @description Extends AuthenticatedRequest to include technical token details.
+ * @property {object} [technicalToken] - Decoded technical token information.
+ * @property {string} technicalToken.userId - User ID associated with the technical token.
+ * @property {string} technicalToken.email - Email associated with the technical token.
+ * @property {string} technicalToken.name - Name associated with the technical token.
+ * @property {string} technicalToken.role - Role associated with the technical token.
+ * @property {string[]} technicalToken.permissions - Permissions granted by the technical token.
+ * @property {string} technicalToken.clientId - Client ID of the technical token.
+ * @property {string} technicalToken.scope - Scope of the technical token.
+ * @property {number} technicalToken.expiresIn - Expiration time of the technical token in seconds.
+ */
 export interface TechnicalAuthRequest extends AuthenticatedRequest {
   technicalToken?: {
     userId: string;
@@ -17,6 +30,18 @@ export interface TechnicalAuthRequest extends AuthenticatedRequest {
 
 /**
  * Enhanced JWT middleware that works with both regular JWT tokens and technical tokens
+ */
+/**
+ * @class JWTTechnicalAuthMiddleware
+ * @description Middleware class to handle JWT authentication for both regular and technical tokens.
+ * @private {JWTTokenService} jwtTokenService - Service to handle JWT token operations.
+ * Methods:
+ * - authenticateJWTToken: Authenticate requests using JWT tokens.
+ * - requirePermissions: Middleware to enforce required permissions on technical tokens.
+ * - requireScope: Middleware to enforce required scopes on technical tokens.
+ * - requireTechnicalTokenOnly: Middleware to allow only technical tokens.
+ * - rateLimitByClient: Middleware to apply rate limiting based on technical token client.
+ * - logTokenUsage: Middleware to log technical token usage for monitoring.
  */
 export class JWTTechnicalAuthMiddleware {
   private jwtTokenService: JWTTokenService;

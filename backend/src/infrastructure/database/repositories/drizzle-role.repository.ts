@@ -7,6 +7,22 @@ import { RoleRepository } from '../../../domain/opportunity/repositories/role.re
 import { TypeNewOpportunityRole } from '../../../../db/schema/opportunity-roles.schema';
 import { TYPES, DatabaseType } from '../../../shared/types';
 
+/**
+ * @class DrizzleRoleRepository
+ * @description Implementation of RoleRepository using Drizzle ORM.
+ * Provides methods for CRUD operations on Role entity and managing assigned members.
+ * @implements RoleRepository
+ * @method findAllByOpportunity - Retrieve all roles for a specific opportunity.
+ * @method findById - Retrieve a role record by its ID.
+ * @method create - Create a new role record.
+ * @method update - Update an existing role record.
+ * @method delete - Delete a role record by its ID.
+ * @method assignMember - Assign a member to a role.
+ * @method unassignMember - Unassign a member from a role.
+ * @method updateAssignedMembers - Update the list of assigned members for a role.
+ * @private db - Drizzle ORM database instance.
+ * @returns Role entities with assigned members where applicable.
+ */
 @injectable()
 export class DrizzleRoleRepository implements RoleRepository {
   constructor(

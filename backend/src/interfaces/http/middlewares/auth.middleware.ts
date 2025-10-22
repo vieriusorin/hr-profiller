@@ -2,6 +2,13 @@ import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { DecodedToken, AuthenticatedRequest } from '../../../domain/interfaces/auth.interface';
 
+/**
+ * Middleware to authenticate JWT tokens.
+ * @param req - The request object.
+ * @param res - The response object.
+ * @param next - The next middleware function.
+ * @returns {void}
+ */
 export const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];

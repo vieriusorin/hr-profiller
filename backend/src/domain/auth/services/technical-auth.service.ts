@@ -35,7 +35,14 @@ export class TechnicalAuthService implements ITechnicalAuthService {
     }
   }
 
+  /**
+   * Creates a technical client object.
+   * @param clientId The ID of the client.
+   * @param token The authentication token for the client.
+   * @returns The created TechnicalClient object.
+   */
   private createTechnicalClient(clientId: string, token: string): TechnicalClient {
+    console.log(token, 'token for client', clientId);
     const permissions = this.getDefaultPermissions(clientId);
     const rateLimits = this.getDefaultRateLimits(clientId);
 
@@ -49,6 +56,11 @@ export class TechnicalAuthService implements ITechnicalAuthService {
     };
   }
 
+  /**
+   * Get default permissions for a technical client.
+   * @param clientId The ID of the client.
+   * @returns Array of default permissions.
+   */
   private getDefaultPermissions(clientId: string): Permission[] {
     const permissionMap: Record<string, Permission[]> = {
       'frontend': [
@@ -78,6 +90,11 @@ export class TechnicalAuthService implements ITechnicalAuthService {
     return permissionMap[clientId] || [{ resource: 'health', action: 'read' }];
   }
 
+  /**
+   * Get default rate limits for a technical client.
+   * @param clientId The ID of the client.
+   * @returns Object containing rate limit settings.
+   */
   private getDefaultRateLimits(clientId: string): { requests: number; windowMs: number } {
     const rateLimitMap: Record<string, { requests: number; windowMs: number }> = {
       'frontend': { requests: 1000, windowMs: 15 * 60 * 1000 }, // 1000 req/15min
@@ -89,6 +106,11 @@ export class TechnicalAuthService implements ITechnicalAuthService {
     return rateLimitMap[clientId] || { requests: 50, windowMs: 15 * 60 * 1000 };
   }
 
+  /**
+   * Get the display name for a technical client.
+   * @param clientId The ID of the client.
+   * @returns The display name of the client.
+   */
   private getClientDisplayName(clientId: string): string {
     const nameMap: Record<string, string> = {
       'frontend': 'Next.js Frontend',
@@ -100,6 +122,11 @@ export class TechnicalAuthService implements ITechnicalAuthService {
     return nameMap[clientId] || `Client ${clientId}`;
   }
 
+  /**
+   * Validates a client token and returns the associated technical client.
+   * @param token The authentication token for the client.
+   * @returns The validated TechnicalClient object or null if invalid.
+   */
   async validateToken(token: string): Promise<TechnicalClient | null> {
     const clientId = this.tokenToClientMap.get(token);
     
@@ -119,20 +146,43 @@ export class TechnicalAuthService implements ITechnicalAuthService {
     return client;
   }
 
+  /**
+   * Get a technical client by ID.
+   * @param clientId The ID of the client.
+   * @returns The TechnicalClient object or null if not found.
+   */
   async getTechnicalClient(clientId: string): Promise<TechnicalClient | null> {
     return this.technicalClients.get(clientId) || null;
   }
 
+  /**
+   * Get all technical clients.
+   * @returns Array of TechnicalClient objects.
+   */
   async getAllClients(): Promise<TechnicalClient[]> {
     return Array.from(this.technicalClients.values());
   }
 
+  /**
+   * Check if a technical client has permission for a specific resource and action.
+   * @param client The technical client to check.
+   * @param resource The resource to check access for.
+   * @param action The action to check access for.
+   * @returns True if the client has permission, false otherwise.
+   */
   hasPermission(client: TechnicalClient, resource: string, action: string): boolean {
     return client.permissions.some(permission => 
       this.matchesPermission(permission, resource, action)
     );
   }
 
+  /**
+   * Checks if a permission matches a specific resource and action.
+   * @param permission The permission to check.
+   * @param resource The resource to check access for.
+   * @param action The action to check access for.
+   * @returns True if the permission matches, false otherwise.
+   */
   private matchesPermission(permission: Permission, resource: string, action: string): boolean {
     // Simple wildcard matching
     const resourceMatches = permission.resource === '*' || 
@@ -144,6 +194,10 @@ export class TechnicalAuthService implements ITechnicalAuthService {
     return resourceMatches && actionMatches;
   }
 
+  /**
+   * Update the last used timestamp for a technical client.
+   * @param clientId The ID of the client.
+   */
   async updateLastUsed(clientId: string): Promise<void> {
     const client = this.technicalClients.get(clientId);
     if (client) {

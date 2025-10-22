@@ -6,30 +6,47 @@ import { RAGService } from '../../ai/services/rag.service';
 import { OpenAIService } from '../../ai/services/openai.service';
 
 /**
- * Match result for a person-role pair
+ * @description Data structure representing a role match result.
+ * @interface RoleMatch
+ * @property personId - ID of the matched person.
+ * @property personName - Name of the matched person.
+ * @property roleId - ID of the role.
+ * @property roleName - Name of the role.
+ * @property matchScore - Match score (0-100).
+ * @property matchReason - Explanation of the match score.
+ * @property strengths - List of strengths identified in the match.
+ * @property gaps - List of gaps identified in the match.
+ * @property recommendations - List of recommendations for improvement.
+ * @property confidence - Confidence level of the match (0-1).
  */
 export interface RoleMatch {
   personId: string;
   personName: string;
   roleId: string;
   roleName: string;
-  matchScore: number; // 0-100
+  matchScore: number;
   matchReason: string;
   strengths: string[];
   gaps: string[];
   recommendations: string[];
-  confidence: number; // 0-1
+  confidence: number; 
 }
 
 /**
- * Request for role matching
+ * @description Request structure for role matching
+ * @interface RoleMatchingRequest
+ * @property roleId - If provided, match this specific role
+ * @property opportunityId - If provided, match all roles in this opportunity
+ * @property personIds - If provided, match only these persons
+ * @property minMatchScore - Minimum match score to return (0-100)
+ * @property limit - Max number of matches to return per role
  */
 export interface RoleMatchingRequest {
-  roleId?: string; // If provided, match this specific role
-  opportunityId?: string; // If provided, match all roles in this opportunity
-  personIds?: string[]; // If provided, match only these persons
-  minMatchScore?: number; // Minimum match score to return (0-100)
-  limit?: number; // Max number of matches to return per role
+  roleId?: string; 
+  opportunityId?: string;
+  personIds?: string[];
+  minMatchScore?: number;
+  limit?: number;
 }
 
 /**

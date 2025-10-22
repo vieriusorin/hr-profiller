@@ -7,8 +7,24 @@ import { TypeNewPerson, TypePerson } from '../../../../db/schema/people.schema';
 import { CreateEmploymentData } from '../repositories/employment.repository';
 
 /**
- * EmployeeApplicationService - Coordinates between Person and Employment domains
- * This service handles cross-domain operations and creates EmployeeProfile aggregates
+ * @description Service for managing employee-related operations.
+ * Coordinates between Person and Employment domains to provide comprehensive employee management.
+ * @class EmployeeApplicationService
+ * @method getEmployeeProfile - Get complete employee profile by person ID.
+ * @method getAllEmployeeProfiles - Get all active employee profiles.
+ * @method createEmployee - Create a new employee (person + employment).
+ * @method updateEmployeeProfile - Update employee profile (coordinates updates across domains).
+ * @method searchEmployeesBySkills - Search employees by skills (delegates to Person domain).
+ * @method searchEmployeesByTechnologies - Search employees by technologies (delegates to Person domain).
+ * @method searchEmployeesByEducation - Search employees by education (delegates to Person domain).
+ * @method getEmployeeCapabilitiesSummary - Get employee capabilities summary.
+ * @method addSkillToEmployee - Add skill to employee (delegates to Person domain).
+ * @method addTechnologyToEmployee - Add technology to employee (delegates to Person domain).
+ * @method addEducationToEmployee - Add education to employee (delegates to Person domain).
+ * @method promoteEmployee - Promote employee (employment domain operation).
+ * @method terminateEmployee - Terminate employee (employment domain operation).
+ * @method assignManager - Assign manager to employee (employment domain operation).
+ * @method removeManager - Remove manager from employee (employment domain operation).
  */
 @injectable()
 export class EmployeeApplicationService {

@@ -2,6 +2,20 @@ import { injectable } from 'inversify';
 import axios, { AxiosInstance } from 'axios';
 import { McpTool, McpToolEndpoint, McpToolResult } from '@base/shared/types/mcp-tools.types';
 
+/**
+* @class McpClientService
+* @description Service for interacting with the MCP (Machine Cognition Platform) server.
+* Provides methods to check server health, retrieve available tools, and execute specific AI-powered tools.
+* @method isHealthy - Check if the MCP server is healthy.
+* @method getAvailableTools - Get list of available tools from MCP server.
+* @method getToolEndpoints - Get list of tool endpoints.
+* @method executeTool - Execute a tool using the generic endpoint (legacy support).
+* @method analyzeData - Analyze data using the dedicated analyze-data endpoint.
+* @method generateReport - Generate report using the dedicated generate-report endpoint.
+* @method skillBenchmarking - Perform skill benchmarking using the dedicated endpoint.
+* @method compensationAnalysis - Perform compensation analysis using the dedicated endpoint.
+* @method getAnalysisConfidence - Get analysis confidence score.
+*/
 @injectable()
 export class McpClientService {
   private httpClient: AxiosInstance;

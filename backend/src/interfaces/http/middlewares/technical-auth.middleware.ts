@@ -3,6 +3,13 @@ import { container } from '../../../infrastructure/container';
 import { TYPES } from '../../../shared/types';
 import { ITechnicalAuthService, AuthenticatedRequest } from '../../../domain/interfaces/auth.interface';
 
+/**
+ * @description Middleware to authenticate technical tokens.
+ * @param req - The request object
+ * @param res - The response object
+ * @param next - The next function
+ * @returns The next function
+ */
 export const authenticateTechnicalToken = async (
   req: AuthenticatedRequest, 
   res: Response, 
@@ -55,6 +62,12 @@ export const authenticateTechnicalToken = async (
   }
 };
 
+/**
+ * @description Middleware to require specific permissions for technical clients.
+ * @param resource - The resource to check permissions against.
+ * @param action - The action to check permissions for (default is 'read').
+ * @returns The middleware function.
+ */
 export const requireTechnicalPermission = (resource: string, action: string = 'read') => {
   return async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     if (!req.technicalClient) {
@@ -100,7 +113,10 @@ export const requireTechnicalPermission = (resource: string, action: string = 'r
   };
 };
 
-// Rate limiting middleware specific to technical tokens
+/**
+ * @description Middleware to rate limit technical clients based on their configuration.
+ * @returns The middleware function.
+ */
 export const rateLimitTechnicalClient = () => {
   const clientRequests = new Map<string, { count: number; windowStart: number }>();
   

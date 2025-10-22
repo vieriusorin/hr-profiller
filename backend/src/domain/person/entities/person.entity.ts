@@ -1,4 +1,22 @@
 // Person Domain Entity - Contains personal identity and capabilities
+
+/**
+ * @description Data structure for a person's skill.
+ * @type PersonSkill
+ * @property skillId - Unique identifier for the skill.
+ * @property skillName - Name of the skill.
+ * @property skillCategory - Category of the skill.
+ * @property skillDescription - Description of the skill.
+ * @property proficiencyLevel - Proficiency level in the skill.
+ * @property yearsOfExperience - Years of experience with the skill.
+ * @property lastUsed - Date when the skill was last used.
+ * @property isCertified - Indicates if the skill is certified.
+ * @property certificationName - Name of the certification.
+ * @property certificationDate - Date of the certification.
+ * @property notes - Additional notes about the skill.
+ * @property createdAt - Timestamp of when the skill was added.
+ * @property updatedAt - Timestamp of the last update to the skill.
+ */
 export type PersonSkill = {
   skillId: string;
   skillName: string;
@@ -15,6 +33,23 @@ export type PersonSkill = {
   updatedAt?: Date;
 };
 
+/**
+ * @description Data structure for a person's technology.
+ * @type PersonTechnology
+ * @property technologyId - Unique identifier for the technology.
+ * @property technologyName - Name of the technology.
+ * @property technologyCategory - Category of the technology.
+ * @property technologyDescription - Description of the technology.
+ * @property technologyVersion - Version of the technology.
+ * @property proficiencyLevel - Proficiency level in the technology.
+ * @property yearsOfExperience - Years of experience with the technology.
+ * @property lastUsed - Date when the technology was last used.
+ * @property context - Context in which the technology was used.
+ * @property projectName - Name of the project where the technology was used.
+ * @property description - Additional description about the technology usage.
+ * @property createdAt - Timestamp of when the technology was added.
+ * @property updatedAt - Timestamp of the last update to the technology.
+ */
 export type PersonTechnology = {
   technologyId: string;
   technologyName: string;
@@ -31,6 +66,21 @@ export type PersonTechnology = {
   updatedAt?: Date;
 };
 
+/**
+ * @description Data structure for a person's education.
+ * @type PersonEducation
+ * @property id - Unique identifier for the education record.
+ * @property institution - Name of the educational institution.
+ * @property degree - Degree obtained.
+ * @property fieldOfStudy - Field of study.
+ * @property startDate - Start date of the education.
+ * @property graduationDate - Graduation date.
+ * @property description - Additional description about the education.
+ * @property gpa - Grade Point Average.
+ * @property isCurrentlyEnrolled - Indicates if the person is currently enrolled.
+ * @property createdAt - Timestamp of when the education record was added.
+ * @property updatedAt - Timestamp of the last update to the education record.
+ */
 export type PersonEducation = {
   id: string;
   institution: string;
@@ -45,6 +95,24 @@ export type PersonEducation = {
   updatedAt?: Date;
 };
 
+/**
+ * @description Data structure for Person entity.
+ * Includes personal identity and contact information.
+ * @type PersonData
+ * @property id - Unique identifier for the person.
+ * @property firstName - First name of the person.
+ * @property lastName - Last name of the person.
+ * @property fullName - Full name of the person.
+ * @property email - Email address of the person.
+ * @property phone - Phone number of the person.
+ * @property birthDate - Birth date of the person.
+ * @property address - Address of the person.
+ * @property city - City of residence.
+ * @property country - Country of residence.
+ * @property notes - Additional notes about the person.
+ * @property createdAt - Timestamp of when the person record was created.
+ * @property updatedAt - Timestamp of the last update to the person record.
+ */
 export type PersonData = {
   id: string;
   firstName: string;
@@ -61,6 +129,43 @@ export type PersonData = {
   updatedAt?: Date | null;
 };
 
+/**
+ * @class Person
+ * @description Entity representing a person with identity and capabilities.
+ * Includes business logic related to personal information and skills management.
+ * @property id - Unique identifier for the person.
+ * @property firstName - First name of the person.
+ * @property lastName - Last name of the person.
+ * @property fullName - Full name of the person.
+ * @property email - Email address of the person.
+ * @property phone - Phone number of the person.
+ * @property birthDate - Birth date of the person.
+ * @property address - Address of the person.
+ * @property city - City of residence.
+ * @property country - Country of residence.
+ * @property notes - Additional notes about the person.
+ * @property createdAt - Timestamp of when the person record was created.
+ * @property updatedAt - Timestamp of the last update to the person record.
+ * @property skills - List of skills associated with the person.
+ * @property technologies - List of technologies associated with the person.
+ * @property education - List of education records associated with the person.
+ * @property displayName - Computed property for the person's display name.
+ * @method addSkill - Adds a new skill to the person.
+ * @method updateSkill - Updates an existing skill of the person.
+ * @method removeSkill - Removes a skill from the person.
+ * @method getSkillsByCategory - Retrieves skills by category.
+ * @method addTechnology - Adds a new technology to the person.
+ * @method updateTechnology - Updates an existing technology of the person.
+ * @method removeTechnology - Removes a technology from the person.
+ * @method getTechnologiesByCategory - Retrieves technologies by category.
+ * @method addEducation - Adds a new education record to the person.
+ * @method updateEducation - Updates an existing education record of the person.
+ * @method removeEducation - Removes an education record from the person.
+ * @method getSkillsText - Returns a formatted string of the person's skills.
+ * @method getTechnologiesText - Returns a formatted string of the person's technologies.
+ * @method getEducationText - Returns a formatted string of the person's education.
+ * @method getSearchableContent - Returns combined searchable content for RAG functionality.
+ */
 export class Person {
   // Core person identity
   readonly id: string;

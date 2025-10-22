@@ -6,14 +6,39 @@ import { insertOpportunityRoleSchema } from '../../../../db/schema/opportunity-r
 import { z } from 'zod';
 
 // Schema for assigning/unassigning members
+/**
+ * @schema AssignMemberSchema
+ * @description Schema for assigning a member to a role.
+ * @property personId - The ID of the person to be assigned.
+ */
 const assignMemberSchema = z.object({
   personId: z.string().uuid('Person ID must be a valid UUID')
 });
 
+/**
+ * @schema UpdateAssignedMembersSchema
+ * @description Schema for updating assigned members of a role.
+ * @property personIds - An array of person IDs to be assigned to the role.
+ */
 const updateAssignedMembersSchema = z.object({
   personIds: z.array(z.string().uuid('Each person ID must be a valid UUID'))
 });
 
+/**
+ * @class RoleController
+ * @description Controller for role-related endpoints.
+ * Handles requests for creating, retrieving, updating, and deleting roles,
+ * as well as managing assigned members.
+ * @method getAllByOpportunity - Retrieve all roles for a specific opportunity.
+ * @method getById - Retrieve a specific role by ID.
+ * @method create - Create a new role.
+ * @method update - Update an existing role by ID.
+ * @method delete - Delete a role by ID.
+ * @method assignMember - Assign a member to a role.
+ * @method unassignMember - Unassign a member from a role.
+ * @method updateAssignedMembers - Update the list of assigned members for a role.
+ * @private roleService - Service for role operations.
+ */
 @injectable()
 export class RoleController {
   constructor(

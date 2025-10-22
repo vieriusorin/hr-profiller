@@ -2,6 +2,30 @@ import { TypeEmployeeStatus } from '../../../../db/enums/employee-status.enum';
 import { TypeWorkStatus } from '../../../../db/enums/work-status.enum';
 import { TypeJobGrade } from '../../../../db/enums/job-grade.enum';
 
+/**
+ * @description Data structure for Employment entity.
+ * Includes properties for employment details.
+ * @type EmploymentData
+ * @property id - Unique identifier for the employment record.
+ * @property personId - Reference to Person entity.
+ * @property employeeId - Employee identifier.
+ * @property hireDate - Date of hire.
+ * @property terminationDate - Date of termination.
+ * @property position - Job position.
+ * @property employmentType - Type of employment (e.g., Full-time, Part-time).
+ * @property salary - Salary amount.
+ * @property hourlyRate - Hourly rate amount.
+ * @property managerId - Reference to the manager's employment record.
+ * @property employeeStatus - Current status of the employee.
+ * @property workStatus - Current work status of the employee.
+ * @property jobGrade - Job grade level.
+ * @property location - Work location.
+ * @property emergencyContactName - Name of the emergency contact.
+ * @property emergencyContactPhone - Phone number of the emergency contact.
+ * @property notes - Additional notes about the employment.
+ * @property createdAt - Timestamp of when the employment record was created.
+ * @property updatedAt - Timestamp of the last update to the employment record.
+ */
 export type EmploymentData = {
   id: string;
   personId: string; // Reference to Person entity
@@ -24,6 +48,30 @@ export type EmploymentData = {
   updatedAt: Date | null;
 };
 
+/**
+ * @class Employment
+ * @description Entity representing an employee's employment details.
+ * Includes business logic related to employment status and actions.
+ * @property id - Unique identifier for the employment record.
+ * @property personId - Reference to Person entity.
+ * @property employeeId - Employee identifier.
+ * @property hireDate - Date of hire.
+ * @property terminationDate - Date of termination.
+ * @property position - Job position.
+ * @property employmentType - Type of employment (e.g., Full-time, Part-time).
+ * @property salary - Salary amount.
+ * @property hourlyRate - Hourly rate amount.
+ * @property managerId - Reference to the manager's employment record.
+ * @property employeeStatus - Current status of the employee.
+ * @property workStatus - Current work status of the employee.
+ * @property jobGrade - Job grade level.
+ * @property location - Work location.
+ * @property emergencyContactName - Name of the emergency contact.
+ * @property emergencyContactPhone - Phone number of the emergency contact.
+ * @property notes - Additional notes about the employment.
+ * @property createdAt - Timestamp of when the employment record was created.
+ * @property updatedAt - Timestamp of the last update to the employment record.
+ */
 export class Employment {
   // Employment-specific properties only
   readonly id: string;
@@ -106,7 +154,12 @@ export class Employment {
     return diffDays;
   }
 
-  // Employment business logic methods
+  /**
+   * Promote the employee to a new position.
+   * @param newPosition The new position to promote the employee to.
+   * @param _newSalary (Optional) The new salary for the employee.
+   * @param _newJobGrade (Optional) The new job grade for the employee.
+   */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   promote(newPosition: string, _newSalary?: number, _newJobGrade?: TypeJobGrade): void {
     if (!this.isActive) {
@@ -120,6 +173,11 @@ export class Employment {
     }
   }
 
+  /**
+   * Terminate the employee's contract.
+   * @param terminationDate The date of termination.
+   * @param _reason (Optional) The reason for termination.
+   */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   terminate(terminationDate: Date, _reason?: string): void {
     if (this.isTerminated) {
@@ -134,6 +192,10 @@ export class Employment {
     // This is just showing the business logic that would be applied
   }
 
+  /**
+   * Assign a manager to the employee.
+   * @param managerId The ID of the manager to assign.
+   */
   assignManager(managerId: string): void {
     if (!this.isActive) {
       throw new Error('Cannot assign manager to inactive employee');
@@ -147,6 +209,10 @@ export class Employment {
     // This is just showing the business logic that would be applied
   }
 
+  /**
+   * Update the work status of the employee.
+   * @param newStatus The new work status to assign.
+   */
   updateWorkStatus(newStatus: TypeWorkStatus): void {
     if (!this.isActive) {
       throw new Error('Cannot update work status for inactive employee');
@@ -161,7 +227,11 @@ export class Employment {
     // This is just showing the business logic that would be applied
   }
 
-  // Utility methods for employment data
+  
+  /**
+   * Get a summary of the employee's employment details.
+   * @returns A string containing the employment summary.
+   */
   getEmploymentSummary(): string {
     const sections = [
       `Employee ID: ${this.employeeId || 'Not Assigned'}`,

@@ -7,6 +7,16 @@ import { CreateOpportunitySchema, TypeNewOpportunity, TypeOpportunity, TypeUpdat
 
 type CreateOpportunityRequest = Request<{}, QueryParams, TypeOpportunity>;
 
+/**
+ * @class OpportunityController
+ * @description Controller for opportunity-related endpoints.
+ * Handles requests for creating, retrieving, updating, and deleting opportunities.
+ * @method getAll - Retrieve all opportunities with pagination.
+ * @method getById - Retrieve a specific opportunity by ID.
+ * @method create - Create a new opportunity.
+ * @method update - Update an existing opportunity by ID.
+ * @method delete - Delete an opportunity by ID.
+ */
 @injectable()
 export class OpportunityController {
   private readonly presenter = new OpportunityPresenter();

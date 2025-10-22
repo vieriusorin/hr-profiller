@@ -5,6 +5,32 @@ import { Employment, EmploymentData } from '../../../domain/employee/entities/em
 import { EmploymentRepository, CreateEmploymentData } from '../../../domain/employee/repositories/employment.repository';
 import { TypeEmploymentDetails } from '../../../../db/schema/employment-details.schema';
 
+/**
+ * @description Drizzle ORM implementation of the EmploymentRepository interface.
+ * Provides methods for CRUD operations and employment-specific actions.
+ * @class DrizzleEmploymentRepository
+ * @extends EmploymentRepository
+ * @method findAll - Retrieve all employment records.
+ * @method findById - Retrieve an employment record by its ID.
+ * @method findByPersonId - Get employment records by person ID.
+ * @method findActiveByPersonId - Get active employment record by person ID.
+ * @method create - Create a new employment record.
+ * @method update - Update an existing employment record.
+ * @method delete - Delete an employment record by its ID.
+ * @method findByManager - Get employment records by manager ID.
+ * @method findByLocation - Get employment records by location.
+ * @method findByWorkStatus - Get employment records by work status.
+ * @method findByEmployeeStatus - Get employment records by employee status.
+ * @method assignManager - Assign a manager to an employment record.
+ * @method removeManager - Remove the manager from an employment record.
+ * @method promoteEmployee - Promote an employee to a new position.
+ * @method terminateEmployment - Terminate an employment record.
+ * @method searchByText - Search for employment records by text.
+ * @method findByDateRange - Find employment records by date range.
+ * @private db - Drizzle ORM database instance.
+ * @constructor - Initializes the repository with the database instance.
+ * @returns An instance of DrizzleEmploymentRepository.
+ */
 @injectable()
 export class DrizzleEmploymentRepository implements EmploymentRepository {
   constructor(

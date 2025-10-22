@@ -2,9 +2,28 @@ import { Person, PersonSkill, PersonTechnology, PersonEducation } from '../../pe
 import { Employment } from './employment.entity';
 
 /**
- * EmployeeProfile - A composite entity that combines Person and Employment
- * This is used for presentation and cross-domain operations
- * It doesn't contain its own business logic but delegates to the appropriate domains
+ * @description Entity representing a comprehensive employee profile.
+ * Combines personal and employment information along with capabilities.
+ * Provides convenience methods for accessing and summarizing employee data.
+ * @class EmployeeProfile
+ * @property person - The Person entity containing personal details.
+ * @property employment - The Employment entity containing employment details.
+ * @property id - The unique identifier of the employee (from Person).
+ * @property fullName - The full name of the employee (from Person).
+ * @property email - The email address of the employee (from Person).
+ * @property position - The job position of the employee (from Employment).
+ * @property location - The work location of the employee (from Employment).
+ * @property isActive - Indicates if the employee is currently active (from Employment).
+ * @property isAvailable - Indicates if the employee is available for assignment (from Employment).
+ * @property skillsText - A formatted string of the employee's skills (from Person).
+ * @property technologiesText - A formatted string of the employee's technologies (from Person).
+ * @property educationText - A formatted string of the employee's education (from Person).
+ * @property getSearchableContent - Method to retrieve searchable content for indexing.
+ * @method canBePromoted - Check if the employee can be promoted.
+ * @method canBeAssignedToProject - Check if the employee can be assigned to a project. 
+ * @method canBeTerminated - Check if the employee can be terminated.
+ * @method toSummary - Get a summary of the employee profile.
+ * @method toDetailedView - Get a detailed view of the employee profile.
  */
 export class EmployeeProfile {
   readonly person: Person;
@@ -70,7 +89,11 @@ export class EmployeeProfile {
     return this.person.getEducationText();
   }
 
-  // Combined searchable content for RAG functionality
+  /**
+   * Get the searchable content for the employee profile.
+   * such as for indexing in a search engine.
+   * @returns A string containing all relevant information for search indexing.
+   */
   getSearchableContent(): string {
     const sections = [
       `Employee: ${this.fullName}`,
@@ -87,20 +110,35 @@ export class EmployeeProfile {
     return sections.join('\n');
   }
 
-  // Validation methods
+  /**
+   * Check if the employee can be promoted.
+   * @returns True if the employee can be promoted, false otherwise.
+   */
   canBePromoted(): boolean {
     return this.employment.isActive;
   }
 
+  /**
+   * Check if the employee can be assigned to a project.
+   * @returns True if the employee can be assigned to a project, false otherwise.
+   */
   canBeAssignedToProject(): boolean {
     return this.employment.isAvailable;
   }
 
+  /**
+   * Check if the employee can be terminated.
+   * @returns True if the employee can be terminated, false otherwise.
+   */
   canBeTerminated(): boolean {
     return this.employment.isActive && !this.employment.isTerminated;
   }
 
-  // Utility methods for presentation
+  
+  /**
+   * Get a summary of the employee profile.
+   * @returns An object containing the summary information.
+   */
   toSummary(): {
     id: string;
     fullName: string;
@@ -127,6 +165,10 @@ export class EmployeeProfile {
     };
   }
 
+  /**
+   * Get a detailed view of the employee profile.
+   * @returns An object containing the detailed information.
+   */
   toDetailedView(): {
     person: {
       id: string;

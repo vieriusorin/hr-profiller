@@ -4,6 +4,33 @@ import { EmploymentRepository, CreateEmploymentData } from '../repositories/empl
 import { Employment } from '../entities/employment.entity';
 import { TypeEmploymentDetails } from '../../../../db/schema/employment-details.schema';
 
+/**
+ * @class EmploymentService
+ * @description Service class for managing Employment entities.
+ * Includes business logic for employment operations and validations.
+ * @property employmentRepository - Repository for Employment data access.
+ * @method getAllEmployments - Retrieve all employment records.
+ * @method getEmploymentById - Retrieve an employment record by its ID.
+ * @method getEmploymentsByPersonId - Retrieve employment records by person ID.
+ * @method getActiveEmploymentByPersonId - Retrieve active employment record by person ID.
+ * @method createEmployment - Create a new employment record with business validations.
+ * @method updateEmployment - Update an existing employment record with business validations.
+ * @method deleteEmployment - Delete an employment record by its ID.
+ * @method getEmploymentsByManager - Retrieve employment records by manager ID.
+ * @method getEmploymentsByLocation - Retrieve employment records by location.
+ * @method getEmploymentsByWorkStatus - Retrieve employment records by work status.
+ * @method getEmploymentsByEmployeeStatus - Retrieve employment records by employee status.
+ * @method assignManager - Assign a manager to an employment record with validations.
+ * @method removeManager - Remove the manager from an employment record.
+ * @method promoteEmployee - Promote an employee to a new position with validations.
+ * @method terminateEmployment - Terminate an employment record with validations.
+ * @method searchEmployments - Search for employment records by text.
+ * @method getEmploymentsByDateRange - Find employment records by date range.
+ * @method getEmploymentStatistics - Generate statistics on employment records.
+ * @method getEmploymentHistory - Retrieve the employment history for a specific employee.
+ * @property employmentRepository - The repository instance for employment data access.
+ * @private employmentRepository - The injected EmploymentRepository instance.
+ */
 @injectable()
 export class EmploymentService {
   constructor(

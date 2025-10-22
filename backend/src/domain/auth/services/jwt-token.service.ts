@@ -2,6 +2,11 @@ import { injectable } from 'inversify';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 
+/**
+ * TechnicalTokenPayload defines the structure of the JWT payload for technical tokens.
+ * These tokens are used for service-to-service authentication and API access.
+ * They include user identity, role, permissions, and token metadata.
+ */
 export interface TechnicalTokenPayload {
   // Standard JWT fields
   iat: number;
@@ -26,6 +31,9 @@ export interface TechnicalTokenPayload {
   jti: string; // JWT ID for revocation
 }
 
+/**
+ * Options for generating JWT tokens
+ */
 export interface TokenGenerationOptions {
   clientId?: string;
   expiresIn?: string; // e.g., '1h', '24h', '7d'
@@ -33,6 +41,14 @@ export interface TokenGenerationOptions {
   permissions?: string[];
 }
 
+/**
+ * Result of token validation
+ * Contains the validation status, decoded payload, and any error messages.
+ * @param valid - Indicates if the token is valid
+ * @param payload - Decoded token payload if valid
+ * @param error - Error message if invalid
+ * @param expiresIn - Time in seconds until token expiration
+ */
 export interface TokenValidationResult {
   valid: boolean;
   payload?: TechnicalTokenPayload;
@@ -40,6 +56,11 @@ export interface TokenValidationResult {
   expiresIn?: number; // seconds remaining
 }
 
+/**
+ * JWTTokenService handles generation, validation, refreshing, and revocation of JWT tokens.
+ * It uses HS256 algorithm and a secret key defined in NEXTAUTH_SECRET environment variable.
+ * Technical tokens are designed for service-to-service authentication with specific roles and permissions.
+ */
 @injectable()
 export class JWTTokenService {
   private readonly issuer = 'hr-profiler-api';
@@ -102,6 +123,7 @@ export class JWTTokenService {
 
   /**
    * Validate and decode a JWT token
+   * Returns TokenValidationResult with validity status and payload or error message.
    */
   validateToken(token: string): TokenValidationResult {
     try {
@@ -152,6 +174,7 @@ export class JWTTokenService {
 
   /**
    * Refresh a token (generate new token with extended expiration)
+   * Returns new token string or null if original token is invalid.
    */
   refreshToken(token: string, options: TokenGenerationOptions = {}): string | null {
     const validation = this.validateToken(token);
@@ -181,6 +204,7 @@ export class JWTTokenService {
 
   /**
    * Revoke a token (add to revocation list)
+   * Returns true if successfully revoked, false otherwise.
    */
   revokeToken(token: string): boolean {
     try {
@@ -195,24 +219,28 @@ export class JWTTokenService {
       }
       return false;
     } catch (error) {
+      console.log('Error revoking token:', error);
       return false;
     }
   }
 
   /**
    * Get token expiration timestamp
+   * Returns Date object or null if unable to decode.
    */
   getTokenExpiration(token: string): Date | null {
     try {
       const decoded = jwt.decode(token) as TechnicalTokenPayload;
       return decoded?.exp ? new Date(decoded.exp * 1000) : null;
     } catch (error) {
+      console.log('Error getting token expiration:', error);
       return null;
     }
   }
 
   /**
    * Parse expiration string to seconds
+   * E.g., '1h' -> 3600, '24h' -> 86400
    */
   private parseExpiration(expiresIn: string): number {
     const units: Record<string, number> = {
@@ -234,6 +262,7 @@ export class JWTTokenService {
 
   /**
    * Get default permissions based on user role
+   * Returns array of permission strings.
    */
   private getDefaultPermissions(role: string): string[] {
     const rolePermissions: Record<string, string[]> = {
@@ -308,6 +337,7 @@ export class JWTTokenService {
 
   /**
    * Get token statistics (for monitoring/debugging)
+   * Returns an object with token stats or null if unable to decode.
    */
   getTokenStats(token: string): Record<string, any> | null {
     try {
@@ -327,6 +357,7 @@ export class JWTTokenService {
         scope: decoded.scope
       };
     } catch (error) {
+      console.log('Error getting token stats:', error);
       return null;
     }
   }

@@ -5,6 +5,18 @@ import { RAGService, AnalysisRequest } from '../../../domain/ai/services/rag.ser
 import { OpenAIService } from '../../../domain/ai/services/openai.service';
 import { VectorDatabaseService } from '../../../domain/ai/services/vector-database.service';
 
+/**
+ * @class AIController
+ * @description Controller for AI-related endpoints.
+ * Handles requests for person analysis, similar person search,
+ * embedding generation, and RAG statistics.
+ * @method analyzePerson - Analyze a person using RAG.
+ * @method findSimilarPersons - Find similar persons using vector similarity search.
+ * @method generatePersonEmbedding - Generate embeddings for a specific person.
+ * @method generateAllEmbeddings - Generate embeddings for all persons (batch operation).
+ * @method getRAGStats - Get RAG system statistics.
+ * @method healthCheck - Health check for AI services.
+ */
 @injectable()
 export class AIController {
   constructor(
@@ -13,10 +25,6 @@ export class AIController {
     @inject(TYPES.VectorDatabaseService) private vectorDbService: VectorDatabaseService
   ) {}
 
-  /**
-   * Analyze a person using RAG (Retrieval-Augmented Generation)
-   * This is the main endpoint for AI-powered person analysis
-   */
   async analyzePerson(req: Request, res: Response): Promise<void> {
     try {
       const { personId, analysisType, includeSimilarPersons, includeSkillsContext } = req.body;
@@ -54,9 +62,6 @@ export class AIController {
     }
   }
 
-  /**
-   * Find similar persons using vector similarity search
-   */
   async findSimilarPersons(req: Request, res: Response): Promise<void> {
     try {
       const { query, limit, similarityThreshold } = req.body;
@@ -86,9 +91,6 @@ export class AIController {
     }
   }
 
-  /**
-   * Generate embeddings for a specific person
-   */
   async generatePersonEmbedding(req: Request, res: Response): Promise<void> {
     try {
       const { personId, embeddingType } = req.body;
@@ -119,9 +121,6 @@ export class AIController {
     }
   }
 
-  /**
-   * Generate embeddings for all persons (batch operation)
-   */
   async generateAllEmbeddings(req: Request, res: Response): Promise<void> {
     try {
       await this.ragService.generateAllPersonEmbeddings();
@@ -143,9 +142,6 @@ export class AIController {
     }
   }
 
-  /**
-   * Get RAG system statistics
-   */
   async getRAGStats(req: Request, res: Response): Promise<void> {
     try {
       const stats = await this.ragService.getRAGStats();
@@ -164,15 +160,8 @@ export class AIController {
     }
   }
 
-  /**
-   * Health check for AI services
-   */
   async healthCheck(req: Request, res: Response): Promise<void> {
     try {
-      // Test OpenAI connection
-      const testEmbedding = await this.openaiService.generateEmbeddings('test');
-      
-      // Test vector database connection
       const stats = await this.vectorDbService.getEmbeddingStats();
 
       res.json({
