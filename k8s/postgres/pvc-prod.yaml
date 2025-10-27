@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: profiller
+  labels:
+    app: postgres
+    component: database
+    environment: production
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi  # Large storage for production (100GB)
+  # For production, specify high-performance storage class
+  # storageClassName: pd-ssd  # GCP example
+  # storageClassName: gp3      # AWS example
+  # storageClassName: managed-premium  # Azure example

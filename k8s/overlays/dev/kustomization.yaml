@@ -1,0 +1,87 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Reference base configuration
+bases:
+  - ../../base
+
+# Namespace override for dev
+namespace: profiller-dev
+
+# Add PVC for dev
+resources:
+  - ../../postgres/pvc-dev.yaml
+
+# Environment-specific labels
+commonLabels:
+  environment: development
+
+# ConfigMap patches for dev environment
+configMapGenerator:
+  - name: app-config
+    behavior: merge
+    literals:
+      - NODE_ENV=development
+      - LOG_LEVEL=debug
+      - POSTGRES_DB=profiller_dev
+      - CORS_ORIGIN=http://localhost:3000
+      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001,http://localhost:3002
+
+# Resource adjustments for dev (lower limits)
+patches:
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: backend
+      spec:
+        replicas: 1
+        template:
+          spec:
+            containers:
+            - name: backend
+              resources:
+                requests:
+                  memory: "256Mi"
+                  cpu: "250m"
+                limits:
+                  memory: "512Mi"
+                  cpu: "500m"
+
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: frontend
+      spec:
+        replicas: 1
+        template:
+          spec:
+            containers:
+            - name: frontend
+              resources:
+                requests:
+                  memory: "256Mi"
+                  cpu: "250m"
+                limits:
+                  memory: "512Mi"
+                  cpu: "500m"
+
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: mcp-server
+      spec:
+        replicas: 1
+        template:
+          spec:
+            containers:
+            - name: mcp-server
+              resources:
+                requests:
+                  memory: "128Mi"
+                  cpu: "100m"
+                limits:
+                  memory: "256Mi"
+                  cpu: "250m"

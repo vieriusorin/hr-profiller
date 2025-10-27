@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: profiller
+data:
+  # Environment
+  NODE_ENV: "development"
+
+  # Ports
+  PORT_FRONTEND: "3000"
+  PORT_BACKEND: "3001"
+  PORT_MCP: "3002"
+  HOSTNAME: "0.0.0.0"
+
+  # Feature Flags
+  NEXT_TELEMETRY_DISABLED: "1"
+
+  # Internal Service URLs (dev uses Minikube)
+  API_URL: "http://backend-service:3001"
+
+  # CORS (dev allows localhost)
+  CORS_ORIGIN: "http://localhost:3000"
+  ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:3001,http://localhost:3002"
+
+  # Database
+  POSTGRES_DB: "profiller_dev"
+  POSTGRES_USER: "postgres"
+
+  # Logging
+  LOG_LEVEL: "debug"
+
+  # Node Options
+  NODE_OPTIONS: "--max-old-space-size=512"
+
+  # JWT
+  JWT_EXPIRES_IN: "7d"

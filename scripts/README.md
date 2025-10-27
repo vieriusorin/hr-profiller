@@ -1,363 +1,388 @@
-# Scripts Directory
+# Profiller HR - Setup Scripts
 
-This directory contains all the automation scripts for managing the Profiller HR application in different environments.
+This directory contains PowerShell scripts to help you set up and manage your Profiller HR development environment on Minikube.
 
-## 📋 Available Scripts
+## Quick Start
 
-### 🚀 **Development Scripts**
+For most users, just run:
 
-#### `start-dev.sh`
+```powershell
+.\scripts\quick-setup.ps1
+```
 
-Starts the development environment with all required services.
+This fully automated script will:
+- ✓ Check prerequisites
+- ✓ Handle corrupted Minikube states automatically
+- ✓ Build all Docker images
+- ✓ Deploy to Kubernetes
+- ✓ Initialize and seed the database
+- ✓ Wait for everything to be ready
 
-```bash
-bash scripts/start-dev.sh
+**Total time:** 15-20 minutes (first time)
+
+## Available Scripts
+
+### 1. `check-prerequisites.ps1`
+
+Checks if all required tools are installed and provides installation instructions.
+
+```powershell
+.\scripts\check-prerequisites.ps1
+```
+
+**Checks for:**
+- Docker Desktop
+- Minikube
+- kubectl
+- Node.js & npm
+- Git
+- PowerShell version
+- Available ports (3000, 3001, 3002, 5433)
+- System resources (CPU, RAM, disk space)
+
+**Exit codes:**
+- `0` - All prerequisites met
+- `1` - Some prerequisites missing (check output for details)
+
+### 2. `quick-setup.ps1` ⭐ Recommended for beginners
+
+Fully automated setup with minimal user interaction. Handles common issues automatically.
+
+```powershell
+# Basic usage
+.\scripts\quick-setup.ps1
+
+# Force delete and recreate cluster
+.\scripts\quick-setup.ps1 -Force
+
+# Skip database seeding
+.\scripts\quick-setup.ps1 -SkipSeed
 ```
 
 **What it does:**
+- Automatically detects and fixes corrupted Minikube states
+- Builds all Docker images silently
+- Deploys to Kubernetes
+- Waits for pods to be ready
+- Initializes database
+- Shows access instructions
 
-- Copies `.env.dev` to `.env` (if available)
-- Starts development containers using `docker-compose.dev.yml`
-- Shows status and URLs when complete
+**Use this when:**
+- First-time setup
+- You want a clean environment
+- Previous setup got corrupted
+- You want minimal interaction
 
-**Requirements:**
+### 3. `dev-setup.ps1`
 
-- Docker Desktop running
-- `.env.dev` file (optional, will use existing `.env` if not found)
+Interactive setup with step-by-step guidance and user choices.
 
----
+```powershell
+# Basic usage
+.\scripts\dev-setup.ps1
 
-### 🏭 **Production Scripts**
+# Skip prerequisite checks (use at your own risk)
+.\scripts\dev-setup.ps1 -SkipChecks
 
-#### `start-prod.sh`
+# Clean up first, then setup
+.\scripts\dev-setup.ps1 -CleanFirst
 
-Comprehensive production startup script with validation and health checks.
-
-```bash
-bash scripts/start-prod.sh
+# Skip Docker image building (if already built)
+.\scripts\dev-setup.ps1 -SkipBuild
 ```
 
 **What it does:**
+- Shows detailed progress for each step
+- Asks for confirmation at key points
+- Provides educational information about what's happening
+- Gives you control over database seeding and testing
+- Handles corrupted Minikube states with user choice
 
-- Validates Docker is running
-- Checks/creates `.env.production` from template
-- Validates critical environment variables
-- Builds production images if needed
-- Starts production services
-- Waits for services to be healthy
-- Tests endpoints
-- Shows production information
+**Use this when:**
+- Learning about Kubernetes deployment
+- You want to see what's happening at each step
+- You need fine-grained control
+- Debugging setup issues
 
-#### `stop-prod.sh`
+### 4. `deploy-k8s.ps1`
 
-Safely stops production environment with cleanup options.
+Deploys or updates the application to Kubernetes (without building images).
 
-```bash
-bash scripts/stop-prod.sh
+```powershell
+# Deploy to development environment
+.\scripts\deploy-k8s.ps1 -Environment dev
+
+# Deploy to staging
+.\scripts\deploy-k8s.ps1 -Environment staging
+
+# Deploy to production
+.\scripts\deploy-k8s.ps1 -Environment prod
 ```
 
-**What it does:**
+**Use this when:**
+- Images are already built
+- You just want to deploy/redeploy
+- Updating configuration without rebuilding
 
-- Stops production containers
-- Offers cleanup options (keep/remove volumes)
-- System cleanup options
-- Shows final status
+### 5. `test-persistence.ps1`
 
-#### `prod-manager.sh`
+Tests data persistence by creating data, restarting PostgreSQL pod, and verifying data survived.
 
-Comprehensive production management tool with multiple commands.
-
-```bash
-bash scripts/prod-manager.sh <command>
+```powershell
+.\scripts\test-persistence.ps1 -Namespace profiller-dev
 ```
 
-**Available Commands:**
+**Use this when:**
+- Verifying PersistentVolume setup
+- Testing database backup/recovery
+- Validating storage configuration
 
-- `start` - Start production environment
-- `stop` - Stop production environment
-- `restart` - Restart production environment
-- `status` - Show detailed status of all services
-- `logs [service]` - Show logs (optionally for specific service)
-- `health` - Check health of all services
-- `build` - Build production images
-- `deploy` - Full deployment (build + start)
-- `backup` - Backup database and volumes
-- `shell <service>` - Open shell in service container
-- `clean` - Clean up unused Docker resources
-- `update` - Update images and restart
+## Common Scenarios
 
-**Examples:**
+### First Time Setup
 
-```bash
-# Start production
-bash scripts/prod-manager.sh start
+```powershell
+# Option 1: Quick and easy
+.\scripts\quick-setup.ps1
 
-# View frontend logs
-bash scripts/prod-manager.sh logs frontend
-
-# Check health
-bash scripts/prod-manager.sh health
-
-# Open shell in backend
-bash scripts/prod-manager.sh shell backend
-
-# Full deployment
-bash scripts/prod-manager.sh deploy
+# Option 2: Step-by-step learning
+.\scripts\dev-setup.ps1
 ```
 
-#### `deploy-production.sh`
+### Minikube is in a Corrupted State
 
-Advanced deployment script with security scanning and registry support.
+**Error:** `unknown state "minikube"` or `state: unknown`
 
-```bash
-bash scripts/deploy-production.sh [command]
+**Solution:**
+
+```powershell
+# Automated fix
+.\scripts\quick-setup.ps1 -Force
+
+# Or manual fix
+minikube delete
+.\scripts\dev-setup.ps1
 ```
 
-**Available Commands:**
+### Rebuild After Code Changes
 
-- `build` - Build production images only
-- `scan` - Run security scans (requires Trivy)
-- `push` - Push images to registry
-- `deploy` - Deploy using Docker Compose
-- `all` - Complete pipeline (default)
+```powershell
+# Stop current deployment
+kubectl delete namespace profiller-dev
 
----
-
-## 🔧 **Setup Requirements**
-
-### For Development:
-
-1. **Docker Desktop** running
-2. **Environment file** (optional):
-   ```bash
-   cp .env.example .env.dev
-   # Edit .env.dev with development values
-   ```
-
-### For Production:
-
-1. **Docker Desktop** running
-2. **Production environment file** (required):
-   ```bash
-   cp env.production.example .env.production
-   # Edit .env.production with production values
-   ```
-
-**Required Production Variables:**
-
-```bash
-POSTGRES_PASSWORD=secure-password
-JWT_SECRET=your-super-secure-jwt-secret
-NEXTAUTH_SECRET=your-nextauth-secret
+# Rebuild and redeploy
+.\scripts\quick-setup.ps1 -Force
 ```
 
----
+### Just Redeploy (without rebuilding)
 
-## 🎯 **Quick Start Guide**
+```powershell
+# Delete old deployment
+kubectl delete namespace profiller-dev
 
-### Development Environment:
-
-```bash
-# 1. Start Docker Desktop
-# 2. Run development environment
-bash scripts/start-dev.sh
-
-# Access applications:
-# - Frontend: http://localhost:3000
-# - Backend: http://localhost:4040
-# - PgAdmin: http://localhost:8080
+# Deploy with existing images
+.\scripts\deploy-k8s.ps1 -Environment dev
 ```
 
-### Production Environment:
+### Check if Everything is Working
 
-```bash
-# 1. Start Docker Desktop
-# 2. Configure environment
-cp env.production.example .env.production
-# Edit .env.production with your values
+```powershell
+# Check pod status
+kubectl get pods -n profiller-dev
 
-# 3. Start production
-bash scripts/start-prod.sh
-# OR use the manager
-bash scripts/prod-manager.sh deploy
+# Check services
+kubectl get services -n profiller-dev
 
-# Access applications:
-# - Frontend: http://localhost:3000
-# - Backend: http://localhost:4040
+# Check logs
+kubectl logs -n profiller-dev -l app=backend -f
+
+# Test persistence
+.\scripts\test-persistence.ps1 -Namespace profiller-dev
 ```
 
----
+### Clean Up Everything
 
-## 🛠️ **Script Features**
+```powershell
+# Delete the namespace (removes all resources)
+kubectl delete namespace profiller-dev
 
-### ✅ **All Scripts Include:**
+# Stop Minikube
+minikube stop
 
-- **Docker validation** - Checks if Docker is running
-- **Error handling** - Exits on errors with helpful messages
-- **Colored output** - Easy to read status messages
-- **Prerequisites checking** - Validates required files and tools
-
-### 🏭 **Production Scripts Include:**
-
-- **Environment validation** - Checks required variables
-- **Health monitoring** - Waits for services to be healthy
-- **Endpoint testing** - Validates application responses
-- **Build metadata** - Adds version and build information
-- **Backup capabilities** - Database and volume backups
-- **Cleanup options** - Safe resource management
-
-### 🔍 **Debugging Features:**
-
-- **Detailed status** - Shows container, network, and volume info
-- **Health checks** - Tests all service endpoints
-- **Log viewing** - Easy access to service logs
-- **Shell access** - Debug containers interactively
-
----
-
-## 🚨 **Troubleshooting**
-
-If scripts fail, check:
-
-1. **Docker Desktop is running**
-
-   ```bash
-   docker info
-   ```
-
-2. **Environment files exist**
-
-   ```bash
-   ls -la .env*
-   ```
-
-3. **Required ports are free**
-
-   ```bash
-   netstat -an | grep :3000
-   netstat -an | grep :4040
-   ```
-
-4. **View detailed logs**
-   ```bash
-   bash scripts/prod-manager.sh logs
-   ```
-
-For more troubleshooting help, see: [`docs/TROUBLESHOOTING.md`](../docs/TROUBLESHOOTING.md)
-
----
-
-## 📚 **Related Documentation**
-
-- [`docs/DOCKER_CLOUD_PATTERNS.md`](../docs/DOCKER_CLOUD_PATTERNS.md) - Docker patterns for cloud deployment
-- [`docs/TROUBLESHOOTING.md`](../docs/TROUBLESHOOTING.md) - Comprehensive troubleshooting guide
-- [`docker-compose.dev.yml`](../docker-compose.dev.yml) - Development configuration
-- [`docker-compose.production.yml`](../docker-compose.production.yml) - Production configuration
-
----
-
-## 🔄 **Script Maintenance**
-
-To make scripts executable (Linux/Mac):
-
-```bash
-chmod +x scripts/*.sh
+# Delete Minikube cluster (complete cleanup)
+minikube delete
 ```
 
-To update all scripts:
+## Troubleshooting
 
-```bash
-git pull origin main
-chmod +x scripts/*.sh  # If needed
+### Docker Daemon Not Running
+
+**Error:** `Cannot connect to the Docker daemon`
+
+**Solution:**
+1. Start Docker Desktop
+2. Wait for it to be fully running (green icon in system tray)
+3. Run `docker ps` to verify
+4. Try the setup script again
+
+### Minikube Won't Start
+
+**Error:** `Failed to start minikube`
+
+**Solution:**
+1. Make sure Docker Desktop is running
+2. Delete corrupted cluster: `minikube delete`
+3. Check WSL 2 (if on Windows): `wsl --list --verbose`
+4. Restart Docker Desktop
+5. Try: `minikube start --cpus=4 --memory=7939 --driver=docker`
+
+### Pods Not Starting
+
+**Error:** Pods stuck in `Pending`, `CrashLoopBackOff`, or `ImagePullBackOff`
+
+**Solution:**
+
+```powershell
+# Check pod details
+kubectl describe pod <pod-name> -n profiller-dev
+
+# Check events
+kubectl get events -n profiller-dev --sort-by='.lastTimestamp'
+
+# Common fixes:
+# 1. Images not built in Minikube's Docker
+& minikube -p minikube docker-env --shell powershell | Invoke-Expression
+# Then rebuild images
+
+# 2. Resource constraints
+minikube start --cpus=4 --memory=7939
+
+# 3. Complete reset
+kubectl delete namespace profiller-dev
+.\scripts\quick-setup.ps1 -Force
 ```
 
-# Type Generation Scripts
+### Port Already in Use
 
-This directory contains scripts for generating frontend types from the backend, ensuring a **single source of truth** for all type definitions.
+**Error:** Ports 3000, 3001, 3002, or 5433 in use
 
-## 🎯 Single Command for All Types
+**Solution:**
 
-```bash
-# Generate all frontend types (recommended)
-npm run generate:types
+```powershell
+# Find what's using the port
+Get-NetTCPConnection -LocalPort 3000
+
+# Option 1: Kill the process using the port
+# Option 2: Use different ports in port-forward command
+kubectl port-forward -n profiller-dev service/frontend-service 8080:3000
+
+# Option 3: Use minikube service (uses random ports)
+minikube service frontend-service -n profiller-dev
 ```
 
-This command will:
+### Out of Disk Space
 
-1. ✅ Generate OpenAPI types from the backend API
-2. ✅ Generate enum types from the backend database enums
-3. ✅ Ensure frontend types stay in sync with backend
+**Error:** `no space left on device`
 
-## 📂 Available Scripts
+**Solution:**
 
-### `generate-all-types.js` (Primary)
+```powershell
+# Clean up Docker
+docker system prune -a --volumes
 
-- **Purpose**: Unified script that generates all frontend types
-- **Usage**: `npm run generate:types` (from frontend or backend)
-- **What it does**:
-  - Builds backend and generates OpenAPI schema
-  - Generates frontend TypeScript types from OpenAPI
-  - Generates enum types from database enums
-  - Provides comprehensive logging and error handling
-
-### `generate-frontend-types.js` (Internal)
-
-- **Purpose**: Generates enum types from backend database enums
-- **Usage**: Called internally by `generate-all-types.js`
-- **What it does**:
-  - Reads backend database enum files (`backend/db/enums/*.enum.ts`)
-  - Extracts enum values from `pgEnum` declarations
-  - Generates TypeScript types, constants, and type guards
-  - Outputs to `frontend/lib/backend-types/enums.ts`
-
-## 🔄 Type Generation Workflow
-
-### When to Run Type Generation
-
-- After modifying backend database enums
-- After adding/changing backend API endpoints
-- After updating backend request/response schemas
-- Before frontend development to ensure types are current
-
-### Automatic vs Manual
-
-- **Manual**: Run `npm run generate:types` when needed
-- **Future**: Could be automated via git hooks or CI/CD pipeline
-
-## 📋 Generated Files
-
-### Frontend OpenAPI Types
-
-- **Location**: `frontend/types/api.ts`
-- **Source**: Backend OpenAPI schema (`backend/generated/openapi.json`)
-- **Contains**: API endpoint types, request/response schemas
-
-### Frontend Enum Types
-
-- **Location**: `frontend/lib/backend-types/enums.ts`
-- **Source**: Backend database enums (`backend/db/enums/*.enum.ts`)
-- **Contains**: TypeScript enum types, constants, and type guards
-
-## 🛠️ Troubleshooting
-
-### Common Issues
-
-1. **"No enum files found"**: Ensure backend enum files exist in `backend/db/enums/`
-2. **"Backend build failed"**: Fix TypeScript errors in backend before running
-3. **"OpenAPI generation failed"**: Check backend API endpoints and schemas
-
-### Debug Mode
-
-```bash
-# Run individual steps for debugging
-cd backend && npm run openapi:generate  # Step 1
-cd frontend && npm run types:generate   # Step 2
-node scripts/generate-frontend-types.js # Step 3
+# Clean up Minikube
+minikube delete
+minikube start --cpus=4 --memory=7939
 ```
 
-## 🎯 Best Practices
+## Script Options Reference
 
-1. **Single Source of Truth**: Always define enums in backend database files
-2. **Never Edit Generated Files**: They will be overwritten on next generation
-3. **Run Before Commits**: Ensure types are current before committing
-4. **Version Control**: Commit generated files to keep team in sync
+### `quick-setup.ps1` Options
+
+| Option | Description |
+|--------|-------------|
+| `-Force` | Delete and recreate Minikube cluster (clean slate) |
+| `-SkipSeed` | Don't seed database with test data |
+
+### `dev-setup.ps1` Options
+
+| Option | Description |
+|--------|-------------|
+| `-SkipChecks` | Skip prerequisite checks (not recommended) |
+| `-SkipBuild` | Skip Docker image building |
+| `-CleanFirst` | Delete namespace before deploying |
+
+### `deploy-k8s.ps1` Options
+
+| Option | Description |
+|--------|-------------|
+| `-Environment <env>` | Target environment: `dev`, `staging`, or `prod` |
+
+### `test-persistence.ps1` Options
+
+| Option | Description |
+|--------|-------------|
+| `-Namespace <name>` | Kubernetes namespace to test (default: `profiller-dev`) |
+
+## Requirements
+
+### Minimum System Requirements
+- **CPU:** 4 cores
+- **RAM:** 8 GB
+- **Disk:** 20 GB free space
+- **OS:** Windows 10/11 with WSL 2
+
+### Required Software
+- Docker Desktop (latest)
+- Minikube v1.30+
+- kubectl v1.26+
+- Node.js v18+ (LTS recommended)
+- PowerShell 5.0+
+- Git (optional but recommended)
+
+### Installation via Chocolatey
+
+```powershell
+# Install Chocolatey first (if not installed)
+Set-ExecutionPolicy Bypass -Scope Process -Force
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+# Install all dependencies
+choco install docker-desktop minikube nodejs-lts git -y
+```
+
+## Additional Resources
+
+- [Minikube Development Guide](../MINIKUBE_DEVELOPMENT_GUIDE.md)
+- [Kubernetes Parameterization Guide](../K8S_PARAMETERIZATION_GUIDE.md)
+- [Persistent Storage Guide](../PERSISTENT_STORAGE_GUIDE.md)
+- [Quick Start Guide](../QUICK_START_MINIKUBE.md)
+
+## Getting Help
+
+If you encounter issues not covered here:
+
+1. Check the output carefully - error messages usually indicate the problem
+2. Run `.\scripts\check-prerequisites.ps1` to verify your setup
+3. Try the "clean slate" approach: `.\scripts\quick-setup.ps1 -Force`
+4. Check the main project documentation in the root directory
+5. Review Minikube logs: `minikube logs`
+6. Check Kubernetes events: `kubectl get events -n profiller-dev`
+
+## Script Development Notes
+
+All scripts follow these conventions:
+- **Exit code 0:** Success
+- **Exit code 1:** Failure (check output for details)
+- **Color coding:**
+  - 🟢 Green (✓): Success
+  - 🟡 Yellow (⚠): Warning or info
+  - 🔴 Red (✗): Error
+  - 🔵 Cyan (▶): Step/section header
+
+Scripts are designed to be:
+- **Idempotent:** Safe to run multiple times
+- **Resilient:** Handle common errors gracefully
+- **Informative:** Provide clear feedback and next steps
+- **Flexible:** Support various use cases via parameters

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: profiller-staging
+  labels:
+    app: postgres
+    component: database
+    environment: staging
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi  # Medium storage for staging (20GB)
+  # storageClassName: standard  # Adjust based on cloud provider

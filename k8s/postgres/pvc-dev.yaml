@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: profiller-dev
+  labels:
+    app: postgres
+    component: database
+    environment: development
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi  # Smaller storage for dev (5GB)
+  # Minikube uses 'standard' storage class by default (hostPath)

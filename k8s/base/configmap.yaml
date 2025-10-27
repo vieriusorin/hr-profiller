@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: profiller
+data:
+  # Ports (standard across all environments)
+  PORT_FRONTEND: "3000"
+  PORT_BACKEND: "3001"
+  PORT_MCP: "3002"
+  HOSTNAME: "0.0.0.0"
+
+  # Feature Flags
+  NEXT_TELEMETRY_DISABLED: "1"
+
+  # Internal Service URLs (same in K8s)
+  API_URL: "http://backend-service:3001"
+
+  # Database user (same across environments)
+  POSTGRES_USER: "postgres"
+
+  # Node Options (base allocation)
+  NODE_OPTIONS: "--max-old-space-size=512"
+
+  # JWT expiry (same across environments)
+  JWT_EXPIRES_IN: "7d"

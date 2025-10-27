@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: profiller
+data:
+  # Environment
+  NODE_ENV: "staging"
+
+  # Ports
+  PORT_FRONTEND: "3000"
+  PORT_BACKEND: "3001"
+  PORT_MCP: "3002"
+  HOSTNAME: "0.0.0.0"
+
+  # Feature Flags
+  NEXT_TELEMETRY_DISABLED: "1"
+
+  # Internal Service URLs (staging uses internal DNS)
+  API_URL: "http://backend-service:3001"
+
+  # CORS (staging domain)
+  CORS_ORIGIN: "https://staging.profiller.com"
+  ALLOWED_ORIGINS: "https://staging.profiller.com,https://staging-api.profiller.com"
+
+  # Database
+  POSTGRES_DB: "profiller_staging"
+  POSTGRES_USER: "postgres"
+
+  # Logging
+  LOG_LEVEL: "info"
+
+  # Node Options
+  NODE_OPTIONS: "--max-old-space-size=1024"
+
+  # JWT
+  JWT_EXPIRES_IN: "7d"
